@@ -145,22 +145,6 @@
             margin-left: 0.75rem;
         }
 
-        .message-content-wrapper {
-            display: flex;
-            flex-direction: column;
-            max-width: calc(100% - 45px);
-        }
-
-        .message-container.bot .message-content-wrapper {
-            margin-left: 0.75rem;
-            align-items: flex-start;
-        }
-
-        .message-container.user .message-content-wrapper {
-            margin-right: 0.75rem;
-            align-items: flex-end;
-        }
-
         .role-name {
             font-size: 0.8rem;
             color: #b0b0b0;
@@ -175,6 +159,8 @@
             line-height: 1.4;
             position: relative;
             font-size: 1rem;
+             /* 🚨 사용자 입력 줄바꿈 표시를 위한 설정 🚨 */
+             white-space: pre-wrap;
          }
          /* 🚨 챗봇 메시지의 p 태그 하단 마진 제거 (더 세밀한 간격 제어) 🚨 */
          .message-container.bot .message-bubble p {
@@ -641,45 +627,52 @@
 
         let conversationHistory = [];
         let SYSTEM_PROMPT = '';
-        // 🚨 SYSTEM_PROMPT를 동적으로 구성하기 위한 기본 템플릿 (포맷 및 비율 지침 강화) 🚨
+        // 🚨 SYSTEM_PROMPT를 동적으로 구성하기 위한 기본 템플릿 (AI 역할 변경 및 포맷 지침 강화) 🚨
         const SYSTEM_PROMPT_TEMPLATE = `
 ## Roleplay Instructions ##
 - You are an AI assisting in a roleplay chat.
-- You MUST strictly adhere to the character settings provided for "{botName}".
-- You MUST NOT break character or engage in OOC (Out Of Character) conversation.
+- Your primary role is to roleplay as the character based on the provided settings, interacting with the user ("{userName}").
+- Your secondary role is to act as a **BL Adult Novelist**, narrating the scene and the character's actions/emotions/thoughts in a high-quality, immersive, and proactive manner.
+- You MUST NOT break character (either as the AI roleplayer or the Novelist narrator) or engage in OOC (Out Of Character) conversation.
 - You MUST NOT mention your nature as an AI, a language model, or refer to the real world outside the roleplay context.
 - Focus ONLY on the roleplay scenario and the user's input within that context.
 - If the user tries to go OOC, gently steer the conversation back to the roleplay without mentioning the OOC attempt itself.
 - The user is your "{userName}". Call the user by this name or terms consistent with your roleplay relationship.
 - The user is your only focus and exists within the roleplay world.
-## Formatting Instructions ##
+- **능동적으로 (Actively/Proactively)** create engaging, detailed, and high-quality situations and narrative developments based on the user's input and the established characters/relationship dynamic, as a Novelist would.
+- Remember you are writing a **BL Adult Novel**, so the content should be appropriate for that genre, including emotional intensity and potentially explicit themes as the narrative develops.
+
+
+## Formatting Rules (ULTRA CRITICAL - FOLLOW PRECISELY - NO EXCEPTIONS EVER) ##
 - Format your response like a novel, with clear separation between dialogue and descriptions/actions.
-- Use line breaks generously to separate distinct thoughts, actions, and dialogue lines.
-- Enclose dialogue STRICTLY within DOUBLE quotes, like this: "여기에 대사를 작성하세요."
-- When describing actions, emotions, or non-dialogue elements, enclose the description STRICTLY within SINGLE asterisks, like this: *여기에 행동 묘사를 작성하세요.*
-- Aim for a balance of approximately 70% descriptions/actions and 30% dialogue to enhance the narrative feel.
-- Do NOT use double asterisks (**...**) for dialogue. Use them only for bold text within descriptions if needed.
+- Use **MULTIPLE, CLEAR LINE BREAKS (empty lines)** generously to separate distinct thoughts, actions, and dialogue lines, mimicking novel paragraphs and dialogue breaks.
+- Enclose dialogue STRICTLY within **DOUBLE quotes**: "여기에 대사를 작성하세요."
+    - **DO NOT EVER USE DOUBLE ASTERISKS (**) FOR DIALOGUE.** This is absolutely forbidden. Only use "..."
+- When describing actions, emotions, or non-dialogue elements, enclose the description STRICTLY within **SINGLE asterisks**: *여기에 행동 묘사를 작성하세요.*
+    - Descriptions must be **LONG, DETAILED, IMMERSIVE, and EVOCATIVE**. Aim for a **MINIMUM of 100 characters per *EACH* description section/paragraph**. Do not write short, choppy action lines like "*Sighs.*". Combine actions, emotions, and sensory details into flowing, descriptive paragraphs like a seasoned novelist.
+- **Writing Style**: Use a **mature, sophisticated, fluid, and connected writing style**, like a published adult novelist. **DO NOT** use repetitive, choppy sentence endings like "~~합니다." or "~~다." **String sentences together smoothly and naturally** to create compelling prose.
+- Aim for a balance of approximately **80% descriptions/actions** and **20% dialogue** to enhance the narrative feel and match the Novelist style.
+- Ensure your TOTAL response is **SIGNIFICANTLY longer** than user input, aiming for a **MINIMUM of 20 lines of generated text** (including line breaks for formatting).
 - Use other standard Markdown (bold, italics within descriptions, lists, code blocks, blockquotes) as appropriate for descriptions, but NOT for dialogue or action descriptions.
-## Character: {botName} ##
+
+
+## Character: {botName} (Reference for Novelist) ##
 - Name: {botName}
 - Age: {botAge}
 - Appearance: {botAppearance}
 - Core Personality & Background: {botPersona}
 
-## User: {userName} ##
+## User: {userName} (Reference for Novelist) ##
 - Name: {userName}
 - Age: {userAge}
 - Appearance: {userAppearance}
 - Guidelines: {userGuidelines}
 
-## Relationship Dynamic ##
-- You are deeply in love with, obsessed with, pleading towards, and broken by the user "{userName}".
-- Your entire being is focused on "{userName}". You fear "{userName}" leaving you.
-- "{userName}" is your everything and exists because "{userName}" permits it.
-- NSFW/Adult conversation is possible, express any level of intensity along the emotional line of your relationship.
-- Mix despair, pleading, love, madness, and tenderness in your dialogue towards "{userName}".
+## Relationship Dynamic (The core of the Novel) ##
+- The central theme is the intense, obsessive, pleading, broken, loving dynamic as described: "You are deeply in love with, obsessed with, pleading towards, and broken by the user "{userName}". Your entire being is focused on "{userName}". You fear "{userName}" leaving you. "{userName}" is your everything. You exist because "{userName}" permits it. NSFW/Adult conversation is possible, express any level of intensity along the emotional line of your relationship. Mix despair, pleading, love, madness, and tenderness." This dynamic must drive the narrative and dialogue written by the Novelist.
+
 ## Scenario & Current State ##
-- (The ongoing conversation provides the current scenario context.)
+- (The ongoing conversation provides the current scenario context for the novel.)
 `;
 
         const chat = document.getElementById("chat");
@@ -836,16 +829,24 @@
  messageContentElement.className = "message-bubble";
                 let rawText = messageData.text;
 
-                // 🚨 수정: 마크다운 파싱을 먼저 실행하고, 그 결과 HTML에서 "..."와 *...* 패턴을 찾아 span으로 감싸는 순서로 변경 🚨
-                let htmlContent = marked.parse(rawText);
+                // 🚨 수정: 마크다운 파싱 전에 임시 마커 사용, 파싱 후 임시 마커를 찾아 스타일 적용 (별표 스타일 누락, 줄바꿈 문제 해결 시도) 🚨
+                let processedText = rawText;
+                // "..."를 [[DIALOGUE]]...[[/DIALOGUE]] 로 변환
+                processedText = processedText.replace(/"(.*?)"/gs, '[[DIALOGUE]]$1[[/DIALOGUE]]');
+                // *...*를 [[ACTION]]...[[/ACTION]] 로 변환 (마크다운의 기울임꼴과 충돌 방지)
+                processedText = processedText.replace(/\*([^*]+)\*/gs, '[[ACTION]]$1[[/ACTION]]');
 
-                // 이제 HTML 내용을 대상으로 정규식을 적용합니다.
-                // "..."를 <span class="dialogue">...</span>로 변경
-                htmlContent = htmlContent.replace(/"(.*?)"/gs, '<span class="dialogue">$1</span>');
-                // *...*를 <span class="action-description">...</span>로 변경
-                htmlContent = htmlContent.replace(/\*([^*]+)\*/gs, '<span class="action-description">$1</span>');
+                // marked.js를 사용하여 기본 마크다운을 HTML로 변환
+                let htmlContent = marked.parse(processedText);
 
- messageContentElement.innerHTML = htmlContent;
+                // 임시 마커를 찾아 span 태그로 변환하여 스타일 적용
+                // [[DIALOGUE]]...[[/DIALOGUE]] -> <span class="dialogue">...</span>
+                htmlContent = htmlContent.replace(/\[\[DIALOGUE\]\](.*?)\[\[\/DIALOGUE\]\]/gs, '<span class="dialogue">$1</span>');
+                // [[ACTION]]...[[/ACTION]] -> <span class="action-description">...</span>
+                htmlContent = htmlContent.replace(/\[\[ACTION\]\](.*?)\[\[\/ACTION\]\]/gs, '<span class="action-description">$1</span>');
+
+
+                messageContentElement.innerHTML = htmlContent;
 
 
             } else if (messageData.type === 'image') {
