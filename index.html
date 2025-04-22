@@ -995,7 +995,7 @@ const deleteBtn = document.createElement("button");
 deleteBtn.className = "delete-btn";
 deleteBtn.textContent = "✕";
 deleteBtn.onclick = () => container.remove();
-contentWrapper.appendChild(deleteBtn);
+container.appendChild(deleteBtn);
 
             chat.appendChild(container);
             chat.scrollTop = chat.scrollHeight;
@@ -1314,14 +1314,14 @@ contentWrapper.appendChild(deleteBtn);
          function buildSystemPrompt(botName, userName, botPersona, botAge, botAppearance, userAge, userAppearance, userGuidelines) {
              // 범용적인 템플릿 사용 (이안 관련 내용 제거됨)
              let finalPrompt = SYSTEM_PROMPT_TEMPLATE
-                 .replace('{botName}', botName || '캐릭터') // 기본값 변경
-                 .replace('{botAge}', botAge || '불명')
-                 .replace('{botAppearance}', botAppearance || '설정되지 않음')
-                 .replace('{botPersona}', botPersona || '설정된 캐릭터 지침 없음.') // 기본값 변경
-                 .replace('{userName}', userName || '사용자') // 기본값 변경
-                 .replace('{userAge}', userAge || '불명')
-                 .replace('{userAppearance}', userAppearance || '설정되지 않음')
-                 .replace('{userGuidelines}', userGuidelines || '설정된 사용자 지침 없음.');
+    .replaceAll('{botName}', botName || '이안')
+    .replaceAll('{botAge}', botAge || '불명')
+    .replaceAll('{botAppearance}', botAppearance || '설정되지 않음')
+    .replaceAll('{botPersona}', botPersona || '설정된 페르소나 없음.')
+    .replaceAll('{userName}', userName || '피주머니')
+    .replaceAll('{userAge}', userAge || '불명')
+    .replaceAll('{userAppearance}', userAppearance || '설정되지 않음')
+    .replaceAll('{userGuidelines}', userGuidelines || '설정된 사용자 지침 없음.');
 
              return finalPrompt.trim();
          }
