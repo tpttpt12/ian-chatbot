@@ -296,17 +296,23 @@
         }
 
 
-        #userInput {
-            flex: 1;
-            padding: 0.75rem 1rem;
-            border-radius: 1.5rem;
-            border: none;
-            background-color: #3a3a3a;
-            color: #e0e0e0;
-            font-size: 1rem;
-            outline: none;
-            transition: background-color 0.2s ease, box-shadow 0.2s ease;
-        }
+#userInput {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border-radius: 1.5rem;
+    border: none;
+    background-color: #3a3a3a;
+    color: #e0e0e0;
+    font-size: 1rem;
+    outline: none;
+    resize: none; /* 크기 조절 금지 */
+    min-height: 2.5rem;
+    max-height: 8rem;
+    line-height: 1.4;
+    overflow-y: auto;
+    box-shadow: none;
+}
+
 
         #userInput:focus {
             background-color: #4a4a4a;
@@ -563,7 +569,7 @@
 
         <div id="inputArea">
             <button id="actionMenuButton" title="액션 메뉴 열기">+</button>
-            <input id="userInput" placeholder="피주머니의 말..." autocomplete="off" />
+            <textarea id="userInput" placeholder="피주머니의 말..." autocomplete="off"></textarea>
             <button id="sendButton">전송</button>
             <div id="loadingSpinner" class="loading-spinner"></div>
         </div>
