@@ -235,7 +235,7 @@
          /* *별표* 로 감싸진 부분에 적용될 스타일 */
         .action-description {
              color: #b0b0b0;
-             font-style: italic;
+             font-: italic;
          }
          /* 대사 스타일 */
          /* "따옴표" 로 감싸진 부분에 적용될 스타일 */
@@ -384,7 +384,7 @@
         }
 
          #actionMenu .menu-buttons::-webkit-scrollbar { display: none; }
-         #actionMenu .menu-buttons { -ms-overflow-style: none; }
+         #actionMenu .menu-buttons { -ms-overflow-: none; }
 
 
         /* 액션 메뉴 버튼 스타일 수정: 원형으로 */
@@ -605,7 +605,23 @@
          .slot-button:active {
              background-color: #3366cc;
          }
+        
+  .delete-btn {
+    background: transparent;
+    border: none;
+    color: #aaa;
+    font-size: 1rem;
+    cursor: pointer;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    padding: 0;
+    z-index: 1;
+  }
 
+  .message-container {
+    position: relative;
+  }
 
     </style>
 <style>
@@ -974,6 +990,12 @@ Only use "..."
                 container.appendChild(img);
                 container.appendChild(contentWrapper);
             }
+            // 삭제 버튼 추가
+const deleteBtn = document.createElement("button");
+deleteBtn.className = "delete-btn";
+deleteBtn.textContent = "✕";
+deleteBtn.onclick = () => container.remove();
+container.appendChild(deleteBtn);
 
             chat.appendChild(container);
             chat.scrollTop = chat.scrollHeight;
