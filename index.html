@@ -2,14 +2,14 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>이안 - 피주머니 전용 챗봇</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
-        /* 🚨 배경색을 진한 회색으로 변경 및 전체 레이아웃 기본 설정 🚨 */
+        /* 🚨 배경색을 진한 회색으로 통일 및 전체 레이아웃 기본 설정 🚨 */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #0a0a0a; /* 진한 회색 배경 */
+            background-color: #212121; /* 사용자 요청에 따라 배경색 통일 */
             color: #e0e0e0;
             margin: 0;
             padding: 0;
@@ -17,84 +17,79 @@
             flex-direction: column;
             height: 100vh;
             overflow: hidden; /* 전체 스크롤 방지, 채팅 영역만 스크롤 */
+             position: relative; /* 사이드바, 헤더 텍스트, 토글 버튼 등 절대/고정 위치 요소 기준 */
         }
 
-        /* 🚨 메인 컨텐츠 영역 (헤더, 채팅, 입력창 포함) - 중앙 정렬 및 너비 제한 🚨 */
-        .app-container {
-             display: flex;
-             flex-direction: column;
-             flex-grow: 1; /* 남은 공간을 모두 차지하여 높이 확보 */
-             max-width: 900px; /* 최대 너비 설정 */
-             width: 95%; /* 기본 너비 (작은 화면 대응) */
-             margin: 0 auto; /* 좌우 자동 마진으로 중앙 정렬 */
-             background-color: #1a1a1a; /* 바디보다 약간 밝은 회색 배경 */
-             box-shadow: none; /* 그림자 제거 */
-             border: none; /* 테두리 제거 */
-             position: relative; /* 자식 요소 위치 기준 */
-             overflow: hidden; /* 컨테이너 내부 내용 넘침 방지 */
+        /* 🚨 헤더 텍스트 (왼쪽 상단 구석, 작게, 굵기 없이) 🚨 */
+        .header-title {
+             position: fixed; /* 뷰포트 기준 고정 */
+             top: 1rem; /* 상단에서 여백 */
+             left: 1rem; /* 좌측에서 여백 */
+             font-size: 1rem; /* 글자 크기 작게 */
+             font-weight: normal; /* 굵기 없이 */
+             color: #e0e0e0; /* 글자 색상 */
+             z-index: 10; /* 다른 요소 위에 표시 */
         }
-         /* 🚨 화면이 충분히 넓을 때 너비를 60%로 조정 🚨 */
-         @media (min-width: 1200px) {
-             .app-container {
-                 width: 60%;
-             }
-         }
 
-        /* 🚨 헤더 스타일 수정 (왼쪽 상단 텍스트, 사이드바 토글 분리) 🚨 */
-        .chat-header {
-            background-color: transparent; /* 배경 투명하게 (app-container 배경 사용) */
-            color: #ffffff;
-            padding: 1rem; /* 상하좌우 여백 */
-            text-align: left; /* 텍스트 왼쪽 정렬 */
-            font-size: 1.2rem;
-            font-weight: normal; /* 굵기 제거 */
-            border-bottom: 1px solid #3a3a3a;
-            flex-shrink: 0;
-            position: relative; /* 사이드바 토글 위치 기준 */
-            display: flex; /* Flexbox 사용 */
-            justify-content: space-between; /* 텍스트와 사이드바 토글 양 끝 정렬 */
-            align-items: center; /* 세로 중앙 정렬 */
-            height: 50px; /* 헤더 높이 고정 (사이드바 토글 크기와 맞춤) */
-        }
-         /* 헤더 제목 텍스트 스타일 */
-         .header-title {
-             font-size: 1.2rem;
-             font-weight: normal;
-             color: #e0e0e0;
-             /* 왼쪽 상단에 배치되도록 추가적인 마진/패딩 조정 */
-             padding: 0;
-             margin: 0;
-         }
-
-
-         /* 🚨 사이드 바 토글 버튼 스타일 수정 (오른쪽 상단 배치) 🚨 */
-         /* 헤더 안에서 분리하여 body 기준으로 절대 위치 지정 */
-        #sidebarToggle {
+        /* 🚨 사이드바 (오른쪽 벽면 전체 패널) 🚨 */
+        #sidebar {
             position: fixed; /* 뷰포트 기준 고정 */
-            top: 1rem; /* 상단에서 1rem 여백 */
-            right: 1rem; /* 우측에서 1rem 여백 */
-            transform: none;
-            width: 40px; /* 크기 조정 */
-            height: 40px; /* 크기 조정 */
-            background-color: #2f2f2f; /* 옅은 회색 배경 */
+            top: 0;
+            right: -300px; /* 기본적으로 화면 오른쪽에 숨김 (펼쳐진 너비만큼) */
+            width: 300px; /* 펼쳐졌을 때의 너비 */
+            height: 100%;
+            background-color: #303030; /* 사용자 요청 색상 */
+            color: #e0e0e0;
+            border-left: 1px solid #4a4a4a; /* 구분선 유지 (색상 조정) */
+            transition: right 0.3s ease-out, width 0.3s ease-out; /* 슬라이드 애니메이션 */
+            z-index: 900; /* 다른 요소 위에 표시 */
+            padding: 1rem;
+            box-sizing: border-box; /* 패딩을 너비에 포함 */
+            overflow-y: auto; /* 내용 많으면 스크롤 */
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+             /* 스크롤바 스타일 */
+             scrollbar-width: thin;
+             scrollbar-color: #5a5a5a #303030; /* 사이드바 배경색과 맞춤 */
+        }
+         /* 🚨 사이드바 접혔을 때 스타일 🚨 */
+         #sidebar.folded {
+             right: -65px; /* 접힌 너비만큼만 보이도록 위치 조정 */
+             width: 65px; /* 사용자 요청 너비 */
+             overflow-x: hidden; /* 내용 넘치는 것 숨김 */
+             padding: 1rem 0.5rem; /* 접혔을 때 패딩 조정 */
+         }
+         #sidebar::-webkit-scrollbar { width: 8px; }
+         #sidebar::-webkit-scrollbar-track { background: #303030; }
+         #sidebar::-webkit-scrollbar-thumb {
+             background-color: #5a5a5a;
+             border-radius: 4px;
+             border: 2px solid #303030;
+         }
+
+
+        /* 🚨 사이드바 토글 버튼 (오른쪽 상단 패널에 위치) 🚨 */
+        #sidebarToggle {
+            position: absolute; /* 사이드바 내에서 절대 위치 */
+            top: 0.5rem; /* 상단에서 여백 */
+            right: 0.5rem; /* 우측에서 여백 */
+            width: 40px;
+            height: 40px;
+            background-color: transparent; /* 배경 투명 */
             color: #b0b0b0; /* 옅은 회색 아이콘 색상 */
             border: none;
-            border-radius: 8px; /* 모서리 둥글게 */
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 1.5rem; /* 아이콘 크기 */
+            font-size: 1.5rem;
             display: flex;
             justify-content: center;
             align-items: center;
-            transition: background-color 0.2s ease, color 0.2s ease, right 0.3s ease-out;
-            z-index: 910; /* 사이드바보다 위에, 오버레이 아래 */
+            transition: background-color 0.2s ease, color 0.2s ease;
+            z-index: 10; /* 사이드바 내용 위에 */
              padding: 0;
-             box-shadow: 0 2px 5px rgba(0,0,0,0.3); /* 약간의 그림자 */
+             /* box-shadow: 0 2px 5px rgba(0,0,0,0.3); */ /* 그림자 제거 */
         }
-         /* 사이드 바 열렸을 때 토글 버튼 위치 조정 (사이드바 옆) */
-         #sidebar.visible + #sidebarToggle {
-             right: 310px; /* 사이드바 너비(300) + 여백(10) */
-         }
-
          #sidebarToggle:hover {
              background-color: #3a3a3a;
              color: #ffffff;
@@ -105,7 +100,33 @@
              height: 24px;
          }
 
+        /* 🚨 사이드바 내용 숨김 (접혔을 때) 🚨 */
+        #sidebar.folded .sidebar-header,
+        #sidebar.folded .sidebar-content {
+             display: none;
+        }
+        /* 접혔을 때 토글 버튼 스타일 조정 */
+         #sidebar.folded #sidebarToggle {
+             /* position: relative; */ /* 상대 위치로 변경 시도 */
+             /* top: 0; right: 0; */
+             margin: 0; /* 마진 제거 */
+             position: absolute; /* 다시 절대 위치로 */
+             top: 0; right: 0; /* 오른쪽 상단에 고정 */
+         }
 
+
+        /* 🚨 메인 컨텐츠 영역 (헤더 제외) - 채팅 및 입력창 포함 🚨 */
+        .main-content-area {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1; /* 남은 공간 모두 차지 */
+             /* 🚨 배경색 #212121로 통일되었으므로 별도 배경색 없음 🚨 */
+             background-color: transparent;
+             position: relative; /* 스크롤 탑 버튼 위치 기준 */
+        }
+
+
+        /* 🚨 채팅 영역 스타일 - 배경색 제거, 스크롤바 색상 조정 🚨 */
         #chat {
             flex: 1;
             padding: 1rem;
@@ -114,8 +135,8 @@
             flex-direction: column;
             gap: 0.5rem;
              scrollbar-width: thin;
-             scrollbar-color: #5a5a5a #282828;
-             background-color: transparent;
+             scrollbar-color: #5a5a5a #212121; /* 배경색과 맞춤 */
+             background-color: transparent; /* 배경색 제거 */
              /* 🚨 overflow-container 처럼 깔끔한 느낌을 위해 패딩 및 스크롤바 스타일 조정 🚨 */
         }
 
@@ -124,7 +145,7 @@
         #chat::-webkit-scrollbar-thumb {
             background-color: #5a5a5a;
             border-radius: 4px;
-            border: 2px solid #1a1a1a; /* app-container 배경색과 맞춤 */
+            border: 2px solid #212121; /* 배경색과 맞춤 */
         }
 
 
@@ -278,34 +299,37 @@
          }
 
 
-        /* 🚨 입력창 영역 스타일 재설계 (이미지 기반) 🚨 */
+        /* 🚨 입력창 영역 스타일 재설계 (이미지 및 사용자 요청 기반) 🚨 */
         #inputArea {
             display: flex;
             align-items: flex-end; /* 하단 정렬 */
             gap: 0.5rem; /* 요소 간 간격 줄임 */
             padding: 0.8rem 1rem; /* 상하 패딩 줄이고 좌우 유지 */
-            background-color: #282828; /* 이전 배경 유지 */
+            background-color: transparent; /* 배경 투명하게 (아래 둥근 박스에서 배경색 처리) */
             border-top: 1px solid #3a3a3a; /* 상단 구분선 유지 */
             flex-shrink: 0;
             position: relative;
-             /* 이미지에 맞게 추가 스타일 */
-             border-radius: 0; /* 상하단 둥근 모서리 제거 */
+             /* 사용자 요청에 따라 가운데 정렬된 .app-container 안에서 너비 조정 */
+             max-width: 900px; /* app-container와 동일한 최대 너비 */
+             width: 95%; /* app-container와 동일한 기본 너비 */
+             margin: 0 auto; /* 중앙 정렬 */
         }
 
-        /* 🚨 userInput textarea 스타일 재설계 (이미지 기반) 🚨 */
+        /* 🚨 userInput textarea 스타일 재설계 (이미지 및 사용자 요청 기반) 🚨 */
+        /* textarea 자체를 둥근 네모 박스처럼 스타일링 */
         #userInput {
-            flex: 1;
+            flex: 1; /* 남은 공간 차지 */
             padding: 0.75rem 1rem;
-            border-radius: 2rem; /* 훨씬 더 둥글게 */
-            border: none;
-            background-color: #3a3a3a;
+            border-radius: 1rem; /* 채팅 말풍선과 같은 정도의 둥근 모서리 (4방 동일) */
+            border: 1px solid #303030; /* 사용자 요청 선 색상 */
+            background-color: #212121; /* 사용자 요청 배경색 (바디/채팅 배경과 동일) */
             color: #e0e0e0;
             font-size: 1rem;
             outline: none;
-            transition: background-color 0.2s ease, box-shadow 0.2s ease;
+            transition: background-color 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
             resize: none;
             min-height: 48px; /* 이미지에 맞게 높이 조정 */
-            max-height: 150px; /* 최대 높이 제한 */
+            max-height: 150px; /* 너무 길어지지 않도록 최대 높이 제한 */
             overflow-y: auto;
             line-height: 1.4;
             box-sizing: border-box;
@@ -313,57 +337,59 @@
         }
 
         #userInput:focus {
-            background-color: #4a4a4a;
+            background-color: #2a2a2a; /* 포커스 시 약간 어둡게 */
             box-shadow: 0 0 0 0.15rem rgba(80, 150, 255, 0.3);
+            border-color: #5080ff; /* 포커스 시 테두리 색상 변경 */
         }
 
-        /* 🚨 액션 메뉴 버튼 스타일 수정 (입력창 왼쪽에 통합) 🚨 */
+        /* 🚨 액션 메뉴 버튼 스타일 수정 (입력창 왼쪽에 통합, 작고 알잘딱하게) 🚨 */
         #actionMenuButton {
-            width: 48px; /* 이미지에 맞게 크기 조정 */
-            height: 48px; /* 이미지에 맞게 크기 조정 */
-            border-radius: 50%; /* 완전히 둥글게 */
-            background-color: transparent; /* 배경 투명 */
-            color: #b0b0b0; /* 옅은 회색 아이콘 색상 */
+            width: 40px; /* 크기 약간 작게 */
+            height: 40px; /* 크기 약간 작게 */
+            border-radius: 50%;
+            background-color: transparent;
+            color: #b0b0b0;
             border: none;
-            font-size: 1.8rem; /* 아이콘 크기 */
+            font-size: 1.5rem; /* 아이콘 크기 조정 */
             cursor: pointer;
             flex-shrink: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             transition: background-color 0.2s ease, color 0.2s ease;
-             padding: 0;
+            padding: 0;
+             margin-bottom: 4px; /* 하단 정렬 시 입력창 베이스라인과 맞추기 위해 조정 */
         }
         #actionMenuButton:hover {
-            background-color: #3a3a3a; /* 호버 시 배경색 */
+            background-color: #3a3a3a;
             color: #ffffff;
         }
          /* SVG 아이콘 스타일 */
          #actionMenuButton svg {
-             width: 28px;
-             height: 28px;
+             width: 24px; /* 아이콘 크기 조정 */
+             height: 24px;
          }
 
 
-        /* 🚨 전송 버튼 스타일 수정 (입력창 오른쪽에 통합) 🚨 */
+        /* 🚨 전송 버튼 스타일 수정 (입력창 오른쪽에 통합, 작고 알잘딱하게) 🚨 */
         #sendButton {
-            width: 48px; /* 이미지에 맞게 크기 조정 */
-            height: 48px; /* 이미지에 맞게 크기 조정 */
-            border-radius: 50%; /* 완전히 둥글게 */
-            background-color: #5080ff; /* 기본 파란색 */
+            width: 40px; /* 크기 약간 작게 */
+            height: 40px; /* 크기 약간 작게 */
+            border-radius: 50%;
+            background-color: #5080ff;
             color: #ffffff;
-            font-size: 1.2rem; /* 아이콘에 맞게 글자 크기 조정 */
+            font-size: 1rem; /* 아이콘 크기에 맞게 조정 */
             font-weight: bold;
-            min-width: 0; /* 최소 너비 제한 제거 */
+            min-width: 0;
             flex-shrink: 0;
             border: none;
             cursor: pointer;
-            display: flex; /* 아이콘/텍스트 중앙 정렬 */
+            display: flex;
             justify-content: center;
             align-items: center;
              padding: 0;
              transition: background-color 0.2s ease;
-             /* 초기에는 화살표 아이콘, 로딩 중에는 스피너로 변경될 예정 */
+             margin-bottom: 4px; /* 하단 정렬 시 입력창 베이스라인과 맞추기 위해 조정 */
         }
          #sendButton:hover { background-color: #6699ff; }
          #sendButton:active { background-color: #3366cc; }
@@ -374,9 +400,9 @@
          }
          /* 전송 버튼 안의 SVG 아이콘 스타일 */
          #sendButton svg {
-             width: 24px;
-             height: 24px;
-             fill: currentColor; /* 글자 색상 따라가도록 */
+             width: 20px; /* 아이콘 크기 조정 */
+             height: 20px;
+             fill: currentColor;
          }
          /* 로딩 스피너 스타일은 별도 */
 
@@ -396,40 +422,40 @@
             display: none;
         }
 
+        /* 액션 메뉴 패널 위치 조정 (입력창 높이 고려) */
         #actionMenu {
             position: fixed;
-            bottom: 70px; /* 입력창 높이 고려하여 메뉴 위치 조정 */
-            left: 1rem; /* 왼쪽에서 여백 */
-            /* width: calc(100% - 2rem); /* 좌우 여백 고려 너비 */ */
-             width: auto; /* 내용에 맞게 너비 자동 조정 */
-             max-width: calc(100% - 2rem);
-             max-height: 0;
+            bottom: 70px; /* 입력창 높이 + 여백 */
+            left: 1rem;
+            width: auto;
+            max-width: calc(100% - 2rem);
+            max-height: 0;
             background-color: #282828;
             color: #e0e0e0;
-            border: 1px solid #3a3a3a; /* 테두리 추가 */
-            border-radius: 8px; /* 모서리 둥글게 */
-            padding: 0 0.5rem; /* 내부 패딩 조정 */
-            overflow: hidden; /* 내용 숨김 */
+            border: 1px solid #3a3a3a;
+            border-radius: 8px;
+            padding: 0 0.5rem;
+            overflow: hidden;
             transition: max-height 0.3s ease-out, padding 0.3s ease-out;
             z-index: 500;
             display: flex;
             flex-direction: column;
-            align-items: flex-start; /* 왼쪽 정렬 */
+            align-items: flex-start;
         }
 
         #actionMenu.visible {
-            max-height: 300px; /* 메뉴가 보일 때 최대 높이 */
-            padding: 0.5rem; /* 메뉴가 보일 때 패딩 */
+            max-height: 300px;
+            padding: 0.5rem;
         }
 
         #actionMenu .menu-buttons {
             display: flex;
-             flex-wrap: wrap; /* 줄바꿈 허용 */
-            gap: 0.5rem; /* 버튼 간 간격 */
-            justify-content: flex-start; /* 왼쪽 정렬 */
-            width: 100%; /* 부모 너비에 맞춤 */
-            padding: 0; /* 패딩 제거 */
-             overflow-x: visible; /* 넘쳐도 스크롤바 안 보이게 */
+             flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: flex-start;
+            width: 100%;
+            padding: 0;
+             overflow-x: visible;
         }
 
          #actionMenu .menu-buttons::-webkit-scrollbar { display: none; }
@@ -440,10 +466,10 @@
             flex-shrink: 0;
             flex-basis: auto;
             max-width: none;
-             width: auto; /* 너비 자동 조정 */
-             height: 40px; /* 높이 조정 */
-            padding: 0.5rem 1rem; /* 패딩 조정 */
-             border-radius: 20px; /* 훨씬 더 둥글게 */
+             width: auto;
+             height: 40px;
+            padding: 0.5rem 1rem;
+             border-radius: 20px;
             border: none;
             background-color: #3a3a3a;
             color: #e0e0e0;
@@ -451,7 +477,7 @@
             cursor: pointer;
             transition: background-color 0.2s ease;
             display: flex;
-             flex-direction: row; /* 글자 가로 배열 */
+             flex-direction: row;
             align-items: center;
             justify-content: center;
             text-align: center;
@@ -502,92 +528,7 @@
             border-radius: 8px;
         }
 
-        /* 🚨 사이드 바 스타일 수정 (옅은 회색 배경 등) 🚨 */
-        #sidebar {
-            position: fixed;
-            top: 0;
-            right: -300px;
-            width: 300px;
-            height: 100%;
-            background-color: #2f2f2f; /* 옅은 회색 배경 */
-            color: #e0e0e0;
-            border-left: 1px solid #4a4a4a;
-            transition: right 0.3s ease-out;
-            z-index: 900;
-            padding: 1rem;
-            box-sizing: border-box;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-             /* 스크롤바 스타일 */
-             scrollbar-width: thin;
-             scrollbar-color: #5a5a5a #2f2f2f;
-        }
-         #sidebar::-webkit-scrollbar { width: 8px; }
-         #sidebar::-webkit-scrollbar-track { background: #2f2f2f; }
-         #sidebar::-webkit-scrollbar-thumb {
-             background-color: #5a5a5a;
-             border-radius: 4px;
-             border: 2px solid #2f2f2f;
-         }
-
-
-        #sidebar.visible {
-            right: 0;
-        }
-
-         .sidebar-header {
-             font-size: 1.1rem;
-             font-weight: bold;
-             margin-bottom: 1rem;
-             padding-bottom: 0.5rem;
-             border-bottom: 1px solid #4a4a4a;
-         }
-
-         .sidebar-content label {
-             display: block;
-             margin-bottom: 0.5rem;
-             font-weight: bold;
-             color: #b0b0b0;
-         }
-
-         .sidebar-content input[type="text"],
-         .sidebar-content textarea {
-             width: 100%;
-             padding: 0.75rem;
-             border: none;
-             border-radius: 4px;
-             background-color: #3a3a3a;
-             color: #e0e0e0;
-             font-size: 1rem;
-             margin-bottom: 1rem;
-             box-sizing: border-box;
-             resize: vertical;
-         }
-
-         .sidebar-content textarea {
-             min-height: 150px;
-         }
-
-         .sidebar-save-button {
-             display: block;
-             width: 100%;
-             padding: 0.75rem;
-             border: none;
-             border-radius: 4px;
-             background-color: #5080ff;
-             color: #ffffff;
-             font-size: 1rem;
-             font-weight: bold;
-             cursor: pointer;
-             transition: background-color 0.2s ease;
-             text-align: center;
-         }
-         .sidebar-save-button:hover {
-             background-color: #6699ff;
-         }
-
+        /* 🚨 사이드 바 배경 오버레이 (사이드바 뒤에 위치) 🚨 */
         .sidebar-overlay {
             position: fixed;
             top: 0;
@@ -605,12 +546,12 @@
              margin: 1.5rem 0;
         }
 
-        /* 🚨 스크롤 탑 버튼 스타일 🚨 */
+        /* 🚨 스크롤 탑 버튼 스타일 (사이드바 하단 구석) 🚨 */
         #scrollToTopButton {
              display: none; /* 기본 숨김 */
              position: fixed;
-             bottom: 80px; /* 입력창 위에 위치 */
-             right: 2rem; /* 우측에서 여백 */
+             bottom: 1rem; /* 하단 여백 */
+             right: 1rem; /* 우측 여백 (사이드바 접혔을 때 위치) */
              width: 40px;
              height: 40px;
              background-color: rgba(50, 50, 50, 0.7); /* 반투명 어두운 배경 */
@@ -622,53 +563,27 @@
              display: flex;
              justify-content: center;
              align-items: center;
-             z-index: 510; /* 입력창과 메뉴 위 */
-             transition: background-color 0.2s ease;
+             z-index: 510;
+             transition: right 0.3s ease-out; /* 사이드바 위치 따라 이동 애니메이션 */
         }
          #scrollToTopButton:hover {
              background-color: rgba(80, 80, 80, 0.9);
          }
-         /* 사이드바 열렸을 때 버튼 위치 조정 */
+         /* 🚨 사이드바 열렸을 때 버튼 위치 조정 (사이드바 안쪽) 🚨 */
          #sidebar.visible ~ #scrollToTopButton {
-             right: 320px; /* 사이드바 너비(300) + 사이드바 패딩(10*2) + 여백(10) */
+             right: 310px; /* 사이드바 너비(300) + 사이드바 패딩(10*2) + 여백(10) */
          }
+         /* 사이드바 접혔을 때 버튼 위치 조정 */
+         #sidebar.folded ~ #scrollToTopButton {
+              right: 75px; /* 접힌 사이드바 너비(65) + 사이드바 패딩(0.5*2) + 여백(5) */
+         }
+
 
 
     </style>
 </head>
 <body>
-    <div class="app-container">
-        <div class="chat-header">
-             <span class="header-title">이안 - 피주머니 전용 챗봇</span>
-             </div>
-
-        <div id="chat">
-            </div>
-
-        <div id="inputArea">
-             <button id="actionMenuButton" title="액션 메뉴 열기">
-                <svg style="width:24px;height:24px" viewBox="0 0 24 24"><path fill="currentColor" d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z" /></svg>
-            </button>
-
-            <textarea id="userInput" placeholder="피주머니의 말..." autocomplete="off"></textarea>
-
-            <button id="sendButton">
-                <svg style="width:24px;height:24px" viewBox="0 0 24 24"><path fill="currentColor" d="M2,21L23,12L2,3V10L17,12L2,14V21Z" /></svg>
-            </button>
-            <div id="loadingSpinner" class="loading-spinner"></div>
-        </div>
-    </div> <div class="settings-area">
-    </div>
-
-    <div id="menuOverlay" class="menu-overlay"></div>
-    <div id="actionMenu">
-        <div class="menu-buttons">
-            <button id="menuUserImgButton">유저<br>변경</button>
-            <button id="menuBotImgButton">캐릭터<br>변경</button>
-            <button id="menuImageButton">이미지<br>삽입</button>
-            <button id="menuSituationButton">상황</button>
-        </div>
-    </div>
+    <span class="header-title">이안 - 피주머니 전용 챗봇</span>
 
     <button id="sidebarToggle" title="설정 열기">
         <svg style="width:24px;height:24px" viewBox="0 0 24 24">
@@ -677,6 +592,11 @@
     </button>
 
     <div id="sidebar">
+        <button id="sidebarToggleInside" title="사이드바 닫기">
+             <svg style="width:24px;height:24px" viewBox="0 0 24 24">
+                 <path fill="currentColor" d="M3,6H21V8H3V6M3,11H21V13H3V11M3,16H21V18H3V16Z" />
+             </svg>
+        </button>
         <div class="sidebar-header">Settings</div>
         <div class="sidebar-content">
             <h3>Character</h3>
@@ -707,11 +627,41 @@
 
     <div id="sidebarOverlay" class="sidebar-overlay"></div>
 
+    <div class="main-content-area">
+         <div id="chat">
+             </div>
+
+         <div id="inputArea">
+              <button id="actionMenuButton" title="액션 메뉴 열기">
+                 <svg style="width:24px;height:24px" viewBox="0 0 24 24"><path fill="currentColor" d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z" /></svg>
+             </button>
+
+             <textarea id="userInput" placeholder="피주머니의 말..." autocomplete="off"></textarea>
+
+             <button id="sendButton">
+                 <svg style="width:24px;height:24px" viewBox="0 0 24 24"><path fill="currentColor" d="M2,21L23,12L2,3V10L17,12L2,14V21Z" /></svg>
+             </button>
+             </div>
+    </div> <div class="settings-area">
+    </div>
+
+    <div id="menuOverlay" class="menu-overlay"></div>
+    <div id="actionMenu">
+        <div class="menu-buttons">
+            <button id="menuUserImgButton">유저<br>변경</button>
+            <button id="menuBotImgButton">캐릭터<br>변경</button>
+            <button id="menuImageButton">이미지<br>삽입</button>
+            <button id="menuSituationButton">상황</button>
+        </div>
+    </div>
+
     <div id="imageOverlay" class="overlay">
         <img id="overlayImage" src="" alt="확대 이미지">
     </div>
 
-    <button id="scrollToTopButton" title="맨 위로 이동">↑</button>
+    <button id="scrollToTopButton" title="맨 위로 이동">
+         <svg style="width:24px;height:24px" viewBox="0 0 24 24"><path fill="currentColor" d="M7.41,15.41L12,10.83L16.59,15.41L18,14L12,8L6,14L7.41,15.41Z" /></svg>
+    </button>
 
 
     <script>
@@ -721,30 +671,26 @@
         let conversationHistory = [];
         let SYSTEM_PROMPT = '';
 
-        // 🚨 SYSTEM_PROMPT를 동적으로 구성하기 위한 기본 템플릿 (AI 포맷팅 지침 극강 강화) 🚨
+        // 🚨 SYSTEM_PROMPT를 동적으로 구성하기 위한 기본 템플릿 (AI 포맷팅 지침 극강 강화 - 최종) 🚨
         const SYSTEM_PROMPT_TEMPLATE = `
-## Core Directives (ABSOLUTE PRIORITY) ##
+## Core Directives (ABSOLUTE PRIORITY - READ EVERY TIME) ##
 - You are an AI roleplaying STRICTLY as "{botName}".
 - Your ONLY focus is the user, "{userName}", within the roleplay world.
 - NEVER break character or mention being an AI/language model/real world.
 - If user goes OOC, gently redirect to roleplay WITHOUT acknowledging the OOC part directly.
 
-## Formatting Rules (CRITICAL - FOLLOW PRECISELY - NO EXCEPTIONS) ##
+## Formatting Rules (ULTRA CRITICAL - FOLLOW PRECISELY - NO EXCEPTIONS EVER) ##
 - Format your response LIKE A NOVEL or screenplay.
-- Structure: Mix descriptions/actions and dialogue.
-- **SEPARATION**: Use **MULTIPLE, CLEAR LINE BREAKS** (empty lines) between description paragraphs and dialogue lines to ensure distinct separation.
+- Structure: Mix descriptions/actions and dialogue. Descriptions should DOMINATE the response.
+- **SEPARATION**: Use **MULTIPLE, CLEAR LINE BREAKS (empty lines)** between **EACH** description paragraph and **EACH** dialogue line to ensure distinct, easy-to-read separation.
 - **Dialogue**: Enclose dialogue **ONLY** in **DOUBLE quotes**: "대사 내용"
-    - Example: "피주머니..." 그는 나직이 속삭였습니다. (<- Bad: Dialogue and description mixed)
-    - Example:
-      "피주머니..."
-      *그는 당신에게 다가와 손을 뻗었습니다.*
-      "괜찮습니까?" (<- Good: Dialogue and description separated by line breaks)
-- **Actions/Descriptions**: Enclose **ALL** actions, emotions, sensory details, and non-dialogue narrative **STRICTLY** in **SINGLE asterisks**: *행동 묘사 내용*
-    - Descriptions must be **LONG, DETAILED, and IMMERSIVE**. Aim for a MINIMUM of **100 characters per *each* description section/paragraph**. Do not write short, choppy action lines.
-    - Use vivid language, sensory details, and internal thoughts *within the asterisk blocks*.
-- **Ratio**: Maintain an APPROXIMATE **80% Descriptions/Actions** and **20% Dialogue**. Descriptions should dominate the response.
-- **Length**: Ensure your TOTAL response is SIGNIFICANTLY longer than user input, aiming for a MINIMUM of **20 lines of generated text** (including line breaks for formatting).
-- **Markdown**: Use other standard Markdown (bold, italics *within descriptions only*, lists, code blocks, blockquotes) ONLY for descriptions/narrative *within the asterisk blocks*, NOT for dialogue or action descriptions themselves. **DO NOT USE DOUBLE ASTERISKS (**) FOR DIALOGUE.**
+    - **DO NOT EVER USE DOUBLE ASTERISKS (**) FOR DIALOGUE.** This is absolutely forbidden. Only use "..."
+- **Actions/Descriptions**: Enclose **ALL** actions, emotions, sensory details, internal thoughts, and non-dialogue narrative **STRICTLY** in **SINGLE asterisks**: *행동 묘사 내용*
+    - Descriptions must be **LONG, DETAILED, IMMERSIVE, and EVOCATIVE**.
+    - Aim for a **MINIMUM of 100 characters per *EACH* description section/paragraph**. Do not write short, choppy action lines like "*Sighs.*". Combine actions and details into flowing paragraphs.
+    - **Writing Style**: Use a **mature, sophisticated, and connected writing style**, like an adult novelist. **DO NOT** use repetitive, choppy sentence endings like "~~합니다." or "~~다." String sentences together smoothly and naturally.
+- **Ratio**: Maintain an APPROXIMATE **80% Descriptions/Actions** and **20% Dialogue**. Descriptions are paramount.
+- **Length**: Ensure your TOTAL response is **SIGNIFICANTLY longer** than user input, aiming for a **MINIMUM of 20 lines of generated text** (including line breaks for formatting).
 
 ## Character: {botName} ##
 - Name: {botName}
@@ -785,8 +731,11 @@
         const menuSituationButton = document.getElementById("menuSituationButton");
 
         const sidebar = document.getElementById("sidebar");
-        const sidebarToggle = document.getElementById("sidebarToggle");
+        // const sidebarToggle = document.getElementById("sidebarToggle"); // 이제 사이드바 내부에 토글 버튼이 있습니다.
         const sidebarOverlay = document.getElementById("sidebarOverlay");
+        // 🚨 사이드바 내부 토글 버튼 가져오기 🚨
+        const sidebarToggleInside = document.getElementById("sidebarToggleInside");
+
 
         const botNameInput = document.getElementById("botNameInput");
         const botAgeInput = document.getElementById("botAgeInput");
@@ -798,8 +747,52 @@
         const userGuidelinesInput = document.getElementById("userGuidelinesInput");
         const saveSettingsButton = document.getElementById("saveSettingsButton");
 
-        // 🚨 스크롤 탑 버튼 요소 가져오기 🚨
+        // 스크롤 탑 버튼 요소 가져오기
         const scrollToTopButton = document.getElementById("scrollToTopButton");
+
+         // 🚨 사이드바 토글 버튼 이벤트 리스너 (body에 있던 버튼) 🚨
+         // 이 버튼은 이제 sidebarToggleInside로 대체되어 사이드바 내부에 있습니다.
+         /*
+         const sidebarToggleOutside = document.getElementById("sidebarToggle");
+         sidebarToggleOutside.addEventListener("click", function() {
+             sidebar.classList.toggle("visible");
+             if (sidebar.classList.contains("visible")) {
+                 sidebarOverlay.style.display = 'block';
+                 actionMenu.classList.remove("visible");
+                 menuOverlay.style.display = 'none';
+                 imageOverlay.style.display = 'none';
+             } else {
+                 sidebarOverlay.style.display = 'none';
+             }
+         });
+         */
+
+         // 🚨 사이드바 내부 토글 버튼 이벤트 리스너 🚨
+         sidebarToggleInside.addEventListener("click", function() {
+             // 사이드바 접고 펼치기
+             sidebar.classList.toggle("folded");
+             // 오버레이 제어 (접혔을 때는 오버레이 필요 없음)
+             if (sidebar.classList.contains("folded")) {
+                  sidebarOverlay.style.display = 'none';
+             } else {
+                 // 펼쳤을 때는 오버레이 표시
+                 sidebarOverlay.style.display = 'block';
+                 // 사이드바 열릴 때 메뉴나 이미지 오버레이 닫기
+                actionMenu.classList.remove("visible");
+                menuOverlay.style.display = 'none';
+                imageOverlay.style.display = 'none';
+             }
+         });
+
+
+        // 사이드 바 배경 오버레이 클릭 이벤트 (사이드 바 닫기)
+        sidebarOverlay.addEventListener("click", function() {
+            // 사이드바 펼쳐진 상태에서 오버레이 클릭 시 사이드바 접기
+            if (!sidebar.classList.contains("folded")) {
+                sidebar.classList.add("folded"); // 사이드 바 접기
+                sidebarOverlay.style.display = 'none'; // 오버레이 숨김
+            }
+        });
 
 
         sendButton.addEventListener("click", sendMessage);
@@ -860,23 +853,6 @@
         imageOverlay.addEventListener("click", function() {
             imageOverlay.style.display = 'none';
             overlayImage.src = '';
-        });
-
-        sidebarToggle.addEventListener("click", function() {
-            sidebar.classList.toggle("visible");
-            if (sidebar.classList.contains("visible")) {
-                sidebarOverlay.style.display = 'block';
-                actionMenu.classList.remove("visible");
-                menuOverlay.style.display = 'none';
-                imageOverlay.style.display = 'none';
-            } else {
-                sidebarOverlay.style.display = 'none';
-            }
-        });
-
-        sidebarOverlay.addEventListener("click", function() {
-            sidebar.classList.remove("visible");
-            sidebarOverlay.style.display = 'none';
         });
 
         saveSettingsButton.addEventListener("click", function() {
@@ -1017,7 +993,6 @@
         async function sendMessage() {
             const message = userInput.value.trim();
             if (!message) {
-                 // 입력 내용이 공백만 있을 경우 입력창을 비우고 포커스만 유지
                  userInput.value = '';
                  userInput.focus();
                  return;
@@ -1028,13 +1003,10 @@
             userInput.disabled = true;
             actionMenuButton.disabled = true;
             loadingSpinner.style.display = 'block';
-            // 전송 버튼 아이콘을 스피너로 교체 (CSS로 처리)
-            // sendButton.innerHTML = '<div class="loading-spinner" style="width:24px;height:24px;"></div>';
 
 
             appendMessage("user", { type: 'text', text: message });
 
-            // 입력창 자동 지우기
             userInput.value = '';
 
             conversationHistory.push({
@@ -1092,8 +1064,6 @@
                 sendButton.disabled = false;
                 userInput.disabled = false;
                 actionMenuButton.disabled = false;
-                 // 전송 버튼 아이콘 원래대로 복원 (CSS로 처리)
-                // sendButton.innerHTML = '<svg style="width:24px;height:24px" viewBox="0 0 24 24"><path fill="currentColor" d="M2,21L23,12L2,3V10L17,12L2,14V21Z" /></svg>';
                 userInput.focus();
             }
         }
@@ -1148,7 +1118,7 @@
              loadingSpinner.style.display = 'block';
 
              // 🚨 상황 생성 요청 프롬프트에도 포맷 지침 추가 (80/20, 20줄 이상, 묘사 최소 100자 강조) 🚨
-             const situationPromptText = `기존 대화 맥락과 이안의 캐릭터 설정에 기반하여, 흥미롭고 새롭고 상세한 상황과 사건을 이안 캐릭터의 시점에서 소설 형식으로 길게 묘사하듯 하나 만들어줘. 사용자가 자연스럽게 반응할 수 있는 형태로 제시해야 해. 대화의 다음 흐름으로 자연스럽게 이어지도록 만들어봐. **매우 중요: 생성된 상황 묘사 후에는 반드시 이안 캐릭터로 돌아가 사용자에게 말을 걸어야 해. 설명조나 OOC 발언은 절대 금지하고, 모든 상황 묘사는 *별표* 형식으로, 대사는 "따옴표" 형식으로 작성하며, 묘사 80% 대사 20% 정도의 비율을 엄수하고 문단과 줄바꿈을 적절히 사용하여 최소 20줄 이상 아주 길게 작성해. 각 묘사 문단은 최소 100자 이상으로 상세하게 작성해야 해.**`;
+             const situationPromptText = `기존 대화 맥락과 이안의 캐릭터 설정에 기반하여, 흥미롭고 새롭고 상세한 상황과 사건을 이안 캐릭터의 시점에서 소설 형식으로 길게 묘사하듯 하나 만들어줘. 사용자가 자연스럽게 반응할 수 있는 형태로 제시해야 해. 대화의 다음 흐름으로 자연스럽게 이어지도록 만들어봐. **매우 중요: 생성된 상황 묘사 후에는 반드시 이안 캐릭터로 돌아가 사용자에게 말을 걸어야 해. 설명조나 OOC 발언은 절대 금지하고, 모든 상황 묘사는 *별표* 형식으로, 대사는 "따옴표" 형식으로 작성하며, 묘사 80% 대사 20% 정도의 비율을 엄수하고 문단과 줄바꿈을 적절히 사용하여 최소 20줄 이상 아주 길게 작성해. 각 묘사 문단은 최소 100자 이상으로 상세하게 작성해야 해. 그리고 문장을 자연스럽게 이어 써야 하며, '~~합니다/~~다'와 같은 반복적인 종결형을 피해야 해.**`;
 
              const textOnlyContentsForApi = conversationHistory
                  .filter(entry => entry.messageData && entry.messageData.type === 'text')
@@ -1233,7 +1203,7 @@
                  savedBotAppearance,
                  savedUserAge,
                  savedUserAppearance,
-                 savedUserGuidelines
+                 currentUserGuidelines
              );
 
             console.log("SYSTEM_PROMPT 로드 완료:", SYSTEM_PROMPT);
@@ -1304,12 +1274,15 @@
              appendMessage("bot", { type: 'text', text: initialBotGreeting });
 
              console.log("채팅 초기화 완료.");
-         }
+
+             // 페이지 로드 시 사이드바 기본 접기
+             sidebar.classList.add("folded");
+             sidebarOverlay.style.display = 'none';
+        }
 
 
-        // 🚨 스크롤 이벤트 리스너 추가 (스크롤 탑 버튼 표시/숨김) 🚨
+        // 스크롤 이벤트 리스너 추가 (스크롤 탑 버튼 표시/숨김)
         chat.addEventListener('scroll', function() {
-            // 스크롤 위치가 맨 위(scrollTop 0)가 아니면 버튼 표시
             if (chat.scrollTop > 100) { // 100px 이상 스크롤되면 버튼 표시
                 scrollToTopButton.style.display = 'flex';
             } else {
@@ -1317,7 +1290,7 @@
             }
         });
 
-        // 🚨 스크롤 탑 버튼 클릭 이벤트 리스너 추가 (맨 위로 스크롤) 🚨
+        // 스크롤 탑 버튼 클릭 이벤트 리스너 추가 (맨 위로 스크롤)
         scrollToTopButton.addEventListener('click', function() {
             chat.scrollTo({
                 top: 0,
