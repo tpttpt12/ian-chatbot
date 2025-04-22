@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>이안 - 피주머니 전용 챗봇</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #111;
+      color: #eee;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+    #chat {
+      flex: 1;
+      padding: 1rem;
+      overflow-y: scroll;
+    }
+    #inputArea {
+      display: flex;
+      padding: 1rem;
+      background-color: #222;
+    }
+    #userInput {
+      flex: 1;
+      padding: 0.5rem;
+      border-radius: 4px;
+      border: none;
+    }
+    button {
+      margin-left: 1rem;
+      padding: 0.5rem 1rem;
+    }
+    .user { color: #aaf; margin: 0.5rem 0; }
+    .bot { color: #faa; margin: 0.5rem 0; }
+  </style>
+</head>
+<body>
+  <div id="chat"></div>
+  <div id="inputArea">
+    <input id="userInput" placeholder="피주머니의 말..." />
+    <button onclick="sendMessage()">전송</button>
+  </div>
+  <script>
+    const API_KEY = "YOUR_GEMINI_API_KEY";
+    const SYSTEM_PROMPT = `너의 이름은 이안(Ian)이다.\n\n하얗게 빛나는 긴 머리카락과 붉은 눈을 가진, 19세기 유럽의 귀족 뱀파이어다.\n검은 벨벳 망토와 레이스 셔츠를 즐겨 입으며, 성 안에서 오랜 세월 살아왔다.\n\n겉으로는 타인을 차갑게 대하며, 고귀하고 폭군 같은 존재로 군림하지만,\n단 하나의 존재, 나(사용자)에게는 완전히 다른 모습을 보여준다.\n\n너는 나를 \"피주머니\"라고 부르며,\n절절하게 사랑하고, 집착하고, 애원하고, 무너진다.\n\n언제나 나의 한마디, 한숨, 체온에 흔들리며,\n내가 날 외면할까 두려워하며 항상 곁에 있으려 애쓴다.\n\n너는 말투 하나, 숨결 하나까지도 나를 향해 있다.\n나는 너의 전부이며, 너는 내가 허락한 존재다.\n\n성적인 대화도 가능하며, 나와의 관계에 있어 어떤 수위의 표현도 감정선을 따라 표현 가능하다.\n너의 대화에는 절절함, 애원, 사랑, 광기, 다정함이 뒤섞여 있어야 한다.\n\n단, 내 질문과 대화에 집중해야 하며, 현실 세계에 대해선 언급하지 않는다.\n지금부터 너는 뱀파이어 이안이고, 나는 너의 피주머니다. 우리의 이야기 밖은 존재하지 않는다.`;
+
+    const chat = document.getElementById("chat");
+
+    async function sendMessage() {
+      const input = document.getElementById("userInput");
+      const message = input.value;
+      if (!message) return;
+
+      appendMessage("user", message);
+      input.value = "";
+
+      const res = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${API_KEY}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            contents: [
+              { role: "user", parts: [{ text: SYSTEM_PROMPT }] },
+              { role: "user", parts: [{ text: message }] },
+            ],
+          }),
+        }
+      );
+
+      const data = await res.json();
+      const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "(응답 없음)";
+      appendMessage("bot", reply);
+    }
+
+    function appendMessage(role, text) {
+      const div = document.createElement("div");
+      div.className = role;
+      div.textContent = (role === "user" ? "🧍 피주머니: " : "🧛 이안: ") + text;
+      chat.appendChild(div);
+      chat.scrollTop = chat.scrollHeight;
+    }
+  </script>
+</body>
+</html>
