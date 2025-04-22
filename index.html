@@ -757,7 +757,7 @@ This dynamic must drive the narrative and dialogue written by the Novelist.
             sidebarOverlay.style.display = 'none';
         });
         saveSettingsButton.addEventListener("click", function() {
-             console.log("saveSettings 호출됨");
+             // console.log("saveSettings 호출됨"); // 콘솔 로그 제거
              const currentBotName = botNameInput.value.trim();
              const currentUserName = userNameInput.value.trim();
              const currentBotPersona = botPersonaInput.value.trim();
@@ -792,7 +792,7 @@ This dynamic must drive the narrative and dialogue written by the Novelist.
                  currentUserAppearance,
                  currentUserGuidelines
              );
-             console.log("설정 저장 완료 및 SYSTEM_PROMPT 업데이트:", SYSTEM_PROMPT);
+             // console.log("설정 저장 완료 및 SYSTEM_PROMPT 업데이트:", SYSTEM_PROMPT); // 콘솔 로그 제거
 
             alert("설정이 저장되었습니다.");
         });
@@ -805,7 +805,7 @@ This dynamic must drive the narrative and dialogue written by the Novelist.
             img.src = (role === 'user' ? userProfileImgUrl : botProfileImgUrl);
             img.alt = (role === 'user' ? "사용자 프로필" : "이안 프로필");
             img.onerror = function() {
-                 console.warn(`Failed to load image for role "${role}" from "${this.src}". Using fallback.`);
+                 // console.warn(`Failed to load image for role "${role}" from "${this.src}". Using fallback.`); // 콘솔 로그 제거
                  this.onerror = null;
                  const fallbackDiv = document.createElement("div");
                  fallbackDiv.className = "profile-fallback";
@@ -849,7 +849,7 @@ This dynamic must drive the narrative and dialogue written by the Novelist.
                  messageContentElement.src = messageData.url;
                  messageContentElement.alt = "이미지 메시지";
                  img.onerror = function() {
-                     console.warn(`Failed to load image message from "${this.src}". Using fallback.`);
+                     // console.warn(`Failed to load image message from "${this.src}". Using fallback.`); // 콘솔 로그 제거
                      this.onerror = null;
                      this.classList.add('error');
                  }
@@ -913,9 +913,9 @@ This dynamic must drive the narrative and dialogue written by the Novelist.
                     }));
                 const contentsForApi = [{ role: "user", parts: [{ text: SYSTEM_PROMPT }] }, ...textOnlyContentsForApi];
                 if (contentsForApi.length === 1 && contentsForApi[0].parts[0].text === SYSTEM_PROMPT) {
-                     console.log("Only SYSTEM_PROMPT to send to API.");
+                     // console.log("Only SYSTEM_PROMPT to send to API."); // 콘솔 로그 제거
                 } else if (contentsForApi.length === 0) {
-                     console.log("No content to send to API.");
+                     // console.log("No content to send to API."); // 콘솔 로그 제거
                      appendMessage("bot", { type: 'text', text: "(메시지 전송 실패: 보낼 텍스트 내용 없음)" });
                      return Promise.resolve();
                 }
@@ -1013,9 +1013,9 @@ This dynamic must drive the narrative and dialogue written by the Novelist.
          }));
              const contentsForApi = [{ role: "user", parts: [{ text: SYSTEM_PROMPT }] }, ...textOnlyContentsForApi, { role: "user", parts: [{ text: situationPromptText }] }];
              if (contentsForApi.length <= 1 && contentsForApi[0].parts[0].text === SYSTEM_PROMPT) {
-                 console.log("Only SYSTEM_PROMPT or SYSTEM_PROMPT + Situation Prompt to send to API.");
+                 // console.log("Only SYSTEM_PROMPT or SYSTEM_PROMPT + Situation Prompt to send to API."); // 콘솔 로그 제거
              } else if (contentsForApi.length === 0) {
-                 console.log("No content to send to API.");
+                 // console.log("No content to send to API."); // 콘솔 로그 제거
                  appendMessage("bot", { type: 'text', text: "(상황 생성 요청 실패: 보낼 텍스트 내용 없음)" });
                  return Promise.resolve();
              }
@@ -1060,7 +1060,7 @@ This dynamic must drive the narrative and dialogue written by the Novelist.
 
 
         function loadSettings() {
-             console.log("loadSettings 호출됨");
+             // console.log("loadSettings 호출됨"); // 콘솔 로그 제거
              const savedBotName = localStorage.getItem('botName') || '이안';
              const savedUserName = localStorage.getItem('userName') || '피주머니';
              const savedBotPersona = localStorage.getItem('botPersona') || '설정된 페르소나 없음.';
@@ -1090,15 +1090,15 @@ This dynamic must drive the narrative and dialogue written by the Novelist.
                  savedBotAge,
                  savedBotAppearance,
 
-                 savedUserAge, // 오류 수정 부분
-                 savedUserAppearance, // 오류 수정 부분
-                 savedUserGuidelines // 오류 수정 부분
+                 savedUserAge,
+                 savedUserAppearance,
+                 savedUserGuidelines
              );
-             console.log("SYSTEM_PROMPT 로드 완료:", SYSTEM_PROMPT);
+             // console.log("SYSTEM_PROMPT 로드 완료:", SYSTEM_PROMPT); // 콘솔 로그 제거
         }
 
         function saveSettings() {
-             console.log("saveSettings 호출됨");
+             // console.log("saveSettings 호출됨"); // 콘솔 로그 제거
              const currentBotName = botNameInput.value.trim();
              const currentUserName = userNameInput.value.trim();
              const currentBotPersona = botPersonaInput.value.trim();
@@ -1130,7 +1130,7 @@ This dynamic must drive the narrative and dialogue written by the Novelist.
                  currentUserAppearance,
                  currentUserGuidelines
              );
-             console.log("설정 저장 완료 및 SYSTEM_PROMPT 업데이트:", SYSTEM_PROMPT);
+             // console.log("설정 저장 완료 및 SYSTEM_PROMPT 업데이트:", SYSTEM_PROMPT); // 콘솔 로그 제거
 
             alert("설정이 저장되었습니다.");
         }
@@ -1154,7 +1154,7 @@ This dynamic must drive the narrative and dialogue written by the Novelist.
          }
 
         function initializeChat() {
-             console.log("initializeChat 호출됨");
+             // console.log("initializeChat 호출됨"); // 콘솔 로그 제거
              loadSettings();
 
              // 초기 대화 메시지 전송 (SYSTEM_PROMPT 포함)
@@ -1164,14 +1164,14 @@ This dynamic must drive the narrative and dialogue written by the Novelist.
              // 현재 로직은 SYSTEM_PROMPT만 초기 메시지로 보내고 있습니다.
              // 초기 봇 인사말은 화면에만 표시하고 AI에게는 보내지 않는 방식입니다.
 
-             console.log("초기 SYSTEM_PROMPT:", SYSTEM_PROMPT);
+             // console.log("초기 SYSTEM_PROMPT:", SYSTEM_PROMPT); // 콘솔 로그 제거
 
-             console.log("초기 메시지 추가 시도");
+             // console.log("초기 메시지 추가 시도"); // 콘솔 로그 제거
              // 이 부분은 AI에게 보내는 메시지가 아니라 화면에 표시하는 부분입니다.
              const initialBotGreeting = `...${botNameInput.value || "이안"}의 ${userNameInput.value || "피주머니"}... 그래, 이곳에 왔군요...`;
              appendMessage("bot", { type: 'text', text: initialBotGreeting });
 
-             console.log("채팅 초기화 완료.");
+             // console.log("채팅 초기화 완료."); // 콘솔 로그 제거
 
              // 페이지 로드 후 바로 AI 응답을 받으려면 여기에 첫 sendMessage 호출 로직 추가 필요
              // 예: sendMessage("초기 인사말에 대한 AI의 응답을 유도하는 텍스트");
