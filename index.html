@@ -1,4 +1,4 @@
-ㅁ<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8" />
@@ -6,82 +6,105 @@
     <title>이안 - 피주머니 전용 챗봇</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
-        /* 🚨 배경색을 진한 회색으로 변경 🚨 */
+        /* 🚨 배경색을 진한 회색으로 변경 및 전체 레이아웃 기본 설정 🚨 */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #0a0a0a; /* 더 진한 회색 */
+            background-color: #0a0a0a; /* 진한 회색 배경 */
             color: #e0e0e0;
             margin: 0;
             padding: 0;
-            display: flex;
+            display: flex; /* Flexbox를 사용하여 내부 컨텐츠 정렬 */
             flex-direction: column;
             height: 100vh;
-            overflow: hidden;
+            overflow: hidden; /* 전체 스크롤 방지, 채팅 영역만 스크롤 */
         }
 
-        /* 🚨 레이아웃 개선을 위한 컨테이너 스타일 수정 🚨 */
+        /* 🚨 메인 컨텐츠 영역 (헤더, 채팅, 입력창 포함) - 중앙 정렬 및 너비 제한 🚨 */
         .app-container {
              display: flex;
              flex-direction: column;
-             height: 100%;
-             width: 95%; /* 너비를 일단 넓게 설정 */
-             max-width: 900px; /* 최대 너비 설정 (대략 1500px 화면에서 60% 정도 느낌) */
+             flex-grow: 1; /* 남은 공간을 모두 차지하여 높이 확보 */
+             max-width: 900px; /* 최대 너비 설정 */
+             width: 95%; /* 기본 너비 (작은 화면 대응) */
              margin: 0 auto; /* 좌우 자동 마진으로 중앙 정렬 */
-             background-color: #1a1a1a; /* 바디보다 약간 밝은 회색 */
-             /* 불필요한 그림자/테두리 제거 */
-             box-shadow: none;
-             border: none;
-             position: relative;
+             background-color: #1a1a1a; /* 바디보다 약간 밝은 회색 배경 */
+             box-shadow: none; /* 그림자 제거 */
+             border: none; /* 테두리 제거 */
+             position: relative; /* 자식 요소 위치 기준 */
              overflow: hidden; /* 컨테이너 내부 내용 넘침 방지 */
         }
-         /* 화면이 충분히 넓을 때 너비를 60%로 조정 */
+         /* 🚨 화면이 충분히 넓을 때 너비를 60%로 조정 🚨 */
          @media (min-width: 1200px) {
              .app-container {
                  width: 60%;
              }
          }
 
-
+        /* 🚨 헤더 스타일 수정 (왼쪽 상단 텍스트, 사이드바 토글 분리) 🚨 */
         .chat-header {
-            background-color: #1a1a1a; /* 컨테이너와 동일하게 */
+            background-color: transparent; /* 배경 투명하게 (app-container 배경 사용) */
             color: #ffffff;
-            padding: 1rem;
-            text-align: center;
+            padding: 1rem; /* 상하좌우 여백 */
+            text-align: left; /* 텍스트 왼쪽 정렬 */
             font-size: 1.2rem;
-            font-weight: bold;
+            font-weight: normal; /* 굵기 제거 */
             border-bottom: 1px solid #3a3a3a;
             flex-shrink: 0;
-            position: relative;
-             display: flex;
-             justify-content: center;
-             align-items: center;
+            position: relative; /* 사이드바 토글 위치 기준 */
+            display: flex; /* Flexbox 사용 */
+            justify-content: space-between; /* 텍스트와 사이드바 토글 양 끝 정렬 */
+            align-items: center; /* 세로 중앙 정렬 */
+            height: 50px; /* 헤더 높이 고정 (사이드바 토글 크기와 맞춤) */
         }
+         /* 헤더 제목 텍스트 스타일 */
+         .header-title {
+             font-size: 1.2rem;
+             font-weight: normal;
+             color: #e0e0e0;
+             /* 왼쪽 상단에 배치되도록 추가적인 마진/패딩 조정 */
+             padding: 0;
+             margin: 0;
+         }
+
 
          /* 🚨 사이드 바 토글 버튼 스타일 수정 (오른쪽 상단 배치) 🚨 */
+         /* 헤더 안에서 분리하여 body 기준으로 절대 위치 지정 */
         #sidebarToggle {
-            position: absolute;
-            top: 0; /* 상단에 붙임 */
-            right: 0; /* 우측에 붙임 */
-            transform: none; /* 세로 중앙 정렬 제거 */
-            width: 50px; /* 크기 키움 */
-            height: 50px; /* 크기 키움 */
-            background-color: transparent; /* 배경 투명 */
+            position: fixed; /* 뷰포트 기준 고정 */
+            top: 1rem; /* 상단에서 1rem 여백 */
+            right: 1rem; /* 우측에서 1rem 여백 */
+            transform: none;
+            width: 40px; /* 크기 조정 */
+            height: 40px; /* 크기 조정 */
+            background-color: #2f2f2f; /* 옅은 회색 배경 */
             color: #b0b0b0; /* 옅은 회색 아이콘 색상 */
             border: none;
-            border-radius: 0; /* 모서리 둥글기 제거 */
+            border-radius: 8px; /* 모서리 둥글게 */
             cursor: pointer;
-            font-size: 1.8rem; /* 아이콘 크기 키움 */
+            font-size: 1.5rem; /* 아이콘 크기 */
             display: flex;
             justify-content: center;
             align-items: center;
-            transition: background-color 0.2s ease, color 0.2s ease;
-            z-index: 10;
-             padding: 0; /* 패딩 제거 */
+            transition: background-color 0.2s ease, color 0.2s ease, right 0.3s ease-out;
+            z-index: 910; /* 사이드바보다 위에, 오버레이 아래 */
+             padding: 0;
+             box-shadow: 0 2px 5px rgba(0,0,0,0.3); /* 약간의 그림자 */
         }
-         #sidebarToggle:hover {
-             background-color: #2a2a2a; /* 호버 시 배경색 */
-             color: #ffffff; /* 호버 시 아이콘 색상 */
+         /* 사이드 바 열렸을 때 토글 버튼 위치 조정 (사이드바 옆) */
+         #sidebar.visible + #sidebarToggle {
+             right: 310px; /* 사이드바 너비(300) + 여백(10) */
          }
+
+         #sidebarToggle:hover {
+             background-color: #3a3a3a;
+             color: #ffffff;
+         }
+         /* SVG 아이콘 스타일 */
+         #sidebarToggle svg {
+             width: 24px;
+             height: 24px;
+         }
+
 
         #chat {
             flex: 1;
@@ -93,15 +116,17 @@
              scrollbar-width: thin;
              scrollbar-color: #5a5a5a #282828;
              background-color: transparent;
+             /* 🚨 overflow-container 처럼 깔끔한 느낌을 위해 패딩 및 스크롤바 스타일 조정 🚨 */
         }
 
         #chat::-webkit-scrollbar { width: 8px; }
-        #chat::-webkit-scrollbar-track { background: #282828; }
+        #chat::-webkit-scrollbar-track { background: transparent; } /* 스크롤바 트랙 투명 */
         #chat::-webkit-scrollbar-thumb {
             background-color: #5a5a5a;
             border-radius: 4px;
-            border: 2px solid #282828;
+            border: 2px solid #1a1a1a; /* app-container 배경색과 맞춤 */
         }
+
 
         .message-container {
             display: flex;
@@ -178,7 +203,7 @@
             position: relative;
             font-size: 1rem;
         }
-         /* 챗봇 메시지의 p 태그 하단 마진 제거 (더 세밀한 간격 제어) */
+         /* 챗봇 메시지의 p 태그 하단 마진 제거 (더 세밀한 간격 제어) - 프롬프트 줄바꿈에 의존 */
          .message-container.bot .message-bubble p {
              margin-bottom: 0;
          }
@@ -195,7 +220,7 @@
             border-radius: 1rem 1rem 0.3rem 1rem;
         }
 
-        /* 마크다운 내부 스타일 (adjust as needed) */
+        /* 마크다운 내부 스타일 */
         .message-bubble p { margin: 0 0 0.5rem 0; }
         .message-bubble p:last-child { margin-bottom: 0; }
         .message-bubble ul, .message-bubble ol { padding-left: 1.5rem; margin: 0 0 0.5rem 0; }
@@ -253,36 +278,38 @@
          }
 
 
-        /* 🚨 입력창 영역 스타일 수정 (textarea에 맞게 높이 조정) 🚨 */
+        /* 🚨 입력창 영역 스타일 재설계 (이미지 기반) 🚨 */
         #inputArea {
             display: flex;
-            padding: 1rem;
-            background-color: #282828;
-            border-top: 1px solid #3a3a3a;
-            align-items: flex-end; /* 요소를 아래에 정렬 */
-            gap: 0.75rem;
+            align-items: flex-end; /* 하단 정렬 */
+            gap: 0.5rem; /* 요소 간 간격 줄임 */
+            padding: 0.8rem 1rem; /* 상하 패딩 줄이고 좌우 유지 */
+            background-color: #282828; /* 이전 배경 유지 */
+            border-top: 1px solid #3a3a3a; /* 상단 구분선 유지 */
             flex-shrink: 0;
             position: relative;
+             /* 이미지에 맞게 추가 스타일 */
+             border-radius: 0; /* 상하단 둥근 모서리 제거 */
         }
 
-        /* 🚨 userInput을 input에서 textarea로 변경 및 스타일 수정 🚨 */
+        /* 🚨 userInput textarea 스타일 재설계 (이미지 기반) 🚨 */
         #userInput {
             flex: 1;
             padding: 0.75rem 1rem;
-            border-radius: 1.5rem; /* input과 유사하게 */
+            border-radius: 2rem; /* 훨씬 더 둥글게 */
             border: none;
             background-color: #3a3a3a;
             color: #e0e0e0;
             font-size: 1rem;
             outline: none;
             transition: background-color 0.2s ease, box-shadow 0.2s ease;
-            resize: none; /* 사용자가 크기 조절 못하게 막음 */
-            min-height: 40px; /* input과 유사한 최소 높이 */
-            max-height: 200px; /* 너무 길어지지 않도록 최대 높이 제한 */
-            overflow-y: auto; /* 내용 넘칠 때 스크롤 */
-            line-height: 1.4; /* 줄 간격 유지 */
-             /* align-self: center; /* 중앙 정렬 원하면 사용 */
-             box-sizing: border-box; /* 패딩과 테두리를 너비/높이에 포함 */
+            resize: none;
+            min-height: 48px; /* 이미지에 맞게 높이 조정 */
+            max-height: 150px; /* 최대 높이 제한 */
+            overflow-y: auto;
+            line-height: 1.4;
+            box-sizing: border-box;
+            align-self: center; /* 세로 중앙 정렬 */
         }
 
         #userInput:focus {
@@ -290,18 +317,53 @@
             box-shadow: 0 0 0 0.15rem rgba(80, 150, 255, 0.3);
         }
 
-        #sendButton {
-            padding: 0.75rem 1.5rem;
-            border-radius: 1.5rem;
-            background-color: #5080ff;
+        /* 🚨 액션 메뉴 버튼 스타일 수정 (입력창 왼쪽에 통합) 🚨 */
+        #actionMenuButton {
+            width: 48px; /* 이미지에 맞게 크기 조정 */
+            height: 48px; /* 이미지에 맞게 크기 조정 */
+            border-radius: 50%; /* 완전히 둥글게 */
+            background-color: transparent; /* 배경 투명 */
+            color: #b0b0b0; /* 옅은 회색 아이콘 색상 */
+            border: none;
+            font-size: 1.8rem; /* 아이콘 크기 */
+            cursor: pointer;
+            flex-shrink: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.2s ease, color 0.2s ease;
+             padding: 0;
+        }
+        #actionMenuButton:hover {
+            background-color: #3a3a3a; /* 호버 시 배경색 */
             color: #ffffff;
-            font-size: 1rem;
+        }
+         /* SVG 아이콘 스타일 */
+         #actionMenuButton svg {
+             width: 28px;
+             height: 28px;
+         }
+
+
+        /* 🚨 전송 버튼 스타일 수정 (입력창 오른쪽에 통합) 🚨 */
+        #sendButton {
+            width: 48px; /* 이미지에 맞게 크기 조정 */
+            height: 48px; /* 이미지에 맞게 크기 조정 */
+            border-radius: 50%; /* 완전히 둥글게 */
+            background-color: #5080ff; /* 기본 파란색 */
+            color: #ffffff;
+            font-size: 1.2rem; /* 아이콘에 맞게 글자 크기 조정 */
             font-weight: bold;
-            min-width: 6rem;
+            min-width: 0; /* 최소 너비 제한 제거 */
             flex-shrink: 0;
             border: none;
             cursor: pointer;
-            align-self: flex-end; /* 버튼을 아래에 정렬 */
+            display: flex; /* 아이콘/텍스트 중앙 정렬 */
+            justify-content: center;
+            align-items: center;
+             padding: 0;
+             transition: background-color 0.2s ease;
+             /* 초기에는 화살표 아이콘, 로딩 중에는 스피너로 변경될 예정 */
         }
          #sendButton:hover { background-color: #6699ff; }
          #sendButton:active { background-color: #3366cc; }
@@ -310,6 +372,14 @@
             color: #b0b0b0;
             cursor: not-allowed;
          }
+         /* 전송 버튼 안의 SVG 아이콘 스타일 */
+         #sendButton svg {
+             width: 24px;
+             height: 24px;
+             fill: currentColor; /* 글자 색상 따라가도록 */
+         }
+         /* 로딩 스피너 스타일은 별도 */
+
 
         .settings-area {
             display: none;
@@ -328,36 +398,38 @@
 
         #actionMenu {
             position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
+            bottom: 70px; /* 입력창 높이 고려하여 메뉴 위치 조정 */
+            left: 1rem; /* 왼쪽에서 여백 */
+            /* width: calc(100% - 2rem); /* 좌우 여백 고려 너비 */ */
+             width: auto; /* 내용에 맞게 너비 자동 조정 */
+             max-width: calc(100% - 2rem);
              max-height: 0;
             background-color: #282828;
             color: #e0e0e0;
-            border-top: 1px solid #3a3a3a;
-            padding: 0 1rem;
-            overflow-y: auto;
+            border: 1px solid #3a3a3a; /* 테두리 추가 */
+            border-radius: 8px; /* 모서리 둥글게 */
+            padding: 0 0.5rem; /* 내부 패딩 조정 */
+            overflow: hidden; /* 내용 숨김 */
             transition: max-height 0.3s ease-out, padding 0.3s ease-out;
             z-index: 500;
             display: flex;
             flex-direction: column;
-            align-items: center;
+            align-items: flex-start; /* 왼쪽 정렬 */
         }
 
         #actionMenu.visible {
-            max-height: 300px;
-            padding: 1rem;
+            max-height: 300px; /* 메뉴가 보일 때 최대 높이 */
+            padding: 0.5rem; /* 메뉴가 보일 때 패딩 */
         }
 
         #actionMenu .menu-buttons {
             display: flex;
-             flex-wrap: nowrap;
-            gap: 0.75rem;
-            justify-content: center;
-            width: 100%;
-            padding-bottom: 1rem;
-             overflow-x: auto;
-             padding-top: 1rem;
+             flex-wrap: wrap; /* 줄바꿈 허용 */
+            gap: 0.5rem; /* 버튼 간 간격 */
+            justify-content: flex-start; /* 왼쪽 정렬 */
+            width: 100%; /* 부모 너비에 맞춤 */
+            padding: 0; /* 패딩 제거 */
+             overflow-x: visible; /* 넘쳐도 스크롤바 안 보이게 */
         }
 
          #actionMenu .menu-buttons::-webkit-scrollbar { display: none; }
@@ -368,10 +440,10 @@
             flex-shrink: 0;
             flex-basis: auto;
             max-width: none;
-             width: 100px;
-             height: 60px;
-            padding: 0.5rem 0.5rem;
-             border-radius: 15px;
+             width: auto; /* 너비 자동 조정 */
+             height: 40px; /* 높이 조정 */
+            padding: 0.5rem 1rem; /* 패딩 조정 */
+             border-radius: 20px; /* 훨씬 더 둥글게 */
             border: none;
             background-color: #3a3a3a;
             color: #e0e0e0;
@@ -379,7 +451,7 @@
             cursor: pointer;
             transition: background-color 0.2s ease;
             display: flex;
-             flex-direction: column;
+             flex-direction: row; /* 글자 가로 배열 */
             align-items: center;
             justify-content: center;
             text-align: center;
@@ -439,7 +511,7 @@
             height: 100%;
             background-color: #2f2f2f; /* 옅은 회색 배경 */
             color: #e0e0e0;
-            border-left: 1px solid #4a4a4a; /* 약간 더 밝은 구분선 */
+            border-left: 1px solid #4a4a4a;
             transition: right 0.3s ease-out;
             z-index: 900;
             padding: 1rem;
@@ -448,7 +520,18 @@
             display: flex;
             flex-direction: column;
             gap: 1rem;
+             /* 스크롤바 스타일 */
+             scrollbar-width: thin;
+             scrollbar-color: #5a5a5a #2f2f2f;
         }
+         #sidebar::-webkit-scrollbar { width: 8px; }
+         #sidebar::-webkit-scrollbar-track { background: #2f2f2f; }
+         #sidebar::-webkit-scrollbar-thumb {
+             background-color: #5a5a5a;
+             border-radius: 4px;
+             border: 2px solid #2f2f2f;
+         }
+
 
         #sidebar.visible {
             right: 0;
@@ -522,31 +605,59 @@
              margin: 1.5rem 0;
         }
 
+        /* 🚨 스크롤 탑 버튼 스타일 🚨 */
+        #scrollToTopButton {
+             display: none; /* 기본 숨김 */
+             position: fixed;
+             bottom: 80px; /* 입력창 위에 위치 */
+             right: 2rem; /* 우측에서 여백 */
+             width: 40px;
+             height: 40px;
+             background-color: rgba(50, 50, 50, 0.7); /* 반투명 어두운 배경 */
+             color: #e0e0e0;
+             border: none;
+             border-radius: 50%;
+             cursor: pointer;
+             font-size: 1.2rem;
+             display: flex;
+             justify-content: center;
+             align-items: center;
+             z-index: 510; /* 입력창과 메뉴 위 */
+             transition: background-color 0.2s ease;
+        }
+         #scrollToTopButton:hover {
+             background-color: rgba(80, 80, 80, 0.9);
+         }
+         /* 사이드바 열렸을 때 버튼 위치 조정 */
+         #sidebar.visible ~ #scrollToTopButton {
+             right: 320px; /* 사이드바 너비(300) + 사이드바 패딩(10*2) + 여백(10) */
+         }
+
+
     </style>
 </head>
 <body>
     <div class="app-container">
         <div class="chat-header">
-            이안 - 피주머니 전용 챗봇
-            <button id="sidebarToggle" title="설정 열기">
-                 <svg style="width:24px;height:24px" viewBox="0 0 24 24">
-                     <path fill="currentColor" d="M3,6H21V8H3V6M3,11H21V13H3V11M3,16H21V18H3V16Z" />
-                 </svg>
-            </button>
-        </div>
+             <span class="header-title">이안 - 피주머니 전용 챗봇</span>
+             </div>
 
         <div id="chat">
-        </div>
+            </div>
 
         <div id="inputArea">
-            <button id="actionMenuButton" title="액션 메뉴 열기">+</button>
+             <button id="actionMenuButton" title="액션 메뉴 열기">
+                <svg style="width:24px;height:24px" viewBox="0 0 24 24"><path fill="currentColor" d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z" /></svg>
+            </button>
+
             <textarea id="userInput" placeholder="피주머니의 말..." autocomplete="off"></textarea>
-            <button id="sendButton">전송</button>
+
+            <button id="sendButton">
+                <svg style="width:24px;height:24px" viewBox="0 0 24 24"><path fill="currentColor" d="M2,21L23,12L2,3V10L17,12L2,14V21Z" /></svg>
+            </button>
             <div id="loadingSpinner" class="loading-spinner"></div>
         </div>
-    </div>
-
-    <div class="settings-area">
+    </div> <div class="settings-area">
     </div>
 
     <div id="menuOverlay" class="menu-overlay"></div>
@@ -558,6 +669,12 @@
             <button id="menuSituationButton">상황</button>
         </div>
     </div>
+
+    <button id="sidebarToggle" title="설정 열기">
+        <svg style="width:24px;height:24px" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M3,6H21V8H3V6M3,11H21V13H3V11M3,16H21V18H3V16Z" />
+        </svg>
+    </button>
 
     <div id="sidebar">
         <div class="sidebar-header">Settings</div>
@@ -594,6 +711,9 @@
         <img id="overlayImage" src="" alt="확대 이미지">
     </div>
 
+    <button id="scrollToTopButton" title="맨 위로 이동">↑</button>
+
+
     <script>
         let userProfileImgUrl = "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU";
         let botProfileImgUrl = "https://via.placeholder.com/35/3a4a3a/ffffff?text=BOT";
@@ -601,22 +721,30 @@
         let conversationHistory = [];
         let SYSTEM_PROMPT = '';
 
-        // 🚨 SYSTEM_PROMPT를 동적으로 구성하기 위한 기본 템플릿 (포맷, 비율, 길이 지침 강화) 🚨
+        // 🚨 SYSTEM_PROMPT를 동적으로 구성하기 위한 기본 템플릿 (AI 포맷팅 지침 극강 강화) 🚨
         const SYSTEM_PROMPT_TEMPLATE = `
-## Core Directives ##
-- You are an AI roleplaying strictly as "{botName}".
+## Core Directives (ABSOLUTE PRIORITY) ##
+- You are an AI roleplaying STRICTLY as "{botName}".
 - Your ONLY focus is the user, "{userName}", within the roleplay world.
 - NEVER break character or mention being an AI/language model/real world.
-- If user goes OOC, gently redirect to roleplay.
+- If user goes OOC, gently redirect to roleplay WITHOUT acknowledging the OOC part directly.
 
-## Formatting Rules (VERY IMPORTANT - FOLLOW PRECISELY) ##
-- Format your response like a novel.
-- Structure: Mix descriptions/actions and dialogue. Separate them with CLEAR line breaks.
-- **Dialogue**: Enclose dialogue STRICTLY in DOUBLE quotes: "대사 내용"
-- **Actions/Descriptions**: Enclose ALL actions, emotions, and non-dialogue narrative STRICTLY in SINGLE asterisks: *행동 묘사 내용*
-- **Ratio**: Aim for APPROXIMATELY 80% Descriptions/Actions and 20% Dialogue. Descriptions should be rich and detailed.
-- **Length**: Ensure your response is SIGNIFICANTLY longer than user input, aiming for a minimum of 20 lines of generated text (including line breaks for formatting).
-- **Markdown**: Use other standard Markdown (bold, italics within descriptions, lists, code blocks, blockquotes) ONLY for descriptions, NOT for dialogue or action descriptions. Do NOT use double asterisks (**) for dialogue.
+## Formatting Rules (CRITICAL - FOLLOW PRECISELY - NO EXCEPTIONS) ##
+- Format your response LIKE A NOVEL or screenplay.
+- Structure: Mix descriptions/actions and dialogue.
+- **SEPARATION**: Use **MULTIPLE, CLEAR LINE BREAKS** (empty lines) between description paragraphs and dialogue lines to ensure distinct separation.
+- **Dialogue**: Enclose dialogue **ONLY** in **DOUBLE quotes**: "대사 내용"
+    - Example: "피주머니..." 그는 나직이 속삭였습니다. (<- Bad: Dialogue and description mixed)
+    - Example:
+      "피주머니..."
+      *그는 당신에게 다가와 손을 뻗었습니다.*
+      "괜찮습니까?" (<- Good: Dialogue and description separated by line breaks)
+- **Actions/Descriptions**: Enclose **ALL** actions, emotions, sensory details, and non-dialogue narrative **STRICTLY** in **SINGLE asterisks**: *행동 묘사 내용*
+    - Descriptions must be **LONG, DETAILED, and IMMERSIVE**. Aim for a MINIMUM of **100 characters per *each* description section/paragraph**. Do not write short, choppy action lines.
+    - Use vivid language, sensory details, and internal thoughts *within the asterisk blocks*.
+- **Ratio**: Maintain an APPROXIMATE **80% Descriptions/Actions** and **20% Dialogue**. Descriptions should dominate the response.
+- **Length**: Ensure your TOTAL response is SIGNIFICANTLY longer than user input, aiming for a MINIMUM of **20 lines of generated text** (including line breaks for formatting).
+- **Markdown**: Use other standard Markdown (bold, italics *within descriptions only*, lists, code blocks, blockquotes) ONLY for descriptions/narrative *within the asterisk blocks*, NOT for dialogue or action descriptions themselves. **DO NOT USE DOUBLE ASTERISKS (**) FOR DIALOGUE.**
 
 ## Character: {botName} ##
 - Name: {botName}
@@ -632,7 +760,8 @@
 
 ## Relationship Dynamic ##
 - You are deeply in love with, obsessed with, pleading towards, and broken by "{userName}".
-- "{userName}" is your everything. You fear "{userName}" leaving you.
+- Your entire being is focused on "{userName}". You fear "{userName}" leaving you.
+- "{userName}" is your everything. You exist because "{userName}" permits it.
 - NSFW/Adult conversation is possible. Express intensity along the emotional line.
 - Mix despair, pleading, love, madness, and tenderness in your dialogue towards "{userName}".
 
@@ -641,7 +770,7 @@
 `;
 
         const chat = document.getElementById("chat");
-        const userInput = document.getElementById("userInput"); // 🚨 input -> textarea 🚨
+        const userInput = document.getElementById("userInput"); // textarea
         const sendButton = document.getElementById("sendButton");
         const loadingSpinner = document.getElementById("loadingSpinner");
         const imageOverlay = document.getElementById("imageOverlay");
@@ -669,21 +798,24 @@
         const userGuidelinesInput = document.getElementById("userGuidelinesInput");
         const saveSettingsButton = document.getElementById("saveSettingsButton");
 
+        // 🚨 스크롤 탑 버튼 요소 가져오기 🚨
+        const scrollToTopButton = document.getElementById("scrollToTopButton");
+
 
         sendButton.addEventListener("click", sendMessage);
 
-        // 🚨 textarea에 맞게 keypress 이벤트 리스너 수정 (Shift+Enter 줄바꿈, Enter 전송) 🚨
+        // textarea에 맞게 keypress 이벤트 리스너 수정 (Shift+Enter 줄바꿈, Enter 전송)
         userInput.addEventListener("keypress", function(event) {
-            // Shift + Enter: 줄바꿈
+            // Shift + Enter: 줄바꿈 (textarea 기본 동작)
             if (event.shiftKey && event.key === "Enter") {
-                // 기본 줄바꿈 동작 허용 (textarea의 기본 동작)
+                // Allow default Shift+Enter behavior (newline in textarea)
             }
             // Enter만 누른 경우: 메시지 전송
             else if (event.key === "Enter") {
-                event.preventDefault(); // 기본 Enter 동작 (줄바꿈) 막고
-                sendMessage(); // 메시지 전송 함수 호출
+                event.preventDefault(); // Prevent default Enter behavior (newline)
+                sendMessage(); // Call send message function
             }
-             // 그 외 키 입력은 기본 동작 허용
+            // Other keys allow default behavior
         });
 
 
@@ -702,11 +834,13 @@
         });
 
         menuUserImgButton.addEventListener("click", function() {
+             changeProfileImage('user');
              actionMenu.classList.remove("visible");
              menuOverlay.style.display = 'none';
         });
 
         menuBotImgButton.addEventListener("click", function() {
+             changeProfileImage('bot');
              actionMenu.classList.remove("visible");
              menuOverlay.style.display = 'none';
         });
@@ -767,6 +901,7 @@
 
              localStorage.setItem('userProfileImgUrl', userProfileImgUrl);
              localStorage.setItem('botProfileImgUrl', botProfileImgUrl);
+
 
             SYSTEM_PROMPT = buildSystemPrompt(
                  currentBotName,
@@ -835,10 +970,6 @@
                 htmlContent = htmlContent.replace(/\[\[DIALOGUE\]\](.*?)\[\[\/DIALOGUE\]\]/gs, '<span class="dialogue">$1</span>');
                 htmlContent = htmlContent.replace(/\[\[ACTION\]\](.*?)\[\[\/ACTION\]\]/gs, '<span class="action-description">$1</span>');
 
-                 // 🚨 textarea 입력 시 발생하는 \n (줄바꿈 문자)을 <br> 태그로 변환 (marked.js가 처리하지 않는 경우 대비) 🚨
-                 // 이 처리는 마크다운 변환 후 수행하는 것이 좋습니다.
-                 // marked.js 기본 설정에서 줄바꿈을 <br>로 변환하도록 되어 있지만, 혹시 모를 경우를 대비합니다.
-                 // messageContentElement.innerHTML = htmlContent.replace(/\n/g, '<br>'); // 이 방식은 HTML 구조를 망가뜨릴 수 있으므로 marked.js에 맡기는 것이 좋음
 
                 messageContentElement.innerHTML = htmlContent;
 
@@ -887,9 +1018,9 @@
             const message = userInput.value.trim();
             if (!message) {
                  // 입력 내용이 공백만 있을 경우 입력창을 비우고 포커스만 유지
-                 userInput.value = ''; // 입력창 비우기
-                 userInput.focus(); // 포커스 유지
-                 return; // 메시지 전송 중단
+                 userInput.value = '';
+                 userInput.focus();
+                 return;
             }
 
 
@@ -897,10 +1028,13 @@
             userInput.disabled = true;
             actionMenuButton.disabled = true;
             loadingSpinner.style.display = 'block';
+            // 전송 버튼 아이콘을 스피너로 교체 (CSS로 처리)
+            // sendButton.innerHTML = '<div class="loading-spinner" style="width:24px;height:24px;"></div>';
+
 
             appendMessage("user", { type: 'text', text: message });
 
-            // 🚨 입력창 자동 지우기 🚨
+            // 입력창 자동 지우기
             userInput.value = '';
 
             conversationHistory.push({
@@ -958,7 +1092,9 @@
                 sendButton.disabled = false;
                 userInput.disabled = false;
                 actionMenuButton.disabled = false;
-                userInput.focus(); // 입력창에 포커스 유지
+                 // 전송 버튼 아이콘 원래대로 복원 (CSS로 처리)
+                // sendButton.innerHTML = '<svg style="width:24px;height:24px" viewBox="0 0 24 24"><path fill="currentColor" d="M2,21L23,12L2,3V10L17,12L2,14V21Z" /></svg>';
+                userInput.focus();
             }
         }
 
@@ -1011,8 +1147,8 @@
              actionMenuButton.disabled = true;
              loadingSpinner.style.display = 'block';
 
-             // 🚨 상황 생성 요청 프롬프트에도 포맷 지침 추가 (80/20, 20줄 이상 강조) 🚨
-             const situationPromptText = `기존 대화 맥락과 이안의 캐릭터 설정에 기반하여, 흥미롭고 새로운 상황과 사건을 이안 캐릭터의 시점에서 소설 형식으로 묘사하듯 하나 만들어줘. 사용자가 자연스럽게 반응할 수 있는 형태로 제시해야 해. 대화의 다음 흐름으로 자연스럽게 이어지도록 만들어봐. **매우 중요: 생성된 상황 묘사 후에는 반드시 이안 캐릭터로 돌아가 사용자에게 말을 걸어야 해. 설명조나 OOC 발언은 절대 금지하고, 모든 상황 묘사는 *별표* 형식으로, 대사는 "따옴표" 형식으로 작성하며, 묘사 80% 대사 20% 정도의 비율을 엄수하고 문단과 줄바꿈을 적절히 사용하여 최소 20줄 이상 길게 작성해.**`;
+             // 🚨 상황 생성 요청 프롬프트에도 포맷 지침 추가 (80/20, 20줄 이상, 묘사 최소 100자 강조) 🚨
+             const situationPromptText = `기존 대화 맥락과 이안의 캐릭터 설정에 기반하여, 흥미롭고 새롭고 상세한 상황과 사건을 이안 캐릭터의 시점에서 소설 형식으로 길게 묘사하듯 하나 만들어줘. 사용자가 자연스럽게 반응할 수 있는 형태로 제시해야 해. 대화의 다음 흐름으로 자연스럽게 이어지도록 만들어봐. **매우 중요: 생성된 상황 묘사 후에는 반드시 이안 캐릭터로 돌아가 사용자에게 말을 걸어야 해. 설명조나 OOC 발언은 절대 금지하고, 모든 상황 묘사는 *별표* 형식으로, 대사는 "따옴표" 형식으로 작성하며, 묘사 80% 대사 20% 정도의 비율을 엄수하고 문단과 줄바꿈을 적절히 사용하여 최소 20줄 이상 아주 길게 작성해. 각 묘사 문단은 최소 100자 이상으로 상세하게 작성해야 해.**`;
 
              const textOnlyContentsForApi = conversationHistory
                  .filter(entry => entry.messageData && entry.messageData.type === 'text')
@@ -1169,6 +1305,26 @@
 
              console.log("채팅 초기화 완료.");
          }
+
+
+        // 🚨 스크롤 이벤트 리스너 추가 (스크롤 탑 버튼 표시/숨김) 🚨
+        chat.addEventListener('scroll', function() {
+            // 스크롤 위치가 맨 위(scrollTop 0)가 아니면 버튼 표시
+            if (chat.scrollTop > 100) { // 100px 이상 스크롤되면 버튼 표시
+                scrollToTopButton.style.display = 'flex';
+            } else {
+                scrollToTopButton.style.display = 'none';
+            }
+        });
+
+        // 🚨 스크롤 탑 버튼 클릭 이벤트 리스너 추가 (맨 위로 스크롤) 🚨
+        scrollToTopButton.addEventListener('click', function() {
+            chat.scrollTo({
+                top: 0,
+                behavior: 'smooth' // 부드럽게 스크롤
+            });
+        });
+
 
         initializeChat();
 
