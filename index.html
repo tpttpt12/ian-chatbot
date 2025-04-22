@@ -606,6 +606,25 @@
 
 
     </style>
+    .overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.9);
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.overlay img {
+  max-width: 90%;
+  max-height: 90%;
+  border-radius: 8px;
+}
+
 </head>
 <body>
     <div class="app-container">
@@ -914,6 +933,7 @@ Only use "..."
                  messageContentElement = document.createElement("img");
                  messageContentElement.className = "message-image-thumbnail";
                  messageContentElement.src = messageData.url;
+                messageContentElement.onclick = () => openImageOverlay(messageContentElement); 
                  messageContentElement.alt = "이미지 메시지";
                  img.onerror = function() {
                      // console.warn(`Failed to load image message from "${this.src}". Using fallback.`); // 콘솔 로그 제거
@@ -1326,6 +1346,25 @@ Only use "..."
 
         initializeChat();
 
+        function openImageOverlay(thumbnail) {
+  const overlay = document.getElementById("imageOverlay");
+  const overlayImage = document.getElementById("overlayImage");
+  overlayImage.src = thumbnail.src;
+  overlay.style.display = "flex";
+}
+
+function closeImageOverlay() {
+  const overlay = document.getElementById("imageOverlay");
+  const overlayImage = document.getElementById("overlayImage");
+  overlay.style.display = "none";
+  overlayImage.src = "";
+}
+
+
     </script>
+    <div id="imageOverlay" class="overlay" onclick="closeImageOverlay()">
+  <img id="overlayImage" src="" />
+</div>
+
 </body>
 </html>
