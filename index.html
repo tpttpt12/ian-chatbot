@@ -923,13 +923,13 @@ Only use "..."
 
                  // 이미지 썸네일 클릭 이벤트 리스너
                  messageContentElement.addEventListener("click", function() {
-                     console.log("이미지 썸네일 클릭됨"); // 클릭 감지 로그
+                     // console.log("이미지 썸네일 클릭됨"); // 클릭 감지 로그 (제거)
                      if (!this.classList.contains('error')) {
-                         console.log("이미지 로드 성공, 오버레이 표시 시도"); // 오버레이 표시 조건 충족 로그
+                         // console.log("이미지 로드 성공, 오버레이 표시 시도"); // 오버레이 표시 조건 충족 로그 (제거)
                          overlayImage.src = this.src;
                          imageOverlay.style.display = 'flex';
                      } else {
-                         console.log("이미지 로드 실패, 오버레이 표시 안 함"); // 오버레이 표시 조건 불충족 로그
+                         // console.log("이미지 로드 실패, 오버레이 표시 안 함"); // 오버레이 표시 조건 불충족 로그 (제거)
                          alert("이미지를 불러올 수 없습니다.");
                      }
                  });
@@ -1135,7 +1135,7 @@ Only use "..."
 
         // loadSettings 함수 수정: 슬롯 번호를 인자로 받아 해당 슬롯의 설정을 로드
         function loadSettings(slotNumber) {
-             console.log(`loadSettings 호출됨 - 슬롯 ${slotNumber}`); // 콘솔 로그 유지
+             // console.log(`loadSettings 호출됨 - 슬롯 ${slotNumber}`); // 콘솔 로그 제거
              // 수정된 로직: 슬롯 버튼 클릭 시 currentSlot 및 스타일 업데이트는 항상 실행
              currentSlot = slotNumber; // 현재 슬롯 업데이트
              updateSlotButtonStyles(); // 슬롯 버튼 스타일 업데이트
@@ -1176,7 +1176,7 @@ Only use "..."
                          userAppearanceInput.value,
                          userGuidelinesInput.value
                      );
-                     console.log(`SYSTEM_PROMPT 로드 완료 - 슬롯 ${slotNumber}:`, SYSTEM_PROMPT); // 콘솔 로그 유지
+                     // console.log(`SYSTEM_PROMPT 로드 완료 - 슬롯 ${slotNumber}:`, SYSTEM_PROMPT); // 콘솔 로그 제거
                      // currentSlot 업데이트와 스타일 업데이트는 함수 초반에서 이미 했습니다.
                      // alert(`${slotNumber}번 슬롯의 설정을 불러왔습니다.`); // 알림 제거
 
@@ -1187,15 +1187,15 @@ Only use "..."
                  }
              } else {
                  // 저장된 설정이 없으면 기본 설정 로드
-                 console.log(`슬롯 ${slotNumber}에 저장된 설정이 없습니다. 기본 설정을 로드합니다.`); // 콘솔 로그 유지
+                 // console.log(`슬롯 ${slotNumber}에 저장된 설정이 없습니다. 기본 설정을 로드합니다.`); // 콘솔 로그 제거
                  loadDefaultSettings(); // 이 함수 내에서는 currentSlot이나 스타일 변경하지 않음
-                 // alert(`${slotNumber}번 슬롯에 저장된 설정이 없습니다. 기본 설정을 로드했습니다.`); // 알림 제거
+                 // alert(`${slotNumber}번 슬롯에 저장된 설정이 없습니다. 기본 설정을 로드했습니다.`); // 알림 추가
              }
         }
 
         // saveSettings 함수 수정: 현재 활성화된 슬롯에 설정 저장
         function saveSettings(slotNumber) {
-             console.log(`saveSettings 호출됨 - 슬롯 ${slotNumber}`); // 콘솔 로그 유지
+             // console.log(`saveSettings 호출됨 - 슬롯 ${slotNumber}`); // 콘솔 로그 제거
              const settingsToSave = {
                  botName: botNameInput.value.trim(),
                  userName: userNameInput.value.trim(),
@@ -1219,7 +1219,7 @@ Only use "..."
                  localStorage.setItem(`settings_slot_${slotNumber}`, jsonString);
                  // currentSlot 업데이트와 스타일 업데이트는 슬롯 로드 시에만 합니다.
                  // alert(`${slotNumber}번 슬롯에 현재 설정이 저장되었습니다.`); // 알림 제거
-                 console.log(`슬롯 ${slotNumber}에 설정 저장 완료`); // 콘솔 로그 유지
+                 // console.log(`슬롯 ${slotNumber}에 설정 저장 완료`); // 콘솔 로그 제거
              } catch (e) {
                   console.error(`Failed to save settings to slot ${slotNumber}:`, e);
                   // alert(`${slotNumber}번 슬롯에 설정을 저장하는데 실패했습니다.`); // 알림 제거
@@ -1229,7 +1229,7 @@ Only use "..."
         // 기본 설정을 로드하는 함수 (저장된 설정이 없거나 로드 실패 시 사용)
         // 기본값을 빈 값 또는 일반적인 플레이스홀더로 수정
         function loadDefaultSettings() {
-             console.log("기본 설정 로드"); // 콘솔 로그 유지
+             // console.log("기본 설정 로드"); // 콘솔 로그 제거
             botNameInput.value = ''; // 빈 값으로 변경
             userNameInput.value = ''; // 빈 값으로 변경
             botPersonaInput.value = '캐릭터의 성격, 배경, 말투, 행동 지침 등을 입력하세요.'; // 일반적인 플레이스홀더
@@ -1290,7 +1290,7 @@ Only use "..."
 
 
         function initializeChat() {
-             console.log("initializeChat 호출됨"); // 콘솔 로그 유지
+             // console.log("initializeChat 호출됨"); // 콘솔 로그 제거
              loadSettings(1); // 페이지 로드 시 1번 슬롯의 설정 로드 (currentSlot 및 스타일 업데이트 포함)
 
              // 초기 대화 메시지 전송 (SYSTEM_PROMPT 포함)
@@ -1300,14 +1300,14 @@ Only use "..."
              // 현재 로직은 SYSTEM_PROMPT만 초기 메시지로 보내고 있습니다.
              // 초기 봇 인사말은 화면에만 표시하고 AI에게는 보내지 않는 방식입니다.
 
-             console.log("초기 SYSTEM_PROMPT:", SYSTEM_PROMPT); // 콘솔 로그 유지
+             // console.log("초기 SYSTEM_PROMPT:", SYSTEM_PROMPT); // 콘솔 로그 제거
 
-             console.log("초기 메시지 추가 시도"); // 콘솔 로그 유지
+             // console.log("초기 메시지 추가 시도"); // 콘솔 로그 제거
              // 이 부분은 AI에게 보내는 메시지가 아니라 화면에 표시하는 부분입니다.
              const initialBotGreeting = `채팅을 시작합니다. 캐릭터와 사용자 설정을 확인해주세요.`; // 초기 인사말 변경
              appendMessage("bot", { type: 'text', text: initialBotGreeting });
 
-             console.log("채팅 초기화 완료."); // 콘솔 로그 유지
+             // console.log("채팅 초기화 완료."); // 콘솔 로그 제거
 
              // 페이지 로드 후 바로 AI 응답을 받으려면 여기에 첫 sendMessage 호출 로직 추가 필요
              // 예: sendMessage("초기 인사말에 대한 AI의 응답을 유도하는 텍스트");
