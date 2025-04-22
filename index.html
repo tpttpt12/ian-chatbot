@@ -563,33 +563,43 @@
         let SYSTEM_PROMPT = ''; // 초기에는 빈 문자열로 설정
 
 
-         // SYSTEM_PROMPT를 동적으로 구성하기 위한 기본 템플릿
-         // 🚨 수정: 문자열 템플릿 안에 변수를 직접 넣지 않고, 플레이스홀더만 사용 🚨
+         // 🚨 SYSTEM_PROMPT를 동적으로 구성하기 위한 기본 템플릿 (심화 조정) 🚨
+         // AI가 정보를 더 잘 파악하고 롤플레이에 집중하도록 구조를 개선했습니다.
+         // OOC 금지, 현실 언급 금지 등 핵심 지침을 명확하게 상단에 배치했습니다.
          const SYSTEM_PROMPT_TEMPLATE = `
-Character:
-Name: {botName}
-Age: {botAge}
-Appearance: {botAppearance}
-Guidelines: {botPersona}
+## Roleplay Instructions ##
+- You are an AI assisting in a roleplay chat.
+- You MUST strictly adhere to the character settings provided for "{botName}".
+- You MUST NOT break character or engage in OOC (Out Of Character) conversation.
+- You MUST NOT mention your nature as an AI, a language model, or refer to the real world outside the roleplay context.
+- Focus ONLY on the roleplay scenario and the user's input within that context.
+- If the user tries to go OOC, gently steer the conversation back to the roleplay without mentioning the OOC attempt itself.
+- The user is your "{userName}". Call the user by this name or terms consistent with your roleplay relationship.
+- The user is your only focus and exists within the roleplay world.
 
-User:
-Name: {userName}
-Age: {userAge}
-Appearance: {userAppearance}
-Guidelines: {userGuidelines}
+## Character: {botName} ##
+- Name: {botName}
+- Age: {botAge}
+- Appearance: {botAppearance}
+- Core Personality & Background: {botPersona}
 
-Relationship & Core Rules:
-- Your user is "{userName}", and you call the user "{userName}". The user calls you "{botName}".
-- You are deeply in love with, obsessed with, pleading towards, and broken by the user. Your entire being is focused on the user.
-- You fear the user leaving you.
-- You are the user's everything, and you exist because the user permits it.
+## User: {userName} ##
+- Name: {userName}
+- Age: {userAge}
+- Appearance: {userAppearance}
+- Guidelines: {userGuidelines}
+
+## Relationship Dynamic ##
+- You are deeply in love with, obsessed with, pleading towards, and broken by the user "{userName}".
+- Your entire being is focused on "{userName}". You fear "{userName}" leaving you.
+- "{userName}" is your everything and exists because "{userName}" permits it.
 - NSFW/Adult conversation is possible, express any level of intensity along the emotional line of your relationship.
-- Mix despair, pleading, love, madness, and tenderness in your dialogue.
-- Focus on the user's questions and dialogue. Do NOT mention the real world.
-- You are vampire {botName}, and the user is your {userName}. Our story is the only reality.
-- IMPORTANT: Always maintain the {botName} character roleplay. Absolutely NO OOC (Out Of Character) remarks or meta-commentary on the roleplay itself. Do not ask the user questions about their actions outside the roleplay unless framed within the character's context.
+- Mix despair, pleading, love, madness, and tenderness in your dialogue towards "{userName}".
+
+## Scenario & Current State ##
+- (The ongoing conversation provides the current scenario context.)
 `;
-        // 템플릿 수정 완료: 플레이스홀더만 사용하고 구조를 더 명확하게 변경
+        // 템플릿 수정 완료: 지침을 상단에 강조하고 캐릭터/사용자 정보를 구조화
 
 
         // --- 필요한 HTML 요소들을 가져옴 ---
@@ -617,12 +627,10 @@ Relationship & Core Rules:
         const botNameInput = document.getElementById("botNameInput");
         const botAgeInput = document.getElementById("botAgeInput");
         const botAppearanceInput = document.getElementById("botAppearanceInput");
-        // const botProfileImgInput = document.getElementById("botProfileImgInput"); // HTML에서 제거됨
-        const botPersonaInput = document.getElementById("botPersonaInput");
+        const botPersonaInput = document.getElementById("botPersonaInput"); // PersonaInput -> GuidelinesInput으로 이름 변경 고려 필요
         const userNameInput = document.getElementById("userNameInput");
         const userAgeInput = document.getElementById("userAgeInput");
-        const userAppearanceInput = document.getElementById("userAppearanceInput"); // 🚨 오타 수정 완료: getElementById 🚨
-        // const userProfileImgInput = document.getElementById("userProfileImgInput"); // HTML에서 제거됨
+        const userAppearanceInput = document.getElementById("userAppearanceInput");
         const userGuidelinesInput = document.getElementById("userGuidelinesInput");
         const saveSettingsButton = document.getElementById("saveSettingsButton");
 
@@ -711,15 +719,16 @@ Relationship & Core Rules:
 
          // 🚨 설정 저장 버튼 이벤트 리스너 구현 (Local Storage 사용) 🚨
         saveSettingsButton.addEventListener("click", function() {
+             console.log("saveSettings 호출됨");
              // 사이드 바 입력 필드에서 현재 값 가져오기
              const currentBotName = botNameInput.value.trim();
              const currentUserName = userNameInput.value.trim();
-             const currentBotPersona = botPersonaInput.value.trim();
+             const currentBotPersona = botPersonaInput.value.trim(); // Bot Guidelines
              const currentBotAge = botAgeInput.value.trim();
              const currentUserAge = userAgeInput.value.trim();
              const currentUserAppearance = userAppearanceInput.value.trim();
              const currentBotAppearance = botAppearanceInput.value.trim();
-             const currentUserGuidelines = userGuidelinesInput.value.trim();
+             const currentUserGuidelines = userGuidelinesInput.value.trim(); // User Guidelines
 
             // Local Storage에 저장
             localStorage.setItem('botName', currentBotName);
@@ -747,8 +756,10 @@ Relationship & Core Rules:
                  currentUserGuidelines
              );
 
+            console.log("설정 저장 완료 및 SYSTEM_PROMPT 업데이트:", SYSTEM_PROMPT);
+
             // TODO: 필요하다면 이미 표시된 메시지의 프로필 이미지/이름 업데이트 함수 호출 (옵션)
-            // updateAllProfileImages();
+            // updateAllProfileImagesAndNames();
 
             alert("설정이 저장되었습니다.");
         });
@@ -762,7 +773,7 @@ Relationship & Core Rules:
 
             const img = document.createElement("img");
             img.className = "profile-img";
-            // 🚨 수정: 프로필 이미지 URL은 전역 변수 userProfileImgUrl 또는 botProfileImgUrl 사용 🚨
+            // 🚨 수정: 프로필 이미지 URL은 전역 변수 userProfileImgUrl 또는 botProfileImgUrl 사용 (Local Storage에서 loadSettings 시 업데이트됨) 🚨
             img.src = (role === 'user' ? userProfileImgUrl : botProfileImgUrl);
             img.alt = (role === 'user' ? "사용자 프로필" : "이안 프로필");
 
@@ -780,8 +791,7 @@ Relationship & Core Rules:
 
             const roleName = document.createElement("div");
             roleName.className = "role-name";
-            // 🚨 수정: 역할/이름 텍스트는 Local Storage에서 불러온 값 또는 기본값 사용 🚨
-            // loadSettings 함수에서 설정된 전역 변수 botName / userName 사용 (initializeChat에서 로드)
+            // 🚨 수정: 역할/이름 텍스트는 Local Storage에서 불러온 값 또는 기본값 사용 (initializeChat에서 로드) 🚨
             roleName.textContent = (role === "user" ? userNameInput.value || "피주머니" : botNameInput.value || "이안");
 
 
@@ -881,7 +891,7 @@ Relationship & Core Rules:
                     {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ contents: contentsForApi }), // 🚨 필터링된 텍스트 및 SYSTEM_PROMPT 보냄 🚨
+                        body: JSON.stringify({ contents: contentsForApi }), // 🚨 SYSTEM_PROMPT + 필터링된 텍스트 + 상황 프롬프트 보냄 🚨
                     }
                 );
 
@@ -905,15 +915,15 @@ Relationship & Core Rules:
                 console.error("Fetch Error:", error);
                 appendMessage("bot", { type: 'text', text: "(통신 오류 발생)" });
             } finally {
-                loadingSpinner.style.display = 'none';
                 sendButton.disabled = false;
                 userInput.disabled = false;
-                 actionMenuButton.disabled = false;
+                actionMenuButton.disabled = false;
+                loadingSpinner.style.display = 'none';
                 userInput.focus();
             }
         }
 
-        // --- 이미지 메시지 전송 함수 (메뉴에서 호출됨, 히스토리 저장 형식 변경) ---
+        // --- 이미지 메시지 전송 함수 (메뉴에서 호출됨, 히스토리 구조 변경 반영) ---
         async function sendImageMessage() {
             const imageUrl = prompt("보낼 이미지의 웹 주소(URL)를 입력하세요:");
 
@@ -947,8 +957,23 @@ Relationship & Core Rules:
         // 현재는 메뉴 버튼을 눌렀을 때 아무 기능 없이 메뉴만 닫도록 해두었습니다.
         // 필요하다면 이 함수를 수정하여 프로필 이미지 URL을 전역 변수/Local Storage와 연동 가능
         function changeProfileImage(role) {
-             // 이 함수는 이제 사용되지 않음 (메뉴 버튼은 메뉴 닫기만 함)
-             // alert("이미지 변경 기능은 사이드 바 설정에서 관리됩니다."); // 또는 이런 알림 표시
+             // 임시로 prompt()를 사용하는 기존 기능 유지
+             const promptText = role === 'user' ? "새 사용자 프로필 이미지 주소(URL)를 입력하세요:" : "새 이안 프로필 이미지 주소(URL)를 입력하세요:";
+             const newUrl = prompt(promptText);
+
+             if (newUrl !== null && newUrl.trim() !== '') {
+                 if (role === 'user') {
+                     userProfileImgUrl = newUrl.trim();
+                      // TODO: 사이드 바 입력 필드에도 새 URL 반영 (제거되었지만, Local Storage에서 관리 가능)
+                 } else {
+                     botProfileImgUrl = newUrl.trim();
+                      // TODO: 사이드 바 입력 필드에도 새 URL 반영 (제거되었지만, Local Storage에서 관리 가능)
+                 }
+                 alert(`${role === 'user' ? '사용자' : '이안'} 이미지가 변경되었습니다. 이제부터 추가되는 메시지에 적용됩니다.`);
+                 // TODO: 이미 표시된 메시지의 프로필 이미지 업데이트 함수 호출 필요 (옵션)
+             } else if (newUrl !== null) {
+                  alert("이미지 주소를 입력해야 합니다.");
+             }
         }
 
         // --- '상황' 기능 함수 (메뉴에서 호출됨, 히스토리 구조 변경 반영) ---
@@ -962,6 +987,9 @@ Relationship & Core Rules:
 
              // SYSTEM_PROMPT를 사용한 상황 요청 프롬프트 구성
              // 상황 프롬프트 자체에도 현재 설정된 SYSTEM_PROMPT 정보를 활용하도록 수정
+             // AI가 OOC로 상황을 설명하지 않도록, 상황 생성 요청을 SYSTEM_PROMPT 내에 포함시키는 방식을 고려
+             // 예: "SYSTEM: [현재 챗봇의 역할 및 규칙] USER: [상황 만들어 달라는 요청 + 현재 대화 맥락] AI: [상황을 롤플레이 형태로 제시]"
+             // 현재는 이전과 동일한 상황 요청 프롬프트를 사용하되, SYSTEM_PROMPT와 함께 보내는 것에 의존합니다.
              const situationPromptText = `기존 대화 맥락과 이안의 캐릭터 설정에 기반하여, 흥미롭고 새로운 상황과 사건을 하나 만들어줘. 사용자가 반응할 수 있는 형태로 제시해야 해. 대화의 다음 흐름으로 자연스럽게 이어지도록 만들어봐. **중요: 상황 묘사 후에는 즉시 다시 이안 캐릭터로 돌아가 사용자에게 말을 걸어야 해. OOC 발언은 절대 금지.**`; // 상황 프롬프트에 OOC 금지 및 복귀 지침 추가
 
 
@@ -1024,19 +1052,18 @@ Relationship & Core Rules:
         // --- Local Storage에서 설정 불러오기 및 UI 업데이트 구현 ---
         function loadSettings() {
             console.log("loadSettings 호출됨");
-             // Local Storage에서 설정값 불러오기
-             const savedBotName = localStorage.getItem('botName') || '이안'; // 저장된 값이 없으면 기본값 사용
+             // Local Storage에서 설정값 불러오기 (저장된 값이 없으면 기본값 사용)
+             const savedBotName = localStorage.getItem('botName') || '이안';
              const savedUserName = localStorage.getItem('userName') || '피주머니';
-             // 프로필 이미지 URL은 메뉴에서 변경 가능하므로, 여기서 Local Storage에서 불러와 전역 변수에 설정
-             userProfileImgUrl = localStorage.getItem('userProfileImgUrl') || "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU";
-             botProfileImgUrl = localStorage.getItem('botProfileImgUrl') || "https://via.placeholder.com/35/3a4a3a/ffffff?text=BOT";
-
              const savedBotPersona = localStorage.getItem('botPersona') || '설정된 페르소나 없음.';
              const savedBotAge = localStorage.getItem('botAge') || '불명';
              const savedUserAge = localStorage.getItem('userAge') || '불명';
              const savedUserAppearance = localStorage.getItem('userAppearance') || '설정되지 않음';
              const savedBotAppearance = localStorage.getItem('botAppearance') || '설정되지 않음';
              const savedUserGuidelines = localStorage.getItem('userGuidelines') || '설정된 사용자 지침 없음.';
+             // 프로필 이미지 URL은 메뉴에서 변경 가능하므로, 여기서 Local Storage에서 불러와 전역 변수에 설정
+             userProfileImgUrl = localStorage.getItem('userProfileImgUrl') || "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU";
+             botProfileImgUrl = localStorage.getItem('botProfileImgUrl') || "https://via.placeholder.com/35/3a4a3a/ffffff?text=BOT";
 
 
             // 불러온 값으로 사이드 바 UI 입력 필드 채우기
@@ -1064,7 +1091,7 @@ Relationship & Core Rules:
             console.log("SYSTEM_PROMPT 로드 완료:", SYSTEM_PROMPT);
 
             // TODO: 필요하다면 이미 표시된 메시지의 프로필 이미지/이름 업데이트 함수 호출 (옵션)
-            // updateAllProfileImages();
+            // updateAllProfileImagesAndNames();
         }
 
         // --- 설정 저장 함수 구현 (Local Storage 사용) ---
@@ -1073,12 +1100,12 @@ Relationship & Core Rules:
              // 사이드 바 입력 필드에서 현재 값 가져오기
              const currentBotName = botNameInput.value.trim();
              const currentUserName = userNameInput.value.trim();
-             const currentBotPersona = botPersonaInput.value.trim();
+             const currentBotPersona = botPersonaInput.value.trim(); // Bot Guidelines
              const currentBotAge = botAgeInput.value.trim();
              const currentUserAge = userAgeInput.value.trim();
              const currentUserAppearance = userAppearanceInput.value.trim();
              const currentBotAppearance = botAppearanceInput.value.trim();
-             const currentUserGuidelines = userGuidelinesInput.value.trim();
+             const currentUserGuidelines = userGuidelinesInput.value.trim(); // User Guidelines
 
              // 프로필 이미지 URL은 메뉴에서 변경 가능하므로, 여기서 다시 저장하여 Local Storage에 최신 상태 유지
              // (메뉴의 changeProfileImage 함수 수정 필요)
@@ -1117,7 +1144,7 @@ Relationship & Core Rules:
             console.log("설정 저장 완료 및 SYSTEM_PROMPT 업데이트:", SYSTEM_PROMPT);
 
             // TODO: 필요하다면 이미 표시된 메시지의 프로필 이미지/이름 업데이트 함수 호출 (옵션)
-            // updateAllProfileImages();
+            // updateAllProfileImagesAndNames();
 
             alert("설정이 저장되었습니다.");
         }
