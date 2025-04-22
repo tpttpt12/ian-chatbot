@@ -235,65 +235,63 @@
             display: none;
         }
 
-        /* --- 액션 메뉴 배경 오버레이 스타일 --- */
+        /* --- 액션 메뉴 배경 오버레이 스타일 (이전과 동일) --- */
         .menu-overlay {
-            position: fixed; /* 화면 전체 고정 */
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.5); /* 반투명 검은 배경 */
-            z-index: 490; /* 메뉴 패널 아래, 채팅창 위 */
-            display: none; /* 기본 숨김 */
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 490;
+            display: none;
         }
 
-        /* --- 액션 메뉴 패널 스타일 --- */
+        /* --- 액션 메뉴 패널 스타일 (이전과 동일) --- */
         #actionMenu {
             position: fixed;
             bottom: 0;
             left: 0;
             width: 100%;
-            /* height: 0; /* 기본적으로 높이 0으로 숨김 */
-             max-height: 0; /* 높이 대신 max-height 사용 */
+             max-height: 0;
             background-color: #282828;
             color: #e0e0e0;
             border-top: 1px solid #3a3a3a;
             padding: 0 1rem;
             overflow-y: auto;
-            transition: max-height 0.3s ease-out, padding 0.3s ease-out; /* max-height와 패딩 애니메이션 */
+            transition: max-height 0.3s ease-out, padding 0.3s ease-out;
             z-index: 500;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
 
-        /* 메뉴가 보일 때의 스타일 */
         #actionMenu.visible {
-            /* height: 200px; /* 보일 때의 높이 (조절 가능) */
-            max-height: 300px; /* 보일 때의 최대 높이 (조절 가능) */
+            max-height: 300px;
             padding: 1rem;
         }
 
-        /* 메뉴 내부 버튼 컨테이너 (한 줄 가로 배열) */
+        /* --- 메뉴 내부 버튼 컨테이너 스타일 수정 (한 줄 가로 배열 유지) --- */
         #actionMenu .menu-buttons {
-            display: flex; /* 가로 배열 */
-            /* flex-wrap: wrap; /* 줄바꿈 안 함 */
-            gap: 0.75rem; /* 버튼들 간 간격 */
-            justify-content: center; /* 버튼들 가운데 정렬 */
+            display: flex;
+            flex-wrap: wrap; /* 버튼이 넘치면 줄바꿈 허용 */
+            gap: 0.75rem;
+            justify-content: center;
             width: 100%;
             max-width: 400px;
-             padding-bottom: 1rem; /* 메뉴 하단 패딩 */
+            padding-bottom: 1rem;
         }
 
 
-        /* 메뉴 내부 버튼 스타일 (가로 텍스트) */
+        /* --- 메뉴 내부 버튼 스타일 수정 (둥근 모서리, 글자 배열) --- */
         #actionMenu button {
-            flex-basis: auto; /* flex-basis 해제 */
-            max-width: none; /* 최대 너비 해제 */
-            /* width: auto; /* 내용에 맞게 너비 자동 조절 */
-             min-width: 80px; /* 버튼 최소 너비 */
-            padding: 0.75rem 1rem; /* 버튼 내부 패딩 */
-            border-radius: 8px;
+            flex-basis: auto;
+            max-width: none;
+             /* 너비, 높이, 패딩, 둥글기 조정 */
+             width: 120px; /* 버튼 너비 */
+             height: 55px; /* 버튼 높이 (두 줄 글자 고려) */
+            padding: 0.5rem 1rem; /* 패딩 */
+             border-radius: 10px; /* 둥근 모서리 */
             border: none;
             background-color: #3a3a3a;
             color: #e0e0e0;
@@ -301,10 +299,11 @@
             cursor: pointer;
             transition: background-color 0.2s ease;
             display: flex;
-            /* flex-direction: column; /* 세로 정렬 해제 */
+             flex-direction: column; /* 글자 세로 배열 유지 */
             align-items: center;
             justify-content: center;
             text-align: center;
+             line-height: 1.2; /* 줄 간격 조절 */
         }
          #actionMenu button:hover {
              background-color: #4a4a4a;
@@ -354,14 +353,14 @@
     </div>
 
     <div class="settings-area">
-        </div>
+    </div>
 
     <div id="menuOverlay" class="menu-overlay"></div>
     <div id="actionMenu">
         <div class="menu-buttons">
-            <button id="menuUserImgButton">유저 변경</button>
-            <button id="menuBotImgButton">캐릭터 변경</button>
-            <button id="menuImageButton">이미지 삽입</button>
+            <button id="menuUserImgButton">유저<br>변경</button>
+            <button id="menuBotImgButton">캐릭터<br>변경</button>
+            <button id="menuImageButton">이미지<br>삽입</button>
             <button id="menuSituationButton">상황</button>
         </div>
     </div>
@@ -385,7 +384,7 @@
          });
 
 
-        // --- 필요한 HTML 요소들을 가져옴 (새로운 메뉴 요소들 추가) ---
+        // --- 필요한 HTML 요소들을 가져옴 ---
         const chat = document.getElementById("chat");
         const userInput = document.getElementById("userInput");
         const sendButton = document.getElementById("sendButton");
@@ -393,14 +392,14 @@
         const imageOverlay = document.getElementById("imageOverlay");
         const overlayImage = document.getElementById("overlayImage");
 
-        // 🚨 새로운 메뉴 관련 요소들 🚨
-        const actionMenuButton = document.getElementById("actionMenuButton"); // + 버튼
-        const actionMenu = document.getElementById("actionMenu"); // 메뉴 패널 요소
-        const menuOverlay = document.getElementById("menuOverlay"); // 메뉴 배경 오버레이 요소
-        const menuUserImgButton = document.getElementById("menuUserImgButton"); // 메뉴 안의 유저 변경 버튼
-        const menuBotImgButton = document.getElementById("menuBotImgButton"); // 메뉴 안의 캐릭터 변경 버튼
-        const menuImageButton = document.getElementById("menuImageButton"); // 메뉴 안의 이미지 삽입 버튼
-        const menuSituationButton = document.getElementById("menuSituationButton"); // 메뉴 안의 상황 버튼
+        // 액션 메뉴 관련 요소들
+        const actionMenuButton = document.getElementById("actionMenuButton");
+        const actionMenu = document.getElementById("actionMenu");
+        const menuOverlay = document.getElementById("menuOverlay");
+        const menuUserImgButton = document.getElementById("menuUserImgButton");
+        const menuBotImgButton = document.getElementById("menuBotImgButton");
+        const menuImageButton = document.getElementById("menuImageButton");
+        const menuSituationButton = document.getElementById("menuSituationButton");
 
 
         // --- 이벤트 리스너 연결 ---
@@ -413,51 +412,43 @@
             }
         });
 
-        // 🚨 액션 메뉴 열기/닫기 버튼 이벤트 🚨
         actionMenuButton.addEventListener("click", function() {
-            // actionMenu 요소에 'visible' 클래스를 추가/제거하여 CSS 애니메이션 발동
             actionMenu.classList.toggle("visible");
-            // 메뉴 상태에 따라 메뉴 배경 오버레이 표시/숨김
             if (actionMenu.classList.contains("visible")) {
-                menuOverlay.style.display = 'block'; // 보이기
+                menuOverlay.style.display = 'block';
             } else {
-                menuOverlay.style.display = 'none'; // 숨기기
+                menuOverlay.style.display = 'none';
             }
-             // 필요하다면 + 버튼을 X 버튼으로 바꾸는 시각적 변화 추가 가능
         });
 
-        // 🚨 메뉴 배경 오버레이 클릭 이벤트 (메뉴 닫기) 🚨
         menuOverlay.addEventListener("click", function() {
-            actionMenu.classList.remove("visible"); // 메뉴 닫기
-            menuOverlay.style.display = 'none'; // 메뉴 배경 오버레이 숨기기
+            actionMenu.classList.remove("visible");
+            menuOverlay.style.display = 'none';
         });
 
-
-        // 🚨 메뉴 안의 버튼 이벤트 (기존 기능 연결) 🚨
         menuUserImgButton.addEventListener("click", function() {
              changeProfileImage('user');
-             actionMenu.classList.remove("visible"); // 메뉴 닫기
-             menuOverlay.style.display = 'none'; // 메뉴 배경 오버레이 숨기기
+             actionMenu.classList.remove("visible");
+             menuOverlay.style.display = 'none';
         });
 
         menuBotImgButton.addEventListener("click", function() {
              changeProfileImage('bot');
-             actionMenu.classList.remove("visible"); // 메뉴 닫기
-             menuOverlay.style.display = 'none'; // 메뉴 배경 오버레이 숨기기
+             actionMenu.classList.remove("visible");
+             menuOverlay.style.display = 'none';
         });
 
         menuImageButton.addEventListener("click", function() {
             sendImageMessage();
-             actionMenu.classList.remove("visible"); // 메뉴 닫기
-             menuOverlay.style.display = 'none'; // 메뉴 배경 오버레이 숨기기
+             actionMenu.classList.remove("visible");
+             menuOverlay.style.display = 'none';
         });
 
         menuSituationButton.addEventListener("click", function() {
             sendSituationRequest(); // 아래에 함수 구현 예정
-             actionMenu.classList.remove("visible"); // 메뉴 닫기
-             menuOverlay.style.display = 'none'; // 메뉴 배경 오버레이 숨기기
+             actionMenu.classList.remove("visible");
+             menuOverlay.style.display = 'none';
         });
-
 
         imageOverlay.addEventListener("click", function() {
             imageOverlay.style.display = 'none';
@@ -470,13 +461,11 @@
             const container = document.createElement("div");
             container.className = `message-container ${role}`;
 
-            // 프로필 이미지 (텍스트/이미지 메시지 모두 동일하게 가짐)
             const img = document.createElement("img");
             img.className = "profile-img";
             img.src = (role === 'user' ? userProfileImgUrl : botProfileImgUrl);
             img.alt = (role === 'user' ? "사용자 프로필" : "이안 프로필");
 
-            // 프로필 이미지 로드 실패 시 처리 (이전과 동일)
             img.onerror = function() {
                  console.warn(`Failed to load image for role "${role}" from "${this.src}". Using fallback.`);
                  this.onerror = null;
@@ -486,16 +475,13 @@
                  if (parent) { parent.replaceChild(fallbackDiv, this); }
             }
 
-            // 메시지 내용(이름+내용 요소) 래퍼
             const contentWrapper = document.createElement("div");
             contentWrapper.className = "message-content-wrapper";
 
-            // 역할/이름 요소
             const roleName = document.createElement("div");
             roleName.className = "role-name";
             roleName.textContent = (role === "user" ? "피주머니" : "이안");
 
-            // 메시지 내용 요소 (텍스트 버블 또는 이미지 썸네일)
             let messageContentElement;
 
             if (messageData.type === 'text') {
@@ -568,7 +554,8 @@
 
                  if (textOnlyContents.length === 0) {
                      console.log("No text content to send to API.");
-                     return;
+                     // API 호출 건너뛰고 finally 블록으로 이동
+                     return Promise.resolve(); // Promise.resolve() 반환하여 finally 실행
                  }
 
                 const res = await fetch(
@@ -613,20 +600,24 @@
             const imageUrl = prompt("보낼 이미지의 웹 주소(URL)를 입력하세요:");
 
             if (imageUrl !== null && imageUrl.trim() !== '') {
-                 sendButton.disabled = true;
-                 userInput.disabled = true;
-                 // sendImageButton.disabled = true;
+                 sendButton.disabled = true; // 전송 버튼 비활성화 (텍스트 입력 막기)
+                 userInput.disabled = true; // 입력창 비활성화
+                 actionMenuButton.disabled = true; // + 버튼 비활성화
 
 
                  appendMessage("user", { type: 'image', url: imageUrl.trim() });
                  conversationHistory.push({
                      role: "user",
                      // 이미지 메시지는 현재 API에게 보내지 않지만, 히스토리에는 기록
-                     parts: [{ text: 'image', 'imageUrl': imageUrl.trim() }] // 예시 구조
+                     // API가 이미지도 처리하게 하려면 parts 형식을 Gemini API 이미지 part 형식으로 바꿔야 합니다.
+                     // 예시: parts: [{ file_data: { mime_type: 'image/jpeg', file_uri: imageUrl.trim() } }]
+                     parts: [{ text: '[Image]', 'imageUrl': imageUrl.trim() }] // 히스토리에 이미지임을 나타내는 텍스트와 URL 함께 기록
                  });
 
+                 // 이미지 전송 후 바로 입력창 다시 활성화
                  sendButton.disabled = false;
                  userInput.disabled = false;
+                 actionMenuButton.disabled = false;
                  userInput.focus();
 
             } else if (imageUrl !== null) {
@@ -653,7 +644,74 @@
 
         // --- '상황' 기능 함수 (메뉴에서 호출됨, 구현 예정) ---
         async function sendSituationRequest() {
-             alert("상황 생성 기능은 아직 구현되지 않았습니다.");
+             alert("상황 생성 기능 구현 시작!"); // 임시 알림 변경
+
+             // + 버튼, 입력창, 전송 버튼 비활성화 및 로딩 스피너 표시
+             sendButton.disabled = true;
+             userInput.disabled = true;
+             actionMenuButton.disabled = true;
+             loadingSpinner.style.display = 'block';
+
+
+             // AI에게 보낼 상황 생성 요청 프롬프트
+             const situationPrompt = `기존 대화 맥락과 이안의 캐릭터 설정에 기반하여, 흥미롭고 새로운 상황과 사건을 하나 만들어줘. 사용자가 반응할 수 있는 형태로 제시해야 해. 대화의 다음 흐름으로 자연스럽게 이어지도록 만들어봐.`;
+
+             // 히스토리에 상황 요청 프롬프트 추가 (AI에게 보낼 때 사용)
+             const situationHistory = [...conversationHistory, { role: "user", parts: [{ text: situationPrompt }] }];
+
+
+            try {
+                // API 호출 시, situationHistory 배열에서 텍스트 메시지만 골라내어 새로운 배열 생성
+                // (백엔드는 아직 이미지 처리 안 함)
+                const textOnlyContents = situationHistory.map(entry => {
+                    return {
+                         role: entry.role,
+                         parts: entry.parts.filter(part => part.text !== undefined)
+                    };
+                }).filter(entry => entry.parts.length > 0);
+
+                 if (textOnlyContents.length === 0) {
+                     console.log("No text content to send to API for situation.");
+                     appendMessage("bot", { type: 'text', text: "(상황 생성 요청 실패: 보낼 텍스트 내용 없음)" });
+                     return Promise.resolve();
+                 }
+
+
+                const res = await fetch(
+                    `/api/chat`,
+                    {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ contents: textOnlyContents }),
+                    }
+                );
+
+                if (!res.ok) {
+                    const errorData = await res.json();
+                    console.error("API (Backend) Error:", res.status, errorData);
+                    appendMessage("bot", { type: 'text', text: `(상황 생성 오류: ${res.status} - ${errorData.error?.error?.message || errorData.error || res.statusText})` });
+                } else {
+                    const data = await res.json();
+                    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "(응답 없음)";
+                     // AI 응답을 봇 메시지로 추가
+                    appendMessage("bot", { type: 'text', text: reply });
+                     // 상황 생성 응답은 대화 히스토리에 추가하지 않습니다. (필요하다면 추가 로직 필요)
+                }
+
+            } catch (error) {
+                console.error("Fetch Error:", error);
+                appendMessage("bot", { type: 'text', text: "(상황 생성 통신 오류 발생)" });
+            } finally {
+                // 버튼들 다시 활성화 및 로딩 스피너 숨김
+                sendButton.disabled = false;
+                userInput.disabled = false;
+                actionMenuButton.disabled = false;
+                loadingSpinner.style.display = 'none';
+                userInput.focus(); // 입력창에 포커스
+            }
+
+             // 참고: 상황 생성 응답을 히스토리에 추가할지 여부는 결정해야 합니다.
+             // 만약 히스토리에 추가한다면, 이후 대화에 영향을 줄 수 있습니다.
         }
 
 
