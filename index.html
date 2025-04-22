@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial=1.0" />
     <title>이안 - 피주머니 전용 챗봇</title>
     <style>
-        /* 기존 CSS 유지 및 로딩 스피너, 역할 이름, 새로운 메시지 구조 스타일 추가 */
+        /* 기존 CSS 유지 */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #1a1a1a;
@@ -48,7 +48,7 @@
             border: 2px solid #282828;
         }
 
-        /* --- 메시지 컨테이너 및 내부 구조 변경 --- */
+        /* --- 메시지 컨테이너 및 내부 구조 (이전과 동일) --- */
         .message-container {
             display: flex;
             align-items: flex-start;
@@ -65,30 +65,27 @@
             margin-right: auto;
         }
 
-        /* 프로필 이미지 스타일 */
+        /* 프로필 이미지 (썸네일 역할 포함) 스타일 */
         .profile-img {
-            width: 35px;
+            width: 35px; /* 썸네일 크기 */
             height: 35px;
             border-radius: 50%;
             object-fit: cover;
             border: 1px solid #5a5a5a;
             flex-shrink: 0;
-            /* 이미지 로드 실패 시 .profile-fallback 스타일이 대신 적용 */
+            cursor: pointer; /* 이미지를 클릭할 수 있음을 표시 */
         }
 
-         /* 이미지 로드 실패 시 대체할 회색 동그라미 스타일 */
+         /* 이미지 로드 실패 시 대체할 회색 동그라미 스타일 (이전과 동일) */
         .profile-fallback {
             width: 35px;
             height: 35px;
             border-radius: 50%;
-            background-color: #5a5a5a; /* 회색 배경 */
-            border: 1px solid #5a5a5a; /* 테두리 (배경과 같거나 다르게) */
+            background-color: #5a5a5a;
+            border: 1px solid #5a5a5a;
             flex-shrink: 0;
-            /* 이미지 로드 실패 시 .profile-img 대신 이 스타일이 적용된 div가 삽입 */
         }
 
-
-        /* 이미지/대체 요소와 메시지 내용 래퍼 간 간격 */
         .message-container.bot .profile-img,
         .message-container.bot .profile-fallback {
             margin-right: 0.75rem;
@@ -98,7 +95,6 @@
         .message-container.user .profile-fallback {
             margin-left: 0.75rem;
         }
-
 
         /* 메시지 내용(이름+버블)을 감싸는 래퍼 */
         .message-content-wrapper {
@@ -117,14 +113,12 @@
             align-items: flex-end;
         }
 
-
         /* 역할/이름 표시 스타일 */
         .role-name {
             font-size: 0.8rem;
             color: #b0b0b0;
             margin-bottom: 0.2rem;
         }
-
 
         /* 메시지 버블 스타일 */
         .message-bubble {
@@ -147,6 +141,8 @@
             color: #ffffff;
             border-radius: 1rem 1rem 0.3rem 1rem;
         }
+        /* --- 메시지 컨테이너 및 내부 구조 끝 --- */
+
 
         #inputArea {
             display: flex;
@@ -215,16 +211,23 @@
         }
 
          .settings-area button {
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            min-width: auto;
-             background-color: #5a5a5a;
+            padding: 0.5rem;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            min-width: 0;
+            background-color: #5a5a5a;
+            font-size: 1.2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
          .settings-area button:hover {
              background-color: #6a6a6a;
          }
 
-        /* 로딩 스피너 스타일 */
+
+        /* 로딩 스피너 스타일 (이전과 동일) */
         .loading-spinner {
             border: 4px solid rgba(255, 255, 255, 0.3);
             border-top: 4px solid #fff;
@@ -239,6 +242,29 @@
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
+        }
+
+        /* --- 이미지 오버레이 스타일 --- */
+        .overlay {
+            position: fixed; /* 화면 전체를 덮도록 고정 */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9); /* 어둡고 투명한 배경 */
+            display: flex; /* 이미지 중앙 정렬 */
+            justify-content: center;
+            align-items: center;
+            z-index: 1000; /* 다른 요소 위에 표시 */
+            display: none; /* 기본적으로 숨김 */
+            cursor: pointer; /* 오버레이 클릭 시 닫히도록 커서 변경 */
+        }
+
+        .overlay img {
+            max-width: 90%; /* 화면에 꽉 차지 않도록 최대 크기 제한 */
+            max-height: 90%;
+            object-fit: contain; /* 이미지 비율 유지 */
+            border-radius: 8px; /* 모서리 살짝 둥글게 */
         }
 
     </style>
@@ -258,15 +284,22 @@
     </div>
 
     <div class="settings-area">
-        <button id="changeUserImgButton">사용자 이미지 변경</button>
-        <button id="changeBotImgButton">이안 이미지 변경</button>
+        <button id="changeUserImgButton" title="사용자 이미지 변경">
+            📸
+        </button>
+        <button id="changeBotImgButton" title="이안 이미지 변경">
+            📸
+        </button>
+    </div>
+
+    <div id="imageOverlay" class="overlay">
+        <img id="overlayImage" src="" alt="확대 이미지">
     </div>
 
     <script>
         // --- 프로필 이미지 주소 변수 선언 ---
-        // 기본적으로 via.placeholder.com을 사용하지만, 로드 실패 시 대체 이미지로 바꿉니다.
-        let userProfileImgUrl = "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU"; // 기본 사용자 이미지
-        let botProfileImgUrl = "https://via.placeholder.com/35/3a4a4a/ffffff?text=BOT"; // 기본 이안 이미지
+        let userProfileImgUrl = "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU";
+        let botProfileImgUrl = "https://via.placeholder.com/35/3a4a4a/ffffff?text=BOT";
 
         // --- API 키 및 히스토리 (이전과 동일) ---
         let conversationHistory = [];
@@ -276,19 +309,20 @@
              role: "user",
              parts: [{ text: SYSTEM_PROMPT }]
          });
-        // --- 이전 단계 내용 끝 ---
 
 
-        // --- 필요한 HTML 요소들을 가져옴 (이전과 동일) ---
+        // --- 필요한 HTML 요소들을 가져옴 (오버레이 요소 추가) ---
         const chat = document.getElementById("chat");
         const userInput = document.getElementById("userInput");
         const sendButton = document.getElementById("sendButton");
         const changeUserImgButton = document.getElementById("changeUserImgButton");
         const changeBotImgButton = document.getElementById("changeBotImgButton");
         const loadingSpinner = document.getElementById("loadingSpinner");
+        const imageOverlay = document.getElementById("imageOverlay"); // 오버레이 요소
+        const overlayImage = document.getElementById("overlayImage"); // 오버레이 안의 이미지 요소
 
 
-        // --- 이벤트 리스너 연결 (이전과 동일) ---
+        // --- 이벤트 리스너 연결 (이전과 동일 + 오버레이 클릭 이벤트) ---
         sendButton.addEventListener("click", sendMessage);
 
         userInput.addEventListener("keypress", function(event) {
@@ -303,9 +337,6 @@
             if (newUrl !== null && newUrl.trim() !== '') {
                 userProfileImgUrl = newUrl.trim();
                 alert("사용자 이미지가 변경되었습니다. 이제부터 추가되는 메시지에 적용됩니다.");
-                 // 이미 표시된 이미지까지 바꾸려면, 해당 이미지 요소들을 찾아서 src를 바꿔야 합니다.
-                 // 간단하게 모든 메시지를 찾아서 이미지 src를 업데이트하는 함수를 호출할 수도 있습니다.
-                 // updateAllProfileImages('user'); // 필요하다면 이 함수를 구현하여 호출
             } else if (newUrl !== null) {
                  alert("이미지 주소를 입력해야 합니다.");
             }
@@ -316,43 +347,50 @@
              if (newUrl !== null && newUrl.trim() !== '') {
                 botProfileImgUrl = newUrl.trim();
                 alert("이안 이미지가 변경되었습니다. 이제부터 추가되는 메시지에 적용됩니다.");
-                 // updateAllProfileImages('bot'); // 필요하다면 이 함수를 구현하여 호출
              } else if (newUrl !== null) {
                  alert("이미지 주소를 입력해야 합니다.");
             }
         });
-        // --- 이벤트 리스너 연결 끝 ---
+
+        // 🚨 오버레이 클릭 이벤트 리스너 🚨
+        imageOverlay.addEventListener("click", function() {
+            imageOverlay.style.display = 'none'; // 오버레이 숨기기
+            overlayImage.src = ''; // 이미지 소스 초기화 (선택 사항)
+        });
 
 
-        // --- 메시지를 화면에 추가하는 함수 수정 (이미지 로드 실패 시 대체 요소 삽입) ---
+        // --- 메시지를 화면에 추가하는 함수 수정 (이미지 요소에 클릭 이벤트 추가) ---
         function appendMessage(role, text) {
             const container = document.createElement("div");
             container.className = `message-container ${role}`;
 
             const img = document.createElement("img");
-            img.className = "profile-img";
+            img.className = "profile-img"; // 썸네일 스타일 겸 클릭 가능 표시
             img.src = (role === 'user' ? userProfileImgUrl : botProfileImgUrl);
             img.alt = (role === 'user' ? "사용자 프로필" : "이안 프로필");
 
-            // 🚨 이미지 로드 실패 시 처리 함수 수정 🚨
+            // --- 이미지 로드 실패 시 처리 함수 (이전과 동일) ---
             img.onerror = function() {
-                 console.warn(`Failed to load image for role "${role}" from "${this.src}". Using fallback.`); // 콘솔에 경고 표시
-                 this.onerror = null; // 무한 에러 방지
+                 console.warn(`Failed to load image for role "${role}" from "${this.src}". Using fallback.`);
+                 this.onerror = null;
 
-                 // --- 대체 요소 생성 ---
                  const fallbackDiv = document.createElement("div");
-                 fallbackDiv.className = "profile-fallback"; // 새로 추가한 회색 동그라미 스타일 적용
-                 // 필요하다면 여기에 이니셜 같은 텍스트를 넣을 수도 있습니다.
-                 // fallbackDiv.textContent = (role === 'user' ? 'YOU' : 'BOT'); // 예시
+                 fallbackDiv.className = "profile-fallback";
 
-                 // --- 기존 img 요소를 대체 요소로 교체 ---
-                 // img 요소의 부모 요소를 찾아서 replaceChild 사용
-                 const parent = this.parentElement; // 여기서 this는 img 요소입니다.
+                 const parent = this.parentElement;
                  if (parent) {
-                     parent.replaceChild(fallbackDiv, this); // fallbackDiv로 this(img)를 교체합니다.
+                     parent.replaceChild(fallbackDiv, this);
                  }
             }
-            // --- 이미지 로드 실패 시 처리 함수 수정 끝 ---
+
+            // 🚨 이미지 클릭 이벤트 리스너 추가 🚨
+            img.addEventListener("click", function() {
+                // 이미지 로드에 실패한 상태 (fallbackDiv가 대신 있는 경우)가 아니라면
+                // 오버레이를 표시합니다.
+                // 만약 이미 로드 실패로 fallbackDiv로 교체되었다면 이 리스너는 호출되지 않습니다.
+                 overlayImage.src = this.src; // 클릭된 이미지의 주소를 오버레이 이미지에 설정
+                 imageOverlay.style.display = 'flex'; // 오버레이 보이게
+            });
 
 
             // --- 메시지 내용(이름+버블) 래퍼 생성 (이전과 동일) ---
@@ -382,14 +420,22 @@
                 container.appendChild(img); // 이미지 추가 (로드 실패 시 대체 요소로 교체됨)
             } else {
                 container.appendChild(img); // 이미지 추가 (로드 실패 시 대체 요소로 교체됨)
+                contentWrapper.appendChild(img); // 이미지를 message-content-wrapper 밖으로 옮겨야 함
+
+            }
+            // --- 전체 컨테이너 안에 이미지(또는 대체 요소)와 내용 래퍼 추가 (가로 배치, 역할에 따라 순서 다름) ---
+            // 🚨 수정: 이미지는 message-content-wrapper 밖에 있어야 합니다.
+            if (role === "user") {
+                container.appendChild(contentWrapper);
+                container.appendChild(img); // 이미지 추가 (로드 실패 시 대체 요소로 교체됨)
+            } else {
+                container.appendChild(img); // 이미지 추가 (로드 실패 시 대체 요소로 교체됨)
                 container.appendChild(contentWrapper);
             }
-
 
             chat.appendChild(container);
             chat.scrollTop = chat.scrollHeight;
         }
-        // --- appendMessage 함수 수정 끝 ---
 
 
         // --- 메시지 전송 함수 (이전과 동일) ---
@@ -444,7 +490,6 @@
                 userInput.focus();
             }
         }
-        // --- sendMessage 함수 끝 ---
 
         // 초기 메시지 예시 (페이지 로드 시 실행)
          appendMessage("bot", "...당신은 나의 피주머니... 그래, 이곳에 왔군요...");
