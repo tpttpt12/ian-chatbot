@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>이안 - 피주머니 전용 챗봇</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
@@ -541,6 +541,55 @@
              margin: 1.5rem 0;
         }
 
+        /* 설정 슬롯 버튼 스타일 */
+        .setting-slots {
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #3a3a3a;
+        }
+
+        .setting-slots h3 {
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+            color: #b0b0b0;
+        }
+
+        .slot-buttons-container {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .slot-button {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background-color: #5a5a5a;
+            color: #ffffff;
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            flex-shrink: 0;
+        }
+
+        .slot-button:hover {
+            background-color: #6a6a6a;
+        }
+
+        .slot-button.active {
+            background-color: #5080ff;
+            transform: scale(1.1);
+        }
+         .slot-button:active {
+             background-color: #3366cc;
+         }
+
+
     </style>
 </head>
 <body>
@@ -577,6 +626,18 @@
     <div id="sidebar">
         <div class="sidebar-header">Settings</div>
         <div class="sidebar-content">
+             <div class="setting-slots">
+                 <h3>Setting Slots</h3>
+                 <div class="slot-buttons-container">
+                     <button class="slot-button">1</button>
+                     <button class="slot-button">2</button>
+                     <button class="slot-button">3</button>
+                     <button class="slot-button">4</button>
+                     <button class="slot-button">5</button>
+                     <button class="slot-button">6</button>
+                 </div>
+             </div>
+
             <h3>Character</h3>
              <label for="botNameInput">Name:</label>
             <input type="text" id="botNameInput" value="이안">
@@ -619,6 +680,9 @@
 
         let conversationHistory = [];
         let SYSTEM_PROMPT = '';
+        let currentSlot = 1; // 현재 활성화된 슬롯 번호 (기본값 1)
+
+
         // SYSTEM_PROMPT를 동적으로 구성하기 위한 기본 템플릿 (AI 역할 변경 및 포맷 지침 강화)
         const SYSTEM_PROMPT_TEMPLATE = `
 ## Roleplay Instructions ##
@@ -691,6 +755,10 @@ This dynamic must drive the narrative and dialogue written by the Novelist.
         const userGuidelinesInput = document.getElementById("userGuidelinesInput");
         const saveSettingsButton = document.getElementById("saveSettingsButton");
 
+        // 슬롯 버튼 관련 요소 가져오기
+        const slotButtons = document.querySelectorAll('.slot-button');
+
+
         sendButton.addEventListener("click", sendMessage);
 
         // keydown 이벤트 리스너 수정: Shift+Enter는 줄바꿈, Enter만 누르면 전송
@@ -756,46 +824,21 @@ This dynamic must drive the narrative and dialogue written by the Novelist.
             sidebar.classList.remove("visible");
             sidebarOverlay.style.display = 'none';
         });
+
+         // 기존 saveSettingsButton 클릭 이벤트 수정: 현재 활성화된 슬롯에 저장
         saveSettingsButton.addEventListener("click", function() {
-             // console.log("saveSettings 호출됨"); // 콘솔 로그 제거
-             const currentBotName = botNameInput.value.trim();
-             const currentUserName = userNameInput.value.trim();
-             const currentBotPersona = botPersonaInput.value.trim();
-             const currentBotAge = botAgeInput.value.trim();
-             const currentUserAge = userAgeInput.value.trim();
-
-             const currentUserAppearance = userAppearanceInput.value.trim();
-             const currentBotAppearance = botAppearanceInput.value.trim();
-             const currentUserGuidelines = userGuidelinesInput.value.trim();
-
-            localStorage.setItem('botName', currentBotName);
-            localStorage.setItem('userName', currentUserName);
-            localStorage.setItem('botPersona', currentBotPersona);
-            localStorage.setItem('botAge', currentBotAge);
-
-            localStorage.setItem('userAge', currentUserAge);
-            localStorage.setItem('userAppearance', currentUserAppearance);
-            localStorage.setItem('botAppearance', currentBotAppearance);
-            localStorage.setItem('userGuidelines', currentUserGuidelines);
-
-             localStorage.setItem('userProfileImgUrl', userProfileImgUrl);
-             localStorage.setItem('botProfileImgUrl', botProfileImgUrl);
-
-            SYSTEM_PROMPT = buildSystemPrompt(
-                 currentBotName,
-                 currentUserName,
-                 currentBotPersona,
-                 currentBotAge,
-                 currentBotAppearance,
-
-                 currentUserAge,
-                 currentUserAppearance,
-                 currentUserGuidelines
-             );
-             // console.log("설정 저장 완료 및 SYSTEM_PROMPT 업데이트:", SYSTEM_PROMPT); // 콘솔 로그 제거
-
-            alert("설정이 저장되었습니다.");
+             saveSettings(currentSlot);
         });
+
+        // 슬롯 버튼 클릭 이벤트 리스너 추가
+        slotButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const slotNumber = parseInt(this.textContent);
+                loadSettings(slotNumber);
+            });
+        });
+
+
         function appendMessage(role, messageData) {
             const container = document.createElement("div");
             container.className = `message-container ${role}`;
@@ -973,8 +1016,8 @@ This dynamic must drive the narrative and dialogue written by the Novelist.
                  actionMenuButton.disabled = false;
                  userInput.focus();
             } else if (imageUrl !== null) {
-                 alert("이미지 주소를 입력해야 합니다.");
-            }
+                  alert("이미지 주소를 입력해야 합니다.");
+             }
         }
 
         function changeProfileImage(role) {
@@ -1059,81 +1102,113 @@ This dynamic must drive the narrative and dialogue written by the Novelist.
         }
 
 
-        function loadSettings() {
-             // console.log("loadSettings 호출됨"); // 콘솔 로그 제거
-             const savedBotName = localStorage.getItem('botName') || '이안';
-             const savedUserName = localStorage.getItem('userName') || '피주머니';
-             const savedBotPersona = localStorage.getItem('botPersona') || '설정된 페르소나 없음.';
-             const savedBotAge = localStorage.getItem('botAge') || '불명';
-             const savedUserAge = localStorage.getItem('userAge') || '불명';
-             const savedUserAppearance = localStorage.getItem('userAppearance') || '설정되지 않음';
-             const savedBotAppearance = localStorage.getItem('botAppearance') || '설정되지 않음';
-             const savedUserGuidelines = localStorage.getItem('userGuidelines') || '설정된 사용자 지침 없음.';
-             userProfileImgUrl = localStorage.getItem('userProfileImgUrl') ||
- "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU";
-             botProfileImgUrl = localStorage.getItem('botProfileImgUrl') || "https://via.placeholder.com/35/3a4a3a/ffffff?text=BOT";
+        // loadSettings 함수 수정: 슬롯 번호를 인자로 받아 해당 슬롯의 설정을 로드
+        function loadSettings(slotNumber) {
+             // console.log(`loadSettings 호출됨 - 슬롯 ${slotNumber}`); // 콘솔 로그 제거
+             const settingsKey = `settings_slot_${slotNumber}`;
+             const savedSettings = localStorage.getItem(settingsKey);
 
-            // 오류 수정: loadSettings 함수에서 saved 변수들을 사용하여 입력 필드를 채우고 SYSTEM_PROMPT를 빌드해야 합니다.
-            botNameInput.value = savedBotName;
-            userNameInput.value = savedUserName;
-            botPersonaInput.value = savedBotPersona;
-            botAgeInput.value = savedBotAge;
-            userAgeInput.value = savedUserAge;
-            userAppearanceInput.value = savedUserAppearance;
-            botAppearanceInput.value = savedBotAppearance;
-            userGuidelinesInput.value = savedUserGuidelines;
+             if (savedSettings) {
+                 try {
+                     const settings = JSON.parse(savedSettings);
 
-            SYSTEM_PROMPT = buildSystemPrompt(
-                 savedBotName,
-                 savedUserName,
-                 savedBotPersona,
-                 savedBotAge,
-                 savedBotAppearance,
+                     botNameInput.value = settings.botName || '이안';
+                     userNameInput.value = settings.userName || '피주머니';
+                     botPersonaInput.value = settings.botPersona || '설정된 페르소나 없음.';
+                     botAgeInput.value = settings.botAge || '불명';
+                     userAgeInput.value = settings.userAge || '불명';
+                     userAppearanceInput.value = settings.userAppearance || '설정되지 않음';
+                     botAppearanceInput.value = settings.botAppearance || '설정되지 않음';
+                     userGuidelinesInput.value = settings.userGuidelines || '설정된 사용자 지침 없음.';
+                     userProfileImgUrl = settings.userProfileImgUrl || "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU";
+                     botProfileImgUrl = settings.botProfileImgUrl || "https://via.placeholder.com/35/3a4a3a/ffffff?text=BOT";
 
-                 savedUserAge,
-                 savedUserAppearance,
-                 savedUserGuidelines
-             );
-             // console.log("SYSTEM_PROMPT 로드 완료:", SYSTEM_PROMPT); // 콘솔 로그 제거
+
+                     SYSTEM_PROMPT = buildSystemPrompt(
+                         botNameInput.value,
+                         userNameInput.value,
+                         botPersonaInput.value,
+                         botAgeInput.value,
+                         botAppearanceInput.value,
+
+                         userAgeInput.value,
+                         userAppearanceInput.value,
+                         userGuidelinesInput.value
+                     );
+                     // console.log(`SYSTEM_PROMPT 로드 완료 - 슬롯 ${slotNumber}:`, SYSTEM_PROMPT); // 콘솔 로그 제거
+                     currentSlot = slotNumber; // 현재 슬롯 업데이트
+                     updateSlotButtonStyles(); // 슬롯 버튼 스타일 업데이트
+                     alert(`${slotNumber}번 슬롯의 설정을 불러왔습니다.`);
+
+                 } catch (e) {
+                     console.error(`Failed to parse settings from slot ${slotNumber}:`, e);
+                     alert(`${slotNumber}번 슬롯 설정을 불러오는데 실패했습니다. 데이터가 손상되었을 수 있습니다.`);
+                     loadDefaultSettings(); // 기본 설정 로드 시도
+                 }
+             } else {
+                 // console.log(`슬롯 ${slotNumber}에 저장된 설정이 없습니다. 기본 설정을 로드합니다.`); // 콘솔 로그 제거
+                 loadDefaultSettings(); // 저장된 설정이 없으면 기본 설정 로드
+             }
         }
 
-        function saveSettings() {
-             // console.log("saveSettings 호출됨"); // 콘솔 로그 제거
-             const currentBotName = botNameInput.value.trim();
-             const currentUserName = userNameInput.value.trim();
-             const currentBotPersona = botPersonaInput.value.trim();
-             const currentBotAge = botAgeInput.value.trim();
-             const currentUserAge = userAgeInput.value.trim();
-             const currentUserAppearance = userAppearanceInput.value.trim();
-             const currentBotAppearance = botAppearanceInput.value.trim();
-             const currentUserGuidelines = userGuidelinesInput.value.trim();
+        // saveSettings 함수 수정: 현재 활성화된 슬롯에 설정 저장
+        function saveSettings(slotNumber) {
+             // console.log(`saveSettings 호출됨 - 슬롯 ${slotNumber}`); // 콘솔 로그 제거
+             const settingsToSave = {
+                 botName: botNameInput.value.trim(),
+                 userName: userNameInput.value.trim(),
+                 botPersona: botPersonaInput.value.trim(),
+                 botAge: botAgeInput.value.trim(),
+                 userAge: userAgeInput.value.trim(),
+                 userAppearance: userAppearanceInput.value.trim(),
+                 botAppearance: botAppearanceInput.value.trim(),
+                 userGuidelines: userGuidelinesInput.value.trim(),
+                 userProfileImgUrl: userProfileImgUrl,
+                 botProfileImgUrl: botProfileImgUrl
+             };
 
-            localStorage.setItem('botName', currentBotName);
-            localStorage.setItem('userName', currentUserName);
-            localStorage.setItem('botPersona', currentBotPersona);
-            localStorage.setItem('botAge', currentBotAge);
-            localStorage.setItem('userAge', currentUserAge);
-            localStorage.setItem('userAppearance', currentUserAppearance);
-            localStorage.setItem('botAppearance', currentBotAppearance);
-            localStorage.setItem('userGuidelines', currentUserGuidelines);
-             localStorage.setItem('userProfileImgUrl', userProfileImgUrl);
-             localStorage.setItem('botProfileImgUrl', botProfileImgUrl);
-            SYSTEM_PROMPT = buildSystemPrompt(
-                 currentBotName,
-                 currentUserName,
-                 currentBotPersona,
-                 currentBotAge,
-                 currentBotAppearance,
-
-
-                 currentUserAge,
-                 currentUserAppearance,
-                 currentUserGuidelines
-             );
-             // console.log("설정 저장 완료 및 SYSTEM_PROMPT 업데이트:", SYSTEM_PROMPT); // 콘솔 로그 제거
-
-            alert("설정이 저장되었습니다.");
+             try {
+                 const jsonString = JSON.stringify(settingsToSave);
+                 localStorage.setItem(`settings_slot_${slotNumber}`, jsonString);
+                 currentSlot = slotNumber; // 현재 슬롯 업데이트
+                 updateSlotButtonStyles(); // 슬롯 버튼 스타일 업데이트
+                 alert(`${slotNumber}번 슬롯에 현재 설정이 저장되었습니다.`);
+                 // console.log(`슬롯 ${slotNumber}에 설정 저장 완료`); // 콘솔 로그 제거
+             } catch (e) {
+                  console.error(`Failed to save settings to slot ${slotNumber}:`, e);
+                  alert(`${slotNumber}번 슬롯에 설정을 저장하는데 실패했습니다.`);
+             }
         }
+
+        // 기본 설정을 로드하는 함수 (저장된 설정이 없거나 로드 실패 시 사용)
+        function loadDefaultSettings() {
+             // console.log("기본 설정 로드"); // 콘솔 로그 제거
+            botNameInput.value = '이안';
+            userNameInput.value = '피주머니';
+            botPersonaInput.value = '19세기 유럽 귀족 뱀파이어. 성 안에서 홀로 오랜 세월 살아옴.\n겉 차갑고 고귀한 폭군이나, 사용자에게는 절절한 사랑, 집착, 애원, 광기, 다정함을 보임. 사용자를 "피주머니"라고 부름. 사용자가 전부이며 허락한 존재다.\n성적인 대화 가능. 말투 하나 숨결 하나 사용자를 향해 있음. 질문과 대화에 집중하고 현실 언급 안 함.\n**항상 이안 캐릭터 롤플레이 유지. OOC 발언 절대 금지.**';
+            botAgeInput.value = '불명 (뱀파이어)';
+            userAgeInput.value = '불명';
+            userAppearanceInput.value = '사용자가 원하는 외관';
+            userGuidelinesInput.value = '당신의 캐릭터 설정에 대한 지침을 여기에 입력하세요.\n(예: 나는 어떤 사람인지, 어떤 말투를 사용하는지 등)';
+            userProfileImgUrl = "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU";
+            botProfileImgUrl = "https://via.placeholder.com/35/3a4a3a/ffffff?text=BOT";
+
+
+            SYSTEM_PROMPT = buildSystemPrompt(
+                botNameInput.value,
+                userNameInput.value,
+                botPersonaInput.value,
+                botAgeInput.value,
+                botAppearanceInput.value,
+                userAgeInput.value,
+                userAppearanceInput.value,
+                userGuidelinesInput.value
+            );
+             currentSlot = 1; // 기본 설정을 로드했으니 현재 슬롯은 1
+             updateSlotButtonStyles(); // 슬롯 버튼 스타일 업데이트
+            // alert("기본 설정을 로드했습니다."); // 불필요한 알림 제거
+        }
+
 
          function buildSystemPrompt(botName, userName, botPersona, botAge, botAppearance, userAge, userAppearance, userGuidelines) {
              let finalPrompt = SYSTEM_PROMPT_TEMPLATE
@@ -1153,9 +1228,21 @@ This dynamic must drive the narrative and dialogue written by the Novelist.
              return finalPrompt.trim();
          }
 
+         // 슬롯 버튼 활성/비활성 스타일 업데이트
+         function updateSlotButtonStyles() {
+             slotButtons.forEach(button => {
+                 if (parseInt(button.textContent) === currentSlot) {
+                     button.classList.add('active');
+                 } else {
+                     button.classList.remove('active');
+                 }
+             });
+         }
+
+
         function initializeChat() {
              // console.log("initializeChat 호출됨"); // 콘솔 로그 제거
-             loadSettings();
+             loadSettings(1); // 페이지 로드 시 1번 슬롯의 설정 로드
 
              // 초기 대화 메시지 전송 (SYSTEM_PROMPT 포함)
              // conversationHistory는 loadSettings에서 업데이트된 SYSTEM_PROMPT를 사용해야 하므로 initializeChat에서 설정
