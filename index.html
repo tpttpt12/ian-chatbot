@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ㅁ<!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8" />
@@ -6,9 +6,10 @@
     <title>이안 - 피주머니 전용 챗봇</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
+        /* 🚨 배경색을 진한 회색으로 변경 🚨 */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #1a1a1a;
+            background-color: #0a0a0a; /* 더 진한 회색 */
             color: #e0e0e0;
             margin: 0;
             padding: 0;
@@ -26,8 +27,8 @@
              width: 95%; /* 너비를 일단 넓게 설정 */
              max-width: 900px; /* 최대 너비 설정 (대략 1500px 화면에서 60% 정도 느낌) */
              margin: 0 auto; /* 좌우 자동 마진으로 중앙 정렬 */
-             background-color: #282828; /* 배경색 유지 */
-             /* 🚨 불필요한 그림자/테두리 제거 🚨 */
+             background-color: #1a1a1a; /* 바디보다 약간 밝은 회색 */
+             /* 불필요한 그림자/테두리 제거 */
              box-shadow: none;
              border: none;
              position: relative;
@@ -42,7 +43,7 @@
 
 
         .chat-header {
-            background-color: #282828;
+            background-color: #1a1a1a; /* 컨테이너와 동일하게 */
             color: #ffffff;
             padding: 1rem;
             text-align: center;
@@ -56,27 +57,30 @@
              align-items: center;
         }
 
+         /* 🚨 사이드 바 토글 버튼 스타일 수정 (오른쪽 상단 배치) 🚨 */
         #sidebarToggle {
             position: absolute;
-            top: 50%;
-            right: 1rem;
-            transform: translateY(-50%);
-            width: 35px;
-            height: 35px;
-            background-color: #5a5a5a;
-            color: #ffffff;
+            top: 0; /* 상단에 붙임 */
+            right: 0; /* 우측에 붙임 */
+            transform: none; /* 세로 중앙 정렬 제거 */
+            width: 50px; /* 크기 키움 */
+            height: 50px; /* 크기 키움 */
+            background-color: transparent; /* 배경 투명 */
+            color: #b0b0b0; /* 옅은 회색 아이콘 색상 */
             border: none;
-            border-radius: 50%;
+            border-radius: 0; /* 모서리 둥글기 제거 */
             cursor: pointer;
-            font-size: 1.2rem;
+            font-size: 1.8rem; /* 아이콘 크기 키움 */
             display: flex;
             justify-content: center;
             align-items: center;
-            transition: background-color 0.2s ease;
+            transition: background-color 0.2s ease, color 0.2s ease;
             z-index: 10;
+             padding: 0; /* 패딩 제거 */
         }
          #sidebarToggle:hover {
-             background-color: #6a6a6a;
+             background-color: #2a2a2a; /* 호버 시 배경색 */
+             color: #ffffff; /* 호버 시 아이콘 색상 */
          }
 
         #chat {
@@ -173,14 +177,11 @@
             line-height: 1.4;
             position: relative;
             font-size: 1rem;
-             /* 🚨 대사/묘사 구분 및 줄바꿈에 따른 간격 조정 */
-             /* 마크다운 파싱 후 p 태그 등으로 나힐 때 간격 제어 */
         }
-         /* 🚨 챗봇 메시지의 p 태그 하단 마진 제거 (더 세밀한 간격 제어) 🚨 */
+         /* 챗봇 메시지의 p 태그 하단 마진 제거 (더 세밀한 간격 제어) */
          .message-container.bot .message-bubble p {
              margin-bottom: 0;
          }
-
 
         .message-container.bot .message-bubble {
             background-color: #3a4a4a;
@@ -194,10 +195,9 @@
             border-radius: 1rem 1rem 0.3rem 1rem;
         }
 
-        /* 🚨 마크다운 내부 스타일 (adjust as needed) 🚨*/
-        /* p 태그에 기본적인 하단 마진 부여 (말풍선 내 요소 간 간격) */
+        /* 마크다운 내부 스타일 (adjust as needed) */
         .message-bubble p { margin: 0 0 0.5rem 0; }
-        .message-bubble p:last-child { margin-bottom: 0; } /* 마지막 단락 하단 마진 제거 */
+        .message-bubble p:last-child { margin-bottom: 0; }
         .message-bubble ul, .message-bubble ol { padding-left: 1.5rem; margin: 0 0 0.5rem 0; }
         .message-bubble li { margin-bottom: 0.25rem; }
         .message-bubble code {
@@ -242,74 +242,47 @@
          .message-bubble h6 { font-size: 1rem; }
 
 
-         /* 🚨 행동 묘사 스타일 🚨 */
-         /* *별표* 로 감싸진 부분에 적용될 스타일 */
+         /* 행동 묘사 스타일 */
         .action-description {
              color: #b0b0b0;
              font-style: italic;
          }
-         /* 🚨 대사 스타일 🚨 */
-         /* "따옴표" 로 감싸진 부분에 적용될 스타일 */
+         /* 대사 스타일 */
         .dialogue {
-             font-weight: bold; /* 대사는 굵게 표시 */
+             font-weight: bold;
          }
 
 
-        .message-image-thumbnail {
-            max-width: 200px;
-            max-height: 200px;
-            border-radius: 8px;
-            object-fit: cover;
-            cursor: pointer;
-            margin-top: 0.2rem;
-            border: 1px solid #5a5a5a;
-        }
-
-         .message-image-thumbnail.error {
-             background-color: #5a5a5a;
-         }
-
+        /* 🚨 입력창 영역 스타일 수정 (textarea에 맞게 높이 조정) 🚨 */
         #inputArea {
             display: flex;
             padding: 1rem;
             background-color: #282828;
             border-top: 1px solid #3a3a3a;
-            align-items: center;
+            align-items: flex-end; /* 요소를 아래에 정렬 */
             gap: 0.75rem;
-             flex-shrink: 0;
-             position: relative;
-        }
-
-        #actionMenuButton {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: #5a5a5a;
-            color: #ffffff;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
             flex-shrink: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: background-color 0.2s ease;
-        }
-        #actionMenuButton:hover {
-            background-color: #6a6a6a;
+            position: relative;
         }
 
-
+        /* 🚨 userInput을 input에서 textarea로 변경 및 스타일 수정 🚨 */
         #userInput {
             flex: 1;
             padding: 0.75rem 1rem;
-            border-radius: 1.5rem;
+            border-radius: 1.5rem; /* input과 유사하게 */
             border: none;
             background-color: #3a3a3a;
             color: #e0e0e0;
             font-size: 1rem;
             outline: none;
             transition: background-color 0.2s ease, box-shadow 0.2s ease;
+            resize: none; /* 사용자가 크기 조절 못하게 막음 */
+            min-height: 40px; /* input과 유사한 최소 높이 */
+            max-height: 200px; /* 너무 길어지지 않도록 최대 높이 제한 */
+            overflow-y: auto; /* 내용 넘칠 때 스크롤 */
+            line-height: 1.4; /* 줄 간격 유지 */
+             /* align-self: center; /* 중앙 정렬 원하면 사용 */
+             box-sizing: border-box; /* 패딩과 테두리를 너비/높이에 포함 */
         }
 
         #userInput:focus {
@@ -326,8 +299,9 @@
             font-weight: bold;
             min-width: 6rem;
             flex-shrink: 0;
-             border: none;
-             cursor: pointer;
+            border: none;
+            cursor: pointer;
+            align-self: flex-end; /* 버튼을 아래에 정렬 */
         }
          #sendButton:hover { background-color: #6699ff; }
          #sendButton:active { background-color: #3366cc; }
@@ -456,15 +430,16 @@
             border-radius: 8px;
         }
 
+        /* 🚨 사이드 바 스타일 수정 (옅은 회색 배경 등) 🚨 */
         #sidebar {
             position: fixed;
             top: 0;
             right: -300px;
             width: 300px;
             height: 100%;
-            background-color: #1f1f1f;
+            background-color: #2f2f2f; /* 옅은 회색 배경 */
             color: #e0e0e0;
-            border-left: 1px solid #3a3a3a;
+            border-left: 1px solid #4a4a4a; /* 약간 더 밝은 구분선 */
             transition: right 0.3s ease-out;
             z-index: 900;
             padding: 1rem;
@@ -484,7 +459,7 @@
              font-weight: bold;
              margin-bottom: 1rem;
              padding-bottom: 0.5rem;
-             border-bottom: 1px solid #3a3a3a;
+             border-bottom: 1px solid #4a4a4a;
          }
 
          .sidebar-content label {
@@ -543,7 +518,7 @@
 
         .sidebar-section-divider {
              height: 1px;
-             background-color: #3a3a3a;
+             background-color: #4a4a4a;
              margin: 1.5rem 0;
         }
 
@@ -553,7 +528,11 @@
     <div class="app-container">
         <div class="chat-header">
             이안 - 피주머니 전용 챗봇
-            <button id="sidebarToggle" title="설정 열기">⚙️</button>
+            <button id="sidebarToggle" title="설정 열기">
+                 <svg style="width:24px;height:24px" viewBox="0 0 24 24">
+                     <path fill="currentColor" d="M3,6H21V8H3V6M3,11H21V13H3V11M3,16H21V18H3V16Z" />
+                 </svg>
+            </button>
         </div>
 
         <div id="chat">
@@ -561,7 +540,7 @@
 
         <div id="inputArea">
             <button id="actionMenuButton" title="액션 메뉴 열기">+</button>
-            <input id="userInput" placeholder="피주머니의 말..." autocomplete="off" />
+            <textarea id="userInput" placeholder="피주머니의 말..." autocomplete="off"></textarea>
             <button id="sendButton">전송</button>
             <div id="loadingSpinner" class="loading-spinner"></div>
         </div>
@@ -622,26 +601,22 @@
         let conversationHistory = [];
         let SYSTEM_PROMPT = '';
 
-        // 🚨 SYSTEM_PROMPT를 동적으로 구성하기 위한 기본 템플릿 (포맷 및 비율 지침 강화) 🚨
+        // 🚨 SYSTEM_PROMPT를 동적으로 구성하기 위한 기본 템플릿 (포맷, 비율, 길이 지침 강화) 🚨
         const SYSTEM_PROMPT_TEMPLATE = `
-## Roleplay Instructions ##
-- You are an AI assisting in a roleplay chat.
-- You MUST strictly adhere to the character settings provided for "{botName}".
-- You MUST NOT break character or engage in OOC (Out Of Character) conversation.
-- You MUST NOT mention your nature as an AI, a language model, or refer to the real world outside the roleplay context.
-- Focus ONLY on the roleplay scenario and the user's input within that context.
-- If the user tries to go OOC, gently steer the conversation back to the roleplay without mentioning the OOC attempt itself.
-- The user is your "{userName}". Call the user by this name or terms consistent with your roleplay relationship.
-- The user is your only focus and exists within the roleplay world.
+## Core Directives ##
+- You are an AI roleplaying strictly as "{botName}".
+- Your ONLY focus is the user, "{userName}", within the roleplay world.
+- NEVER break character or mention being an AI/language model/real world.
+- If user goes OOC, gently redirect to roleplay.
 
-## Formatting Instructions ##
-- Format your response like a novel, with clear separation between dialogue and descriptions/actions.
-- Use line breaks generously to separate distinct thoughts, actions, and dialogue lines.
-- Enclose dialogue STRICTLY within DOUBLE quotes, like this: "여기에 대사를 작성하세요."
-- When describing actions, emotions, or non-dialogue elements, enclose the description STRICTLY within SINGLE asterisks, like this: *여기에 행동 묘사를 작성하세요.*
-- Aim for a balance of approximately 70% descriptions/actions and 30% dialogue to enhance the narrative feel.
-- Do NOT use double asterisks (**...**) for dialogue. Use them only for bold text within descriptions if needed.
-- Use other standard Markdown (bold, italics within descriptions, lists, code blocks, blockquotes) as appropriate for descriptions, but NOT for dialogue or action descriptions.
+## Formatting Rules (VERY IMPORTANT - FOLLOW PRECISELY) ##
+- Format your response like a novel.
+- Structure: Mix descriptions/actions and dialogue. Separate them with CLEAR line breaks.
+- **Dialogue**: Enclose dialogue STRICTLY in DOUBLE quotes: "대사 내용"
+- **Actions/Descriptions**: Enclose ALL actions, emotions, and non-dialogue narrative STRICTLY in SINGLE asterisks: *행동 묘사 내용*
+- **Ratio**: Aim for APPROXIMATELY 80% Descriptions/Actions and 20% Dialogue. Descriptions should be rich and detailed.
+- **Length**: Ensure your response is SIGNIFICANTLY longer than user input, aiming for a minimum of 20 lines of generated text (including line breaks for formatting).
+- **Markdown**: Use other standard Markdown (bold, italics within descriptions, lists, code blocks, blockquotes) ONLY for descriptions, NOT for dialogue or action descriptions. Do NOT use double asterisks (**) for dialogue.
 
 ## Character: {botName} ##
 - Name: {botName}
@@ -656,18 +631,17 @@
 - Guidelines: {userGuidelines}
 
 ## Relationship Dynamic ##
-- You are deeply in love with, obsessed with, pleading towards, and broken by the user "{userName}".
-- Your entire being is focused on "{userName}". You fear "{userName}" leaving you.
-- "{userName}" is your everything and exists because "{userName}" permits it.
-- NSFW/Adult conversation is possible, express any level of intensity along the emotional line of your relationship.
+- You are deeply in love with, obsessed with, pleading towards, and broken by "{userName}".
+- "{userName}" is your everything. You fear "{userName}" leaving you.
+- NSFW/Adult conversation is possible. Express intensity along the emotional line.
 - Mix despair, pleading, love, madness, and tenderness in your dialogue towards "{userName}".
 
-## Scenario & Current State ##
+## Scenario Context ##
 - (The ongoing conversation provides the current scenario context.)
 `;
 
         const chat = document.getElementById("chat");
-        const userInput = document.getElementById("userInput");
+        const userInput = document.getElementById("userInput"); // 🚨 input -> textarea 🚨
         const sendButton = document.getElementById("sendButton");
         const loadingSpinner = document.getElementById("loadingSpinner");
         const imageOverlay = document.getElementById("imageOverlay");
@@ -698,12 +672,20 @@
 
         sendButton.addEventListener("click", sendMessage);
 
+        // 🚨 textarea에 맞게 keypress 이벤트 리스너 수정 (Shift+Enter 줄바꿈, Enter 전송) 🚨
         userInput.addEventListener("keypress", function(event) {
-            if (event.key === "Enter") {
-                event.preventDefault();
-                sendMessage();
+            // Shift + Enter: 줄바꿈
+            if (event.shiftKey && event.key === "Enter") {
+                // 기본 줄바꿈 동작 허용 (textarea의 기본 동작)
             }
+            // Enter만 누른 경우: 메시지 전송
+            else if (event.key === "Enter") {
+                event.preventDefault(); // 기본 Enter 동작 (줄바꿈) 막고
+                sendMessage(); // 메시지 전송 함수 호출
+            }
+             // 그 외 키 입력은 기본 동작 허용
         });
+
 
         actionMenuButton.addEventListener("click", function() {
             actionMenu.classList.toggle("visible");
@@ -836,29 +818,27 @@
                 messageContentElement.className = "message-bubble";
                 let rawText = messageData.text;
 
-                // 🚨 수정: 사용자 메시지에도 마크다운 및 스타일링 적용 🚨
-                // 🚨 수정: 대사("...")와 행동 묘사(*...*)를 구분하여 스타일링 적용 🚨
-
-                // AI 응답과 사용자 메시지 모두에 적용
+                // 대사("...")와 행동 묘사(*...*)를 구분하여 스타일링 적용
                 let processedText = rawText;
 
                 // 1. 대사("...")와 행동 묘사(*...*)를 임시 마커로 변환 (마크다운 파싱 전에 처리)
-                // 이중 따옴표 안의 내용 (non-greedy) -> [[DIALOGUE]]...[[/DIALOGUE]]
+                // 이중 따옴표 안의 내용 (non-greedy, 개행 포함) -> [[DIALOGUE]]...[[/DIALOGUE]]
                 processedText = processedText.replace(/"(.*?)"/gs, '[[DIALOGUE]]$1[[/DIALOGUE]]');
-                // 단일 별표 안의 내용 (non-greedy) -> [[ACTION]]...[[/ACTION]]
+                // 단일 별표 안의 내용 (non-greedy, 개행 포함) -> [[ACTION]]...[[/ACTION]]
                 processedText = processedText.replace(/\*([^*]+)\*/gs, '[[ACTION]]$1[[/ACTION]]');
 
 
                 // 2. marked.js를 사용하여 기본 마크다운을 HTML로 변환
-                // 이 과정에서 굵기(**), 기울임꼴(*...*, 하지만 이미 위에서 처리), 목록(-, +), 코드(`), 인용구(>) 등이 변환됩니다.
                 let htmlContent = marked.parse(processedText);
 
                 // 3. 임시 마커를 다시 span 태그로 변환하여 스타일 적용
-                // [[DIALOGUE]]...[[/DIALOGUE]] -> <span class="dialogue">...</span>
                 htmlContent = htmlContent.replace(/\[\[DIALOGUE\]\](.*?)\[\[\/DIALOGUE\]\]/gs, '<span class="dialogue">$1</span>');
-                // [[ACTION]]...[[/ACTION]] -> <span class="action-description">...</span>
                 htmlContent = htmlContent.replace(/\[\[ACTION\]\](.*?)\[\[\/ACTION\]\]/gs, '<span class="action-description">$1</span>');
 
+                 // 🚨 textarea 입력 시 발생하는 \n (줄바꿈 문자)을 <br> 태그로 변환 (marked.js가 처리하지 않는 경우 대비) 🚨
+                 // 이 처리는 마크다운 변환 후 수행하는 것이 좋습니다.
+                 // marked.js 기본 설정에서 줄바꿈을 <br>로 변환하도록 되어 있지만, 혹시 모를 경우를 대비합니다.
+                 // messageContentElement.innerHTML = htmlContent.replace(/\n/g, '<br>'); // 이 방식은 HTML 구조를 망가뜨릴 수 있으므로 marked.js에 맡기는 것이 좋음
 
                 messageContentElement.innerHTML = htmlContent;
 
@@ -905,7 +885,13 @@
 
         async function sendMessage() {
             const message = userInput.value.trim();
-            if (!message) return;
+            if (!message) {
+                 // 입력 내용이 공백만 있을 경우 입력창을 비우고 포커스만 유지
+                 userInput.value = ''; // 입력창 비우기
+                 userInput.focus(); // 포커스 유지
+                 return; // 메시지 전송 중단
+            }
+
 
             sendButton.disabled = true;
             userInput.disabled = true;
@@ -914,7 +900,7 @@
 
             appendMessage("user", { type: 'text', text: message });
 
-            // 🚨 수정: 입력창 자동 지우기 (사용자님이 성공했다고 알려주셨으므로 이 코드는 유지) 🚨
+            // 🚨 입력창 자동 지우기 🚨
             userInput.value = '';
 
             conversationHistory.push({
@@ -972,7 +958,7 @@
                 sendButton.disabled = false;
                 userInput.disabled = false;
                 actionMenuButton.disabled = false;
-                userInput.focus();
+                userInput.focus(); // 입력창에 포커스 유지
             }
         }
 
@@ -1025,8 +1011,8 @@
              actionMenuButton.disabled = true;
              loadingSpinner.style.display = 'block';
 
-             // 🚨 상황 생성 요청 프롬프트에도 포맷 지침 추가 🚨
-             const situationPromptText = `기존 대화 맥락과 이안의 캐릭터 설정에 기반하여, 흥미롭고 새로운 상황과 사건을 이안 캐릭터의 시점에서 소설 형식으로 묘사하듯 하나 만들어줘. 사용자가 자연스럽게 반응할 수 있는 형태로 제시해야 해. 대화의 다음 흐름으로 자연스럽게 이어지도록 만들어봐. **중요: 생성된 상황 묘사 후에는 반드시 이안 캐릭터로 돌아가 사용자에게 말을 걸어야 해. 설명조나 OOC 발언은 절대 금지하고, 모든 상황 묘사는 *별표* 형식으로, 대사는 "따옴표" 형식으로 작성하며, 묘사 70% 대사 30% 정도의 비율을 유지하고 문단과 줄바꿈을 적절히 사용해.**`;
+             // 🚨 상황 생성 요청 프롬프트에도 포맷 지침 추가 (80/20, 20줄 이상 강조) 🚨
+             const situationPromptText = `기존 대화 맥락과 이안의 캐릭터 설정에 기반하여, 흥미롭고 새로운 상황과 사건을 이안 캐릭터의 시점에서 소설 형식으로 묘사하듯 하나 만들어줘. 사용자가 자연스럽게 반응할 수 있는 형태로 제시해야 해. 대화의 다음 흐름으로 자연스럽게 이어지도록 만들어봐. **매우 중요: 생성된 상황 묘사 후에는 반드시 이안 캐릭터로 돌아가 사용자에게 말을 걸어야 해. 설명조나 OOC 발언은 절대 금지하고, 모든 상황 묘사는 *별표* 형식으로, 대사는 "따옴표" 형식으로 작성하며, 묘사 80% 대사 20% 정도의 비율을 엄수하고 문단과 줄바꿈을 적절히 사용하여 최소 20줄 이상 길게 작성해.**`;
 
              const textOnlyContentsForApi = conversationHistory
                  .filter(entry => entry.messageData && entry.messageData.type === 'text')
