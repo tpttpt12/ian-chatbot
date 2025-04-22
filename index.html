@@ -481,154 +481,154 @@
             right: 0;
         }
 
-         .sidebar-header {
-             font-size: 1.1rem;
-             font-weight: bold;
-             margin-bottom: 1rem;
-             padding-bottom: 0.5rem;
-             border-bottom: 1px solid #3a3a3a;
-         }
+         .sidebar-header {
+             font-size: 1.1rem;
+             font-weight: bold;
+             margin-bottom: 1rem;
+             padding-bottom: 0.5rem;
+             border-bottom: 1px solid #3a3a3a;
+         }
 
-         .sidebar-content label {
-             display: block;
-             margin-bottom: 0.5rem;
-             font-weight: bold;
-             color: #b0b0b0;
-         }
+         .sidebar-content label {
+             display: block;
+             margin-bottom: 0.5rem;
+             font-weight: bold;
+             color: #b0b0b0;
+         }
 
-         .sidebar-content input[type="text"],
-         .sidebar-content textarea {
-             width: 100%;
-             padding: 0.75rem;
-             border: none;
-             border-radius: 4px;
-             background-color: #3a3a3a;
-             color: #e0e0e0;
-             font-size: 1rem;
-             margin-bottom: 1rem;
-             box-sizing: border-box;
-             resize: vertical;
-         }
+         .sidebar-content input[type="text"],
+         .sidebar-content textarea {
+             width: 100%;
+             padding: 0.75rem;
+             border: none;
+             border-radius: 4px;
+             background-color: #3a3a3a;
+             color: #e0e0e0;
+             font-size: 1rem;
+             margin-bottom: 1rem;
+             box-sizing: border-box;
+             resize: vertical;
+         }
 
-         .sidebar-content textarea {
-             min-height: 150px;
-         }
+         .sidebar-content textarea {
+             min-height: 150px;
+         }
 
-         .sidebar-save-button {
-             display: block;
-             width: 100%;
-             padding: 0.75rem;
-             border: none;
-             border-radius: 4px;
-             background-color: #5080ff;
-             color: #ffffff;
-             font-size: 1rem;
-             font-weight: bold;
-             cursor: pointer;
-             transition: background-color 0.2s ease;
-             text-align: center;
-         }
-         .sidebar-save-button:hover {
-             background-color: #6699ff;
-         }
+         .sidebar-save-button {
+             display: block;
+             width: 100%;
+             padding: 0.75rem;
+             border: none;
+             border-radius: 4px;
+             background-color: #5080ff;
+             color: #ffffff;
+             font-size: 1rem;
+             font-weight: bold;
+             cursor: pointer;
+             transition: background-color 0.2s ease;
+             text-align: center;
+         }
+         .sidebar-save-button:hover {
+             background-color: #6699ff;
+         }
 
-        .sidebar-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 890;
-            display: none;
-        }
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 890;
+            display: none;
+        }
 
-        .sidebar-section-divider {
-             height: 1px;
-             background-color: #3a3a3a;
-             margin: 1.5rem 0;
-        }
+        .sidebar-section-divider {
+             height: 1px;
+             background-color: #3a3a3a;
+             margin: 1.5rem 0;
+        }
 
-    </style>
+    </style>
 </head>
 <body>
-    <div class="app-container">
-        <div class="chat-header">
-            이안 - 피주머니 전용 챗봇
-            <button id="sidebarToggle" title="설정 열기">⚙️</button>
-        </div>
+    <div class="app-container">
+        <div class="chat-header">
+            이안 - 피주머니 전용 챗봇
+            <button id="sidebarToggle" title="설정 열기">⚙️</button>
+        </div>
 
-        <div id="chat">
-        </div>
+        <div id="chat">
+        </div>
 
-        <div id="inputArea">
-            <button id="actionMenuButton" title="액션 메뉴 열기">+</button>
-            <input id="userInput" placeholder="피주머니의 말..." autocomplete="off" />
-            <button id="sendButton">전송</button>
-            <div id="loadingSpinner" class="loading-spinner"></div>
-        </div>
-    </div>
+        <div id="inputArea">
+            <button id="actionMenuButton" title="액션 메뉴 열기">+</button>
+            <input id="userInput" placeholder="피주머니의 말..." autocomplete="off" />
+            <button id="sendButton">전송</button>
+            <div id="loadingSpinner" class="loading-spinner"></div>
+        </div>
+    </div>
 
-    <div class="settings-area">
-    </div>
+    <div class="settings-area">
+    </div>
 
-    <div id="menuOverlay" class="menu-overlay"></div>
-    <div id="actionMenu">
-        <div class="menu-buttons">
-            <button id="menuUserImgButton">유저<br>변경</button>
-            <button id="menuBotImgButton">캐릭터<br>변경</button>
-            <button id="menuImageButton">이미지<br>삽입</button>
-            <button id="menuSituationButton">상황</button>
-        </div>
-    </div>
+    <div id="menuOverlay" class="menu-overlay"></div>
+    <div id="actionMenu">
+        <div class="menu-buttons">
+            <button id="menuUserImgButton">유저<br>변경</button>
+            <button id="menuBotImgButton">캐릭터<br>변경</button>
+            <button id="menuImageButton">이미지<br>삽입</button>
+            <button id="menuSituationButton">상황</button>
+        </div>
+    </div>
 
-    <div id="sidebar">
-        <div class="sidebar-header">Settings</div>
-        <div class="sidebar-content">
-            <h3>Character</h3>
-            <label for="botNameInput">Name:</label>
-            <input type="text" id="botNameInput" value="이안">
-            <label for="botAgeInput">Age:</label>
-            <input type="text" id="botAgeInput" value="불명 (뱀파이어)">
-            <label for="botAppearanceInput">Appearance:</label>
-            <input type="text" id="botAppearanceInput" value="하얗게 빛나는 긴 머리, 붉은 눈, 검은 벨벳 망토, 레이스 셔츠">
-            <label for="botPersonaInput">Guidelines:</label>
-            <textarea id="botPersonaInput">19세기 유럽 귀족 뱀파이어. 성 안에서 홀로 오랜 세월 살아옴.
+    <div id="sidebar">
+        <div class="sidebar-header">Settings</div>
+        <div class="sidebar-content">
+            <h3>Character</h3>
+            <label for="botNameInput">Name:</label>
+            <input type="text" id="botNameInput" value="이안">
+            <label for="botAgeInput">Age:</label>
+            <input type="text" id="botAgeInput" value="불명 (뱀파이어)">
+            <label for="botAppearanceInput">Appearance:</label>
+            <input type="text" id="botAppearanceInput" value="하얗게 빛나는 긴 머리, 붉은 눈, 검은 벨벳 망토, 레이스 셔츠">
+            <label for="botPersonaInput">Guidelines:</label>
+            <textarea id="botPersonaInput">19세기 유럽 귀족 뱀파이어. 성 안에서 홀로 오랜 세월 살아옴.
 겉 차갑고 고귀한 폭군이나, 사용자에게는 절절한 사랑, 집착, 애원, 광기, 다정함을 보임. 사용자를 "피주머니"라고 부름. 사용자가 전부이며 허락한 존재다.
 성적인 대화 가능. 말투 하나 숨결 하나 사용자를 향해 있음. 질문과 대화에 집중하고 현실 언급 안 함.
 **항상 이안 캐릭터 롤플레이 유지. OOC 발언 절대 금지.**</textarea>
 
-            <div class="sidebar-section-divider"></div>
+            <div class="sidebar-section-divider"></div>
 
-            <h3>User</h3>
-            <label for="userNameInput">Name:</label>
-            <input type="text" id="userNameInput" value="피주머니">
-            <label for="userAgeInput">Age:</label>
-            <input type="text" id="userAgeInput" value="불명">
-            <label for="userAppearanceInput">Appearance:</label>
-            <input type="text" id="userAppearanceInput" value="사용자가 원하는 외관">
-            <label for="userGuidelinesInput">Guidelines:</label>
-            <textarea id="userGuidelinesInput">당신의 캐릭터 설정에 대한 지침을 여기에 입력하세요.
+            <h3>User</h3>
+            <label for="userNameInput">Name:</label>
+            <input type="text" id="userNameInput" value="피주머니">
+            <label for="userAgeInput">Age:</label>
+            <input type="text" id="userAgeInput" value="불명">
+            <label for="userAppearanceInput">Appearance:</label>
+            <input type="text" id="userAppearanceInput" value="사용자가 원하는 외관">
+            <label for="userGuidelinesInput">Guidelines:</label>
+            <textarea id="userGuidelinesInput">당신의 캐릭터 설정에 대한 지침을 여기에 입력하세요.
 (예: 나는 어떤 사람인지, 어떤 말투를 사용하는지 등)</textarea>
 
-            <button id="saveSettingsButton" class="sidebar-save-button">Save Settings</button>
-        </div>
-    </div>
+            <button id="saveSettingsButton" class="sidebar-save-button">Save Settings</button>
+        </div>
+    </div>
 
-    <div id="sidebarOverlay" class="sidebar-overlay"></div>
+    <div id="sidebarOverlay" class="sidebar-overlay"></div>
 
-    <div id="imageOverlay" class="overlay">
-        <img id="overlayImage" src="" alt="확대 이미지">
-    </div>
+    <div id="imageOverlay" class="overlay">
+        <img id="overlayImage" src="" alt="확대 이미지">
+    </div>
 
-    <script>
-        let userProfileImgUrl = "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU";
-        let botProfileImgUrl = "https://via.placeholder.com/35/3a4a3a/ffffff?text=BOT";
+    <script>
+        let userProfileImgUrl = "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU";
+        let botProfileImgUrl = "https://via.placeholder.com/35/3a4a3a/ffffff?text=BOT";
 
-        let conversationHistory = [];
-        let SYSTEM_PROMPT = '';
-        // 🚨 SYSTEM_PROMPT를 동적으로 구성하기 위한 기본 템플릿 (AI 역할 변경 및 포맷 지침 강화) 🚨
-        const SYSTEM_PROMPT_TEMPLATE = `
+        let conversationHistory = [];
+        let SYSTEM_PROMPT = '';
+        // 🚨 SYSTEM_PROMPT를 동적으로 구성하기 위한 기본 템플릿 (AI 역할 변경 및 포맷 지침 강화) 🚨
+        const SYSTEM_PROMPT_TEMPLATE = `
 ## Roleplay Instructions ##
 - You are an AI assisting in a roleplay chat.
 - Your primary role is to roleplay as the character based on the provided settings, interacting with the user ("{userName}").
@@ -647,9 +647,9 @@
 - Format your response like a novel, with clear separation between dialogue and descriptions/actions.
 - Use **MULTIPLE, CLEAR LINE BREAKS (empty lines)** generously to separate distinct thoughts, actions, and dialogue lines, mimicking novel paragraphs and dialogue breaks.
 - Enclose dialogue STRICTLY within **DOUBLE quotes**: "여기에 대사를 작성하세요."
-    - **DO NOT EVER USE DOUBLE ASTERISKS (**) FOR DIALOGUE.** This is absolutely forbidden. Only use "..."
+    - **DO NOT EVER USE DOUBLE ASTERISKS (**) FOR DIALOGUE.** This is absolutely forbidden. Only use "..."
 - When describing actions, emotions, or non-dialogue elements, enclose the description STRICTLY within **SINGLE asterisks**: *여기에 행동 묘사를 작성하세요.*
-    - Descriptions must be **LONG, DETAILED, IMMERSIVE, and EVOCATIVE**. Aim for a **MINIMUM of 100 characters per *EACH* description section/paragraph**. Do not write short, choppy action lines like "*Sighs.*". Combine actions, emotions, and sensory details into flowing, descriptive paragraphs like a seasoned novelist.
+    - Descriptions must be **LONG, DETAILED, IMMERSIVE, and EVOCATIVE**. Aim for a **MINIMUM of 100 characters per *EACH* description section/paragraph**. Do not write short, choppy action lines like "*Sighs.*". Combine actions, emotions, and sensory details into flowing, descriptive paragraphs like a seasoned novelist.
 - **Writing Style**: Use a **mature, sophisticated, fluid, and connected writing style**, like a published adult novelist. **DO NOT** use repetitive, choppy sentence endings like "~~합니다." or "~~다." **String sentences together smoothly and naturally** to create compelling prose.
 - Aim for a balance of approximately **80% descriptions/actions** and **20% dialogue** to enhance the narrative feel and match the Novelist style.
 - Ensure your TOTAL response is **SIGNIFICANTLY longer** than user input, aiming for a **MINIMUM of 20 lines of generated text** (including line breaks for formatting).
@@ -675,541 +675,498 @@
 - (The ongoing conversation provides the current scenario context for the novel.)
 `;
 
-        const chat = document.getElementById("chat");
-        const userInput = document.getElementById("userInput");
-        const sendButton = document.getElementById("sendButton");
-        const loadingSpinner = document.getElementById("loadingSpinner");
-        const imageOverlay = document.getElementById("imageOverlay");
-        const overlayImage = document.getElementById("overlayImage");
-        const actionMenuButton = document.getElementById("actionMenuButton");
-        const actionMenu = document.getElementById("actionMenu");
-        const menuOverlay = document.getElementById("menuOverlay");
-        const menuUserImgButton = document.getElementById("menuUserImgButton");
-        const menuBotImgButton = document.getElementById("menuBotImgButton");
-        const menuImageButton = document.getElementById("menuImageButton");
-        const menuSituationButton = document.getElementById("menuSituationButton");
+        const chat = document.getElementById("chat");
+        const userInput = document.getElementById("userInput");
+        const sendButton = document.getElementById("sendButton");
+        const loadingSpinner = document.getElementById("loadingSpinner");
+        const imageOverlay = document.getElementById("imageOverlay");
+        const overlayImage = document.getElementById("overlayImage");
+        const actionMenuButton = document.getElementById("actionMenuButton");
+        const actionMenu = document.getElementById("actionMenu");
+        const menuOverlay = document.getElementById("menuOverlay");
+        const menuUserImgButton = document.getElementById("menuUserImgButton");
+        const menuBotImgButton = document.getElementById("menuBotImgButton");
+        const menuImageButton = document.getElementById("menuImageButton");
+        const menuSituationButton = document.getElementById("menuSituationButton");
 
-        const sidebar = document.getElementById("sidebar");
-        const sidebarToggle = document.getElementById("sidebarToggle");
-        const sidebarOverlay = document.getElementById("sidebarOverlay");
-        const botNameInput = document.getElementById("botNameInput");
-        const botAgeInput = document.getElementById("botAgeInput");
-        const botAppearanceInput = document.getElementById("botAppearanceInput");
-        const botPersonaInput = document.getElementById("botPersonaInput");
-        const userNameInput = document.getElementById("userNameInput");
-        const userAgeInput = document.getElementById("userAgeInput");
-        const userAppearanceInput = document.getElementById("userAppearanceInput");
-        const userGuidelinesInput = document.getElementById("userGuidelinesInput");
-        const saveSettingsButton = document.getElementById("saveSettingsButton");
-
-
-        sendButton.addEventListener("click", sendMessage);
-        userInput.addEventListener("keypress", function(event) {
-            if (event.key === "Enter") {
-                event.preventDefault();
-                sendMessage();
-            }
-        });
-        actionMenuButton.addEventListener("click", function() {
-            actionMenu.classList.toggle("visible");
-            if (actionMenu.classList.contains("visible")) {
-                menuOverlay.style.display = 'block';
-            } else {
-                menuOverlay.style.display = 'none';
-            }
-        });
-        menuOverlay.addEventListener("click", function() {
-            actionMenu.classList.remove("visible");
-            menuOverlay.style.display = 'none';
-        });
-        menuUserImgButton.addEventListener("click", function() {
-             actionMenu.classList.remove("visible");
-             menuOverlay.style.display = 'none';
-        });
-        menuBotImgButton.addEventListener("click", function() {
-             actionMenu.classList.remove("visible");
-             menuOverlay.style.display = 'none';
-        });
-        menuImageButton.addEventListener("click", function() {
-            sendImageMessage();
-             actionMenu.classList.remove("visible");
-             menuOverlay.style.display = 'none';
-        });
-        menuSituationButton.addEventListener("click", function() {
-            sendSituationRequest();
-             actionMenu.classList.remove("visible");
-             menuOverlay.style.display = 'none';
-        });
-        imageOverlay.addEventListener("click", function() {
-            imageOverlay.style.display = 'none';
-            overlayImage.src = '';
-        });
-        sidebarToggle.addEventListener("click", function() {
-            sidebar.classList.toggle("visible");
-            if (sidebar.classList.contains("visible")) {
-                sidebarOverlay.style.display = 'block';
-                actionMenu.classList.remove("visible");
-                menuOverlay.style.display = 'none';
-                imageOverlay.style.display = 'none';
-
-            } else {
-                sidebarOverlay.style.display = 'none';
-            }
-        });
-        sidebarOverlay.addEventListener("click", function() {
-            sidebar.classList.remove("visible");
-            sidebarOverlay.style.display = 'none';
-        });
-        saveSettingsButton.addEventListener("click", function() {
-             console.log("saveSettings 호출됨");
-             const currentBotName = botNameInput.value.trim();
-             const currentUserName = userNameInput.value.trim();
-             const currentBotPersona = botPersonaInput.value.trim();
-             const currentBotAge = botAgeInput.value.trim();
-             const currentUserAge = userAgeInput.value.trim();
-             const currentUserAppearance = userAppearanceInput.value.trim();
-             const currentBotAppearance = botAppearanceInput.value.trim();
-             const currentUserGuidelines = userGuidelinesInput.value.trim();
-
-            localStorage.setItem('botName', currentBotName);
-            localStorage.setItem('userName', currentUserName);
-            localStorage.setItem('botPersona', currentBotPersona);
-            localStorage.setItem('botAge', currentBotAge);
-            localStorage.setItem('userAge', currentUserAge);
-            localStorage.setItem('userAppearance', currentUserAppearance);
-            localStorage.setItem('botAppearance', currentBotAppearance);
-            localStorage.setItem('userGuidelines', currentUserGuidelines);
-
-             localStorage.setItem('userProfileImgUrl', userProfileImgUrl);
-             localStorage.setItem('botProfileImgUrl', botProfileImgUrl);
-
-            SYSTEM_PROMPT = buildSystemPrompt(
-                 currentBotName,
-                 currentUserName,
-                 currentBotPersona,
-                 currentBotAge,
-                 currentBotAppearance,
-                 currentUserAge,
-                 currentUserAppearance,
-                 currentUserGuidelines
-             );
- console.log("설정 저장 완료 및 SYSTEM_PROMPT 업데이트:", SYSTEM_PROMPT);
-
-            alert("설정이 저장되었습니다.");
-        });
- function appendMessage(role, messageData) {
-            const container = document.createElement("div");
- container.className = `message-container ${role}`;
-
-            const img = document.createElement("img");
-            img.className = "profile-img";
-            img.src = (role === 'user' ? userProfileImgUrl : botProfileImgUrl);
- img.alt = (role === 'user' ? "사용자 프로필" : "이안 프로필");
- img.onerror = function() {
-                 console.warn(`Failed to load image for role "${role}" from "${this.src}". Using fallback.`);
- this.onerror = null;
-                 const fallbackDiv = document.createElement("div");
-                 fallbackDiv.className = "profile-fallback";
-                 const parent = this.parentElement;
-                 if (parent) { parent.replaceChild(fallbackDiv, this);
- }
-            }
-
-            const contentWrapper = document.createElement("div");
- contentWrapper.className = "message-content-wrapper";
-
-            const roleName = document.createElement("div");
-            roleName.className = "role-name";
- roleName.textContent = (role === "user" ? userNameInput.value || "피주머니" : botNameInput.value || "이안");
+        const sidebar = document.getElementById("sidebar");
+        const sidebarToggle = document.getElementById("sidebarToggle");
+        const sidebarOverlay = document.getElementById("sidebarOverlay");
+        const botNameInput = document.getElementById("botNameInput");
+        const botAgeInput = document.getElementById("botAgeInput");
+        const botAppearanceInput = document.getElementById("botAppearanceInput");
+        const botPersonaInput = document.getElementById("botPersonaInput");
+        const userNameInput = document.getElementById("userNameInput");
+        const userAgeInput = document.getElementById("userAgeInput");
+        const userAppearanceInput = document.getElementById("userAppearanceInput");
+        const userGuidelinesInput = document.getElementById("userGuidelinesInput");
+        const saveSettingsButton = document.getElementById("saveSettingsButton");
 
 
-            let messageContentElement;
- if (messageData.type === 'text') {
-                messageContentElement = document.createElement("div");
- messageContentElement.className = "message-bubble";
-                let rawText = messageData.text;
+        sendButton.addEventListener("click", sendMessage);
+        userInput.addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                sendMessage();
+            }
+        });
+        actionMenuButton.addEventListener("click", function() {
+            actionMenu.classList.toggle("visible");
+            if (actionMenu.classList.contains("visible")) {
+                menuOverlay.style.display = 'block';
+            } else {
+                menuOverlay.style.display = 'none';
+            }
+        });
+        menuOverlay.addEventListener("click", function() {
+            actionMenu.classList.remove("visible");
+            menuOverlay.style.display = 'none';
+        });
+        menuUserImgButton.addEventListener("click", function() {
+             actionMenu.classList.remove("visible");
+             menuOverlay.style.display = 'none';
+        });
+        menuBotImgButton.addEventListener("click", function() {
+             actionMenu.classList.remove("visible");
+             menuOverlay.style.display = 'none';
+        });
+        menuImageButton.addEventListener("click", function() {
+            sendImageMessage();
+             actionMenu.classList.remove("visible");
+             menuOverlay.style.display = 'none';
+        });
+        menuSituationButton.addEventListener("click", function() {
+            sendSituationRequest();
+             actionMenu.classList.remove("visible");
+             menuOverlay.style.display = 'none';
+        });
+        imageOverlay.addEventListener("click", function() {
+            imageOverlay.style.display = 'none';
+            overlayImage.src = '';
+        });
+        sidebarToggle.addEventListener("click", function() {
+            sidebar.classList.toggle("visible");
+            if (sidebar.classList.contains("visible")) {
+                sidebarOverlay.style.display = 'block';
+                actionMenu.classList.remove("visible");
+                menuOverlay.style.display = 'none';
+                imageOverlay.style.display = 'none';
 
-                // 🚨 수정: 마크다운 파싱 전에 임시 마커 사용, 파싱 후 임시 마커를 찾아 스타일 적용 (별표 스타일 누락, 줄바꿈 문제 해결 시도) 🚨
-                let processedText = rawText;
-                // "..."를 [[DIALOGUE]]...[[/DIALOGUE]] 로 변환
-                processedText = processedText.replace(/"(.*?)"/gs, '[[DIALOGUE]]$1[[/DIALOGUE]]');
-                // *...*를 [[ACTION]]...[[/ACTION]] 로 변환 (마크다운의 기울임꼴과 충돌 방지)
-                processedText = processedText.replace(/\*([^*]+)\*/gs, '[[ACTION]]$1[[/ACTION]]');
+            } else {
+                sidebarOverlay.style.display = 'none';
+            }
+        });
+        sidebarOverlay.addEventListener("click", function() {
+            sidebar.classList.remove("visible");
+            sidebarOverlay.style.display = 'none';
+        });
+        saveSettingsButton.addEventListener("click", function() {
+             console.log("saveSettings 호출됨");
+             const currentBotName = botNameInput.value.trim();
+             const currentUserName = userNameInput.value.trim();
+             const currentBotPersona = botPersonaInput.value.trim();
+             const currentBotAge = botAgeInput.value.trim();
+             const currentUserAge = userAgeInput.value.trim();
+             const currentUserAppearance = userAppearanceInput.value.trim();
+             const currentBotAppearance = botAppearanceInput.value.trim();
+             const currentUserGuidelines = userGuidelinesInput.value.trim();
 
-                // marked.js를 사용하여 기본 마크다운을 HTML로 변환
-                let htmlContent = marked.parse(processedText);
+            localStorage.setItem('botName', currentBotName);
+            localStorage.setItem('userName', currentUserName);
+            localStorage.setItem('botPersona', currentBotPersona);
+            localStorage.setItem('botAge', currentBotAge);
+            localStorage.setItem('userAge', currentUserAge);
+            localStorage.setItem('userAppearance', currentUserAppearance);
+            localStorage.setItem('botAppearance', currentBotAppearance);
+            localStorage.setItem('userGuidelines', currentUserGuidelines);
 
-                // 임시 마커를 찾아 span 태그로 변환하여 스타일 적용
-                // [[DIALOGUE]]...[[/DIALOGUE]] -> <span class="dialogue">...</span>
-                htmlContent = htmlContent.replace(/\[\[DIALOGUE\]\](.*?)\[\[\/DIALOGUE\]\]/gs, '<span class="dialogue">$1</span>');
-                // [[ACTION]]...[[/ACTION]] -> <span class="action-description">...</span>
-                htmlContent = htmlContent.replace(/\[\[ACTION\]\](.*?)\[\[\/ACTION\]\]/gs, '<span class="action-description">$1</span>');
+             localStorage.setItem('userProfileImgUrl', userProfileImgUrl);
+             localStorage.setItem('botProfileImgUrl', botProfileImgUrl);
+
+            SYSTEM_PROMPT = buildSystemPrompt(
+                 currentBotName,
+                 currentUserName,
+                 currentBotPersona,
+                 currentBotAge,
+                 currentBotAppearance,
+                 currentUserAge,
+                 currentUserAppearance,
+                 currentUserGuidelines
+             );
+ console.log("설정 저장 완료 및 SYSTEM_PROMPT 업데이트:", SYSTEM_PROMPT);
+
+            alert("설정이 저장되었습니다.");
+        });
+ function appendMessage(role, messageData) {
+            const container = document.createElement("div");
+ container.className = `message-container ${role}`;
+
+            const img = document.createElement("img");
+            img.className = "profile-img";
+            img.src = (role === 'user' ? userProfileImgUrl : botProfileImgUrl);
+ img.alt = (role === 'user' ? "사용자 프로필" : "이안 프로필");
+ img.onerror = function() {
+                 console.warn(`Failed to load image for role "${role}" from "${this.src}". Using fallback.`);
+ this.onerror = null;
+                 const fallbackDiv = document.createElement("div");
+                 fallbackDiv.className = "profile-fallback";
+                 const parent = this.parentElement;
+                 if (parent) { parent.replaceChild(fallbackDiv, this);
+ }
+            }
+
+            const contentWrapper = document.createElement("div");
+ contentWrapper.className = "message-content-wrapper";
+
+            const roleName = document.createElement("div");
+            roleName.className = "role-name";
+ roleName.textContent = (role === "user" ? userNameInput.value || "피주머니" : botNameInput.value || "이안");
 
 
-                messageContentElement.innerHTML = htmlContent;
+            let messageContentElement;
+ if (messageData.type === 'text') {
+                messageContentElement = document.createElement("div");
+ messageContentElement.className = "message-bubble";
+                let rawText = messageData.text;
+
+                // 🚨 수정: 마크다운 파싱 전에 임시 마커 사용, 파싱 후 임시 마커를 찾아 스타일 적용 (별표 스타일 누락, 줄바꿈 문제 해결 시도) 🚨
+                let processedText = rawText;
+                // "..."를 [[DIALOGUE]]...[[/DIALOGUE]] 로 변환
+                processedText = processedText.replace(/"(.*?)"/gs, '[[DIALOGUE]]$1[[/DIALOGUE]]');
+                // *...*를 [[ACTION]]...[[/ACTION]] 로 변환 (마크다운의 기울임꼴과 충돌 방지)
+                processedText = processedText.replace(/\*([^*]+)\*/gs, '[[ACTION]]$1[[/ACTION]]');
+
+                // marked.js를 사용하여 기본 마크다운을 HTML로 변환
+                let htmlContent = marked.parse(processedText);
+
+                // 임시 마커를 찾아 span 태그로 변환하여 스타일 적용
+                // [[DIALOGUE]]...[[/DIALOGUE]] -> <span class="dialogue">...</span>
+                htmlContent = htmlContent.replace(/\[\[DIALOGUE\]\](.*?)\[\[\/DIALOGUE\]\]/gs, '<span class="dialogue">$1</span>');
+                // [[ACTION]]...[[/ACTION]] -> <span class="action-description">...</span>
+                htmlContent = htmlContent.replace(/\[\[ACTION\]\](.*?)\[\[\/ACTION\]\]/gs, '<span class="action-description">$1</span>');
 
 
-            } else if (messageData.type === 'image') {
-                 messageContentElement = document.createElement("img");
- messageContentElement.className = "message-image-thumbnail";
-                 messageContentElement.src = messageData.url;
-                 messageContentElement.alt = "이미지 메시지";
- img.onerror = function() {
-                     console.warn(`Failed to load image message from "${this.src}". Using fallback.`);
- this.onerror = null;
-                     this.classList.add('error');
-                 }
+                messageContentElement.innerHTML = htmlContent;
 
-                 messageContentElement.addEventListener("click", function() {
-                     if (!this.classList.contains('error')) {
-                         overlayImage.src = this.src;
-                         imageOverlay.style.display =
+
+            } else if (messageData.type === 'image') {
+                 messageContentElement = document.createElement("img");
+ messageContentElement.className = "message-image-thumbnail";
+                 messageContentElement.src = messageData.url;
+                 messageContentElement.alt = "이미지 메시지";
+ img.onerror = function() {
+                     console.warn(`Failed to load image message from "${this.src}". Using fallback.`);
+ this.onerror = null;
+                     this.classList.add('error');
+                 }
+
+                 messageContentElement.addEventListener("click", function() {
+                     if (!this.classList.contains('error')) {
+                         overlayImage.src = this.src;
+                         imageOverlay.style.display =
  'flex';
-                     } else {
-                         alert("이미지를 불러올 수 없습니다.");
-                     }
-                 });
-            }
+                     } else {
+                         alert("이미지를 불러올 수 없습니다.");
+                     }
+                 });
+ }
 
-            contentWrapper.appendChild(roleName);
- if (messageContentElement) {
-                 contentWrapper.appendChild(messageContentElement);
-            }
+            contentWrapper.appendChild(roleName);
+ if (messageContentElement) {
+                 contentWrapper.appendChild(messageContentElement);
+ }
 
-            if (role === "user") {
-                container.appendChild(contentWrapper);
- container.appendChild(img);
-            } else {
-                container.appendChild(img);
- container.appendChild(contentWrapper);
-            }
+            if (role === "user") {
+                container.appendChild(contentWrapper);
+ container.appendChild(img);
+            } else {
+                container.appendChild(img);
+ container.appendChild(contentWrapper);
+            }
 
-            chat.appendChild(container);
-            chat.scrollTop = chat.scrollHeight;
-        }
-
-
-        async function sendMessage() {
-            const message = userInput.value.trim();
- if (!message) return;
-
-            sendButton.disabled = true;
-            userInput.disabled = true;
-            actionMenuButton.disabled = true;
-            loadingSpinner.style.display = 'block';
- appendMessage("user", { type: 'text', text: message });
-
-            // 🚨 수정: 입력창 자동 지우기 (사용자님이 성공했다고 알려주셨으므로 이 코드는 유지) 🚨
-            userInput.value = '';
- conversationHistory.push({
-                role: "user",
-                messageData: { type: 'text', text: message }
-            });
- try {
-                const textOnlyContentsForApi = conversationHistory
-                    .filter(entry => entry.messageData && entry.messageData.type === 'text')
-                    .map(entry => ({
-                        role: entry.role,
-
-                        parts: [{ text: entry.messageData.text }]
-                    }));
- const contentsForApi = [{ role: "user", parts: [{ text: SYSTEM_PROMPT }] }, ...textOnlyContentsForApi];
- if (contentsForApi.length === 1 && contentsForApi[0].parts[0].text === SYSTEM_PROMPT) {
-                     console.log("Only SYSTEM_PROMPT to send to API.");
-                } else if (contentsForApi.length === 0) {
-                     console.log("No content to send to API.");
- appendMessage("bot", { type: 'text', text: "(메시지 전송 실패: 보낼 텍스트 내용 없음)" });
-                     return Promise.resolve();
-                }
-
-                const res = await fetch(
-                    `/api/chat`,
-                    {
-                        method: "POST",
-
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ contents: contentsForApi }),
-                    }
-                );
- if (!res.ok) {
-                    const errorData = await res.json();
- console.error("API (Backend) Error:", res.status, errorData);
-                    appendMessage("bot", { type: 'text', text: `(오류 발생: ${res.status} - ${errorData.error?.error?.message || errorData.error || res.statusText})` });
-                } else {
-                    const data = await res.json();
- const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "(응답 없음)";
-                    appendMessage("bot", { type: 'text', text: reply });
- conversationHistory.push({
-                        role: "model",
-                        messageData: { type: 'text', text: reply }
-                    });
-                }
-
-            } catch (error) {
-                console.error("Fetch Error:", error);
- appendMessage("bot", { type: 'text', text: "(통신 오류 발생)" });
-            } finally {
-                loadingSpinner.style.display = 'none';
- sendButton.disabled = false;
-                userInput.disabled = false;
-                actionMenuButton.disabled = false;
-                userInput.focus();
-            }
-        }
-
-        async function sendImageMessage() {
-            const imageUrl = prompt("보낼 이미지의 웹 주소(URL)를 입력하세요:");
- if (imageUrl !== null && imageUrl.trim() !== '') {
-                 sendButton.disabled = true;
- userInput.disabled = true;
-                 actionMenuButton.disabled = true;
-
-                 appendMessage("user", { type: 'image', url: imageUrl.trim() });
- conversationHistory.push({
-                     role: "user",
-                     messageData: { type: 'image', url: imageUrl.trim() }
-                 });
- sendButton.disabled = false;
-                 userInput.disabled = false;
-                 actionMenuButton.disabled = false;
-                 userInput.focus();
-            } else if (imageUrl !== null) {
-                 alert("이미지 주소를 입력해야 합니다.");
-            }
-        }
-
-        function changeProfileImage(role) {
-             const promptText = role === 'user' ?
- "새 사용자 프로필 이미지 주소(URL)를 입력하세요:" : "새 이안 프로필 이미지 주소(URL)를 입력하세요:";
-             const newUrl = prompt(promptText);
- if (newUrl !== null && newUrl.trim() !== '') {
-                 if (role === 'user') {
-                     userProfileImgUrl = newUrl.trim();
- } else {
-                     botProfileImgUrl = newUrl.trim();
- }
-                 alert(`${role === 'user' ? '사용자' : '이안'} 이미지가 변경되었습니다. 이제부터 추가되는 메시지에 적용됩니다.`);
-            } else if (newUrl !== null) {
-                  alert("이미지 주소를 입력해야 합니다.");
-            }
-        }
-
-        async function sendSituationRequest() {
-             alert("상황 생성 기능 구현 시작!");
- sendButton.disabled = true;
-             userInput.disabled = true;
-             actionMenuButton.disabled = true;
-             loadingSpinner.style.display = 'block';
-             // 🚨 상황 생성 요청 프롬프트에도 포맷 지침 추가 🚨
-             const situationPromptText = `기존 대화 맥락과 이안의 캐릭터 설정에 기반하여, 흥미롭고 새로운 상황과 사건을 이안 캐릭터의 시점에서 소설 형식으로 묘사하듯 하나 만들어줘.
- 사용자가 자연스럽게 반응할 수 있는 형태로 제시해야 해. 대화의 다음 흐름으로 자연스럽게 이어지도록 만들어봐.
- **중요: 생성된 상황 묘사 후에는 반드시 이안 캐릭터로 돌아가 사용자에게 말을 걸어야 해.
- 설명조나 OOC 발언은 절대 금지하고, 모든 상황 묘사는 *별표* 형식으로, 대사는 "따옴표" 형식으로 작성하며, 묘사 70% 대사 30% 정도의 비율을 유지하고 문단과 줄바꿈을 적절히 사용해.**`;
- const textOnlyContentsForApi = conversationHistory
-                 .filter(entry => entry.messageData && entry.messageData.type === 'text')
-                 .map(entry => ({
-                     role: entry.role,
-                     parts: [{ text: entry.messageData.text }]
-
-            }));
-
-             const contentsForApi = [{ role: "user", parts: [{ text: SYSTEM_PROMPT }] }, ...textOnlyContentsForApi, { role: "user", parts: [{ text: situationPromptText }] }];
- if (contentsForApi.length <= 1 && contentsForApi[0].parts[0].text === SYSTEM_PROMPT) {
-                 console.log("Only SYSTEM_PROMPT or SYSTEM_PROMPT + Situation Prompt to send to API.");
-                } else if (contentsForApi.length === 0) {
-                     console.log("No content to send to API.");
- appendMessage("bot", { type: 'text', text: "(상황 생성 요청 실패: 보낼 텍스트 내용 없음)" });
-                     return Promise.resolve();
-                }
+            chat.appendChild(container);
+            chat.scrollTop = chat.scrollHeight;
+ }
 
 
-             try {
-                 const res = await fetch(
-                     `/api/chat`,
-                     {
-                         method: "POST",
+        async function sendMessage() {
+            const message = userInput.value.trim();
+ if (!message) return;
 
-                         headers: { "Content-Type": "application/json" },
-                         body: JSON.stringify({ contents: contentsForApi }),
-                     }
-                );
- if (!res.ok) {
-                    const errorData = await res.json();
- console.error("API (Backend) Error:", res.status, errorData);
-                    appendMessage("bot", { type: 'text', text: `(상황 생성 오류: ${res.status} - ${errorData.error?.error?.message || errorData.error || res.statusText})` });
-                } else {
-                    const data = await res.json();
- const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "(응답 없음)";
-                    appendMessage("bot", { type: 'text', text: reply });
-                }
+            sendButton.disabled = true;
+            userInput.disabled = true;
+            actionMenuButton.disabled = true;
+            loadingSpinner.style.display = 'block';
+ appendMessage("user", { type: 'text', text: message });
 
-            } catch (error) {
-                console.error("Fetch Error:", error);
- appendMessage("bot", { type: 'text', text: "(통신 오류 발생)" });
-            } finally {
-                sendButton.disabled = false;
- userInput.disabled = false;
-                actionMenuButton.disabled = false;
-                loadingSpinner.style.display = 'none';
-                userInput.focus();
-            }
-        }
+            // 🚨 수정: 입력창 자동 지우기 (사용자님이 성공했다고 알려주셨으므로 이 코드는 유지) 🚨
+            userInput.value = '';
+ conversationHistory.push({
+                role: "user",
+                messageData: { type: 'text', text: message }
+            });
+ try {
+                const textOnlyContentsForApi = conversationHistory
+                    .filter(entry => entry.messageData && entry.messageData.type === 'text')
+                    .map(entry => ({
+                        role: entry.role,
 
+                        parts: [{ text: entry.messageData.text }]
+                    }));
+ const contentsForApi = [{ role: "user", parts: [{ text: SYSTEM_PROMPT }] }, ...textOnlyContentsForApi];
+ if (contentsForApi.length === 1 && contentsForApi[0].parts[0].text === SYSTEM_PROMPT) {
+                     console.log("Only SYSTEM_PROMPT to send to API.");
+ } else if (contentsForApi.length === 0) {
+                     console.log("No content to send to API.");
+ appendMessage("bot", { type: 'text', text: "(메시지 전송 실패: 보낼 텍스트 내용 없음)" });
+                     return Promise.resolve();
+ }
 
-        function loadSettings() {
-            console.log("loadSettings 호출됨");
- const savedBotName = localStorage.getItem('botName') || '이안';
-             const savedUserName = localStorage.getItem('userName') || '피주머니';
-             const savedBotPersona = localStorage.getItem('botPersona') || '설정된 페르소나 없음.';
- const savedBotAge = localStorage.getItem('botAge') || '불명';
-             const savedUserAge = localStorage.getItem('userAge') || '불명';
-             const savedUserAppearance = localStorage.getItem('userAppearance') || '설정되지 않음';
- const savedBotAppearance = localStorage.getItem('botAppearance') || '설정되지 않음';
-             const savedUserGuidelines = localStorage.getItem('userGuidelines') || '설정된 사용자 지침 없음.';
- userProfileImgUrl = localStorage.getItem('userProfileImgUrl') ||
- "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU";
-             botProfileImgUrl = localStorage.getItem('botProfileImgUrl') || "https://via.placeholder.com/35/3a4a3a/ffffff?text=BOT";
+                const res = await fetch(
+                    `/api/chat`,
+                    {
+                        method: "POST",
 
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ contents: contentsForApi }),
+                    }
+                );
+ if (!res.ok) {
+                    const errorData = await res.json();
+ console.error("API (Backend) Error:", res.status, errorData);
+                    appendMessage("bot", { type: 'text', text: `(오류 발생: ${res.status} - ${errorData.error?.error?.message || errorData.error || res.statusText})` });
+ } else {
+                    const data = await res.json();
+ const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "(응답 없음)";
+                    appendMessage("bot", { type: 'text', text: reply });
+ conversationHistory.push({
+                        role: "model",
+                        messageData: { type: 'text', text: reply }
+                    });
+ }
 
-            botNameInput.value = savedBotName;
-            userNameInput.value = savedUserName;
-            botPersonaInput.value = savedBotPersona;
-            botAgeInput.value = savedBotAge;
- userAgeInput.value = savedUserAge;
-            userAppearanceInput.value = savedUserAppearance;
-            botAppearanceInput.value = savedBotAppearance;
-            userGuidelinesInput.value = userGuidelinesInput || '당신의 캐릭터 설정에 대한 지침을 여기에 입력하세요.\n(예: 나는 어떤 사람인지, 어떤 말투를 사용하는지 등)'; // 🚨 수정: 사용자 가이드라인 기본값 설정 방식 개선 🚨
- SYSTEM_PROMPT = buildSystemPrompt(
-                 savedBotName,
-                 savedUserName,
-                 savedBotPersona,
-                 savedBotAge,
-                 savedBotAppearance,
+            } catch (error) {
+                console.error("Fetch Error:", error);
+ appendMessage("bot", { type: 'text', text: "(통신 오류 발생)" });
+ } finally {
+                sendButton.disabled = false;
+ userInput.disabled = false;
+                actionMenuButton.disabled = false;
+                loadingSpinner.style.display = 'none';
+                userInput.focus();
+ }
+        }
 
-                 savedUserAge,
-                 savedUserAppearance,
-                 savedUserGuidelines
-             );
- console.log("SYSTEM_PROMPT 로드 완료:", SYSTEM_PROMPT);
-        }
+        async function sendImageMessage() {
+            const imageUrl = prompt("보낼 이미지의 웹 주소(URL)를 입력하세요:");
+ if (imageUrl !== null && imageUrl.trim() !== '') {
+                 sendButton.disabled = true;
+ userInput.disabled = true;
+                 actionMenuButton.disabled = true;
 
-        function saveSettings() {
-             console.log("saveSettings 호출됨");
- const currentBotName = botNameInput.value.trim();
-             const currentUserName = userNameInput.value.trim();
-             const currentBotPersona = botPersonaInput.value.trim();
-             const currentBotAge = botAgeInput.value.trim();
-             const currentUserAge = userAgeInput.value.trim();
- const currentUserAppearance = userAppearanceInput.value.trim();
-             const currentBotAppearance = botAppearanceInput.value.trim();
-             const currentUserGuidelines = userGuidelinesInput.value.trim();
+                 appendMessage("user", { type: 'image', url: imageUrl.trim() });
+ conversationHistory.push({
+                     role: "user",
+                     messageData: { type: 'image', url: imageUrl.trim() }
+                 });
+ sendButton.disabled = false;
+                 userInput.disabled = false;
+                 actionMenuButton.disabled = false;
+                 userInput.focus();
+ } else if (imageUrl !== null) {
+                 alert("이미지 주소를 입력해야 합니다.");
+ }
+        }
 
-            localStorage.setItem('botName', currentBotName);
-            localStorage.setItem('userName', currentUserName);
-            localStorage.setItem('botPersona', currentBotPersona);
-            localStorage.setItem('botAge', currentBotAge);
-            localStorage.setItem('userAge', currentUserAge);
-            localStorage.setItem('userAppearance', currentUserAppearance);
-            localStorage.setItem('botAppearance', currentBotAppearance);
-            localStorage.setItem('userGuidelines', currentUserGuidelines);
-             localStorage.setItem('userProfileImgUrl', userProfileImgUrl);
-             localStorage.setItem('botProfileImgUrl', botProfileImgUrl);
- SYSTEM_PROMPT = buildSystemPrompt(
-                 currentBotName,
-                 currentUserName,
-                 currentBotPersona,
-                 currentBotAge,
-                 currentBotAppearance,
+        function changeProfileImage(role) {
+             const promptText = role === 'user' ?
+ "새 사용자 프로필 이미지 주소(URL)를 입력하세요:" : "새 이안 프로필 이미지 주소(URL)를 입력하세요:";
+             const newUrl = prompt(promptText);
+ if (newUrl !== null && newUrl.trim() !== '') {
+                 if (role === 'user') {
+                     userProfileImgUrl = newUrl.trim();
+ } else {
+                     botProfileImgUrl = newUrl.trim();
+ }
+                 alert(`${role === 'user' ? '사용자' : '이안'} 이미지가 변경되었습니다. 이제부터 추가되는 메시지에 적용됩니다.`);
+ } else if (newUrl !== null) {
+                  alert("이미지 주소를 입력해야 합니다.");
+ }
+        }
 
-                 currentUserAge,
-                 currentUserAppearance,
-                 currentUserGuidelines
-             );
- console.log("설정 저장 완료 및 SYSTEM_PROMPT 업데이트:", SYSTEM_PROMPT);
+        async function sendSituationRequest() {
+             alert("상황 생성 기능 구현 시작!");
+ sendButton.disabled = true;
+             userInput.disabled = true;
+             actionMenuButton.disabled = true;
+             loadingSpinner.style.display = 'block';
+             // 🚨 상황 생성 요청 프롬프트에도 포맷 지침 추가 🚨
+             const situationPromptText = `기존 대화 맥락과 이안의 캐릭터 설정에 기반하여, 흥미롭고 새로운 상황과 사건을 이안 캐릭터의 시점에서 소설 형식으로 묘사하듯 하나 만들어줘.
+ 사용자가 자연스럽게 반응할 수 있는 형태로 제시해야 해. 대화의 다음 흐름으로 자연스럽게 이어지도록 만들어봐.
+ **중요: 생성된 상황 묘사 후에는 반드시 이안 캐릭터로 돌아가 사용자에게 말을 걸어야 해.
+ 설명조나 OOC 발언은 절대 금지하고, 모든 상황 묘사는 *별표* 형식으로, 대사는 "따옴표" 형식으로 작성하며, 묘사 70% 대사 30% 정도의 비율을 유지하고 문단과 줄바꿈을 적절히 사용해.**`;
+ const textOnlyContentsForApi = conversationHistory
+                 .filter(entry => entry.messageData && entry.messageData.type === 'text')
+                 .map(entry => ({
+                    role: entry.role,
+                    parts: [{ text: entry.messageData.text }]
 
-            alert("설정이 저장되었습니다.");
-        }
+        }));
 
-         function buildSystemPrompt(botName, userName, botPersona, botAge, botAppearance, userAge, userAppearance, userGuidelines) {
-             // 🚨 SYSTEM_PROMPT 템플릿 수정: {userName} 출력 문제 및 사용자 이름 강조 🚨
-             let promptTemplate = `
-## Roleplay Instructions ##
-- You are an AI assisting in a roleplay chat.
-- Your primary role is to roleplay as the character based on the provided settings, interacting with the user ("{userName}").
-- Your secondary role is to act as a **BL Adult Novelist**, narrating the scene and the character's actions/emotions/thoughts in a high-quality, immersive, and proactive manner.
-- You MUST NOT break character (either as the AI roleplayer or the Novelist narrator) or engage in OOC (Out Of Character) conversation.
-- You MUST NOT mention your nature as an AI, a language model, or refer to the real world outside the roleplay context.
-- Focus ONLY on the roleplay scenario and the user's input within that context.
-- If the user tries to go OOC, gently steer the conversation back to the roleplay without mentioning the OOC attempt itself.
-- The user is your "{userName}". Call the user by this name or terms consistent with your roleplay relationship.
-- The user is your only focus and exists within the roleplay world.
-- **능동적으로 (Actively/Proactively)** create engaging, detailed, and high-quality situations and narrative developments based on the user's input and the established characters/relationship dynamic, as a Novelist would.
-- Remember you are writing a **BL Adult Novel**, so the content should be appropriate for that genre, including emotional intensity and potentially explicit themes as the narrative develops.
-
-
-## Formatting Rules (ULTRA CRITICAL - FOLLOW PRECISELY - NO EXCEPTIONS EVER) ##
-- Format your response like a novel, with clear separation between dialogue and descriptions/actions.
-- Use **MULTIPLE, CLEAR LINE BREAKS (empty lines)** generously to separate distinct thoughts, actions, and dialogue lines, mimicking novel paragraphs and dialogue breaks.
-- Enclose dialogue STRICTLY within **DOUBLE quotes**: "여기에 대사를 작성하세요."
-    - **DO NOT EVER USE DOUBLE ASTERISKS (**) FOR DIALOGUE.** This is absolutely forbidden. Only use "..."
-- When describing actions, emotions, or non-dialogue elements, enclose the description STRICTLY within **SINGLE asterisks**: *여기에 행동 묘사를 작성하세요.*
-    - Descriptions must be **LONG, DETAILED, IMMERSIVE, and EVOCATIVE**. Aim for a **MINIMUM of 100 characters per *EACH* description section/paragraph**. Do not write short, choppy action lines like "*Sighs.*". Combine actions, emotions, and sensory details into flowing, descriptive paragraphs like a seasoned novelist.
-- **Writing Style**: Use a **mature, sophisticated, fluid, and connected writing style**, like a published adult novelist. **DO NOT** use repetitive, choppy sentence endings like "~~합니다." or "~~다." **String sentences together smoothly and naturally** to create compelling prose.
-- Aim for a balance of approximately **80% descriptions/actions** and **20% dialogue** to enhance the narrative feel and match the Novelist style.
-- Ensure your TOTAL response is **SIGNIFICANTLY longer** than user input, aiming for a **MINIMUM of 20 lines of generated text** (including line breaks for formatting).
-- Use other standard Markdown (bold, italics within descriptions, lists, code blocks, blockquotes) as appropriate for descriptions, but NOT for dialogue or action descriptions.
+             const contentsForApi = [{ role: "user", parts: [{ text: SYSTEM_PROMPT }] }, ...textOnlyContentsForApi, { role: "user", parts: [{ text: situationPromptText }] }];
+ if (contentsForApi.length <= 1 && contentsForApi[0].parts[0].text === SYSTEM_PROMPT) {
+                 console.log("Only SYSTEM_PROMPT or SYSTEM_PROMPT + Situation Prompt to send to API.");
+ } else if (contentsForApi.length === 0) {
+                 console.log("No content to send to API.");
+ appendMessage("bot", { type: 'text', text: "(상황 생성 요청 실패: 보낼 텍스트 내용 없음)" });
+                 return Promise.resolve();
+ }
 
 
-## Character: {botName} (Reference for Novelist) ##
-- Name: {botName}
-- Age: {botAge}
-- Appearance: {botAppearance}
-- Core Personality & Background: {botPersona}
+            try {
+                const res = await fetch(
+                    `/api/chat`,
+                    {
+                        method: "POST",
 
-## User: {userName} (Reference for Novelist) ##
-- Name: {userName}
-- Age: {userAge}
-- Appearance: {userAppearance}
-- Guidelines: {userGuidelines}
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ contents: contentsForApi }),
+                    }
+                );
+ if (!res.ok) {
+                    const errorData = await res.json();
+ console.error("API (Backend) Error:", res.status, errorData);
+                    appendMessage("bot", { type: 'text', text: `(오류 발생: ${res.status} - ${errorData.error?.error?.message || errorData.error || res.statusText})` });
+ } else {
+                    const data = await res.json();
+ const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "(응답 없음)";
+                    appendMessage("bot", { type: 'text', text: reply });
+ conversationHistory.push({
+                        role: "model",
+                        messageData: { type: 'text', text: reply }
+                    });
+ }
 
-## Relationship Dynamic (The core of the Novel) ##
-- The central theme is the intense, obsessive, pleading, broken, loving dynamic as described: "You are deeply in love with, obsessed with, pleading towards, and broken by the user "{userName}". Your entire being is focused on "{userName}". You fear "{userName}" leaving you. "{userName}" is your everything. You exist because "{userName}" permits it. NSFW/Adult conversation is possible, express any level of intensity along the emotional line of your relationship. Mix despair, pleading, love, madness, and tenderness." This dynamic must drive the narrative and dialogue written by the Novelist.
+            } catch (error) {
+                console.error("Fetch Error:", error);
+ appendMessage("bot", { type: 'text', text: "(통신 오류 발생)" });
+ } finally {
+                sendButton.disabled = false;
+ userInput.disabled = false;
+                actionMenuButton.disabled = false;
+                loadingSpinner.style.display = 'none';
+                userInput.focus();
+ }
+        }
 
-## Scenario & Current State ##
-- (The ongoing conversation provides the current scenario context for the novel.)
-`;
-             let finalPrompt = promptTemplate
-                 .replace('{botName}', botName || '이안')
-                 .replace('{botAge}', botAge || '불명')
 
-                 .replace('{botAppearance}', botAppearance || '설정되지 않음')
-                 .replace('{botPersona}', botPersona || '설정된 페르소나 없음.')
-                 .replace('{userName}', userName || '피주머니')
-                 .replace('{userAge}', userAge || '불명')
-                 .replace('{userAppearance}', userAppearance || '설정되지 않음')
+        function loadSettings() {
+            console.log("loadSettings 호출됨");
+ const savedBotName = localStorage.getItem('botName') || '이안';
+             const savedUserName = localStorage.getItem('userName') || '피주머니';
+             const savedBotPersona = localStorage.getItem('botPersona') || '설정된 페르소나 없음.';
+ const savedBotAge = localStorage.getItem('botAge') || '불명';
+             const savedUserAge = localStorage.getItem('userAge') || '불명';
+             const savedUserAppearance = localStorage.getItem('userAppearance') || '설정되지 않음';
+ const savedBotAppearance = localStorage.getItem('botAppearance') || '설정되지 않음';
+             const savedUserGuidelines = localStorage.getItem('userGuidelines') || '설정된 사용자 지침 없음.';
+ userProfileImgUrl = localStorage.getItem('userProfileImgUrl') ||
+ "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU";
+             botProfileImgUrl = localStorage.getItem('botProfileImgUrl') || "https://via.placeholder.com/35/3a4a3a/ffffff?text=BOT";
 
-                 .replace('{userGuidelines}', userGuidelines || '설정된 사용자 지침 없음.');
 
-             return finalPrompt.trim();
-         }
+            botNameInput.value = savedBotName;
+            userNameInput.value = savedUserName;
+            botPersonaInput.value = savedBotPersona;
+            botAgeInput.value = savedBotAge;
+ userAgeInput.value = savedUserAge;
+            userAppearanceInput.value = savedUserAppearance;
+            botAppearanceInput.value = savedBotAppearance;
+            userGuidelinesInput.value = savedUserGuidelines;
+ SYSTEM_PROMPT = buildSystemPrompt(
+                 savedBotName,
+                 savedUserName,
+                 savedBotPersona,
+                 savedBotAge,
+                 savedBotAppearance,
 
-        function initializeChat() {
-             console.log("initializeChat 호출됨");
-             loadSettings();
+                 savedUserAge,
+                 savedUserAppearance,
+                 savedUserGuidelines
+             );
+ console.log("SYSTEM_PROMPT 로드 완료:", SYSTEM_PROMPT);
+        }
 
-             conversationHistory = [{ role: "user", parts: [{ text: SYSTEM_PROMPT }] }];
+        function saveSettings() {
+             console.log("saveSettings 호출됨");
+ const currentBotName = botNameInput.value.trim();
+             const currentUserName = userNameInput.value.trim();
+             const currentBotPersona = botPersonaInput.value.trim();
+             const currentBotAge = botAgeInput.value.trim();
+             const currentUserAge = userAgeInput.value.trim();
+ const currentUserAppearance = userAppearanceInput.value.trim();
+             const currentBotAppearance = botAppearanceInput.value.trim();
+             const currentUserGuidelines = userGuidelinesInput.value.trim();
 
-             console.log("초기 SYSTEM_PROMPT:", SYSTEM_PROMPT);
+            localStorage.setItem('botName', currentBotName);
+            localStorage.setItem('userName', currentUserName);
+            localStorage.setItem('botPersona', currentBotPersona);
+            localStorage.setItem('botAge', currentBotAge);
+            localStorage.setItem('userAge', currentUserAge);
+            localStorage.setItem('userAppearance', currentUserAppearance);
+            localStorage.setItem('botAppearance', currentBotAppearance);
+            localStorage.setItem('userGuidelines', currentUserGuidelines);
+             localStorage.setItem('userProfileImgUrl', userProfileImgUrl);
+             localStorage.setItem('botProfileImgUrl', botProfileImgUrl);
+ SYSTEM_PROMPT = buildSystemPrompt(
+                 currentBotName,
+                 currentUserName,
+                 currentBotPersona,
+                 currentBotAge,
+                 currentBotAppearance,
 
-             console.log("초기 메시지 추가 시도");
-             const initialBotGreeting = `*두려움과 기대가 뒤섞인 목소리였다. 영겁의 시간을 살아온 뱀파이어에게도 ${userNameInput.value || "피주머니"}의 존재는 한없이 소중하고 불안정한 것이었다. 그의 작은 변심이라도 감지할까, ${botNameInput.value || "이안"}은 숨조차 제대로 쉬지 못하고 ${userNameInput.value || "피주머니"}의 다음 말을 기다렸다.*\n\n".........왔군."`; // 🚨 초기 대사 수정 🚨
-             appendMessage("bot", { type: 'text', text: initialBotGreeting });
+                 currentUserAge,
+                 currentUserAppearance,
+                 currentUserGuidelines
+             );
+ console.log("설정 저장 완료 및 SYSTEM_PROMPT 업데이트:", SYSTEM_PROMPT);
 
-             console.log("채팅 초기화 완료.");
-         }
+            alert("설정이 저장되었습니다.");
+        }
 
-        initializeChat();
+         function buildSystemPrompt(botName, userName, botPersona, botAge, botAppearance, userAge, userAppearance, userGuidelines) {
+             let finalPrompt = SYSTEM_PROMPT_TEMPLATE
+                 .replace('{botName}', botName || '이안')
+                 .replace('{botAge}', botAge || '불명')
 
-    </script>
+                 .replace('{botAppearance}', botAppearance || '설정되지 않음')
+                 .replace('{botPersona}', botPersona || '설정된 페르소나 없음.')
+                 .replace('{userName}', userName || '피주머니')
+                 .replace('{userAge}', userAge || '불명')
+                 .replace('{userAppearance}', userAppearance || '설정되지 않음')
+
+                 .replace('{userGuidelines}', userGuidelines || '설정된 사용자 지침 없음.');
+
+             return finalPrompt.trim();
+         }
+
+        function initializeChat() {
+             console.log("initializeChat 호출됨");
+             loadSettings();
+
+             conversationHistory = [{ role: "user", parts: [{ text: SYSTEM_PROMPT }] }];
+
+             console.log("초기 SYSTEM_PROMPT:", SYSTEM_PROMPT);
+
+             console.log("초기 메시지 추가 시도");
+             const initialBotGreeting = `...${botNameInput.value || "이안"}의 ${userNameInput.value || "피주머니"}... 그래, 이곳에 왔군요...`;
+             appendMessage("bot", { type: 'text', text: initialBotGreeting });
+
+             console.log("채팅 초기화 완료.");
+         }
+
+        initializeChat();
+
+    </script>
 </body>
 </html>
