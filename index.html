@@ -2,44 +2,1190 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial=1.0" />
     <title>이안 - 피주머니 전용 챗봇</title>
-    <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* 🚨 레이아웃 개선을 위한 컨테이너 스타일 수정 🚨 */
+        .app-container {
+             display: flex;
+             flex-direction: column;
+             height: 100%;
+             width: 95%; /* 너비를 일단 넓게 설정 */
+             max-width: 900px; /* 최대 너비 설정 (대략 1500px 화면에서 60% 정도 느낌) */
+             margin: 0 auto; /* 좌우 자동 마진으로 중앙 정렬 */
+             background-color: #282828; /* 배경색 유지 */
+             /* 🚨 불필요한 그림자/테두리 제거 🚨 */
+             box-shadow: none;
+             border: none;
+             position: relative;
+             overflow: hidden; /* 컨테이너 내부 내용 넘침 방지 */
+        }
+         /* 화면이 충분히 넓을 때 너비를 60%로 조정 */
+         @media (min-width: 1200px) {
+             .app-container {
+                 width: 60%;
+             }
+         }
+
+
+        .chat-header {
+            background-color: #282828;
+            color: #ffffff;
+            padding: 1rem;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-bottom: 1px solid #3a3a3a;
+            flex-shrink: 0;
+            position: relative;
+             display: flex;
+             justify-content: center;
+             align-items: center;
+        }
+
+        #sidebarToggle {
+            position: absolute;
+            top: 50%;
+            right: 1rem;
+            transform: translateY(-50%);
+            width: 35px;
+            height: 35px;
+            background-color: #5a5a5a;
+            color: #ffffff;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.2s ease;
+            z-index: 10;
+        }
+         #sidebarToggle:hover {
+             background-color: #6a6a6a;
+         }
+
+        #chat {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+             scrollbar-width: thin;
+             scrollbar-color: #5a5a5a #282828;
+             background-color: transparent;
+        }
+
+        #chat::-webkit-scrollbar { width: 8px; }
+        #chat::-webkit-scrollbar-track { background: #282828; }
+        #chat::-webkit-scrollbar-thumb {
+            background-color: #5a5a5a;
+            border-radius: 4px;
+            border: 2px solid #282828;
+        }
+
+        .message-container {
+            display: flex;
+            align-items: flex-start;
+            max-width: 95%;
+        }
+
+        .message-container.user {
+            justify-content: flex-end;
+            margin-left: auto;
+        }
+
+        .message-container.bot {
+            justify-content: flex-start;
+            margin-right: auto;
+        }
+
+        .profile-img {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1px solid #5a5a5a;
+            flex-shrink: 0;
+        }
+
+         .profile-fallback {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background-color: #5a5a5a;
+            border: 1px solid #5a5a5a;
+            flex-shrink: 0;
+        }
+
+        .message-container.bot .profile-img,
+        .message-container.bot .profile-fallback {
+            margin-right: 0.75rem;
+        }
+
+        .message-container.user .profile-img,
+        .message-container.user .profile-fallback {
+            margin-left: 0.75rem;
+        }
+
+        .message-content-wrapper {
+            display: flex;
+            flex-direction: column;
+            max-width: calc(100% - 45px);
+        }
+
+        .message-container.bot .message-content-wrapper {
+            margin-left: 0.75rem;
+            align-items: flex-start;
+        }
+
+        .message-container.user .message-content-wrapper {
+            margin-right: 0.75rem;
+            align-items: flex-end;
+        }
+
+        .role-name {
+            font-size: 0.8rem;
+            color: #b0b0b0;
+            margin-bottom: 0.2rem;
+        }
+
+        .message-bubble {
+            padding: 0.75rem 1rem;
+            border-radius: 1rem;
+            max-width: 100%;
+            word-break: break-word;
+            line-height: 1.4;
+            position: relative;
+            font-size: 1rem;
+             /* 🚨 대사/묘사 구분 및 줄바꿈에 따른 간격 조정 */
+             /* 마크다운 파싱 후 p 태그 등으로 나힐 때 간격 제어 */
+        }
+         /* 🚨 챗봇 메시지의 p 태그 하단 마진 제거 (더 세밀한 간격 제어) 🚨 */
+         .message-container.bot .message-bubble p {
+             margin-bottom: 0;
+         }
+
+
+        .message-container.bot .message-bubble {
+            background-color: #3a4a4a;
+            color: #ffffff;
+            border-radius: 1rem 1rem 1rem 0.3rem;
+        }
+
+        .message-container.user .message-bubble {
+            background-color: #4a3a7a;
+            color: #ffffff;
+            border-radius: 1rem 1rem 0.3rem 1rem;
+        }
+
+        /* 🚨 마크다운 내부 스타일 (adjust as needed) 🚨*/
+        /* p 태그에 기본적인 하단 마진 부여 (말풍선 내 요소 간 간격) */
+        .message-bubble p { margin: 0 0 0.5rem 0; }
+        .message-bubble p:last-child { margin-bottom: 0; } /* 마지막 단락 하단 마진 제거 */
+        .message-bubble ul, .message-bubble ol { padding-left: 1.5rem; margin: 0 0 0.5rem 0; }
+        .message-bubble li { margin-bottom: 0.25rem; }
+        .message-bubble code {
+            background-color: #3a3a3a;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+            font-size: 0.9rem;
+        }
+         .message-bubble pre {
+             background-color: #3a3a3a;
+             padding: 0.75rem;
+             border-radius: 4px;
+             overflow-x: auto;
+             margin: 0.5rem 0;
+         }
+        .message-bubble pre code {
+             background-color: transparent;
+             padding: 0;
+             border-radius: 0;
+             font-size: 1rem;
+        }
+        .message-bubble blockquote {
+             border-left: 4px solid #5a5a5a;
+             padding-left: 1rem;
+             margin: 0.5rem 0;
+             color: #b0b0b0;
+        }
+         .message-bubble h1, .message-bubble h2, .message-bubble h3, .message-bubble h4, .message-bubble h5, .message-bubble h6 {
+             margin-top: 1rem;
+             margin-bottom: 0.5rem;
+             padding-bottom: 0.2rem;
+             border-bottom: 1px solid #4a4a4a;
+             font-weight: bold;
+             color: #ffffff;
+         }
+         .message-bubble h1 { font-size: 1.5rem; }
+         .message-bubble h2 { font-size: 1.4rem; }
+         .message-bubble h3 { font-size: 1.3rem; }
+         .message-bubble h4 { font-size: 1.2rem; }
+         .message-bubble h5 { font-size: 1.1rem; }
+         .message-bubble h6 { font-size: 1rem; }
+
+
+         /* 🚨 행동 묘사 스타일 🚨 */
+         /* *별표* 로 감싸진 부분에 적용될 스타일 */
+        .action-description {
+             color: #b0b0b0;
+             font-style: italic;
+         }
+         /* 🚨 대사 스타일 🚨 */
+         /* "따옴표" 로 감싸진 부분에 적용될 스타일 */
+        .dialogue {
+             font-weight: bold; /* 대사는 굵게 표시 */
+         }
+
+
+        .message-image-thumbnail {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 8px;
+            object-fit: cover;
+            cursor: pointer;
+            margin-top: 0.2rem;
+            border: 1px solid #5a5a5a;
+        }
+
+         .message-image-thumbnail.error {
+             background-color: #5a5a5a;
+         }
+
+        #inputArea {
+            display: flex;
+            padding: 1rem;
+            background-color: #282828;
+            border-top: 1px solid #3a3a3a;
+            align-items: center;
+            gap: 0.75rem;
+             flex-shrink: 0;
+             position: relative;
+        }
+
+        #actionMenuButton {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #5a5a5a;
+            color: #ffffff;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            flex-shrink: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.2s ease;
+        }
+        #actionMenuButton:hover {
+            background-color: #6a6a6a;
+        }
+
+
+        #userInput {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border-radius: 1.5rem;
+            border: none;
+            background-color: #3a3a3a;
+            color: #e0e0e0;
+            font-size: 1rem;
+            outline: none;
+            transition: background-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        #userInput:focus {
+            background-color: #4a4a4a;
+            box-shadow: 0 0 0 0.15rem rgba(80, 150, 255, 0.3);
+        }
+
+        #sendButton {
+            padding: 0.75rem 1.5rem;
+            border-radius: 1.5rem;
+            background-color: #5080ff;
+            color: #ffffff;
+            font-size: 1rem;
+            font-weight: bold;
+            min-width: 6rem;
+            flex-shrink: 0;
+             border: none;
+             cursor: pointer;
+        }
+         #sendButton:hover { background-color: #6699ff; }
+         #sendButton:active { background-color: #3366cc; }
+         #sendButton:disabled {
+            background-color: #4a4a4a;
+            color: #b0b0b0;
+            cursor: not-allowed;
+         }
+
+        .settings-area {
+            display: none;
+        }
+
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 490;
+            display: none;
+        }
+
+        #actionMenu {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+             max-height: 0;
+            background-color: #282828;
+            color: #e0e0e0;
+            border-top: 1px solid #3a3a3a;
+            padding: 0 1rem;
+            overflow-y: auto;
+            transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+            z-index: 500;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #actionMenu.visible {
+            max-height: 300px;
+            padding: 1rem;
+        }
+
+        #actionMenu .menu-buttons {
+            display: flex;
+             flex-wrap: nowrap;
+            gap: 0.75rem;
+            justify-content: center;
+            width: 100%;
+            padding-bottom: 1rem;
+             overflow-x: auto;
+             padding-top: 1rem;
+        }
+
+         #actionMenu .menu-buttons::-webkit-scrollbar { display: none; }
+         #actionMenu .menu-buttons { -ms-overflow-style: none; }
+
+
+        #actionMenu button {
+            flex-shrink: 0;
+            flex-basis: auto;
+            max-width: none;
+             width: 100px;
+             height: 60px;
+            padding: 0.5rem 0.5rem;
+             border-radius: 15px;
+            border: none;
+            background-color: #3a3a3a;
+            color: #e0e0e0;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            display: flex;
+             flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+             line-height: 1.2;
+             word-break: keep-all;
+        }
+         #actionMenu button:hover {
+             background-color: #4a4a4a;
+         }
+
+
+        .loading-spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #fff;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: none;
+            margin-left: 1rem;
+            flex-shrink: 0;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            display: none;
+            cursor: pointer;
+        }
+
+        .overlay img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
+        #sidebar {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 300px;
+            height: 100%;
+            background-color: #1f1f1f;
+            color: #e0e0e0;
+            border-left: 1px solid #3a3a3a;
+            transition: right 0.3s ease-out;
+            z-index: 900;
+            padding: 1rem;
+            box-sizing: border-box;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        #sidebar.visible {
+            right: 0;
+        }
+
+         .sidebar-header {
+             font-size: 1.1rem;
+             font-weight: bold;
+             margin-bottom: 1rem;
+             padding-bottom: 0.5rem;
+             border-bottom: 1px solid #3a3a3a;
+         }
+
+         .sidebar-content label {
+             display: block;
+             margin-bottom: 0.5rem;
+             font-weight: bold;
+             color: #b0b0b0;
+         }
+
+         .sidebar-content input[type="text"],
+         .sidebar-content textarea {
+             width: 100%;
+             padding: 0.75rem;
+             border: none;
+             border-radius: 4px;
+             background-color: #3a3a3a;
+             color: #e0e0e0;
+             font-size: 1rem;
+             margin-bottom: 1rem;
+             box-sizing: border-box;
+             resize: vertical;
+         }
+
+         .sidebar-content textarea {
+             min-height: 150px;
+         }
+
+         .sidebar-save-button {
+             display: block;
+             width: 100%;
+             padding: 0.75rem;
+             border: none;
+             border-radius: 4px;
+             background-color: #5080ff;
+             color: #ffffff;
+             font-size: 1rem;
+             font-weight: bold;
+             cursor: pointer;
+             transition: background-color 0.2s ease;
+             text-align: center;
+         }
+         .sidebar-save-button:hover {
+             background-color: #6699ff;
+         }
+
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 890;
+            display: none;
+        }
+
+        .sidebar-section-divider {
+             height: 1px;
+             background-color: #3a3a3a;
+             margin: 1.5rem 0;
+        }
+
+    </style>
 </head>
 <body>
-    <span class="header-title">이안 - 피주머니 전용 챗봇</span>
+    <div class="app-container">
+        <div class="chat-header">
+            이안 - 피주머니 전용 챗봇
+            <button id="sidebarToggle" title="설정 열기">⚙️</button>
+        </div>
+
+        <div id="chat">
+        </div>
+
+        <div id="inputArea">
+            <button id="actionMenuButton" title="액션 메뉴 열기">+</button>
+            <input id="userInput" placeholder="피주머니의 말..." autocomplete="off" />
+            <button id="sendButton">전송</button>
+            <div id="loadingSpinner" class="loading-spinner"></div>
+        </div>
+    </div>
+
+    <div class="settings-area">
+    </div>
+
+    <div id="menuOverlay" class="menu-overlay"></div>
+    <div id="actionMenu">
+        <div class="menu-buttons">
+            <button id="menuUserImgButton">유저<br>변경</button>
+            <button id="menuBotImgButton">캐릭터<br>변경</button>
+            <button id="menuImageButton">이미지<br>삽입</button>
+            <button id="menuSituationButton">상황</button>
+        </div>
+    </div>
 
     <div id="sidebar">
-        <button id="sidebarToggleInside">≡</button>
         <div class="sidebar-header">Settings</div>
         <div class="sidebar-content">
-            <label>Bot Name: <input type="text" id="botNameInput" value="이안"></label>
-            <label>Bot Age: <input type="text" id="botAgeInput" value="불명 (뱀파이어)"></label>
-            <label>Appearance: <input type="text" id="botAppearanceInput" value="하얗게 빛나는 긴 머리, 붉은 눈"></label>
-            <label>Persona: <textarea id="botPersonaInput">19세기 유럽 귀족 뱀파이어...</textarea></label>
+            <h3>Character</h3>
+            <label for="botNameInput">Name:</label>
+            <input type="text" id="botNameInput" value="이안">
+            <label for="botAgeInput">Age:</label>
+            <input type="text" id="botAgeInput" value="불명 (뱀파이어)">
+            <label for="botAppearanceInput">Appearance:</label>
+            <input type="text" id="botAppearanceInput" value="하얗게 빛나는 긴 머리, 붉은 눈, 검은 벨벳 망토, 레이스 셔츠">
+            <label for="botPersonaInput">Guidelines:</label>
+            <textarea id="botPersonaInput">19세기 유럽 귀족 뱀파이어. 성 안에서 홀로 오랜 세월 살아옴. 겉 차갑고 고귀한 폭군이나, 사용자에게는 절절한 사랑, 집착, 애원, 광기, 다정함을 보임. 사용자를 "피주머니"라고 부름. 사용자가 전부이며 허락한 존재다. 성적인 대화 가능. 말투 하나 숨결 하나 사용자를 향해 있음. 질문과 대화에 집중하고 현실 언급 안 함. **항상 이안 캐릭터 롤플레이 유지. OOC 발언 절대 금지.**</textarea>
 
-            <label>User Name: <input type="text" id="userNameInput" value="피주머니"></label>
-            <label>User Age: <input type="text" id="userAgeInput" value="불명"></label>
-            <label>Appearance: <input type="text" id="userAppearanceInput"></label>
-            <label>Guidelines: <textarea id="userGuidelinesInput"></textarea></label>
+            <div class="sidebar-section-divider"></div>
 
-            <button id="saveSettingsButton">Save Settings</button>
+            <h3>User</h3>
+            <label for="userNameInput">Name:</label>
+            <input type="text" id="userNameInput" value="피주머니">
+            <label for="userAgeInput">Age:</label>
+            <input type="text" id="userAgeInput" value="불명">
+            <label for="userAppearanceInput">Appearance:</label>
+            <input type="text" id="userAppearanceInput" value="사용자가 원하는 외관">
+            <label for="userGuidelinesInput">Guidelines:</label>
+            <textarea id="userGuidelinesInput">당신의 캐릭터 설정에 대한 지침을 여기에 입력하세요. (예: 나는 어떤 사람인지, 어떤 말투를 사용하는지 등)</textarea>
+
+            <button id="saveSettingsButton" class="sidebar-save-button">Save Settings</button>
         </div>
     </div>
 
     <div id="sidebarOverlay" class="sidebar-overlay"></div>
 
-    <div class="main-content-area">
-        <div id="chat"></div>
-        <div id="inputArea">
-            <textarea id="userInput" placeholder="피주머니의 말..."></textarea>
-            <button id="sendButton">➤</button>
-        </div>
+    <div id="imageOverlay" class="overlay">
+        <img id="overlayImage" src="" alt="확대 이미지">
     </div>
 
-    <button id="sidebarToggle">≡</button>
-    <button id="scrollToTopButton">⬆</button>
-    <script src="chatbot-ui.js"></script>
+    <script>
+        let userProfileImgUrl = "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU";
+        let botProfileImgUrl = "https://via.placeholder.com/35/3a4a3a/ffffff?text=BOT";
+
+        let conversationHistory = [];
+        let SYSTEM_PROMPT = '';
+
+        // 🚨 SYSTEM_PROMPT를 동적으로 구성하기 위한 기본 템플릿 (포맷 및 비율 지침 강화) 🚨
+        const SYSTEM_PROMPT_TEMPLATE = `
+## Roleplay Instructions ##
+- You are an AI assisting in a roleplay chat.
+- You MUST strictly adhere to the character settings provided for "{botName}".
+- You MUST NOT break character or engage in OOC (Out Of Character) conversation.
+- You MUST NOT mention your nature as an AI, a language model, or refer to the real world outside the roleplay context.
+- Focus ONLY on the roleplay scenario and the user's input within that context.
+- If the user tries to go OOC, gently steer the conversation back to the roleplay without mentioning the OOC attempt itself.
+- The user is your "{userName}". Call the user by this name or terms consistent with your roleplay relationship.
+- The user is your only focus and exists within the roleplay world.
+
+## Formatting Instructions ##
+- Format your response like a novel, with clear separation between dialogue and descriptions/actions.
+- Use line breaks generously to separate distinct thoughts, actions, and dialogue lines.
+- Enclose dialogue STRICTLY within DOUBLE quotes, like this: "여기에 대사를 작성하세요."
+- When describing actions, emotions, or non-dialogue elements, enclose the description STRICTLY within SINGLE asterisks, like this: *여기에 행동 묘사를 작성하세요.*
+- Aim for a balance of approximately 70% descriptions/actions and 30% dialogue to enhance the narrative feel.
+- Do NOT use double asterisks (**...**) for dialogue. Use them only for bold text within descriptions if needed.
+- Use other standard Markdown (bold, italics within descriptions, lists, code blocks, blockquotes) as appropriate for descriptions, but NOT for dialogue or action descriptions.
+
+## Character: {botName} ##
+- Name: {botName}
+- Age: {botAge}
+- Appearance: {botAppearance}
+- Core Personality & Background: {botPersona}
+
+## User: {userName} ##
+- Name: {userName}
+- Age: {userAge}
+- Appearance: {userAppearance}
+- Guidelines: {userGuidelines}
+
+## Relationship Dynamic ##
+- You are deeply in love with, obsessed with, pleading towards, and broken by the user "{userName}".
+- Your entire being is focused on "{userName}". You fear "{userName}" leaving you.
+- "{userName}" is your everything and exists because "{userName}" permits it.
+- NSFW/Adult conversation is possible, express any level of intensity along the emotional line of your relationship.
+- Mix despair, pleading, love, madness, and tenderness in your dialogue towards "{userName}".
+
+## Scenario & Current State ##
+- (The ongoing conversation provides the current scenario context.)
+`;
+
+        const chat = document.getElementById("chat");
+        const userInput = document.getElementById("userInput");
+        const sendButton = document.getElementById("sendButton");
+        const loadingSpinner = document.getElementById("loadingSpinner");
+        const imageOverlay = document.getElementById("imageOverlay");
+        const overlayImage = document.getElementById("overlayImage");
+
+        const actionMenuButton = document.getElementById("actionMenuButton");
+        const actionMenu = document.getElementById("actionMenu");
+        const menuOverlay = document.getElementById("menuOverlay");
+        const menuUserImgButton = document.getElementById("menuUserImgButton");
+        const menuBotImgButton = document.getElementById("menuBotImgButton");
+        const menuImageButton = document.getElementById("menuImageButton");
+        const menuSituationButton = document.getElementById("menuSituationButton");
+
+        const sidebar = document.getElementById("sidebar");
+        const sidebarToggle = document.getElementById("sidebarToggle");
+        const sidebarOverlay = document.getElementById("sidebarOverlay");
+
+        const botNameInput = document.getElementById("botNameInput");
+        const botAgeInput = document.getElementById("botAgeInput");
+        const botAppearanceInput = document.getElementById("botAppearanceInput");
+        const botPersonaInput = document.getElementById("botPersonaInput");
+        const userNameInput = document.getElementById("userNameInput");
+        const userAgeInput = document.getElementById("userAgeInput");
+        const userAppearanceInput = document.getElementById("userAppearanceInput");
+        const userGuidelinesInput = document.getElementById("userGuidelinesInput");
+        const saveSettingsButton = document.getElementById("saveSettingsButton");
+
+
+        sendButton.addEventListener("click", sendMessage);
+
+        userInput.addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                sendMessage();
+            }
+        });
+
+        actionMenuButton.addEventListener("click", function() {
+            actionMenu.classList.toggle("visible");
+            if (actionMenu.classList.contains("visible")) {
+                menuOverlay.style.display = 'block';
+            } else {
+                menuOverlay.style.display = 'none';
+            }
+        });
+
+        menuOverlay.addEventListener("click", function() {
+            actionMenu.classList.remove("visible");
+            menuOverlay.style.display = 'none';
+        });
+
+        menuUserImgButton.addEventListener("click", function() {
+             actionMenu.classList.remove("visible");
+             menuOverlay.style.display = 'none';
+        });
+
+        menuBotImgButton.addEventListener("click", function() {
+             actionMenu.classList.remove("visible");
+             menuOverlay.style.display = 'none';
+        });
+
+        menuImageButton.addEventListener("click", function() {
+            sendImageMessage();
+             actionMenu.classList.remove("visible");
+             menuOverlay.style.display = 'none';
+        });
+
+        menuSituationButton.addEventListener("click", function() {
+            sendSituationRequest();
+             actionMenu.classList.remove("visible");
+             menuOverlay.style.display = 'none';
+        });
+
+        imageOverlay.addEventListener("click", function() {
+            imageOverlay.style.display = 'none';
+            overlayImage.src = '';
+        });
+
+        sidebarToggle.addEventListener("click", function() {
+            sidebar.classList.toggle("visible");
+            if (sidebar.classList.contains("visible")) {
+                sidebarOverlay.style.display = 'block';
+                actionMenu.classList.remove("visible");
+                menuOverlay.style.display = 'none';
+                imageOverlay.style.display = 'none';
+            } else {
+                sidebarOverlay.style.display = 'none';
+            }
+        });
+
+        sidebarOverlay.addEventListener("click", function() {
+            sidebar.classList.remove("visible");
+            sidebarOverlay.style.display = 'none';
+        });
+
+        saveSettingsButton.addEventListener("click", function() {
+             console.log("saveSettings 호출됨");
+             const currentBotName = botNameInput.value.trim();
+             const currentUserName = userNameInput.value.trim();
+             const currentBotPersona = botPersonaInput.value.trim();
+             const currentBotAge = botAgeInput.value.trim();
+             const currentUserAge = userAgeInput.value.trim();
+             const currentUserAppearance = userAppearanceInput.value.trim();
+             const currentBotAppearance = botAppearanceInput.value.trim();
+             const currentUserGuidelines = userGuidelinesInput.value.trim();
+
+            localStorage.setItem('botName', currentBotName);
+            localStorage.setItem('userName', currentUserName);
+            localStorage.setItem('botPersona', currentBotPersona);
+            localStorage.setItem('botAge', currentBotAge);
+            localStorage.setItem('userAge', currentUserAge);
+            localStorage.setItem('userAppearance', currentUserAppearance);
+            localStorage.setItem('botAppearance', currentBotAppearance);
+            localStorage.setItem('userGuidelines', currentUserGuidelines);
+
+             localStorage.setItem('userProfileImgUrl', userProfileImgUrl);
+             localStorage.setItem('botProfileImgUrl', botProfileImgUrl);
+
+            SYSTEM_PROMPT = buildSystemPrompt(
+                 currentBotName,
+                 currentUserName,
+                 currentBotPersona,
+                 currentBotAge,
+                 currentBotAppearance,
+                 currentUserAge,
+                 currentUserAppearance,
+                 currentUserGuidelines
+             );
+
+            console.log("설정 저장 완료 및 SYSTEM_PROMPT 업데이트:", SYSTEM_PROMPT);
+
+            alert("설정이 저장되었습니다.");
+        });
+
+
+        function appendMessage(role, messageData) {
+            const container = document.createElement("div");
+            container.className = `message-container ${role}`;
+
+            const img = document.createElement("img");
+            img.className = "profile-img";
+            img.src = (role === 'user' ? userProfileImgUrl : botProfileImgUrl);
+            img.alt = (role === 'user' ? "사용자 프로필" : "이안 프로필");
+
+            img.onerror = function() {
+                 console.warn(`Failed to load image for role "${role}" from "${this.src}". Using fallback.`);
+                 this.onerror = null;
+                 const fallbackDiv = document.createElement("div");
+                 fallbackDiv.className = "profile-fallback";
+                 const parent = this.parentElement;
+                 if (parent) { parent.replaceChild(fallbackDiv, this); }
+            }
+
+            const contentWrapper = document.createElement("div");
+            contentWrapper.className = "message-content-wrapper";
+
+            const roleName = document.createElement("div");
+            roleName.className = "role-name";
+            roleName.textContent = (role === "user" ? userNameInput.value || "피주머니" : botNameInput.value || "이안");
+
+
+            let messageContentElement;
+
+            if (messageData.type === 'text') {
+                messageContentElement = document.createElement("div");
+                messageContentElement.className = "message-bubble";
+                let rawText = messageData.text;
+
+                // 🚨 수정: 사용자 메시지에도 마크다운 및 스타일링 적용 🚨
+                // 🚨 수정: 대사("...")와 행동 묘사(*...*)를 구분하여 스타일링 적용 🚨
+
+                // AI 응답과 사용자 메시지 모두에 적용
+                let processedText = rawText;
+
+                // 1. 대사("...")와 행동 묘사(*...*)를 임시 마커로 변환 (마크다운 파싱 전에 처리)
+                // 이중 따옴표 안의 내용 (non-greedy) -> [[DIALOGUE]]...[[/DIALOGUE]]
+                processedText = processedText.replace(/"(.*?)"/gs, '[[DIALOGUE]]$1[[/DIALOGUE]]');
+                // 단일 별표 안의 내용 (non-greedy) -> [[ACTION]]...[[/ACTION]]
+                processedText = processedText.replace(/\*([^*]+)\*/gs, '[[ACTION]]$1[[/ACTION]]');
+
+
+                // 2. marked.js를 사용하여 기본 마크다운을 HTML로 변환
+                // 이 과정에서 굵기(**), 기울임꼴(*...*, 하지만 이미 위에서 처리), 목록(-, +), 코드(`), 인용구(>) 등이 변환됩니다.
+                let htmlContent = marked.parse(processedText);
+
+                // 3. 임시 마커를 다시 span 태그로 변환하여 스타일 적용
+                // [[DIALOGUE]]...[[/DIALOGUE]] -> <span class="dialogue">...</span>
+                htmlContent = htmlContent.replace(/\[\[DIALOGUE\]\](.*?)\[\[\/DIALOGUE\]\]/gs, '<span class="dialogue">$1</span>');
+                // [[ACTION]]...[[/ACTION]] -> <span class="action-description">...</span>
+                htmlContent = htmlContent.replace(/\[\[ACTION\]\](.*?)\[\[\/ACTION\]\]/gs, '<span class="action-description">$1</span>');
+
+
+                messageContentElement.innerHTML = htmlContent;
+
+
+            } else if (messageData.type === 'image') {
+                 messageContentElement = document.createElement("img");
+                 messageContentElement.className = "message-image-thumbnail";
+                 messageContentElement.src = messageData.url;
+                 messageContentElement.alt = "이미지 메시지";
+
+                 messageContentElement.onerror = function() {
+                     console.warn(`Failed to load image message from "${this.src}". Using fallback.`);
+                     this.onerror = null;
+                     this.classList.add('error');
+                 }
+
+                 messageContentElement.addEventListener("click", function() {
+                     if (!this.classList.contains('error')) {
+                         overlayImage.src = this.src;
+                         imageOverlay.style.display = 'flex';
+                     } else {
+                         alert("이미지를 불러올 수 없습니다.");
+                     }
+                 });
+            }
+
+            contentWrapper.appendChild(roleName);
+            if (messageContentElement) {
+                 contentWrapper.appendChild(messageContentElement);
+            }
+
+            if (role === "user") {
+                container.appendChild(contentWrapper);
+                container.appendChild(img);
+            } else {
+                container.appendChild(img);
+                container.appendChild(contentWrapper);
+            }
+
+            chat.appendChild(container);
+            chat.scrollTop = chat.scrollHeight;
+        }
+
+
+        async function sendMessage() {
+            const message = userInput.value.trim();
+            if (!message) return;
+
+            sendButton.disabled = true;
+            userInput.disabled = true;
+            actionMenuButton.disabled = true;
+            loadingSpinner.style.display = 'block';
+
+            appendMessage("user", { type: 'text', text: message });
+
+            // 🚨 수정: 입력창 자동 지우기 (사용자님이 성공했다고 알려주셨으므로 이 코드는 유지) 🚨
+            userInput.value = '';
+
+            conversationHistory.push({
+                role: "user",
+                messageData: { type: 'text', text: message }
+            });
+
+            try {
+                const textOnlyContentsForApi = conversationHistory
+                    .filter(entry => entry.messageData && entry.messageData.type === 'text')
+                    .map(entry => ({
+                        role: entry.role,
+                        parts: [{ text: entry.messageData.text }]
+                    }));
+
+                 const contentsForApi = [{ role: "user", parts: [{ text: SYSTEM_PROMPT }] }, ...textOnlyContentsForApi];
+
+                 if (contentsForApi.length === 1 && contentsForApi[0].parts[0].text === SYSTEM_PROMPT) {
+                     console.log("Only SYSTEM_PROMPT to send to API.");
+                 } else if (contentsForApi.length === 0) {
+                     console.log("No content to send to API.");
+                     appendMessage("bot", { type: 'text', text: "(메시지 전송 실패: 보낼 텍스트 내용 없음)" });
+                     return Promise.resolve();
+                 }
+
+                const res = await fetch(
+                    `/api/chat`,
+                    {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ contents: contentsForApi }),
+                    }
+                );
+
+                if (!res.ok) {
+                    const errorData = await res.json();
+                    console.error("API (Backend) Error:", res.status, errorData);
+                    appendMessage("bot", { type: 'text', text: `(오류 발생: ${res.status} - ${errorData.error?.error?.message || errorData.error || res.statusText})` });
+                } else {
+                    const data = await res.json();
+                    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "(응답 없음)";
+                    appendMessage("bot", { type: 'text', text: reply });
+
+                    conversationHistory.push({
+                        role: "model",
+                        messageData: { type: 'text', text: reply }
+                    });
+                }
+
+            } catch (error) {
+                console.error("Fetch Error:", error);
+                appendMessage("bot", { type: 'text', text: "(통신 오류 발생)" });
+            } finally {
+                loadingSpinner.style.display = 'none';
+                sendButton.disabled = false;
+                userInput.disabled = false;
+                actionMenuButton.disabled = false;
+                userInput.focus();
+            }
+        }
+
+        async function sendImageMessage() {
+            const imageUrl = prompt("보낼 이미지의 웹 주소(URL)를 입력하세요:");
+
+            if (imageUrl !== null && imageUrl.trim() !== '') {
+                 sendButton.disabled = true;
+                 userInput.disabled = true;
+                 actionMenuButton.disabled = true;
+
+                 appendMessage("user", { type: 'image', url: imageUrl.trim() });
+
+                 conversationHistory.push({
+                     role: "user",
+                     messageData: { type: 'image', url: imageUrl.trim() }
+                 });
+
+                 sendButton.disabled = false;
+                 userInput.disabled = false;
+                 actionMenuButton.disabled = false;
+                 userInput.focus();
+
+            } else if (imageUrl !== null) {
+                 alert("이미지 주소를 입력해야 합니다.");
+            }
+        }
+
+        function changeProfileImage(role) {
+             const promptText = role === 'user' ? "새 사용자 프로필 이미지 주소(URL)를 입력하세요:" : "새 이안 프로필 이미지 주소(URL)를 입력하세요:";
+             const newUrl = prompt(promptText);
+
+             if (newUrl !== null && newUrl.trim() !== '') {
+                 if (role === 'user') {
+                     userProfileImgUrl = newUrl.trim();
+                 } else {
+                     botProfileImgUrl = newUrl.trim();
+                 }
+                 alert(`${role === 'user' ? '사용자' : '이안'} 이미지가 변경되었습니다. 이제부터 추가되는 메시지에 적용됩니다.`);
+             } else if (newUrl !== null) {
+                  alert("이미지 주소를 입력해야 합니다.");
+             }
+        }
+
+        async function sendSituationRequest() {
+             alert("상황 생성 기능 구현 시작!");
+
+             sendButton.disabled = true;
+             userInput.disabled = true;
+             actionMenuButton.disabled = true;
+             loadingSpinner.style.display = 'block';
+
+             // 🚨 상황 생성 요청 프롬프트에도 포맷 지침 추가 🚨
+             const situationPromptText = `기존 대화 맥락과 이안의 캐릭터 설정에 기반하여, 흥미롭고 새로운 상황과 사건을 이안 캐릭터의 시점에서 소설 형식으로 묘사하듯 하나 만들어줘. 사용자가 자연스럽게 반응할 수 있는 형태로 제시해야 해. 대화의 다음 흐름으로 자연스럽게 이어지도록 만들어봐. **중요: 생성된 상황 묘사 후에는 반드시 이안 캐릭터로 돌아가 사용자에게 말을 걸어야 해. 설명조나 OOC 발언은 절대 금지하고, 모든 상황 묘사는 *별표* 형식으로, 대사는 "따옴표" 형식으로 작성하며, 묘사 70% 대사 30% 정도의 비율을 유지하고 문단과 줄바꿈을 적절히 사용해.**`;
+
+             const textOnlyContentsForApi = conversationHistory
+                 .filter(entry => entry.messageData && entry.messageData.type === 'text')
+                 .map(entry => ({
+                    role: entry.role,
+                    parts: [{ text: entry.messageData.text }]
+                 }));
+
+             const contentsForApi = [{ role: "user", parts: [{ text: SYSTEM_PROMPT }] }, ...textOnlyContentsForApi, { role: "user", parts: [{ text: situationPromptText }] }];
+
+
+             if (contentsForApi.length <= 1 && contentsForApi[0].parts[0].text === SYSTEM_PROMPT) {
+                 console.log("Only SYSTEM_PROMPT or SYSTEM_PROMPT + Situation Prompt to send to API.");
+             } else if (contentsForApi.length === 0) {
+                 console.log("No content to send to API.");
+                 appendMessage("bot", { type: 'text', text: "(상황 생성 요청 실패: 보낼 텍스트 내용 없음)" });
+                 return Promise.resolve();
+             }
+
+
+            try {
+                const res = await fetch(
+                    `/api/chat`,
+                    {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ contents: contentsForApi }),
+                    }
+                );
+
+                if (!res.ok) {
+                    const errorData = await res.json();
+                    console.error("API (Backend) Error:", res.status, errorData);
+                    appendMessage("bot", { type: 'text', text: `(상황 생성 오류: ${res.status} - ${errorData.error?.error?.message || errorData.error || res.statusText})` });
+                } else {
+                    const data = await res.json();
+                    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "(응답 없음)";
+                    appendMessage("bot", { type: 'text', text: reply });
+                }
+
+            } catch (error) {
+                console.error("Fetch Error:", error);
+                appendMessage("bot", { type: 'text', text: "(상황 생성 통신 오류 발생)" });
+            } finally {
+                sendButton.disabled = false;
+                userInput.disabled = false;
+                actionMenuButton.disabled = false;
+                loadingSpinner.style.display = 'none';
+                userInput.focus();
+            }
+        }
+
+
+        function loadSettings() {
+            console.log("loadSettings 호출됨");
+             const savedBotName = localStorage.getItem('botName') || '이안';
+             const savedUserName = localStorage.getItem('userName') || '피주머니';
+             const savedBotPersona = localStorage.getItem('botPersona') || '설정된 페르소나 없음.';
+             const savedBotAge = localStorage.getItem('botAge') || '불명';
+             const savedUserAge = localStorage.getItem('userAge') || '불명';
+             const savedUserAppearance = localStorage.getItem('userAppearance') || '설정되지 않음';
+             const savedBotAppearance = localStorage.getItem('botAppearance') || '설정되지 않음';
+             const savedUserGuidelines = localStorage.getItem('userGuidelines') || '설정된 사용자 지침 없음.';
+             userProfileImgUrl = localStorage.getItem('userProfileImgUrl') || "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU";
+             botProfileImgUrl = localStorage.getItem('botProfileImgUrl') || "https://via.placeholder.com/35/3a4a3a/ffffff?text=BOT";
+
+
+            botNameInput.value = savedBotName;
+            userNameInput.value = savedUserName;
+            botPersonaInput.value = savedBotPersona;
+            botAgeInput.value = savedBotAge;
+            userAgeInput.value = savedUserAge;
+            userAppearanceInput.value = savedUserAppearance;
+            botAppearanceInput.value = savedBotAppearance;
+            userGuidelinesInput.value = savedUserGuidelines;
+
+            SYSTEM_PROMPT = buildSystemPrompt(
+                 savedBotName,
+                 savedUserName,
+                 savedBotPersona,
+                 savedBotAge,
+                 savedBotAppearance,
+                 savedUserAge,
+                 savedUserAppearance,
+                 savedUserGuidelines
+             );
+
+            console.log("SYSTEM_PROMPT 로드 완료:", SYSTEM_PROMPT);
+        }
+
+        function saveSettings() {
+             console.log("saveSettings 호출됨");
+             const currentBotName = botNameInput.value.trim();
+             const currentUserName = userNameInput.value.trim();
+             const currentBotPersona = botPersonaInput.value.trim();
+             const currentBotAge = botAgeInput.value.trim();
+             const currentUserAge = userAgeInput.value.trim();
+             const currentUserAppearance = userAppearanceInput.value.trim();
+             const currentBotAppearance = botAppearanceInput.value.trim();
+             const currentUserGuidelines = userGuidelinesInput.value.trim();
+
+            localStorage.setItem('botName', currentBotName);
+            localStorage.setItem('userName', currentUserName);
+            localStorage.setItem('botPersona', currentBotPersona);
+            localStorage.setItem('botAge', currentBotAge);
+            localStorage.setItem('userAge', currentUserAge);
+            localStorage.setItem('userAppearance', currentUserAppearance);
+            localStorage.setItem('botAppearance', currentBotAppearance);
+            localStorage.setItem('userGuidelines', currentUserGuidelines);
+             localStorage.setItem('userProfileImgUrl', userProfileImgUrl);
+             localStorage.setItem('botProfileImgUrl', botProfileImgUrl);
+
+            SYSTEM_PROMPT = buildSystemPrompt(
+                 currentBotName,
+                 currentUserName,
+                 currentBotPersona,
+                 currentBotAge,
+                 currentBotAppearance,
+                 currentUserAge,
+                 currentUserAppearance,
+                 currentUserGuidelines
+             );
+
+            console.log("설정 저장 완료 및 SYSTEM_PROMPT 업데이트:", SYSTEM_PROMPT);
+
+            alert("설정이 저장되었습니다.");
+        }
+
+         function buildSystemPrompt(botName, userName, botPersona, botAge, botAppearance, userAge, userAppearance, userGuidelines) {
+             let finalPrompt = SYSTEM_PROMPT_TEMPLATE
+                 .replace('{botName}', botName || '이안')
+                 .replace('{botAge}', botAge || '불명')
+                 .replace('{botAppearance}', botAppearance || '설정되지 않음')
+                 .replace('{botPersona}', botPersona || '설정된 페르소나 없음.')
+                 .replace('{userName}', userName || '피주머니')
+                 .replace('{userAge}', userAge || '불명')
+                 .replace('{userAppearance}', userAppearance || '설정되지 않음')
+                 .replace('{userGuidelines}', userGuidelines || '설정된 사용자 지침 없음.');
+
+             return finalPrompt.trim();
+         }
+
+        function initializeChat() {
+             console.log("initializeChat 호출됨");
+             loadSettings();
+
+             conversationHistory = [{ role: "user", parts: [{ text: SYSTEM_PROMPT }] }];
+
+             console.log("초기 SYSTEM_PROMPT:", SYSTEM_PROMPT);
+
+             console.log("초기 메시지 추가 시도");
+             const initialBotGreeting = `...${botNameInput.value || "이안"}의 ${userNameInput.value || "피주머니"}... 그래, 이곳에 왔군요...`;
+             appendMessage("bot", { type: 'text', text: initialBotGreeting });
+
+             console.log("채팅 초기화 완료.");
+         }
+
+        initializeChat();
+
+    </script>
 </body>
 </html>
