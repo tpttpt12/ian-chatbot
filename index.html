@@ -101,21 +101,23 @@
             border: 2px solid #282828;
         }
 
-        .message-container {
-            display: flex;
-            align-items: flex-start;
-            max-width: 95%;
-        }
+  .message-container {
+    display: flex;
+    align-items: flex-start;
+    max-width: 95%;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
 
-        .message-container.user {
-            justify-content: flex-end;
-            margin-left: auto;
-        }
+  .message-container.user {
+    justify-content: flex-end;
+    margin-left: auto;
+  }
 
-        .message-container.bot {
-            justify-content: flex-start;
-            margin-right: auto;
-        }
+  .message-container.bot {
+    justify-content: flex-start;
+    margin-right: auto;
+  }
 
         .profile-img {
             width: 35px;
@@ -151,25 +153,25 @@
             margin-bottom: 0.2rem;
         }
 
-.message-bubble {
-    padding: 12px;
-    margin: 0 !important;
+  .message-bubble {
+    background-color: #3a4a4a;
+    color: #ffffff;
     border-radius: 1rem;
+    padding: 12px; /* ✅ 상하좌우 모두 균일 */
     max-width: 100%;
-    word-break: break-word;
-    line-height: 1.4;
-    position: relative;
     font-size: 1rem;
+    line-height: 1.4;
     white-space: pre-wrap;
-    display: inline-block; /* ✅ 핵심: 여백 방지용 */
-    vertical-align: top;    /* ✅ inline-block 정렬 */
-}
+    margin: 0 !important; /* ✅ 말풍선 바깥 여백 제거 */
+    display: inline-block;
+    vertical-align: top;
+  }
 
-.message-bubble p {
+  .message-bubble p {
     margin: 0 !important;
     padding: 0 !important;
     line-height: 1.4;
-}
+  }
 
         
          /* 🚨 챗봇 메시지의 p 태그 하단 마진 제거 (더 세밀한 간격 제어) 🚨 */
