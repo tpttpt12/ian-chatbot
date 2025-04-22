@@ -949,10 +949,10 @@
                 console.error("Fetch Error:", error);
  appendMessage("bot", { type: 'text', text: "(통신 오류 발생)" });
  } finally {
-                loadingSpinner.style.display = 'none';
- sendButton.disabled = false;
-                userInput.disabled = false;
+                sendButton.disabled = false;
+ userInput.disabled = false;
                 actionMenuButton.disabled = false;
+                loadingSpinner.style.display = 'none';
                 userInput.focus();
  }
         }
@@ -1036,11 +1036,15 @@
  if (!res.ok) {
                     const errorData = await res.json();
  console.error("API (Backend) Error:", res.status, errorData);
-                    appendMessage("bot", { type: 'text', text: `(상황 생성 오류: ${res.status} - ${errorData.error?.error?.message || errorData.error || res.statusText})` });
+                    appendMessage("bot", { type: 'text', text: `(오류 발생: ${res.status} - ${errorData.error?.error?.message || errorData.error || res.statusText})` });
  } else {
                     const data = await res.json();
  const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "(응답 없음)";
                     appendMessage("bot", { type: 'text', text: reply });
+ conversationHistory.push({
+                        role: "model",
+                        messageData: { type: 'text', text: reply }
+                    });
  }
 
             } catch (error) {
