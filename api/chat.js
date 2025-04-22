@@ -1,71 +1,77 @@
-// --- 메시지 전송 함수 수정 (이제 백엔드 서버리스 함수를 호출) ---
- async function sendMessage() {
-     const message = userInput.value.trim();
-     if (!message) return;
+// api/chat.js 파일 내용
 
-     sendButton.disabled = true;
-     userInput.disabled = true;
+// 환경 변수에서 API 키를 가져옵니다. Vercel 설정에서 추가해야 합니다.
+const { GEMINI_API_KEY } = process.env;
 
-     appendMessage("user", message);
-     // 대화 히스토리에는 사용자 메시지를 먼저 추가합니다.
-     conversationHistory.push({
-         role: "user",
-         parts: [{ text: message }]
-     });
+// 구글 Generative AI 라이브러리를 사용해도 좋지만,
+// 프론트엔드와 유사하게 fetch를 사용하는 방식으로 작성하여 이해를 돕습니다.
+// 실제 라이브러리 사용 시 더 편리하고 안정적일 수 있습니다.
 
-     try {
-         // 🚨 구글 API 엔드포인트 대신 Vercel 서버리스 함수 엔드포인트 호출 🚨
-         // 🚨 API 키는 더 이상 URL에 포함시키지 않습니다 🚨
-         const res = await fetch(
-             `/api/chat`, // Vercel 서버리스 함수의 경로
-             {
-                 method: "POST",
-                 headers: {
-                     "Content-Type": "application/json",
-                 },
-                 // 서버리스 함수로 현재까지의 대화 히스토리 전체를 보냅니다.
-                 body: JSON.stringify({ contents: conversationHistory }),
-             }
-         );
+module.exports = async (req, res) => {
+    // CORS 설정 (프론트엔드와 백엔드가 다른 출처일 수 있으므로 필요)
+    // 여기서는 모든 출처 (*) 에서 요청을 허용하도록 간단히 설정합니다.
+    // 실제 운영 환경에서는 특정 프론트엔드 주소만 허용하도록 수정하는 것이 좋습니다.
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-         // Vercel 서버리스 함수 응답 확인
-         if (!res.ok) {
-             const errorData = await res.json();
-             console.error("API (Backend) Error:", res.status, errorData);
-             appendMessage("bot", `(오류 발생: ${res.status} - ${errorData.error?.error?.message || errorData.error || res.statusText})`);
-             // 에러 발생 시 마지막 사용자 메시지를 히스토리에서 제거
-             conversationHistory.pop();
+    // OPTIONS 요청 처리 (CORS 사전 요청)
+    if (req.method === 'OPTIONS') {
+        res.status(200).end();
+        return;
+    }
 
-         } else {
-             // Vercel 서버리스 함수로부터 받은 응답은 이미 구글 API의 응답 구조와 같아야 합니다.
-             const data = await res.json();
-             const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "(응답 없음)";
-             appendMessage("bot", reply);
+    // POST 요청 처리
+    if (req.method !== 'POST') {
+        res.status(405).send('Method Not Allowed');
+        return;
+    }
 
-             // 봇 응답을 대화 히스토리에 추가
-             conversationHistory.push({
-                 role: "model",
-                 parts: [{ text: reply }]
-             });
-         }
+    // API 키가 설정되지 않았다면 에러 반환
+    if (!GEMINI_API_KEY) {
+        console.error("GEMINI_API_KEY is not set in environment variables.");
+        res.status(500).json({ error: 'Server configuration error: API Key missing.' });
+        return;
+    }
 
-     } catch (error) {
-         console.error("Fetch Error:", error);
-         appendMessage("bot", "(통신 오류 발생)");
-         // 에러 발생 시 마지막 사용자 메시지를 히스토리에서 제거
-         conversationHistory.pop();
-     } finally {
-         sendButton.disabled = false;
-         userInput.disabled = false;
-         userInput.focus();
-     }
- }
- // --- sendMessage 함수 수정 끝 ---
+    try {
+        // 프론트엔드에서 보낸 대화 내용(contents)을 요청 본문에서 가져옵니다.
+        const { contents } = req.body;
 
- // ... appendMessage 함수 (이전과 동일하게 두면 됩니다) ...
- // ... 이미지 변경 관련 코드 (이전과 동일하게 두면 됩니다) ...
+        if (!contents || !Array.isArray(contents)) {
+             res.status(400).json({ error: 'Invalid request body: contents array is missing.' });
+             return;
+        }
 
- // 초기 메시지 예시 (이전과 동일)
- // appendMessage("bot", "...당신은 나의 피주머니... 그래, 이곳에 왔군요...");
+        // 구글 Gemini API 엔드포인트 (프론트엔드에서 직접 호출했던 주소)
+        const API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
 
-</script>
+        // 구글 Gemini API 호출 (API 키는 백엔드에서 사용)
+        const googleRes = await fetch(`${API_URL}?key=${GEMINI_API_KEY}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            // 프론트엔드에서 받은 대화 내용을 그대로 구글 API로 보냅니다.
+            body: JSON.stringify({ contents: contents })
+        });
+
+        // 구글 API 응답 확인
+        if (!googleRes.ok) {
+            const errorData = await googleRes.json();
+            console.error("Error calling Google API:", googleRes.status, errorData);
+            res.status(googleRes.status).json({ error: `Error from Google API: ${errorData.error?.message || googleRes.statusText}` });
+            return;
+        }
+
+        // 구글 API 응답을 JSON으로 파싱
+        const googleData = await googleRes.json();
+
+        // 파싱된 응답을 프론트엔드로 다시 보냅니다.
+        res.status(200).json(googleData);
+
+    } catch (error) {
+        console.error("Backend Error:", error);
+        res.status(500).json({ error: 'An unexpected error occurred on the server.' });
+    }
+};
