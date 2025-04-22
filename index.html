@@ -661,8 +661,7 @@
             <label for="userAppearanceInput">Appearance:</label>
             <input type="text" id="userAppearanceInput" value="사용자가 원하는 외관">
             <label for="userGuidelinesInput">Guidelines:</label>
-            <textarea id="userGuidelinesInput">당신의 캐릭터 설정에 대한 지침을 여기에 입력하세요.
-(예: 나는 어떤 사람인지, 어떤 말투를 사용하는지 등)</textarea>
+            <textarea id="userGuidelinesInput">당신의 캐릭터 설정에 대한 지침을 여기에 입력하세요.\n(예: 나는 어떤 사람인지, 어떤 말투를 사용하는지 등)</textarea>
 
             <button id="saveSettingsButton" class="sidebar-save-button">Save Settings</button>
         </div>
@@ -834,7 +833,11 @@ This dynamic must drive the narrative and dialogue written by the Novelist.
         slotButtons.forEach(button => {
             button.addEventListener('click', function() {
                 const slotNumber = parseInt(this.textContent);
-                loadSettings(slotNumber);
+                // 수정된 로직: 슬롯 버튼 클릭 시 currentSlot 및 스타일 업데이트는 항상 실행
+                currentSlot = slotNumber; // 현재 슬롯 업데이트
+                updateSlotButtonStyles(); // 슬롯 버튼 스타일 업데이트
+
+                loadSettings(slotNumber); // 해당 슬롯 설정 로드 시도 (loadSettings 내에서는 로드 성공 여부에 따라 입력 필드 업데이트만 수행)
             });
         });
 
@@ -1105,6 +1108,10 @@ This dynamic must drive the narrative and dialogue written by the Novelist.
         // loadSettings 함수 수정: 슬롯 번호를 인자로 받아 해당 슬롯의 설정을 로드
         function loadSettings(slotNumber) {
              // console.log(`loadSettings 호출됨 - 슬롯 ${slotNumber}`); // 콘솔 로그 제거
+             // 수정된 로직: 슬롯 버튼 클릭 시 currentSlot 및 스타일 업데이트는 항상 실행
+             currentSlot = slotNumber; // 현재 슬롯 업데이트
+             updateSlotButtonStyles(); // 슬롯 버튼 스타일 업데이트
+
              const settingsKey = `settings_slot_${slotNumber}`;
              const savedSettings = localStorage.getItem(settingsKey);
 
@@ -1136,8 +1143,7 @@ This dynamic must drive the narrative and dialogue written by the Novelist.
                          userGuidelinesInput.value
                      );
                      // console.log(`SYSTEM_PROMPT 로드 완료 - 슬롯 ${slotNumber}:`, SYSTEM_PROMPT); // 콘솔 로그 제거
-                     currentSlot = slotNumber; // 현재 슬롯 업데이트
-                     updateSlotButtonStyles(); // 슬롯 버튼 스타일 업데이트
+                     // currentSlot 업데이트와 스타일 업데이트는 함수 초반에서 이미 했습니다.
                      alert(`${slotNumber}번 슬롯의 설정을 불러왔습니다.`);
 
                  } catch (e) {
@@ -1146,8 +1152,9 @@ This dynamic must drive the narrative and dialogue written by the Novelist.
                      loadDefaultSettings(); // 기본 설정 로드 시도
                  }
              } else {
+                 // 저장된 설정이 없으면 기본 설정 로드
                  // console.log(`슬롯 ${slotNumber}에 저장된 설정이 없습니다. 기본 설정을 로드합니다.`); // 콘솔 로그 제거
-                 loadDefaultSettings(); // 저장된 설정이 없으면 기본 설정 로드
+                 loadDefaultSettings(); // 이 함수 내에서는 currentSlot이나 스타일 변경하지 않음
              }
         }
 
@@ -1170,8 +1177,7 @@ This dynamic must drive the narrative and dialogue written by the Novelist.
              try {
                  const jsonString = JSON.stringify(settingsToSave);
                  localStorage.setItem(`settings_slot_${slotNumber}`, jsonString);
-                 currentSlot = slotNumber; // 현재 슬롯 업데이트
-                 updateSlotButtonStyles(); // 슬롯 버튼 스타일 업데이트
+                 // currentSlot 업데이트와 스타일 업데이트는 슬롯 로드 시에만 합니다.
                  alert(`${slotNumber}번 슬롯에 현재 설정이 저장되었습니다.`);
                  // console.log(`슬롯 ${slotNumber}에 설정 저장 완료`); // 콘솔 로그 제거
              } catch (e) {
@@ -1204,8 +1210,7 @@ This dynamic must drive the narrative and dialogue written by the Novelist.
                 userAppearanceInput.value,
                 userGuidelinesInput.value
             );
-             currentSlot = 1; // 기본 설정을 로드했으니 현재 슬롯은 1
-             updateSlotButtonStyles(); // 슬롯 버튼 스타일 업데이트
+             // currentSlot과 스타일 업데이트는 loadSettings에서 이미 처리했습니다.
             // alert("기본 설정을 로드했습니다."); // 불필요한 알림 제거
         }
 
@@ -1220,6 +1225,7 @@ let finalPrompt = SYSTEM_PROMPT_TEMPLATE
     .replaceAll('{userAge}', userAge || '불명')
     .replaceAll('{userAppearance}', userAppearance || '설정되지 않음')
     .replaceAll('{userGuidelines}', userGuidelines || '설정된 사용자 지침 없음.');
+
 
              return finalPrompt.trim();
          }
@@ -1238,7 +1244,7 @@ let finalPrompt = SYSTEM_PROMPT_TEMPLATE
 
         function initializeChat() {
              // console.log("initializeChat 호출됨"); // 콘솔 로그 제거
-             loadSettings(1); // 페이지 로드 시 1번 슬롯의 설정 로드
+             loadSettings(1); // 페이지 로드 시 1번 슬롯의 설정 로드 (currentSlot 및 스타일 업데이트 포함)
 
              // 초기 대화 메시지 전송 (SYSTEM_PROMPT 포함)
              // conversationHistory는 loadSettings에서 업데이트된 SYSTEM_PROMPT를 사용해야 하므로 initializeChat에서 설정
