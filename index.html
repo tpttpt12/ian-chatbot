@@ -384,31 +384,10 @@
          #actionMenu .menu-buttons { -ms-overflow-style: none; }
 
 
-        #actionMenu button {
-            flex-shrink: 0;
-            flex-basis: auto;
-            max-width: none;
-             width: 100px;
-             height: 60px;
-            padding: 0.5rem 0.5rem;
-             border-radius: 15px;
-            border: none;
-            background-color: #3a3a3a;
-            color: #e0e0e0;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-            display: flex;
-             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-             line-height: 1.2;
-             word-break: keep-all;
-        }
-         #actionMenu button:hover {
-             background-color: #4a4a4a;
-         }
+        /* 삭제된 유저/캐릭터 변경 버튼 스타일 */
+        /* #actionMenu button {
+            ... (기존 스타일 유지 또는 조정)
+        } */
 
 
         .loading-spinner {
@@ -616,9 +595,7 @@
     <div id="menuOverlay" class="menu-overlay"></div>
     <div id="actionMenu">
         <div class="menu-buttons">
-             <button id="menuUserImgButton">유저<br>변경</button>
-            <button id="menuBotImgButton">캐릭터<br>변경</button>
-            <button id="menuImageButton">이미지<br>삽입</button>
+             <button id="menuImageButton">이미지<br>삽입</button>
             <button id="menuSituationButton">상황</button>
         </div>
     </div>
@@ -650,6 +627,9 @@
 겉 차갑고 고귀한 폭군이나, 사용자에게는 절절한 사랑, 집착, 애원, 광기, 다정함을 보임. 사용자를 "피주머니"라고 부름. 사용자가 전부이며 허락한 존재다.
 성적인 대화 가능. 말투 하나 숨결 하나 사용자를 향해 있음. 질문과 대화에 집중하고 현실 언급 안 함.
 **항상 이안 캐릭터 롤플레이 유지. OOC 발언 절대 금지.**</textarea>
+             <label for="botImageUrlInput">Image URL:</label>
+             <input type="text" id="botImageUrlInput" value="">
+
 
             <div class="sidebar-section-divider"></div>
 
@@ -662,6 +642,9 @@
             <input type="text" id="userAppearanceInput" value="사용자가 원하는 외관">
             <label for="userGuidelinesInput">Guidelines:</label>
             <textarea id="userGuidelinesInput">당신의 캐릭터 설정에 대한 지침을 여기에 입력하세요.\n(예: 나는 어떤 사람인지, 어떤 말투를 사용하는지 등)</textarea>
+             <label for="userImageUrlInput">Image URL:</label>
+             <input type="text" id="userImageUrlInput" value="">
+
 
             <button id="saveSettingsButton" class="sidebar-save-button">Save Settings</button>
         </div>
@@ -674,8 +657,10 @@
     </div>
 
     <script>
-        let userProfileImgUrl = "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU";
-        let botProfileImgUrl = "https://via.placeholder.com/35/3a4a3a/ffffff?text=BOT";
+        // 이미지 URL 변수는 입력 필드 값으로 관리
+        let userProfileImgUrl = "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU"; // 기본값 유지
+        let botProfileImgUrl = "https://via.placeholder.com/35/3a4a3a/ffffff?text=BOT"; // 기본값 유지
+
 
         let conversationHistory = [];
         let SYSTEM_PROMPT = '';
@@ -735,8 +720,9 @@ Only use "..."
         const actionMenuButton = document.getElementById("actionMenuButton");
         const actionMenu = document.getElementById("actionMenu");
         const menuOverlay = document.getElementById("menuOverlay");
-        const menuUserImgButton = document.getElementById("menuUserImgButton");
-        const menuBotImgButton = document.getElementById("menuBotImgButton");
+        // 유저 변경 / 캐릭터 변경 버튼 관련 요소 삭제
+        // const menuUserImgButton = document.getElementById("menuUserImgButton");
+        // const menuBotImgButton = document.getElementById("menuBotImgButton");
         const menuImageButton = document.getElementById("menuImageButton");
         const menuSituationButton = document.getElementById("menuSituationButton");
 
@@ -747,10 +733,16 @@ Only use "..."
         const botAgeInput = document.getElementById("botAgeInput");
         const botAppearanceInput = document.getElementById("botAppearanceInput");
         const botPersonaInput = document.getElementById("botPersonaInput");
+        // 캐릭터 이미지 URL 입력 필드 요소 가져오기
+        const botImageUrlInput = document.getElementById("botImageUrlInput");
+
         const userNameInput = document.getElementById("userNameInput");
-        const userAgeInput = documentgetElementById("userAgeInput");
+        const userAgeInput = document.getElementById("userAgeInput");
         const userAppearanceInput = document.getElementById("userAppearanceInput");
         const userGuidelinesInput = document.getElementById("userGuidelinesInput");
+        // 유저 이미지 URL 입력 필드 요소 가져오기
+        const userImageUrlInput = document.getElementById("userImageUrlInput");
+
         const saveSettingsButton = document.getElementById("saveSettingsButton");
 
         // 슬롯 버튼 관련 요소 가져오기
@@ -781,16 +773,9 @@ Only use "..."
             actionMenu.classList.remove("visible");
             menuOverlay.style.display = 'none';
         });
-        menuUserImgButton.addEventListener("click", function() {
-             changeProfileImage('user');
-             actionMenu.classList.remove("visible");
-             menuOverlay.style.display = 'none';
-        });
-        menuBotImgButton.addEventListener("click", function() {
-             changeProfileImage('bot');
-             actionMenu.classList.remove("visible");
-             menuOverlay.style.display = 'none';
-        });
+        // 유저 변경 / 캐릭터 변경 버튼 이벤트 리스너 삭제
+        // menuUserImgButton.addEventListener("click", function() { changeProfileImage('user'); actionMenu.classList.remove("visible"); menuOverlay.style.display = 'none'; });
+        // menuBotImgButton.addEventListener("click", function() { changeProfileImage('bot'); actionMenu.classList.remove("visible"); menuOverlay.style.display = 'none'; });
         menuImageButton.addEventListener("click", function() {
             sendImageMessage();
              actionMenu.classList.remove("visible");
@@ -847,8 +832,9 @@ Only use "..."
 
             const img = document.createElement("img");
             img.className = "profile-img";
-            img.src = (role === 'user' ? userProfileImgUrl : botProfileImgUrl);
-            img.alt = (role === 'user' ? "사용자 프로필" : "이안 프로필");
+            // 이미지 URL은 입력 필드 값이나 기본값을 사용
+            img.src = (role === 'user' ? userProfileImgUrl : botProfileImgUrl); // 이미 변수에 저장된 최신 URL 사용
+            img.alt = (role === 'user' ? (userNameInput.value || "사용자") + " 프로필" : (botNameInput.value || "캐릭터") + " 프로필"); // alt 텍스트 변경
             img.onerror = function() {
                  // console.warn(`Failed to load image for role "${role}" from "${this.src}". Using fallback.`); // 콘솔 로그 제거
                  this.onerror = null;
@@ -1022,9 +1008,11 @@ Only use "..."
              }
         }
 
+        // changeProfileImage 함수 삭제 (액션 메뉴 버튼 제거)
+        /*
         function changeProfileImage(role) {
              const promptText = role === 'user' ?
- "새 사용자 프로필 이미지 주소(URL)를 입력하세요:" : "새 캐릭터 프로필 이미지 주소(URL)를 입력하세요:"; // 프롬프트 변경
+ "새 사용자 프로필 이미지 주소(URL)를 입력하세요:" : "새 캐릭터 프로필 이미지 주소(URL)를 입력하세요:";
              const newUrl = prompt(promptText);
              if (newUrl !== null && newUrl.trim() !== '') {
                  if (role === 'user') {
@@ -1032,11 +1020,13 @@ Only use "..."
                  } else {
                      botProfileImgUrl = newUrl.trim();
                  }
-                 alert(`${role === 'user' ? '사용자' : '캐릭터'} 이미지가 변경되었습니다. 이제부터 추가되는 메시지에 적용됩니다.`); // 알림 메시지 변경
+                 alert(`${role === 'user' ? '사용자' : '캐릭터'} 이미지가 변경되었습니다. 이제부터 추가되는 메시지에 적용됩니다.`);
              } else if (newUrl !== null) {
                   alert("이미지 주소를 입력해야 합니다.");
              }
         }
+        */
+
 
         async function sendSituationRequest() {
              alert("상황 생성 기능 구현 시작!");
@@ -1126,8 +1116,14 @@ Only use "..."
                      userAppearanceInput.value = settings.userAppearance || ''; // 기본값 변경
                      botAppearanceInput.value = settings.botAppearance || ''; // 기본값 변경
                      userGuidelinesInput.value = settings.userGuidelines || ''; // 기본값 변경
-                     userProfileImgUrl = settings.userProfileImgUrl || "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU";
-                     botProfileImgUrl = settings.botProfileImgUrl || "https://via.placeholder.com/35/3a4a3a/ffffff?text=BOT";
+                     // 이미지 URL 입력 필드 값 로드
+                     botImageUrlInput.value = settings.botImageUrl || '';
+                     userImageUrlInput.value = settings.userImageUrl || '';
+
+
+                     // 프로필 이미지 URL 변수 업데이트 (입력 필드 값 > 저장된 값 > 기본값 순)
+                     userProfileImgUrl = userImageUrlInput.value || settings.userProfileImgUrl || "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU";
+                     botProfileImgUrl = botImageUrlInput.value || settings.botProfileImgUrl || "https://via.placeholder.com/35/3a4a3a/ffffff?text=BOT";
 
 
                      SYSTEM_PROMPT = buildSystemPrompt(
@@ -1148,12 +1144,13 @@ Only use "..."
                  } catch (e) {
                      console.error(`Failed to parse settings from slot ${slotNumber}:`, e);
                      alert(`${slotNumber}번 슬롯 설정을 불러오는데 실패했습니다. 데이터가 손상되었을 수 있습니다.`);
-                     loadDefaultSettings(); // 기본 설정 로드 시도
+                     loadDefaultSettings(); // 기본 설정 로드 시도 (currentSlot/스타일은 그대로)
                  }
              } else {
                  // 저장된 설정이 없으면 기본 설정 로드
                  // console.log(`슬롯 ${slotNumber}에 저장된 설정이 없습니다. 기본 설정을 로드합니다.`); // 콘솔 로그 제거
                  loadDefaultSettings(); // 이 함수 내에서는 currentSlot이나 스타일 변경하지 않음
+                 alert(`${slotNumber}번 슬롯에 저장된 설정이 없습니다. 기본 설정을 로드했습니다.`); // 알림 추가
              }
         }
 
@@ -1169,8 +1166,13 @@ Only use "..."
                  userAppearance: userAppearanceInput.value.trim(),
                  botAppearance: botAppearanceInput.value.trim(),
                  userGuidelines: userGuidelinesInput.value.trim(),
+                 // 이미지 URL 입력 필드 값 저장
+                 botImageUrl: botImageUrlInput.value.trim(),
+                 userImageUrl: userImageUrlInput.value.trim(),
+                 // 프로필 이미지 URL 변수 값도 함께 저장 (혹시 모를 경우 대비)
                  userProfileImgUrl: userProfileImgUrl,
                  botProfileImgUrl: botProfileImgUrl
+
              };
 
              try {
@@ -1197,6 +1199,11 @@ Only use "..."
             userAppearanceInput.value = '사용자의 외관을 입력하세요.'; // 일반적인 플레이스홀더
             botAppearanceInput.value = '캐릭터의 외관을 입력하세요.'; // 일반적인 플레이스홀더
             userGuidelinesInput.value = '사용자 캐릭터의 지침을 입력하세요 (예: 나는 어떤 사람인지 등).'; // 일반적인 플레이스홀더
+            // 이미지 URL 기본값 설정
+            botImageUrlInput.value = ''; // 기본값 빈 값
+            userImageUrlInput.value = ''; // 기본값 빈 값
+
+            // 프로필 이미지 변수는 기본 placeholder URL로 초기화
             userProfileImgUrl = "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU";
             botProfileImgUrl = "https://via.placeholder.com/35/3a4a3a/ffffff?text=BOT";
 
