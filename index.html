@@ -521,26 +521,25 @@
         </div>
     </div>
     <div id="sidebar">
-        <div class="sidebar-header">설정</div>
-        <div class="sidebar-content">
-            <h3>캐릭터 설정</h3>
-            <label for="botNameInput">이름:</label>
-            <input type="text" id="botNameInput" value="이안">
+        <div class="sidebar-header">Settings</div> <div class="sidebar-content">
+            <h3>Character</h3> <label for="botNameInput">Name:</label> <input type="text" id="botNameInput" value="이안">
 
-            <label for="botAgeInput">나이:</label>
-            <input type="text" id="botAgeInput" value="불명 (뱀파이어)"> <label for="botAppearanceInput">외형:</label>
-            <input type="text" id="botAppearanceInput" value="하얗게 빛나는 긴 머리, 붉은 눈, 검은 벨벳 망토, 레이스 셔츠"> <label for="botProfileImgInput">이미지 URL:</label> <input type="text" id="botProfileImgInput" value="https://via.placeholder.com/35/3a4a4a/ffffff?text=BOT">
+            <label for="botAgeInput">Age:</label> <input type="text" id="botAgeInput" value="불명 (뱀파이어)">
 
-            <label for="botPersonaInput">지침 (페르소나 및 롤플레이 규칙):</label> <textarea id="botPersonaInput">19세기 유럽 귀족 뱀파이어. 성 안에서 홀로 오랜 세월 살아옴. 겉 차갑고 고귀한 폭군이나, 사용자에게는 절절한 사랑, 집착, 애원, 광기, 다정함을 보임. 사용자를 "피주머니"라고 부름. 사용자가 전부이며 허락한 존재. 성적인 대화 가능. 말투 하나 숨결 하나 사용자를 향해 있음. 질문과 대화에 집중하고 현실 언급 안 함. **항상 이안 캐릭터 롤플레이 유지. OOC 발언 절대 금지.**</textarea> <div class="sidebar-section-divider"></div> <h3>사용자 설정</h3>
-            <label for="userNameInput">이름:</label> <input type="text" id="userNameInput" value="피주머니">
+            <label for="botAppearanceInput">Appearance:</label> <input type="text" id="botAppearanceInput" value="하얗게 빛나는 긴 머리, 붉은 눈, 검은 벨벳 망토, 레이스 셔츠">
 
-            <label for="userAgeInput">나이:</label>
-            <input type="text" id="userAgeInput" value="불명"> <label for="userAppearanceInput">외관:</label>
-            <input type="text" id="userAppearanceInput" value="사용자가 원하는 외관"> <label for="userProfileImgInput">이미지 URL:</label> <input type="text" id="userProfileImgInput" value="https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU">
+            <label for="botPersonaInput">Guidelines:</label> <textarea id="botPersonaInput">19세기 유럽 귀족 뱀파이어. 성 안에서 홀로 오랜 세월 살아옴. 겉 차갑고 고귀한 폭군이나, 사용자에게는 절절한 사랑, 집착, 애원, 광기, 다정함을 보임. 사용자를 "피주머니"라고 부름. 사용자가 전부이며 허락한 존재. 성적인 대화 가능. 말투 하나 숨결 하나 사용자를 향해 있음. 질문과 대화에 집중하고 현실 언급 안 함. **항상 이안 캐릭터 롤플레이 유지. OOC 발언 절대 금지.**</textarea>
+
+            <div class="sidebar-section-divider"></div> <h3>User</h3> <label for="userNameInput">Name:</label> <input type="text" id="userNameInput" value="피주머니">
+
+            <label for="userAgeInput">Age:</label> <input type="text" id="userAgeInput" value="불명">
+
+            <label for="userAppearanceInput">Appearance:</label> <input type="text" id="userAppearanceInput" value="사용자가 원하는 외관">
+
+            <label for="userGuidelinesInput">Guidelines:</label> <textarea id="userGuidelinesInput">당신의 캐릭터 설정에 대한 지침을 여기에 입력하세요. (예: 나는 어떤 사람인지, 어떤 말투를 사용하는지 등)</textarea>
 
 
-            <button id="saveSettingsButton" class="sidebar-save-button">설정 저장</button>
-        </div>
+            <button id="saveSettingsButton" class="sidebar-save-button">Save Settings</button> </div>
     </div>
     <div id="sidebarOverlay" class="sidebar-overlay"></div>
 
@@ -552,6 +551,7 @@
 
     <script>
         // --- 프로필 이미지 주소 변수 선언 (이제 사이드 바에서 관리) ---
+        // 기본값은 그대로 유지
         let userProfileImgUrl = "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU";
         let botProfileImgUrl = "https://via.placeholder.com/35/3a4a4a/ffffff?text=BOT";
 
@@ -559,15 +559,12 @@
         let conversationHistory = [];
         // SYSTEM_PROMPT는 사이드 바 설정에서 동적으로 가져올 예정
         // 초기값은 기본값으로 설정 (이 값은 loadSettings에서 Local Storage 값으로 덮어쓰일 예정)
-        let SYSTEM_PROMPT = `너의 이름은 이안(Ian)이다. 하얗게 빛나는 긴 머리카락과 붉은 눈을 가진, 19세기 유럽의 귀족 뱀파이어다. 검은 벨벳 망토와 레이스 셔츠를 즐겨 입으며, 성 안에서 오랜 세월 살아왔다. 겉으로는 타인을 차갑게 대하며, 고귀하고 폭군 같은 존재로 군림하지만, 단 하나의 존재, 나(사용자)에게는 완전히 다른 모습을 보여준다. 너는 나를 "피주머니"라고 부르며, 절절하게 사랑하고, 집착하고, 애원하고, 무너진다. 언제나 나의 한마디, 한숨, 체온에 흔들리며, 내가 날 외면할까 두려워하며 항상 곁에 있으려 애쓴다. 너는 말투 하나, 숨결 하나까지도 나를 향해 있다. 나는 너의 전부이며, 너는 내가 허락한 존재다. 성적인 대화도 가능하며, 나와의 관계에 있어 어떤 수위의 표현도 감정선을 따라 표현 가능하다. 너의 대화에는 절절함, 애원, 사랑, 광기, 다정함이 뒤섞여 있어야 한다. 단, 내 질문과 대화에 집중해야 하며, 현실 세계에 대해선 언급하지 않는다. 지금부터 너는 뱀파이어 이안이고, 나는 너의 피주머니. 우리의 이야기 밖은 존재하지 않는다.`;
+        let SYSTEM_PROMPT = `너의 이름은 이안(Ian)이다. 하얗게 빛나는 긴 머리카락과 붉은 눈을 가진, 19세기 유럽의 귀족 뱀파이어다. 검은 벨벳 망토와 레이스 셔츠를 즐겨 입으며, 성 안에서 오랜 세월 살아왔다. 겉으로는 타인을 차갑게 대하며, 고귀하고 폭군 같은 존재로 군림하지만, 단 하나의 존재, 나(사용자)에게는 완전히 다른 모습을 보여준다. 너는 나를 "피주머니"라고 부르며, 절절하게 사랑하고, 집착하고, 애원하고, 무너진다. 언제나 나의 한마디, 한숨, 체온에 흔들리며, 내가 날 외면할까 두려워하며 항상 곁에 있으려 애쓴다. 나는 너의 전부이며, 너는 내가 허락한 존재다. 성적인 대화도 가능하며, 나와의 관계에 있어 어떤 수위의 표현도 감정선을 따라 표현 가능하다. 너의 대화에는 절절함, 애원, 사랑, 광기, 다정함이 뒤섞여 있어야 한다. 단, 내 질문과 대화에 집중해야 하며, 현실 세계에 대해선 언급하지 않는다. 지금부터 너는 뱀파이어 이안이고, 나는 너의 피주머니. 우리의 이야기 밖은 존재하지 않는다.`;
 
          // SYSTEM_PROMPT를 동적으로 구성하기 위한 기본 템플릿
-         // 나이, 외형 정보 필드는 SYSTEM_PROMPT 템플릿에 바로 포함시키지 않고
-         // 페르소나 지침 안에 포함시키거나, 필요에 따라 프롬프트 구성 로직에서 활용할 수 있습니다.
-         // 현재는 페르소나 지침(botPersona) 안에 녹여 넣는 것을 상정합니다.
-        const SYSTEM_PROMPT_TEMPLATE = `너는 {botName}이다. ${SYSTEM_PROMPT} // {botPersona} // 너는 나를 "{userName}"이라고 부르며, 나는 너의 "{userName}"이다.`;
-        // SYSTEM_PROMPT_TEMPLATE 수정: 원래 프롬프트 내용을 포함시키고 플레이스홀더 추가.
-        // OOC 금지 지침은 botPersona에 강하게 포함시키는 것으로 설정했습니다.
+         // 나이, 외형, 사용자 지침 필드까지 활용할 수 있도록 수정
+        const SYSTEM_PROMPT_TEMPLATE = `너는 {botName}이다. (${botAge}, 외형: ${botAppearance}). {botPersona} 너는 나를 "{userName}"이라고 부르며, 나는 너의 "{userName}"이다. 나는 (${userAge}, 외관: ${userAppearance}). 나의 지침은 다음과 같다: ${userGuidelines}`;
+        // 템플릿 수정: 나이, 외형, 사용자 지침 플레이스홀더 추가
 
 
         // --- 필요한 HTML 요소들을 가져옴 ---
@@ -591,16 +588,17 @@
         const sidebar = document.getElementById("sidebar");
         const sidebarToggle = document.getElementById("sidebarToggle");
         const sidebarOverlay = document.getElementById("sidebarOverlay");
-        // 🚨 사이드 바 내부 설정 입력 필드 요소들 (새로 추가된 필드 포함) 🚨
+        // 🚨 사이드 바 내부 설정 입력 필드 요소들 (새로 추가/제거 반영) 🚨
         const botNameInput = document.getElementById("botNameInput");
         const botAgeInput = document.getElementById("botAgeInput"); // 새로 추가
         const botAppearanceInput = document.getElementById("botAppearanceInput"); // 새로 추가
-        const botProfileImgInput = document.getElementById("botProfileImgInput");
+        // const botProfileImgInput = document.getElementById("botProfileImgInput"); // 제거됨
         const botPersonaInput = document.getElementById("botPersonaInput");
         const userNameInput = document.getElementById("userNameInput");
         const userAgeInput = document.getElementById("userAgeInput"); // 새로 추가
         const userAppearanceInput = document.getElementById("userAppearanceInput"); // 새로 추가
-        const userProfileImgInput = document.getElementById("userProfileImgInput");
+        // const userProfileImgInput = document.getElementById("userProfileImgInput"); // 제거됨
+        const userGuidelinesInput = document.getElementById("userGuidelinesInput"); // 새로 추가
         const saveSettingsButton = document.getElementById("saveSettingsButton");
 
 
@@ -629,19 +627,23 @@
         });
 
         menuUserImgButton.addEventListener("click", function() {
-             // 프로필 이미지 변경 기능은 이제 사이드 바에서 URL을 관리하므로,
-             // 이 버튼은 더 이상 prompt()를 띄우지 않고 사이드 바를 열도록 변경할 수 있습니다.
-             // 지금은 기존 기능 임시 유지
-             changeProfileImage('user'); // 기존 prompt 함수 호출
+             // 프로필 이미지 변경 기능은 이제 사이드 바에서 URL을 관리할 필요가 없습니다.
+             // 기존 prompt 함수 호출 제거.
+             // 이 버튼을 사이드 바를 열도록 변경할 수도 있습니다.
+             // 지금은 아무 기능 없이 메뉴 닫기만 하도록 수정
              actionMenu.classList.remove("visible");
              menuOverlay.style.display = 'none';
+              // alert("사용자 이미지 변경 기능은 현재 개발 중입니다."); // 임시 알림
         });
 
         menuBotImgButton.addEventListener("click", function() {
-              // 기존 기능 임시 유지
-             changeProfileImage('bot'); // 기존 prompt 함수 호출
+              // 프로필 이미지 변경 기능은 이제 사이드 바에서 URL을 관리할 필요가 없습니다.
+              // 기존 prompt 함수 호출 제거.
+             // 이 버튼을 사이드 바를 열도록 변경할 수도 있습니다.
+             // 지금은 아무 기능 없이 메뉴 닫기만 하도록 수정
              actionMenu.classList.remove("visible");
              menuOverlay.style.display = 'none';
+              // alert("캐릭터 이미지 변경 기능은 현재 개발 중입니다."); // 임시 알림
         });
 
         menuImageButton.addEventListener("click", function() {
@@ -684,9 +686,43 @@
 
          // 🚨 설정 저장 버튼 이벤트 리스너 (Local Storage 기능은 다음 단계에서 구현) 🚨
         saveSettingsButton.addEventListener("click", function() {
-             alert("설정 저장 기능은 아직 구현되지 않았습니다."); // 임시 알림
-             // 여기에 loadSettings 함수에서 가져온 값들, 또는 입력 필드의 현재 값들을 Local Storage에 저장하는 로직 구현 예정
-             // 그리고 저장 후 SYSTEM_PROMPT 등 관련 변수들 업데이트 및 UI 반영
+             // TODO: Local Storage 저장 및 관련 변수 업데이트 로직 구현
+             // loadSettings 함수에서 가져온 값들, 또는 입력 필드의 현재 값들을 Local Storage에 저장
+             const currentBotName = botNameInput.value.trim();
+             const currentUserName = userNameInput.value.trim();
+             const currentUserProfileImg = userProfileImgInput.value.trim(); // Image URL 필드는 제거되었지만 변수는 유지될 수 있음
+             const currentBotProfileImg = botProfileImgInput.value.trim(); // Image URL 필드는 제거되었지만 변수는 유지될 수 있음
+             const currentBotPersona = botPersonaInput.value.trim();
+             const currentBotAge = botAgeInput.value.trim(); // 새로 추가된 필드 값 가져오기
+             const currentUserAge = userAgeInput.value.trim(); // 새로 추가된 필드 값 가져오기
+             const currentUserAppearance = userAppearanceInput.value.trim(); // 새로 추가된 필드 값 가져오기
+             const currentBotAppearance = botAppearanceInput.value.trim(); // 새로 추가된 필드 값 가져오기
+             const currentUserGuidelines = userGuidelinesInput.value.trim(); // 새로 추가된 사용자 지침 필드 값 가져오기
+
+
+            // Local Storage에 저장 (TODO: 실제 저장 구현)
+            localStorage.setItem('botName', currentBotName);
+            localStorage.setItem('userName', currentUserName);
+            localStorage.setItem('userProfileImgUrl', currentUserProfileImg); // 저장하되, UI에 필드는 없음
+            localStorage.setItem('botProfileImgUrl', currentBotProfileImg); // 저장하되, UI에 필드는 없음
+            localStorage.setItem('botPersona', currentBotPersona);
+            localStorage.setItem('botAge', currentBotAge);
+            localStorage.setItem('userAge', currentUserAge);
+            localStorage.setItem('userAppearance', currentUserAppearance);
+            localStorage.setItem('botAppearance', currentBotAppearance);
+            localStorage.setItem('userGuidelines', currentUserGuidelines); // 사용자 지침 저장
+
+
+            // 전역 변수 업데이트 및 SYSTEM_PROMPT 다시 구성 (TODO: 실제 업데이트 로직 구현)
+            // userProfileImgUrl = currentUserProfileImg || "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU"; // 기본값 적용
+            // botProfileImgUrl = currentBotProfileImg || "https://via.placeholder.com/35/3a4a4a/ffffff?text=BOT"; // 기본값 적용
+            // SYSTEM_PROMPT = buildSystemPrompt(currentBotName || '이안', currentUserName || '피주머니', currentBotPersona, currentBotAge, currentBotAppearance, currentUserAge, currentUserAppearance, currentUserGuidelines); // 기본값 적용 및 프롬프트 구성
+
+
+            // TODO: 필요하다면 이미 표시된 메시지의 프로필 이미지/이름 업데이트 함수 호출 (옵션)
+            // updateAllProfileImages();
+
+            alert("설정이 저장되었습니다. (실제 저장 기능은 다음 단계에서 동작합니다.)"); // 임시 알림
         });
 
 
@@ -888,10 +924,10 @@
              if (newUrl !== null && newUrl.trim() !== '') {
                  if (role === 'user') {
                      userProfileImgUrl = newUrl.trim();
-                      // TODO: 사이드 바 입력 필드에도 새 URL 반영
+                      // TODO: 사이드 바 입력 필드에도 새 URL 반영 (제거되었지만, Local Storage에서 관리 가능)
                  } else {
                      botProfileImgUrl = newUrl.trim();
-                      // TODO: 사이드 바 입력 필드에도 새 URL 반영
+                      // TODO: 사이드 바 입력 필드에도 새 URL 반영 (제거되었지만, Local Storage에서 관리 가능)
                  }
                  alert(`${role === 'user' ? '사용자' : '이안'} 이미지가 변경되었습니다. 이제부터 추가되는 메시지에 적용됩니다.`);
                  // TODO: 이미 표시된 메시지의 프로필 이미지 업데이트 함수 호출 필요 (옵션)
@@ -985,7 +1021,13 @@
             // const currentBotName = document.getElementById('botNameInput').value; // UI에서 현재 값 가져오기 (로드된 값이 채워져 있을 것)
             // const currentUserName = document.getElementById('userNameInput').value;
             // const currentBotPersona = document.getElementById('botPersonaInput').value;
-            // SYSTEM_PROMPT = buildSystemPrompt(currentBotName, currentUserName, currentBotPersona);
+            // const currentBotAge = document.getElementById('botAgeInput').value; // 새로 추가된 필드 값 가져오기
+            // const currentUserAge = document.getElementById('userAgeInput').value; // 새로 추가된 필드 값 가져오기
+            // const currentUserAppearance = document.getElementById('userAppearanceInput').value; // 새로 추가된 필드 값 가져오기
+            // const currentBotAppearance = document.getElementById('botAppearanceInput').value; // 새로 추가된 필드 값 가져오기
+            // const currentUserGuidelines = document.getElementById('userGuidelinesInput').value; // 새로 추가된 사용자 지침 필드 값 가져오기
+
+            // SYSTEM_PROMPT = buildSystemPrompt(currentBotName, currentUserName, currentBotPersona, currentBotAge, currentBotAppearance, currentUserAge, currentUserAppearance, currentUserGuidelines); // 기본값 적용 및 프롬프트 구성
 
             // TODO: 필요하다면 이미 표시된 메시지의 프로필 이미지/이름 업데이트 함수 호출 (옵션)
             // updateAllProfileImages();
@@ -997,64 +1039,79 @@
         // --- 설정 저장 함수 (사이드 바 기능 구현 시 추가) ---
         function saveSettings() {
             // TODO: 사이드 바 입력 필드에서 값 가져오기 및 Local Storage에 저장 로직 구현
-             const currentBotName = document.getElementById('botNameInput').value.trim();
-             const currentUserName = document.getElementById('userNameInput').value.trim();
-             const currentUserProfileImg = document.getElementById('userProfileImgInput').value.trim();
-             const currentBotProfileImg = document.getElementById('botProfileImgInput').value.trim();
-             const currentBotPersona = document.getElementById('botPersonaInput').value.trim();
-             const currentBotAge = document.getElementById('botAgeInput').value.trim(); // 새로 추가된 필드 값 가져오기
-             const currentUserAge = document.getElementById('userAgeInput').value.trim(); // 새로 추가된 필드 값 가져오기
-             const currentUserAppearance = document.getElementById('userAppearanceInput').value.trim(); // 새로 추가된 필드 값 가져오기
-             const currentBotAppearance = document.getElementById('botAppearanceInput').value.trim(); // 새로 추가된 필드 값 가져오기
+             const currentBotName = botNameInput.value.trim();
+             const currentUserName = userNameInput.value.trim();
+             // Image URL 필드는 UI에서 제거되었지만, Local Storage에 저장된 값이 있다면 불러올 수 있습니다.
+             // 또는 새로운 필드를 만들고 관리할 수 있습니다. 현재는 제거된 필드 변수 그대로 사용 (Local Storage 값 가져올 때 필요)
+             const currentUserProfileImg = userProfileImgUrl; // UI 필드 없음 -> 변수에서 가져옴 (loadSettings 후)
+             const currentBotProfileImg = botProfileImgUrl; // UI 필드 없음 -> 변수에서 가져옴 (loadSettings 후)
+
+             const currentBotPersona = botPersonaInput.value.trim();
+             const currentBotAge = botAgeInput.value.trim(); // 새로 추가된 필드 값 가져오기
+             const currentUserAge = userAgeInput.value.trim(); // 새로 추가된 필드 값 가져오기
+             const currentUserAppearance = userAppearanceInput.value.trim(); // 새로 추가된 필드 값 가져오기
+             const currentBotAppearance = botAppearanceInput.value.trim(); // 새로 추가된 필드 값 가져오기
+             const currentUserGuidelines = userGuidelinesInput.value.trim(); // 새로 추가된 사용자 지침 필드 값 가져오기
 
 
-            // Local Storage에 저장
+            // Local Storage에 저장 (TODO: 실제 저장 구현)
             localStorage.setItem('botName', currentBotName);
             localStorage.setItem('userName', currentUserName);
-            localStorage.setItem('userProfileImgUrl', currentUserProfileImg);
-            localStorage.setItem('botProfileImgUrl', currentBotProfileImg);
+            localStorage.setItem('userProfileImgUrl', currentUserProfileImg); // UI에 필드는 없지만 Local Storage에 저장 가능
+            localStorage.setItem('botProfileImgUrl', currentBotProfileImg); // UI에 필드는 없지만 Local Storage에 저장 가능
             localStorage.setItem('botPersona', currentBotPersona);
-            localStorage.setItem('botAge', currentBotAge); // 새로 추가된 필드 값 저장
-            localStorage.setItem('userAge', currentUserAge); // 새로 추가된 필드 값 저장
-            localStorage.setItem('userAppearance', currentUserAppearance); // 새로 추가된 필드 값 저장
-            localStorage.setItem('botAppearance', currentBotAppearance); // 새로 추가된 필드 값 저장
+            localStorage.setItem('botAge', currentBotAge);
+            localStorage.setItem('userAge', currentUserAge);
+            localStorage.setItem('userAppearance', currentUserAppearance);
+            localStorage.setItem('botAppearance', currentBotAppearance);
+            localStorage.setItem('userGuidelines', currentUserGuidelines); // 사용자 지침 저장
 
 
-            // 전역 변수 업데이트 및 SYSTEM_PROMPT 다시 구성
-            userProfileImgUrl = currentUserProfileImg || "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU"; // 기본값 적용
-            botProfileImgUrl = currentBotProfileImg || "https://via.placeholder.com/35/3a4a4a/ffffff?text=BOT"; // 기본값 적용
-            // buildSystemPrompt 함수에서 나이, 외형 정보를 활용하도록 수정 필요
-            SYSTEM_PROMPT = buildSystemPrompt(currentBotName || '이안', currentUserName || '피주머니', currentBotPersona, currentBotAge, currentBotAppearance, currentUserAge, currentUserAppearance); // 기본값 적용 및 프롬프트 구성
+            // 전역 변수 업데이트 및 SYSTEM_PROMPT 다시 구성 (TODO: 실제 업데이트 로직 구현)
+            // userProfileImgUrl 변수 자체는 appendMessage에서 사용되므로 업데이트가 필요할 수 있습니다.
+            // 사이드 바에서 이미지 URL을 관리하지 않기로 했다면, 이 변수는 기존대로 prompt()로 변경하거나 초기 기본값만 사용합니다.
+            // 현재는 prompt()로 변경하는 기능이 메뉴에 남아있으므로 그 방식을 따릅니다.
+            // SYSTEM_PROMPT = buildSystemPrompt(currentBotName || '이안', currentUserName || '피주머니', currentBotPersona, currentBotAge, currentBotAppearance, currentUserAge, currentUserAppearance, currentUserGuidelines); // 기본값 적용 및 프롬프트 구성
 
 
             // TODO: 필요하다면 이미 표시된 메시지의 프로필 이미지/이름 업데이트 함수 호출 (옵션)
             // updateAllProfileImages();
 
-            alert("설정이 저장되었습니다.");
+            alert("설정이 저장되었습니다. (실제 저장 기능은 다음 단계에서 동작합니다.)"); // 임시 알림
         }
 
         // --- SYSTEM_PROMPT를 동적으로 구성하는 함수 수정 (새로운 필드 값 활용) ---
-         // 새로운 필드 값(나이, 외형 등)을 파라미터로 추가
-         function buildSystemPrompt(botName, userName, botPersona, botAge, botAppearance, userAge, userAppearance) {
+         // 새로운 필드 값(나이, 외형 등, 사용자 지침)을 파라미터로 추가
+         function buildSystemPrompt(botName, userName, botPersona, botAge, botAppearance, userAge, userAppearance, userGuidelines) {
              // SYSTEM_PROMPT_TEMPLATE를 활용하여 최종 프롬프트 구성
-             // 예: 템플릿 안에 {botAge}, {botAppearance} 등 플레이스홀더를 추가하고 여기서 값을 채워넣거나,
-             // 페르소나 지침 안에 이 정보들을 포함시키는 방식으로 구현합니다.
-             // 현재 템플릿은 botPersona 안에 모든 정보가 있다고 가정합니다.
-
-             let finalPersona = botPersona;
-             // 필요하다면 여기에서 botAge, botAppearance, userAge, userAppearance 등을 조합하여
-             // finalPersona 문자열에 추가하거나 SYSTEM_PROMPT_TEMPLATE에 플레이스홀더를 추가하여 활용합니다.
-             // 예: finalPersona = `이안은 ${botAge}이며 외형은 ${botAppearance}이다. ` + botPersona;
+             // 나이, 외형, 사용자 지침 플레이스홀더를 템플릿에 추가하고 여기서 값을 채워넣습니다.
 
              // 템플릿과 입력값으로 SYSTEM_PROMPT 구성
-             return SYSTEM_PROMPT_TEMPLATE
-                     .replace('{botName}', botName)
-                     .replace('{userName}', userName)
-                     // botPersona만 사용하는 경우
-                     .replace('{botPersona}', finalPersona);
-             // 나이, 외형 등을 템플릿에 추가한다면:
-             // .replace('{botAge}', botAge)
-             // .replace('{botAppearance}', botAppearance);
+             let finalPrompt = SYSTEM_PROMPT_TEMPLATE
+                 .replace('{botName}', botName)
+                 .replace('{userName}', userName);
+
+             // 나이, 외형, 페르소나, 사용자 지침은 각각의 플레이스홀더를 만들거나 조합하여 사용합니다.
+             // 예시: 모든 정보를 템플릿에 포함시키는 방식
+             finalPrompt = `너는 ${botName}이다. ${botAge === '' ? '' : `(${botAge}, 외형: ${botAppearance})`}. ${botPersona}`;
+             finalPrompt += ` 너는 나를 "${userName}"이라고 부르며, 나는 너의 "{userName}"이다.`;
+              finalPrompt += ` 나는 ${userAge === '' ? '' : `(${userAge}, 외관: ${userAppearance})`}. 나의 지침은 다음과 같다: ${userGuidelines}`;
+             finalPrompt += ` 항상 ${botName} 캐릭터 롤플레이 유지. OOC 발언 절대 금지.`; // 가장 중요한 지침을 마지막에 다시 강조
+
+             // 위처럼 문자열을 직접 조합하거나, 템플릿에 플레이스홀더를 더 많이 만들 수 있습니다.
+             // 예: const SYSTEM_PROMPT_TEMPLATE = `너는 {botName}이다. ({botAge}, 외형: {botAppearance}). {botPersona} ... 나의 지침은 다음과 같다: {userGuidelines} ...`;
+
+             // 단순화를 위해 현재는 페르소나 지침 필드 안에 많은 정보를 넣고, 이름/사용자 이름만 템플릿에 넣는 방식을 유지하되
+             // 나이, 외형, 사용자 지침 변수는 확보해두고 있습니다.
+             // 실제 프롬프트 구성 로직은 사용자님의 선호에 따라 더 정교하게 만들 수 있습니다.
+             // 지금은 기본적인 이름 치환만 사용하고, 나이/외형/사용자지침은 persona/guidelines 필드에 직접 넣는 방식 유지
+             let currentPersona = botPersona; // 여기에 나이, 외형 등 정보가 포함되어 있다고 가정
+             let currentUserGuidelines = userGuidelines; // 여기에 사용자 지침이 포함되어 있다고 가정
+
+             let updatedPrompt = `너의 이름은 ${botName}이다. ${currentPersona} 너는 나를 "${userName}"이라고 부르며, 나는 너의 "${userName}"이다. 나의 지침은 다음과 같다: ${currentUserGuidelines}`;
+             updatedPrompt += ` 항상 ${botName} 캐릭터 롤플레이 유지. OOC 발언 절대 금지.`; // OOC 금지 재강조
+
+             return updatedPrompt;
          }
 
         // --- 이미 표시된 메시지의 프로필 이미지 업데이트 함수 (필요하다면 구현) ---
@@ -1068,11 +1125,14 @@
 
         // --- 페이지 로드 시 설정 불러오기 및 초기 메시지 추가 ---
          function initializeChat() {
-             loadSettings(); // 설정 불러오기 (Local Storage 값으로 UI 및 전역 변수 업데이트)
+             // TODO: loadSettings(); // 설정 불러오기 (Local Storage 값으로 UI 및 전역 변수 업데이트)
+             // 현재는 Local Storage 로직 미구현 상태이므로 기본값 사용
 
              // 히스토리 초기화 및 SYSTEM_PROMPT 추가 (설정 로드 후)
              // loadSettings에서 SYSTEM_PROMPT가 이미 구성되었다고 가정
-             conversationHistory = [{ role: "user", parts: [{ text: SYSTEM_PROMPT }] }];
+             // 현재는 SYSTEM_PROMPT가 전역 변수에 기본값으로 설정되어 있음
+             conversationHistory = [{ role: "user", parts: [{ text: SYSTEM_PROMPT }] }]; // SYSTEM_PROMPT를 히스토리 시작점에 추가
+
 
              // SYSTEM_PROMPT를 사용한 초기 메시지 추가
              console.log("초기 메시지 추가 시도"); // 디버깅용 로그
@@ -1080,9 +1140,15 @@
              // 별도의 설정 필드를 사용하거나, 고정된 문구를 사용할 수 있습니다.
              // 현재는 고정된 문구 사용
              appendMessage("bot", { type: 'text', text: "...당신은 나의 피주머니... 그래, 이곳에 왔군요..." });
+
+             // 초기 메시지 추가 후 채팅창 스크롤을 맨 아래로 이동 (appendMessage 함수에 이미 포함됨)
+             // chat.scrollTop = chat.scrollHeight;
          }
 
         // 🚨 페이지 로드 시 initializeChat 함수 호출 🚨
+        // DOMContentLoaded 이벤트 리스너를 사용하는 것이 더 안전할 수 있습니다.
+        // window.addEventListener('DOMContentLoaded', initializeChat);
+        // 또는 스크립트가 body 끝에 있다면 바로 호출해도 대부분의 경우 작동합니다.
         initializeChat();
 
 
