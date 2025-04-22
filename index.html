@@ -892,6 +892,9 @@ Only use "..."
             // 이미지 URL은 입력 필드 값이나 기본값을 사용
             img.src = (role === 'user' ? userProfileImgUrl : botProfileImgUrl); // 이미 변수에 저장된 최신 URL 사용
             img.alt = (role === 'user' ? (userNameInput.value || "사용자") + " 프로필" : (botNameInput.value || "캐릭터") + " 프로필"); // alt 텍스트 변경
+
+            img.addEventListener("click", () => openImageOverlay(img));
+
             img.onerror = function() {
                  // console.warn(`Failed to load image for role "${role}" from "${this.src}". Using fallback.`); // 콘솔 로그 제거
                  this.onerror = null;
