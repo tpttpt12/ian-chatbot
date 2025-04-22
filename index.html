@@ -6,7 +6,6 @@
     <title>이안 - 피주머니 전용 챗봇</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
-        /* 배경색을 진한 회색으로 통일 및 전체 레이아웃 기본 설정 */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #212121; /* 배경색 통일 */
@@ -67,41 +66,51 @@
              border: 2px solid #303030;
          }
 
-        /* 사이드바 토글 버튼 (오른쪽 상단 패널에 위치) */
-        #sidebarToggleInside { /* 내부 토글 버튼 ID */
+        /* 🚨 사이드바 토글 버튼 (화면 우측 상단 고정) 🚨 */
+        #sidebarToggle { /* body에 있던 버튼 ID */
+            position: fixed; /* 뷰포트 기준 고정 */
+            top: 1rem; /* 상단에서 여백 */
+            right: 1rem; /* 우측에서 여백 */
+            width: 40px; height: 40px;
+            background-color: #2f2f2f; /* 옅은 회색 배경 */
+            color: #b0b0b0; border: none; border-radius: 8px; cursor: pointer;
+            font-size: 1.5rem; display: flex; justify-content: center; align-items: center;
+            transition: background-color 0.2s ease, color 0.2s ease, right 0.3s ease-out;
+            z-index: 910; padding: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+         #sidebarToggle:hover { background-color: #3a3a3a; color: #ffffff; }
+         /* SVG 아이콘 스타일 */
+         #sidebarToggle svg { width: 24px; height: 24px; }
+
+         /* 사이드바 내부 토글 버튼 (사이드바 펼쳐졌을 때 닫기 버튼 역할) */
+        #sidebarToggleInside { /* 사이드바 내부 토글 버튼 ID */
             position: absolute;
             top: 0.5rem;
             right: 0.5rem;
-            width: 40px;
-            height: 40px;
-            background-color: transparent;
-            color: #b0b0b0;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1.5rem;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: background-color 0.2s ease, color 0.2s ease;
-            z-index: 10;
-             padding: 0;
+            width: 40px; height: 40px;
+            background-color: transparent; color: #b0b0b0; border: none; border-radius: 8px; cursor: pointer;
+            font-size: 1.5rem; display: flex; justify-content: center; align-items: center;
+            transition: background-color 0.2s ease, color 0.2s ease; z-index: 10; padding: 0;
         }
-         #sidebarToggleInside:hover {
-             background-color: #3a3a3a;
-             color: #ffffff;
-         }
-         /* SVG 아이콘 스타일 */
-         #sidebarToggleInside svg {
-             width: 24px;
-             height: 24px;
-         }
+         #sidebarToggleInside:hover { background-color: #3a3a3a; color: #ffffff; }
+         #sidebarToggleInside svg { width: 24px; height: 24px; }
+
 
         /* 사이드바 내용 숨김 (접혔을 때) */
         #sidebar.folded .sidebar-header,
-        #sidebar.folded .sidebar-content {
+        #sidebar.folded .sidebar-content,
+        #sidebar.folded #sidebarToggleInside { /* 내부 토글도 숨김 */
              display: none;
         }
+        /* 접혔을 때 외부 토글 버튼 스타일 */
+        #sidebar.folded ~ #sidebarToggle {
+             right: 75px; /* 접힌 사이드바 너비(65) + 여백(10) */
+        }
+         /* 펼쳐졌을 때 외부 토글 버튼 숨김 */
+         #sidebar:not(.folded) ~ #sidebarToggle {
+             display: none;
+         }
+
 
 
         /* 메인 컨텐츠 영역 (채팅 및 입력창만 포함) - 중앙 정렬 */
@@ -109,9 +118,8 @@
             display: flex;
             flex-direction: column;
             flex-grow: 1;
-             background-color: transparent; /* 배경 투명하게 */
-             position: relative; /* 스크롤 탑 버튼 위치 기준 */
-             /* 중앙 정렬 및 너비 제한 */
+             background-color: transparent;
+             position: relative;
              max-width: 900px;
              width: 95%;
              margin: 0 auto;
@@ -143,23 +151,15 @@
             border: 2px solid #212121; /* 배경색과 맞춤 */
         }
 
-        .message-container {
-            display: flex;
-            align-items: flex-start;
-            max-width: 95%;
-        }
+        .message-container { display: flex; align-items: flex-start; max-width: 95%; }
         .message-container.user { justify-content: flex-end; margin-left: auto; }
         .message-container.bot { justify-content: flex-start; margin-right: auto; }
 
-        .profile-img, .profile-fallback {
-            width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 1px solid #5a5a5a; flex-shrink: 0;
-        }
+        .profile-img, .profile-fallback { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 1px solid #5a5a5a; flex-shrink: 0; }
         .message-container.bot .profile-img, .message-container.bot .profile-fallback { margin-right: 0.75rem; }
         .message-container.user .profile-img, .message-container.user .profile-fallback { margin-left: 0.75rem; }
 
-        .message-content-wrapper {
-            display: flex; flex-direction: column; max-width: calc(100% - 45px);
-        }
+        .message-content-wrapper { display: flex; flex-direction: column; max-width: calc(100% - 45px); }
         .message-container.bot .message-content-wrapper { margin-left: 0.75rem; align-items: flex-start; }
         .message-container.user .message-content-wrapper { margin-right: 0.75rem; align-items: flex-end; }
 
@@ -189,30 +189,28 @@
         .dialogue { font-weight: bold; }
 
 
-        /* 🚨 입력창 영역 스타일 재설계 (최종 사용자 요청 기반) 🚨 */
+        /* 🚨 입력창 영역 스타일 (최종 사용자 요청 기반 재구현) 🚨 */
         #inputArea {
             display: flex;
             align-items: flex-end;
             gap: 0.5rem;
             padding: 0.8rem 1rem;
-            background-color: transparent; /* 배경 투명 */
+            background-color: transparent;
             border-top: 1px solid #3a3a3a;
             flex-shrink: 0;
             position: relative;
-             /* 중앙 정렬 및 너비 제한 */
              max-width: 900px;
              width: 95%;
              margin: 0 auto;
         }
 
-        /* 🚨 userInput textarea 스타일 재설계 (최종 사용자 요청 기반) 🚨 */
-        /* textarea 자체를 둥근 네모 박스처럼 스타일링 */
+        /* 🚨 userInput textarea 스타일 (최종 사용자 요청 기반 재구현) 🚨 */
         #userInput {
             flex: 1;
             padding: 0.75rem 1rem;
-            border-radius: 1rem; /* 사용자 요청: 채팅 말풍선과 같은 둥근 정도 (4방 동일) */
-            border: 1px solid #303030; /* 사용자 요청 선 색상 */
-            background-color: #212121; /* 사용자 요청 배경색 (바디/채팅 배경과 동일) */
+            border-radius: 1rem; /* 네 모서리 동일 둥근 정도 */
+            border: 1px solid #303030; /* 선 색상 */
+            background-color: #212121; /* 배경색 */
             color: #e0e0e0;
             font-size: 1rem;
             outline: none;
@@ -224,6 +222,7 @@
             line-height: 1.4;
             box-sizing: border-box;
             align-self: center;
+             /* 원치 않는 선 문제 해결 시도: box-sizing과 border 설정 확인 */
         }
 
         #userInput:focus {
@@ -232,61 +231,29 @@
             border-color: #5080ff;
         }
 
-        /* 🚨 액션 메뉴 버튼 스타일 수정 (입력창 왼쪽에 통합, 작고 알잘딱하게) 🚨 */
+        /* 🚨 액션 메뉴 버튼 스타일 (작고 알잘딱하게) 🚨 */
         #actionMenuButton {
-            width: 36px; /* 크기 약간 더 작게 조정 */
-            height: 36px; /* 크기 약간 더 작게 조정 */
-            border-radius: 50%;
-            background-color: transparent;
-            color: #b0b0b0;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            flex-shrink: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: background-color 0.2s ease, color 0.2s ease;
-            padding: 0;
-             margin-bottom: 4px;
+            width: 36px; height: 36px; border-radius: 50%; background-color: transparent;
+            color: #b0b0b0; border: none; font-size: 1.5rem; cursor: pointer; flex-shrink: 0;
+            display: flex; justify-content: center; align-items: center; transition: background-color 0.2s ease, color 0.2s ease; padding: 0; margin-bottom: 4px;
         }
         #actionMenuButton:hover { background-color: #3a3a3a; color: #ffffff; }
-         /* SVG 아이콘 스타일 */
-         #actionMenuButton svg { width: 20px; height: 20px; } /* 아이콘 크기 조정 */
+         #actionMenuButton svg { width: 20px; height: 20px; }
 
-
-        /* 🚨 전송 버튼 스타일 수정 (입력창 오른쪽에 통합, 작고 알잘딱하게) 🚨 */
+        /* 🚨 전송 버튼 스타일 (작고 알잘딱하게) 🚨 */
         #sendButton {
-            width: 36px; /* 크기 약간 더 작게 조정 */
-            height: 36px; /* 크기 약간 더 작게 조정 */
-            border-radius: 50%;
-            background-color: #5080ff;
-            color: #ffffff;
-            font-size: 1rem;
-            font-weight: bold;
-            min-width: 0;
-            flex-shrink: 0;
-            border: none;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-             padding: 0;
-             transition: background-color 0.2s ease;
-             margin-bottom: 4px;
+            width: 36px; height: 36px; border-radius: 50%; background-color: #5080ff;
+            color: #ffffff; font-size: 1rem; font-weight: bold; min-width: 0; flex-shrink: 0;
+            border: none; cursor: pointer; display: flex; justify-content: center; align-items: center;
+             padding: 0; transition: background-color 0.2s ease; margin-bottom: 4px;
         }
-         #sendButton:hover { background-color: #6699ff; }
-         #sendButton:active { background-color: #3366cc; }
+         #sendButton:hover { background-color: #6699ff; } #sendButton:active { background-color: #3366cc; }
          #sendButton:disabled { background-color: #4a4a4a; color: #b0b0b0; cursor: not-allowed; }
-         /* 전송 버튼 안의 SVG 아이콘 스타일 */
-         #sendButton svg { width: 18px; height: 18px; fill: currentColor; } /* 아이콘 크기 조정 */
+         #sendButton svg { width: 18px; height: 18px; fill: currentColor; }
 
         .settings-area { display: none; }
 
-        .menu-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0, 0, 0, 0.5); z-index: 490; display: none;
-        }
+        .menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 490; display: none; }
 
         /* 액션 메뉴 패널 위치 조정 (입력창 높이 고려) */
         #actionMenu {
@@ -296,16 +263,10 @@
             transition: max-height 0.3s ease-out, padding 0.3s ease-out; z-index: 500;
             display: flex; flex-direction: column; align-items: flex-start;
         }
-
         #actionMenu.visible { max-height: 300px; padding: 0.5rem; }
-
-        #actionMenu .menu-buttons {
-            display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: flex-start;
-            width: 100%; padding: 0; overflow-x: visible;
-        }
+        #actionMenu .menu-buttons { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: flex-start; width: 100%; padding: 0; overflow-x: visible; }
          #actionMenu .menu-buttons::-webkit-scrollbar { display: none; }
          #actionMenu .menu-buttons { -ms-overflow-style: none; }
-
         #actionMenu button {
             flex-shrink: 0; flex-basis: auto; max-width: none; width: auto; height: 40px;
             padding: 0.5rem 1rem; border-radius: 20px; border: none; background-color: #3a3a3a;
@@ -314,48 +275,33 @@
         }
          #actionMenu button:hover { background-color: #4a4a4a; }
 
-        .loading-spinner {
-            border: 4px solid rgba(255, 255, 255, 0.3); border-top: 4px solid #fff; border-radius: 50%;
-            width: 20px; height: 20px; animation: spin 1s linear infinite; display: none;
-            margin-left: 1rem; flex-shrink: 0;
-        }
+        .loading-spinner { border: 4px solid rgba(255, 255, 255, 0.3); border-top: 4px solid #fff; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; display: none; margin-left: 1rem; flex-shrink: 0; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        .overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0, 0, 0, 0.9); display: flex; justify-content: center; align-items: center; z-index: 1000; display: none; cursor: pointer;
-        }
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.9); display: flex; justify-content: center; align-items: center; z-index: 1000; display: none; cursor: pointer; }
         .overlay img { max-width: 90%; max-height: 90%; object-fit: contain; border-radius: 8px; }
 
         /* 사이드 바 배경 오버레이 (사이드바 뒤에 위치) */
-        .sidebar-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0, 0, 0, 0.5); z-index: 890; display: none;
-        }
+        .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 890; display: none; }
 
         .sidebar-section-divider { height: 1px; background-color: #4a4a4a; margin: 1.5rem 0; }
 
-        /* 🚨 스크롤 탑 버튼 스타일 (사이드바 하단 구석) 🚨 */
+        /* 스크롤 탑 버튼 스타일 (사이드바 하단 구석) */
         #scrollToTopButton {
              display: none;
              position: fixed;
              bottom: 1rem;
              right: 1rem;
              width: 40px; height: 40px;
-             background-color: rgba(50, 50, 50, 0.7);
-             color: #e0e0e0; border: none; border-radius: 50%; cursor: pointer;
+             background-color: rgba(50, 50, 50, 0.7); color: #e0e0e0; border: none; border-radius: 50%; cursor: pointer;
              font-size: 1.2rem; display: flex; justify-content: center; align-items: center;
              z-index: 510; transition: right 0.3s ease-out;
         }
          #scrollToTopButton:hover { background-color: rgba(80, 80, 80, 0.9); }
          /* 사이드바 열렸을 때 버튼 위치 조정 (사이드바 안쪽) */
-         #sidebar:not(.folded) ~ #scrollToTopButton { /* folded 클래스가 아닐 때 */
-             right: 310px; /* 사이드바 너비(300) + 여백 */
-         }
+         #sidebar:not(.folded) ~ #scrollToTopButton { right: 310px; }
          /* 사이드바 접혔을 때 버튼 위치 조정 */
-         #sidebar.folded ~ #scrollToTopButton {
-              right: 75px; /* 접힌 사이드바 너비(65) + 여백 */
-         }
+         #sidebar.folded ~ #scrollToTopButton { right: 75px; }
 
 
     </style>
@@ -428,6 +374,12 @@
          <svg style="width:24px;height:24px" viewBox="0 0 24 24"><path fill="currentColor" d="M7.41,15.41L12,10.83L16.59,15.41L18,14L12,8L6,14L7.41,15.41Z" /></svg>
     </button>
 
+     <button id="sidebarToggle" title="설정 열기">
+        <svg style="width:24px;height:24px" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M3,6H21V8H3V6M3,11H21V13H3V11M3,16H21V18H3V16Z" />
+        </svg>
+    </button>
+
 
     <script>
         let userProfileImgUrl = "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU";
@@ -436,6 +388,7 @@
         let conversationHistory = [];
         let SYSTEM_PROMPT = '';
 
+        // SYSTEM_PROMPT를 동적으로 구성하기 위한 기본 템플릿 (AI 포맷팅 지침 극강 강화 - 최종)
         const SYSTEM_PROMPT_TEMPLATE = `
 ## Core Directives (ABSOLUTE PRIORITY - READ EVERY TIME) ##
 - You are an AI roleplaying STRICTLY as "{botName}".
@@ -497,6 +450,8 @@
         const sidebar = document.getElementById("sidebar");
         const sidebarOverlay = document.getElementById("sidebarOverlay");
         const sidebarToggleInside = document.getElementById("sidebarToggleInside"); // 사이드바 내부 토글 버튼
+        const sidebarToggleOutside = document.getElementById("sidebarToggle"); // 화면 우측 상단 토글 버튼
+
 
         const botNameInput = document.getElementById("botNameInput");
         const botAgeInput = document.getElementById("botAgeInput");
@@ -510,10 +465,10 @@
 
         const scrollToTopButton = document.getElementById("scrollToTopButton");
 
+
          // --- 이벤트 리스너 연결 ---
         sendButton.addEventListener("click", sendMessage);
 
-        // textarea keypress 이벤트: Shift+Enter 줄바꿈, Enter 전송
         userInput.addEventListener("keypress", function(event) {
             if (event.shiftKey && event.key === "Enter") {
                 // Shift + Enter: Allow default newline
@@ -535,22 +490,37 @@
         menuSituationButton.addEventListener("click", function() { sendSituationRequest(); actionMenu.classList.remove("visible"); menuOverlay.style.display = 'none'; });
         imageOverlay.addEventListener("click", function() { imageOverlay.style.display = 'none'; overlayImage.src = ''; });
 
-         // 사이드바 내부 토글 버튼 이벤트 리스너
-         sidebarToggleInside.addEventListener("click", function() {
-             sidebar.classList.toggle("folded");
-             if (sidebar.classList.contains("folded")) { sidebarOverlay.style.display = 'none'; } else {
+         // 사이드바 외부 토글 버튼 이벤트 리스너
+         sidebarToggleOutside.addEventListener("click", function() {
+             sidebar.classList.toggle("folded"); // 사이드바 접기/펼치기
+             // 오버레이 제어 (사이드바가 펼쳐질 때만 오버레이 표시)
+             if (sidebar.classList.contains("folded")) {
+                  sidebarOverlay.style.display = 'none';
+             } else {
                  sidebarOverlay.style.display = 'block';
-                 actionMenu.classList.remove("visible"); menuOverlay.style.display = 'none'; imageOverlay.style.display = 'none';
+                 // 사이드바 열릴 때 메뉴나 이미지 오버레이 닫기
+                actionMenu.classList.remove("visible"); menuOverlay.style.display = 'none'; imageOverlay.style.display = 'none';
              }
          });
 
+         // 사이드바 내부 토글 버튼 이벤트 리스너 (사이드바 닫기 기능)
+         sidebarToggleInside.addEventListener("click", function() {
+             // 사이드바 접기 (folded 클래스 추가)
+             sidebar.classList.add("folded");
+             // 오버레이 숨김
+             sidebarOverlay.style.display = 'none';
+         });
+
+
         // 사이드 바 배경 오버레이 클릭 이벤트 (사이드 바 접기)
         sidebarOverlay.addEventListener("click", function() {
+            // 사이드바 펼쳐진 상태에서 오버레이 클릭 시 사이드바 접기
             if (!sidebar.classList.contains("folded")) {
-                sidebar.classList.add("folded");
-                sidebarOverlay.style.display = 'none';
+                sidebar.classList.add("folded"); // 사이드 바 접기
+                sidebarOverlay.style.display = 'none'; // 오버레이 숨김
             }
         });
+
 
         saveSettingsButton.addEventListener("click", function() {
              console.log("saveSettings 호출됨");
@@ -700,27 +670,43 @@
                     const data = await res.json();
                     const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "(응답 없음)";
                     appendMessage("bot", { type: 'text', text: reply });
+                    conversationHistory.push({ role: "model", messageData: { type: 'text', text: reply } });
                 }
-            } catch (error) { console.error("Fetch Error:", error); appendMessage("bot", { type: 'text', text: "(상황 생성 통신 오류 발생)" });
+            } catch (error) { console.error("Fetch Error:", error); appendMessage("bot", { type: 'text', text: "(통신 오류 발생)" });
             } finally { loadingSpinner.style.display = 'none'; sendButton.disabled = false; userInput.disabled = false; actionMenuButton.disabled = false; userInput.focus(); }
         }
 
         function loadSettings() {
              console.log("loadSettings 호출됨");
-             const savedBotName = localStorage.getItem('botName') || '이안'; const savedUserName = localStorage.getItem('userName') || '피주머니';
-             const savedBotPersona = localStorage.getItem('botPersona') || '설정된 페르소나 없음.'; const savedBotAge = localStorage.getItem('botAge') || '불명';
-             const savedUserAge = localStorage.getItem('userAge') || '불명'; const savedUserAppearance = localStorage.getItem('userAppearance') || '설정되지 않음';
-             const savedBotAppearance = localStorage.getItem('botAppearance') || '설정되지 않음'; const savedUserGuidelines = localStorage.getItem('userGuidelines') || '설정된 사용자 지침 없음.';
+             // Local Storage에서 설정값 불러오기 (저장된 값이 없으면 기본값 사용)
+             const savedBotName = localStorage.getItem('botName') || '이안';
+             const savedUserName = localStorage.getItem('userName') || '피주머니';
+             const savedBotPersona = localStorage.getItem('botPersona') || '설정된 페르소나 없음.';
+             const savedBotAge = localStorage.getItem('botAge') || '불명';
+             const savedUserAge = localStorage.getItem('userAge') || '불명';
+             const savedUserAppearance = localStorage.getItem('userAppearance') || '설정되지 않음';
+             const savedBotAppearance = localStorage.getItem('botAppearance') || '설정되지 않음';
+             const savedUserGuidelines = localStorage.getItem('userGuidelines') || '설정된 사용자 지침 없음.';
+
+             // 프로필 이미지 URL은 메뉴에서 변경 가능하므로, 여기서 Local Storage에서 불러와 전역 변수에 설정
              userProfileImgUrl = localStorage.getItem('userProfileImgUrl') || "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU";
              botProfileImgUrl = localStorage.getItem('botProfileImgUrl') || "https://via.placeholder.com/35/3a4a3a/ffffff?text=BOT";
 
+             // 불러온 값으로 사이드 바 UI 입력 필드 채우기
             botNameInput.value = savedBotName; userNameInput.value = savedUserName; botPersonaInput.value = savedBotPersona;
             botAgeInput.value = savedBotAge; userAgeInput.value = savedUserAge; userAppearanceInput.value = savedUserAppearance;
             botAppearanceInput.value = savedBotAppearance; userGuidelinesInput.value = savedUserGuidelines;
 
+            // 🚨 수정: 불러온 'saved...' 변수들을 사용하도록 수정 🚨
             SYSTEM_PROMPT = buildSystemPrompt(
-                 savedBotName, currentUserName, currentBotPersona, currentBotAge, currentBotAppearance,
-                 currentUserAge, currentUserAppearance, currentUserGuidelines
+                 savedBotName,
+                 savedUserName,
+                 savedBotPersona,
+                 savedBotAge,
+                 savedBotAppearance,
+                 savedUserAge,
+                 savedUserAppearance,
+                 savedUserGuidelines
              );
             console.log("SYSTEM_PROMPT 로드 완료:", SYSTEM_PROMPT);
         }
@@ -755,7 +741,9 @@
 
         function initializeChat() {
              console.log("initializeChat 호출됨");
+             // 🚨 loadSettings 호출 순서를 먼저 🚨
              loadSettings();
+
              conversationHistory = [{ role: "user", parts: [{ text: SYSTEM_PROMPT }] }];
              console.log("초기 SYSTEM_PROMPT:", SYSTEM_PROMPT);
 
@@ -779,7 +767,7 @@
             chat.scrollTo({ top: 0, behavior: 'smooth' });
         });
 
-        // 🚨 페이지 로드 시 initializeChat 함수 호출 🚨
+        // 🚨 DOMContentLoaded 이벤트 리스너를 사용하여 initializeChat 호출 🚨
         window.addEventListener('DOMContentLoaded', initializeChat);
 
 
