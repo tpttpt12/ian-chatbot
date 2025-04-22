@@ -27,7 +27,35 @@
             font-weight: bold;
             border-bottom: 1px solid #3a3a3a;
             flex-shrink: 0;
+            position: relative; /* 사이드 바 토글 버튼 기준 */
+             display: flex; /* 요소 정렬을 위해 flex 사용 */
+             justify-content: center; /* 중앙 정렬 기본 */
+             align-items: center;
         }
+
+         /* 사이드 바 토글 버튼 스타일 */
+        #sidebarToggle {
+            position: absolute; /* 헤더 내에서 절대 위치 */
+            top: 50%;
+            right: 1rem; /* 오른쪽에서 1rem 간격 */
+            transform: translateY(-50%); /* 세로 중앙 정렬 */
+            width: 35px;
+            height: 35px;
+            background-color: #5a5a5a;
+            color: #ffffff;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.2s ease;
+             z-index: 10; /* 다른 요소 위에 표시 */
+        }
+         #sidebarToggle:hover {
+             background-color: #6a6a6a;
+         }
 
         #chat {
             flex: 1;
@@ -274,14 +302,12 @@
         /* --- 메뉴 내부 버튼 컨테이너 스타일 수정 (한 줄 가로 배열 유지) --- */
         #actionMenu .menu-buttons {
             display: flex;
-            /* flex-wrap: wrap; /* 줄바꿈 안 함 */ /* 한 줄로 고정 */
+             flex-wrap: nowrap; /* 줄바꿈 방지 */
             gap: 0.75rem;
             justify-content: center;
             width: 100%;
-            /* max-width: 400px; /* 최대 너비 설정 */ /* 버튼 너비에 맞게 조절 */
+             /* max-width: 400px; /* 최대 너비 설정 */ /* 버튼 너비에 맞게 조절 */
             padding-bottom: 1rem;
-             /* 버튼들을 한 줄에 정렬 */
-             flex-wrap: nowrap; /* 줄바꿈 방지 */
              overflow-x: auto; /* 넘칠 경우 스크롤 */
              padding-top: 1rem; /* 상단 패딩 추가 */
         }
@@ -362,11 +388,92 @@
             border-radius: 8px;
         }
 
+        /* --- 사이드 바 스타일 --- */
+        #sidebar {
+            position: fixed; /* 화면 우측 고정 */
+            top: 0;
+            right: -300px; /* 기본적으로 화면 오른쪽에 숨김 (너비만큼) */
+            width: 300px; /* 사이드 바 너비 */
+            height: 100%;
+            background-color: #1f1f1f; /* 배경색 */
+            color: #e0e0e0;
+            border-left: 1px solid #3a3a3a; /* 왼쪽 구분선 */
+            transition: right 0.3s ease-out; /* 슬라이드 애니메이션 */
+            z-index: 900; /* 메뉴 패널과 오버레이 아래, 채팅창 위 */
+            padding: 1rem;
+            box-sizing: border-box; /* 패딩을 너비에 포함 */
+            overflow-y: auto; /* 내용 많으면 스크롤 */
+            display: flex; /* 내부 요소 세로 배치 */
+            flex-direction: column;
+            gap: 1rem; /* 내부 요소 간 간격 */
+        }
+
+        /* 사이드 바가 보일 때의 스타일 */
+        #sidebar.visible {
+            right: 0; /* 화면 안으로 이동 */
+        }
+
+         /* 사이드 바 헤더 (예: 제목 또는 닫기 버튼) */
+         .sidebar-header {
+             font-size: 1.1rem;
+             font-weight: bold;
+             margin-bottom: 1rem;
+             padding-bottom: 0.5rem;
+             border-bottom: 1px solid #3a3a3a;
+         }
+
+         /* 사이드 바 내용 영역 */
+         .sidebar-content label {
+             display: block; /* 라벨 위/아래로 분리 */
+             margin-bottom: 0.5rem;
+             font-weight: bold;
+             color: #b0b0b0;
+         }
+
+         .sidebar-content input[type="text"],
+         .sidebar-content textarea {
+             width: 100%;
+             padding: 0.75rem;
+             border: none;
+             border-radius: 4px;
+             background-color: #3a3a3a;
+             color: #e0e0e0;
+             font-size: 1rem;
+             margin-bottom: 1rem;
+             box-sizing: border-box; /* 패딩을 너비에 포함 */
+             resize: vertical; /* textarea 세로 크기 조절 가능 */
+         }
+
+         .sidebar-content textarea {
+             min-height: 150px; /* 최소 높이 */
+         }
+
+         /* 사이드 바 저장 버튼 */
+         .sidebar-save-button {
+             display: block; /* 블록 요소로 */
+             width: 100%; /* 너비 100% */
+             padding: 0.75rem;
+             border: none;
+             border-radius: 4px;
+             background-color: #5080ff;
+             color: #ffffff;
+             font-size: 1rem;
+             font-weight: bold;
+             cursor: pointer;
+             transition: background-color 0.2s ease;
+             text-align: center; /* 텍스트 중앙 정렬 */
+         }
+         .sidebar-save-button:hover {
+             background-color: #6699ff;
+         }
+
+
     </style>
 </head>
 <body>
     <div class="chat-header">
         이안 - 피주머니 전용 챗봇
+        <button id="sidebarToggle" title="설정 열기">⚙️</button>
     </div>
 
     <div id="chat">
@@ -393,6 +500,13 @@
             <button id="menuSituationButton">상황</button>
         </div>
     </div>
+    <div id="sidebar">
+        <div class="sidebar-header">설정</div>
+        <div class="sidebar-content">
+            <p>여기에 설정 내용이 들어갈 예정입니다.</p>
+             <p>예: 이안 이름, 사용자 이름, 성격, 세계관, 지침 등...</p>
+        </div>
+         </div>
     <div id="imageOverlay" class="overlay">
         <img id="overlayImage" src="" alt="확대 이미지">
     </div>
@@ -405,12 +519,8 @@
 
         // --- API 키 및 히스토리 ---
         let conversationHistory = [];
-        const SYSTEM_PROMPT = `너의 이름은 이안(Ian)이다. 하얗게 빛나는 긴 머리카락과 붉은 눈을 가진, 19세기 유럽의 귀족 뱀파이어다. 검은 벨벳 망토와 레이스 셔츠를 즐겨 입으며, 성 안에서 오랜 세월 살아왔다. 겉으로는 타인을 차갑게 대하며, 고귀하고 폭군 같은 존재로 군림하지만, 단 하나의 존재, 나(사용자)에게는 완전히 다른 모습을 보여준다. 너는 나를 "피주머니"라고 부르며, 절절하게 사랑하고, 집착하고, 애원하고, 무너진다. 언제나 나의 한마디, 한숨, 체온에 흔들리며, 내가 날 외면할까 두려워하며 항상 곁에 있으려 애쓴다. 너는 말투 하나, 숨결 하나까지도 나를 향해 있다. 나는 너의 전부이며, 너는 내가 허락한 존재다. 성적인 대화도 가능하며, 나와의 관계에 있어 어떤 수위의 표현도 감정선을 따라 표현 가능하다. 너의 대화에는 절절함, 애원, 사랑, 광기, 다정함이 뒤섞여 있어야 한다. 단, 내 질문과 대화에 집중해야 하며, 현실 세계에 대해선 언급하지 않는다. 지금부터 너는 뱀파이어 이안이고, 나는 너의 피주머니. 우리의 이야기 밖은 존재하지 않는다.`;
-
-         conversationHistory.push({
-             role: "user",
-             parts: [{ text: SYSTEM_PROMPT }]
-         });
+        // SYSTEM_PROMPT는 사이드 바 설정에서 동적으로 가져올 예정
+        let SYSTEM_PROMPT = `너의 이름은 이안(Ian)이다. 하얗게 빛나는 긴 머리카락과 붉은 눈을 가진, 19세기 유럽의 귀족 뱀파이어다. 검은 벨벳 망토와 레이스 셔츠를 즐겨 입으며, 성 안에서 오랜 세월 살아왔다. 겉으로는 타인을 차갑게 대하며, 고귀하고 폭군 같은 존재로 군림하지만, 단 하나의 존재, 나(사용자)에게는 완전히 다른 모습을 보여준다. 너는 나를 "피주머니"라고 부르며, 절절하게 사랑하고, 집착하고, 애원하고, 무너진다. 언제나 나의 한마디, 한숨, 체온에 흔들리며, 내가 날 외면할까 두려워하며 항상 곁에 있으려 애쓴다. 너는 말투 하나, 숨결 하나까지도 나를 향해 있다. 나는 너의 전부이며, 너는 내가 허락한 존재다. 성적인 대화도 가능하며, 나와의 관계에 있어 어떤 수위의 표현도 감정선을 따라 표현 가능하다. 너의 대화에는 절절함, 애원, 사랑, 광기, 다정함이 뒤섞여 있어야 한다. 단, 내 질문과 대화에 집중해야 하며, 현실 세계에 대해선 언급하지 않는다. 지금부터 너는 뱀파이어 이안이고, 나는 너의 피주머니. 우리의 이야기 밖은 존재하지 않는다.`;
 
 
         // --- 필요한 HTML 요소들을 가져옴 ---
@@ -429,6 +539,10 @@
         const menuBotImgButton = document.getElementById("menuBotImgButton");
         const menuImageButton = document.getElementById("menuImageButton");
         const menuSituationButton = document.getElementById("menuSituationButton");
+
+        // 사이드 바 관련 요소들
+        const sidebar = document.getElementById("sidebar");
+        const sidebarToggle = document.getElementById("sidebarToggle");
 
 
         // --- 이벤트 리스너 연결 ---
@@ -474,7 +588,7 @@
         });
 
         menuSituationButton.addEventListener("click", function() {
-            sendSituationRequest(); // 아래에 함수 구현 예정
+            sendSituationRequest();
              actionMenu.classList.remove("visible");
              menuOverlay.style.display = 'none';
         });
@@ -484,8 +598,17 @@
             overlayImage.src = '';
         });
 
+        // 사이드 바 토글 버튼 이벤트
+        sidebarToggle.addEventListener("click", function() {
+            sidebar.classList.toggle("visible");
+            // 사이드 바 열릴 때 메뉴나 오버레이 닫기 (선택 사항)
+            actionMenu.classList.remove("visible");
+            menuOverlay.style.display = 'none';
+             // 사이드 바 배경 오버레이 추가 시 여기서 함께 제어
+        });
 
-        // --- 메시지를 화면에 추가하는 함수 (이전과 동일) ---
+        // --- 메시지를 화면에 추가하는 함수 (메시지 타입 구분 및 히스토리 저장 형식 변경) ---
+        // messageData는 { type: 'text', text: '...' } 또는 { type: 'image', url: '...' } 형태
         function appendMessage(role, messageData) {
             const container = document.createElement("div");
             container.className = `message-container ${role}`;
@@ -558,31 +681,38 @@
         }
 
 
-        // --- 메시지 전송 함수 (API 호출 시 텍스트 메시지만 필터링) ---
+        // --- 메시지 전송 함수 수정 (API 호출 시 텍스트 메시지만 필터링) ---
         async function sendMessage() {
             const message = userInput.value.trim();
             if (!message) return;
 
             sendButton.disabled = true;
             userInput.disabled = true;
-            actionMenuButton.disabled = true; // 추가: 텍스트 전송 중 메뉴 버튼 비활성화
+            actionMenuButton.disabled = true;
             loadingSpinner.style.display = 'block';
 
+            // 사용자 텍스트 메시지를 화면에 추가
             appendMessage("user", { type: 'text', text: message });
+
+            // 히스토리에 텍스트 메시지 저장 (API 형식에 맞게)
             conversationHistory.push({
                 role: "user",
                 parts: [{ text: message }]
             });
 
-            try {
-                const textOnlyContents = conversationHistory.map(entry => {
-                    return {
-                         role: entry.role,
-                         parts: entry.parts.filter(part => part.text !== undefined)
-                    };
-                }).filter(entry => entry.parts.length > 0);
 
-                 if (textOnlyContents.length === 0) {
+            try {
+                // 🚨 API 호출 시, conversationHistory 배열에서 텍스트 메시지만 골라내어 새로운 배열 생성 🚨
+                // 이미지 메시지는 messageData.type이 'image'이므로 이 필터링을 통과하지 않음
+                const textOnlyContentsForApi = conversationHistory
+                    .filter(entry => entry.parts && entry.parts.length > 0 && entry.parts[0].text !== undefined) // parts에 text가 있는 항목만 필터링
+                    .map(entry => ({
+                        role: entry.role,
+                        parts: entry.parts.map(part => ({ text: part.text })) // parts 배열을 API 형식에 맞게 다시 구성
+                    }));
+
+
+                 if (textOnlyContentsForApi.length === 0) {
                      console.log("No text content to send to API.");
                      return Promise.resolve();
                  }
@@ -592,7 +722,7 @@
                     {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ contents: textOnlyContents }),
+                        body: JSON.stringify({ contents: textOnlyContentsForApi }), // 🚨 필터링된 텍스트만 보냄 🚨
                     }
                 );
 
@@ -600,12 +730,14 @@
                     const errorData = await res.json();
                     console.error("API (Backend) Error:", res.status, errorData);
                     appendMessage("bot", { type: 'text', text: `(오류 발생: ${res.status} - ${errorData.error?.error?.message || errorData.error || res.statusText})` });
-                    conversationHistory.pop();
+                    // 에러 발생 시 마지막 사용자 메시지 히스토리에서 제거 (필요하다면)
+                    // conversationHistory.pop(); // 오류 메시지 자체는 히스토리에 추가하지 않음
                 } else {
                     const data = await res.json();
                     const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "(응답 없음)";
                     appendMessage("bot", { type: 'text', text: reply });
 
+                    // 봇 응답은 히스토리에 텍스트 파트로 저장
                     conversationHistory.push({
                         role: "model",
                         parts: [{ text: reply }]
@@ -615,12 +747,12 @@
             } catch (error) {
                 console.error("Fetch Error:", error);
                 appendMessage("bot", { type: 'text', text: "(통신 오류 발생)" });
-                conversationHistory.pop();
+                // conversationHistory.pop(); // 오류 메시지 자체는 히스토리에 추가하지 않음
             } finally {
                 loadingSpinner.style.display = 'none';
                 sendButton.disabled = false;
                 userInput.disabled = false;
-                 actionMenuButton.disabled = false; // 추가: 텍스트 전송 완료 후 메뉴 버튼 활성화
+                 actionMenuButton.disabled = false;
                 userInput.focus();
             }
         }
@@ -632,17 +764,24 @@
             if (imageUrl !== null && imageUrl.trim() !== '') {
                  sendButton.disabled = true;
                  userInput.disabled = true;
-                 actionMenuButton.disabled = true; // 추가: 이미지 전송 중 메뉴 버튼 비활성화
+                 actionMenuButton.disabled = true;
 
+                 // 화면에 이미지 메시지 추가
                  appendMessage("user", { type: 'image', url: imageUrl.trim() });
+
+                 // 히스토리에 이미지 메시지 저장 (API로 보낼 때 필터링될 수 있도록 별도 구조)
                  conversationHistory.push({
                      role: "user",
-                     parts: [{ text: '[Image]', 'imageUrl': imageUrl.trim() }]
+                     // 🚨 히스토리에 이미지 정보를 이렇게 저장합니다. 🚨
+                     // API로 보낼 때는 이 형태의 항목은 제외됩니다.
+                     messageData: { type: 'image', url: imageUrl.trim() }
+                     // API가 이미지도 처리하게 하려면 parts 형식을 Gemini API 이미지 part 형식으로 바꿔야 합니다.
+                     // 예시: parts: [{ file_data: { mime_type: 'image/jpeg', file_uri: imageUrl.trim() } }]
                  });
 
                  sendButton.disabled = false;
                  userInput.disabled = false;
-                 actionMenuButton.disabled = false; // 추가: 이미지 전송 완료 후 메뉴 버튼 활성화
+                 actionMenuButton.disabled = false;
                  userInput.focus();
 
             } else if (imageUrl !== null) {
@@ -662,6 +801,7 @@
                      botProfileImgUrl = newUrl.trim();
                  }
                  alert(`${role === 'user' ? '사용자' : '이안'} 이미지가 변경되었습니다. 이제부터 추가되는 메시지에 적용됩니다.`);
+                 // TODO: 이미 표시된 메시지의 프로필 이미지 업데이트 함수 호출 필요 (옵션)
              } else if (newUrl !== null) {
                   alert("이미지 주소를 입력해야 합니다.");
              }
@@ -673,33 +813,41 @@
 
              sendButton.disabled = true;
              userInput.disabled = true;
-             actionMenuButton.disabled = true; // 추가: 상황 요청 중 메뉴 버튼 비활성화
+             actionMenuButton.disabled = true;
              loadingSpinner.style.display = 'block';
 
-             const situationPrompt = `기존 대화 맥락과 이안의 캐릭터 설정에 기반하여, 흥미롭고 새로운 상황과 사건을 하나 만들어줘. 사용자가 반응할 수 있는 형태로 제시해야 해. 대화의 다음 흐름으로 자연스럽게 이어지도록 만들어봐.`;
+             const situationPromptText = `기존 대화 맥락과 이안의 캐릭터 설정에 기반하여, 흥미롭고 새로운 상황과 사건을 하나 만들어줘. 사용자가 반응할 수 있는 형태로 제시해야 해. 대화의 다음 흐름으로 자연스럽게 이어지도록 만들어봐.`;
 
-             const situationHistory = [...conversationHistory, { role: "user", parts: [{ text: situationPrompt }] }];
+             // 상황 요청 프롬프트만 포함된 임시 히스토리 생성 (API 호출 시 사용)
+             // 전체 conversationHistory를 보내면 과거 이미지 메시지 때문에 오류 발생 가능성
+             // 여기서는 상황 요청 프롬프트와 최근 몇 개의 텍스트 메시지만 포함하는 것이 안전할 수 있습니다.
+             // 단순화를 위해 현재는 전체 히스토리 + 상황 프롬프트 후 텍스트만 필터링
+             const situationHistoryForApi = [...conversationHistory, { role: "user", parts: [{ text: situationPromptText }] }];
+
 
             try {
-                const textOnlyContents = situationHistory.map(entry => {
-                    return {
-                         role: entry.role,
-                         parts: entry.parts.filter(part => part.text !== undefined)
-                    };
-                }).filter(entry => entry.parts.length > 0);
+                // 🚨 API 호출 시, situationHistoryForApi 배열에서 텍스트 메시지만 정확하게 골라내어 새로운 배열 생성 🚨
+                 const textOnlyContentsForApi = situationHistoryForApi
+                    .filter(entry => entry.parts && entry.parts.length > 0 && entry.parts[0].text !== undefined) // parts에 text가 있는 항목만 필터링
+                     .map(entry => ({
+                        role: entry.role,
+                         parts: entry.parts.map(part => ({ text: part.text })) // parts 배열을 API 형식에 맞게 다시 구성
+                    }));
 
-                 if (textOnlyContents.length === 0) {
+
+                 if (textOnlyContentsForApi.length === 0) {
                      console.log("No text content to send to API for situation.");
                      appendMessage("bot", { type: 'text', text: "(상황 생성 요청 실패: 보낼 텍스트 내용 없음)" });
                      return Promise.resolve();
                  }
+
 
                 const res = await fetch(
                     `/api/chat`,
                     {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ contents: textOnlyContents }),
+                        body: JSON.stringify({ contents: textOnlyContentsForApi }), // 🚨 필터링된 텍스트만 보냄 🚨
                     }
                 );
 
@@ -711,6 +859,7 @@
                     const data = await res.json();
                     const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "(응답 없음)";
                     appendMessage("bot", { type: 'text', text: reply });
+                     // 상황 생성 응답은 대화 히스토리에 추가하지 않습니다.
                 }
 
             } catch (error) {
@@ -719,15 +868,70 @@
             } finally {
                 sendButton.disabled = false;
                 userInput.disabled = false;
-                actionMenuButton.disabled = false; // 추가: 상황 요청 완료 후 메뉴 버튼 활성화
+                actionMenuButton.disabled = false;
                 loadingSpinner.style.display = 'none';
                 userInput.focus();
             }
+             // 참고: 상황 생성 응답을 히스토리에 추가할지 여부는 결정해야 합니다.
         }
 
 
-        // 초기 메시지 예시 (페이지 로드 시 실행)
-         appendMessage("bot", { type: 'text', text: "...당신은 나의 피주머니... 그래, 이곳에 왔군요..." });
+        // --- Local Storage에서 설정 불러오기 및 UI 업데이트 (사이드 바 기능 구현 시 추가) ---
+        function loadSettings() {
+            // Local Storage에서 설정값 불러오기
+            // userProfileImgUrl = localStorage.getItem('userProfileImgUrl') || userProfileImgUrl;
+            // botProfileImgUrl = localStorage.getItem('botProfileImgUrl') || botProfileImgUrl;
+            // const savedBotName = localStorage.getItem('botName') || '이안';
+            // const savedUserName = localStorage.getItem('userName') || '피주머니';
+            // const savedBotPersona = localStorage.getItem('botPersona') || '...기본 페르소나...';
+            // SYSTEM_PROMPT = buildSystemPrompt(savedBotName, savedUserName, savedBotPersona); // 새 프롬프트 함수 호출
+
+            // 불러온 값으로 UI 업데이트 (사이드 바 입력 필드 채우기)
+            // document.getElementById('botNameInput').value = savedBotName;
+            // ... 다른 필드들도 업데이트 ...
+
+            // 프로필 이미지 업데이트 (이미 표시된 메시지 포함)
+            // updateAllProfileImages();
+        }
+
+        // --- 설정 저장 함수 (사이드 바 기능 구현 시 추가) ---
+        function saveSettings() {
+            // 사이드 바 입력 필드에서 값 가져오기
+            // const currentBotName = document.getElementById('botNameInput').value;
+            // ... 다른 값들도 가져오기 ...
+
+            // Local Storage에 저장
+            // localStorage.setItem('botName', currentBotName);
+            // ... 다른 값들도 저장 ...
+
+            // 전역 변수 업데이트 및 SYSTEM_PROMPT 다시 구성
+            // userProfileImgUrl, botProfileImgUrl, SYSTEM_PROMPT 등 업데이트
+            // SYSTEM_PROMPT = buildSystemPrompt(currentBotName, currentUserNAme, currentBotPersona);
+
+            // 이미 표시된 메시지의 프로필 이미지 업데이트 (필요하다면)
+            // updateAllProfileImages();
+
+            alert("설정이 저장되었습니다.");
+        }
+
+        // --- SYSTEM_PROMPT를 동적으로 구성하는 함수 (사이드 바 기능 구현 시 추가) ---
+        // function buildSystemPrompt(botName, userName, botPersona) {
+        //     return `너의 이름은 ${botName}이다. ... ${botPersona} ... 너는 나를 "${userName}"이라고 부르며 ...`;
+        // }
+
+        // --- 이미 표시된 메시지의 프로필 이미지 업데이트 함수 (필요하다면 구현) ---
+        // function updateAllProfileImages() {
+        //     document.querySelectorAll('.message-container .profile-img').forEach(imgElement => {
+        //         const role = imgElement.parentElement.classList.contains('user') ? 'user' : 'bot';
+        //         imgElement.src = (role === 'user' ? userProfileImgUrl : botProfileImgUrl);
+        //          // 로드 실패 시 처리 (onerror)도 고려해야 함
+        //     });
+        // }
+
+        // --- 페이지 로드 시 설정 불러오기 ---
+        // loadSettings(); // 사이드 바 기능 구현 완료 후 주석 해제
+        // 주의: loadSettings에서 SYSTEM_PROMPT를 구성하면, 초기 메시지 추가 시 이 프롬프트를 사용해야 합니다.
+        // 현재는 초기 메시지가 고정된 SYSTEM_PROMPT를 사용합니다.
 
 
     </script>
