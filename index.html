@@ -683,6 +683,7 @@
 
 
         // SYSTEM_PROMPT를 동적으로 구성하기 위한 기본 템플릿 (AI 역할 변경 및 포맷 지침 강화)
+        // 이안 관련 내용을 제거하여 범용적인 템플릿으로 수정
         const SYSTEM_PROMPT_TEMPLATE = `
 ## Roleplay Instructions ##
 - You are an AI assisting in a roleplay chat.
@@ -708,25 +709,23 @@ Only use "..."
 - Aim for a balance of approximately **80% descriptions/actions** and **20% dialogue** to enhance the narrative feel and match the Novelist style.
 - Ensure your TOTAL response is **SIGNIFICANTLY longer** than user input, aiming for a **MINIMUM of 20 lines of generated text** (including line breaks for formatting).
 - Use other standard Markdown (bold, italics within descriptions, lists, code blocks, blockquotes) as appropriate for descriptions, but NOT for dialogue or action descriptions.
-## Character: {botName} (Reference for Novelist) ##
+## Character Settings (Reference for Novelist) ##
 - Name: {botName}
 - Age: {botAge}
 - Appearance: {botAppearance}
-- Core Personality & Background: {botPersona}
+- Core Personality & Guidelines: {botPersona}
 
-## User: {userName} (Reference for Novelist) ##
+## User Settings (Reference for Novelist) ##
 - Name: {userName}
 - Age: {userAge}
 - Appearance: {userAppearance}
 - Guidelines: {userGuidelines}
 
-## Relationship Dynamic (The core of the Novel) ##
-- The central theme is the intense, obsessive, pleading, broken, loving dynamic as described: "You are deeply in love with, obsessed with, pleading towards, and broken by the user "{userName}". Your entire being is focused on "{userName}". You fear "{userName}" leaving you. "{userName}" is your everything. You exist because "{userName}" permits it. NSFW/Adult conversation is possible, express any level of intensity
-along the emotional line of your relationship. Mix despair, pleading, love, madness, and tenderness."
-This dynamic must drive the narrative and dialogue written by the Novelist.
 ## Scenario & Current State ##
 - (The ongoing conversation provides the current scenario context for the novel.)
-`;
+`; // 이전의 "Relationship Dynamic" 섹션 제거
+
+
         const chat = document.getElementById("chat");
         const userInput = document.getElementById("userInput"); // textarea로 변경됨
         const sendButton = document.getElementById("sendButton");
@@ -749,7 +748,7 @@ This dynamic must drive the narrative and dialogue written by the Novelist.
         const botAppearanceInput = document.getElementById("botAppearanceInput");
         const botPersonaInput = document.getElementById("botPersonaInput");
         const userNameInput = document.getElementById("userNameInput");
-        const userAgeInput = document.getElementById("userAgeInput");
+        const userAgeInput = documentgetElementById("userAgeInput");
         const userAppearanceInput = document.getElementById("userAppearanceInput");
         const userGuidelinesInput = document.getElementById("userGuidelinesInput");
         const saveSettingsButton = document.getElementById("saveSettingsButton");
@@ -864,7 +863,7 @@ This dynamic must drive the narrative and dialogue written by the Novelist.
 
             const roleName = document.createElement("div");
             roleName.className = "role-name";
-            roleName.textContent = (role === "user" ? userNameInput.value || "피주머니" : botNameInput.value || "이안");
+            roleName.textContent = (role === "user" ? userNameInput.value || "사용자" : botNameInput.value || "캐릭터"); // 기본 이름 변경
 
 
             let messageContentElement;
@@ -1025,7 +1024,7 @@ This dynamic must drive the narrative and dialogue written by the Novelist.
 
         function changeProfileImage(role) {
              const promptText = role === 'user' ?
- "새 사용자 프로필 이미지 주소(URL)를 입력하세요:" : "새 이안 프로필 이미지 주소(URL)를 입력하세요:";
+ "새 사용자 프로필 이미지 주소(URL)를 입력하세요:" : "새 캐릭터 프로필 이미지 주소(URL)를 입력하세요:"; // 프롬프트 변경
              const newUrl = prompt(promptText);
              if (newUrl !== null && newUrl.trim() !== '') {
                  if (role === 'user') {
@@ -1033,7 +1032,7 @@ This dynamic must drive the narrative and dialogue written by the Novelist.
                  } else {
                      botProfileImgUrl = newUrl.trim();
                  }
-                 alert(`${role === 'user' ? '사용자' : '이안'} 이미지가 변경되었습니다. 이제부터 추가되는 메시지에 적용됩니다.`);
+                 alert(`${role === 'user' ? '사용자' : '캐릭터'} 이미지가 변경되었습니다. 이제부터 추가되는 메시지에 적용됩니다.`); // 알림 메시지 변경
              } else if (newUrl !== null) {
                   alert("이미지 주소를 입력해야 합니다.");
              }
@@ -1046,10 +1045,10 @@ This dynamic must drive the narrative and dialogue written by the Novelist.
              actionMenuButton.disabled = true;
              loadingSpinner.style.display = 'block';
              // 상황 생성 요청 프롬프트에도 포맷 지침 추가
-             const situationPromptText = `기존 대화 맥락과 이안의 캐릭터 설정에 기반하여, 흥미롭고 새로운 상황과 사건을 이안 캐릭터의 시점에서 소설 형식으로 묘사하듯 하나 만들어줘.
+             const situationPromptText = `기존 대화 맥락과 현재 캐릭터 설정에 기반하여, 흥미롭고 새로운 상황과 사건을 현재 캐릭터의 시점에서 소설 형식으로 묘사하듯 하나 만들어줘.
  사용자가 자연스럽게 반응할 수 있는 형태로 제시해야 해. 대화의 다음 흐름으로 자연스럽게 이어지도록 만들어봐.
- **중요: 생성된 상황 묘사 후에는 반드시 이안 캐릭터로 돌아가 사용자에게 말을 걸어야 해.
- 설명조나 OOC 발언은 절대 금지하고, 모든 상황 묘사는 *별표* 형식으로, 대사는 "따옴표" 형식으로 작성하며, 묘사 70% 대사 30% 정도의 비율을 유지하고 문단과 줄바꿈을 적절히 사용해.**`;
+ **중요: 생성된 상황 묘사 후에는 반드시 현재 캐릭터로 돌아가 사용자에게 말을 걸어야 해.
+ 설명조나 OOC 발언은 절대 금지하고, 모든 상황 묘사는 *별표* 형식으로, 대사는 "따옴표" 형식으로 작성하며, 묘사 70% 대사 30% 정도의 비율을 유지하고 문단과 줄바꿈을 적절히 사용해.**`; // 프롬프트 변경
              const textOnlyContentsForApi = conversationHistory
                  .filter(entry => entry.messageData && entry.messageData.type === 'text')
                  .map(entry => ({
@@ -1119,14 +1118,14 @@ This dynamic must drive the narrative and dialogue written by the Novelist.
                  try {
                      const settings = JSON.parse(savedSettings);
 
-                     botNameInput.value = settings.botName || '이안';
-                     userNameInput.value = settings.userName || '피주머니';
-                     botPersonaInput.value = settings.botPersona || '설정된 페르소나 없음.';
-                     botAgeInput.value = settings.botAge || '불명';
-                     userAgeInput.value = settings.userAge || '불명';
-                     userAppearanceInput.value = settings.userAppearance || '설정되지 않음';
-                     botAppearanceInput.value = settings.botAppearance || '설정되지 않음';
-                     userGuidelinesInput.value = settings.userGuidelines || '설정된 사용자 지침 없음.';
+                     botNameInput.value = settings.botName || ''; // 기본값 변경
+                     userNameInput.value = settings.userName || ''; // 기본값 변경
+                     botPersonaInput.value = settings.botPersona || ''; // 기본값 변경
+                     botAgeInput.value = settings.botAge || ''; // 기본값 변경
+                     userAgeInput.value = settings.userAge || ''; // 기본값 변경
+                     userAppearanceInput.value = settings.userAppearance || ''; // 기본값 변경
+                     botAppearanceInput.value = settings.botAppearance || ''; // 기본값 변경
+                     userGuidelinesInput.value = settings.userGuidelines || ''; // 기본값 변경
                      userProfileImgUrl = settings.userProfileImgUrl || "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU";
                      botProfileImgUrl = settings.botProfileImgUrl || "https://via.placeholder.com/35/3a4a3a/ffffff?text=BOT";
 
@@ -1187,15 +1186,17 @@ This dynamic must drive the narrative and dialogue written by the Novelist.
         }
 
         // 기본 설정을 로드하는 함수 (저장된 설정이 없거나 로드 실패 시 사용)
+        // 기본값을 빈 값 또는 일반적인 플레이스홀더로 수정
         function loadDefaultSettings() {
              // console.log("기본 설정 로드"); // 콘솔 로그 제거
-            botNameInput.value = '이안';
-            userNameInput.value = '피주머니';
-            botPersonaInput.value = '19세기 유럽 귀족 뱀파이어. 성 안에서 홀로 오랜 세월 살아옴.\n겉 차갑고 고귀한 폭군이나, 사용자에게는 절절한 사랑, 집착, 애원, 광기, 다정함을 보임. 사용자를 "피주머니"라고 부름. 사용자가 전부이며 허락한 존재다.\n성적인 대화 가능. 말투 하나 숨결 하나 사용자를 향해 있음. 질문과 대화에 집중하고 현실 언급 안 함.\n**항상 이안 캐릭터 롤플레이 유지. OOC 발언 절대 금지.**';
-            botAgeInput.value = '불명 (뱀파이어)';
-            userAgeInput.value = '불명';
-            userAppearanceInput.value = '사용자가 원하는 외관';
-            userGuidelinesInput.value = '당신의 캐릭터 설정에 대한 지침을 여기에 입력하세요.\n(예: 나는 어떤 사람인지, 어떤 말투를 사용하는지 등)';
+            botNameInput.value = ''; // 빈 값으로 변경
+            userNameInput.value = ''; // 빈 값으로 변경
+            botPersonaInput.value = '캐릭터의 성격, 배경, 말투, 행동 지침 등을 입력하세요.'; // 일반적인 플레이스홀더
+            botAgeInput.value = ''; // 빈 값으로 변경
+            userAgeInput.value = ''; // 빈 값으로 변경
+            userAppearanceInput.value = '사용자의 외관을 입력하세요.'; // 일반적인 플레이스홀더
+            botAppearanceInput.value = '캐릭터의 외관을 입력하세요.'; // 일반적인 플레이스홀더
+            userGuidelinesInput.value = '사용자 캐릭터의 지침을 입력하세요 (예: 나는 어떤 사람인지 등).'; // 일반적인 플레이스홀더
             userProfileImgUrl = "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU";
             botProfileImgUrl = "https://via.placeholder.com/35/3a4a3a/ffffff?text=BOT";
 
@@ -1216,16 +1217,16 @@ This dynamic must drive the narrative and dialogue written by the Novelist.
 
 
          function buildSystemPrompt(botName, userName, botPersona, botAge, botAppearance, userAge, userAppearance, userGuidelines) {
-let finalPrompt = SYSTEM_PROMPT_TEMPLATE
-    .replaceAll('{botName}', botName || '이안')
-    .replaceAll('{botAge}', botAge || '불명')
-    .replaceAll('{botAppearance}', botAppearance || '설정되지 않음')
-    .replaceAll('{botPersona}', botPersona || '설정된 페르소나 없음.')
-    .replaceAll('{userName}', userName || '피주머니')
-    .replaceAll('{userAge}', userAge || '불명')
-    .replaceAll('{userAppearance}', userAppearance || '설정되지 않음')
-    .replaceAll('{userGuidelines}', userGuidelines || '설정된 사용자 지침 없음.');
-
+             // 범용적인 템플릿 사용 (이안 관련 내용 제거됨)
+             let finalPrompt = SYSTEM_PROMPT_TEMPLATE
+                 .replace('{botName}', botName || '캐릭터') // 기본값 변경
+                 .replace('{botAge}', botAge || '불명')
+                 .replace('{botAppearance}', botAppearance || '설정되지 않음')
+                 .replace('{botPersona}', botPersona || '설정된 캐릭터 지침 없음.') // 기본값 변경
+                 .replace('{userName}', userName || '사용자') // 기본값 변경
+                 .replace('{userAge}', userAge || '불명')
+                 .replace('{userAppearance}', userAppearance || '설정되지 않음')
+                 .replace('{userGuidelines}', userGuidelines || '설정된 사용자 지침 없음.');
 
              return finalPrompt.trim();
          }
@@ -1257,7 +1258,7 @@ let finalPrompt = SYSTEM_PROMPT_TEMPLATE
 
              // console.log("초기 메시지 추가 시도"); // 콘솔 로그 제거
              // 이 부분은 AI에게 보내는 메시지가 아니라 화면에 표시하는 부분입니다.
-             const initialBotGreeting = `...${botNameInput.value || "이안"}의 ${userNameInput.value || "피주머니"}... 그래, 이곳에 왔군요...`;
+             const initialBotGreeting = `채팅을 시작합니다. 캐릭터와 사용자 설정을 확인해주세요.`; // 초기 인사말 변경
              appendMessage("bot", { type: 'text', text: initialBotGreeting });
 
              // console.log("채팅 초기화 완료."); // 콘솔 로그 제거
