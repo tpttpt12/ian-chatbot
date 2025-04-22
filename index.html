@@ -166,6 +166,17 @@
          .message-container.bot .message-bubble p {
              margin-bottom: 0;
          }
+        /* 🚨 사용자 메시지의 p 태그 하단 마진 제거 시도 🚨 */
+         .message-container.user .message-bubble p {
+             margin-bottom: 0;
+         }
+         /* 🚨 마크다운으로 생성된 모든 p 태그에 대한 기본 하단 마진 조정 🚨 */
+         .message-bubble p:last-child {
+             margin-bottom: 0 !important; /* 우선순위 높여서 확실히 적용 */
+         }
+         .message-bubble p:not(:last-child) {
+             margin-bottom: 0.5rem; /* 단락 간 기본 간격 */
+         }
 
 
         .message-container.bot .message-bubble {
@@ -182,10 +193,9 @@
 
         /* 🚨 마크다운 내부 스타일 (adjust as needed) 🚨*/
         /* p 태그에 기본적인 하단 마진 부여 (말풍선 내 요소 간 간격) */
-        .message-bubble p { margin: 0 0 0.5rem 0;
-        }
-        .message-bubble p:last-child { margin-bottom: 0;
-        } /* 마지막 단락 하단 마진 제거 */
+        /* 이미 위에 .message-bubble p 로 조정했으므로 주석 처리 */
+        /* .message-bubble p { margin: 0 0 0.5rem 0; } */
+        /* .message-bubble p:last-child { margin-bottom: 0; } */ /* 이미 위에 조정 */
         .message-bubble ul, .message-bubble ol { padding-left: 1.5rem;
         margin: 0 0 0.5rem 0; }
         .message-bubble li { margin-bottom: 0.25rem;
@@ -705,10 +715,12 @@
 
         sendButton.addEventListener("click", sendMessage);
         userInput.addEventListener("keypress", function(event) {
-            if (event.key === "Enter") {
-                event.preventDefault();
-                sendMessage();
+            // 🚨 Shift+Enter는 줄바꿈, Enter만 누르면 전송되도록 수정 🚨
+            if (event.key === "Enter" && !event.shiftKey) {
+                event.preventDefault(); // 일반 Enter의 기본 동작(줄바꿈) 방지
+                sendMessage(); // 메시지 전송
             }
+            // Shift+Enter의 경우 event.preventDefault()를 호출하지 않아 브라우저 기본 줄바꿈 동작을 따름
         });
         actionMenuButton.addEventListener("click", function() {
             actionMenu.classList.toggle("visible");
@@ -1051,10 +1063,10 @@
                 console.error("Fetch Error:", error);
  appendMessage("bot", { type: 'text', text: "(통신 오류 발생)" });
  } finally {
-                sendButton.disabled = false;
- userInput.disabled = false;
-                actionMenuButton.disabled = false;
                 loadingSpinner.style.display = 'none';
+ sendButton.disabled = false;
+                userInput.disabled = false;
+                actionMenuButton.disabled = false;
                 userInput.focus();
  }
         }
