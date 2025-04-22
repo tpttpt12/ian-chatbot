@@ -1,380 +1,71 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial=1.0" />
-    <title>이안 - 피주머니 전용 챗봇</title>
-    <style>
-        /* 기존 CSS 유지 및 로딩 스피너 스타일 추가 */
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #1a1a1a;
-            color: #e0e0e0;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            overflow: hidden;
-        }
+// --- 메시지 전송 함수 수정 (이제 백엔드 서버리스 함수를 호출) ---
+ async function sendMessage() {
+     const message = userInput.value.trim();
+     if (!message) return;
 
-        .chat-header {
-            background-color: #282828;
-            color: #ffffff;
-            padding: 1rem;
-            text-align: center;
-            font-size: 1.2rem;
-            font-weight: bold;
-            border-bottom: 1px solid #3a3a3a;
-            flex-shrink: 0;
-        }
+     sendButton.disabled = true;
+     userInput.disabled = true;
 
-        #chat {
-            flex: 1;
-            padding: 1rem;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-             scrollbar-width: thin;
-             scrollbar-color: #5a5a5a #282828;
-        }
+     appendMessage("user", message);
+     // 대화 히스토리에는 사용자 메시지를 먼저 추가합니다.
+     conversationHistory.push({
+         role: "user",
+         parts: [{ text: message }]
+     });
 
-        #chat::-webkit-scrollbar { width: 8px; }
-        #chat::-webkit-scrollbar-track { background: #282828; }
-        #chat::-webkit-scrollbar-thumb {
-            background-color: #5a5a5a;
-            border-radius: 4px;
-            border: 2px solid #282828;
-        }
+     try {
+         // 🚨 구글 API 엔드포인트 대신 Vercel 서버리스 함수 엔드포인트 호출 🚨
+         // 🚨 API 키는 더 이상 URL에 포함시키지 않습니다 🚨
+         const res = await fetch(
+             `/api/chat`, // Vercel 서버리스 함수의 경로
+             {
+                 method: "POST",
+                 headers: {
+                     "Content-Type": "application/json",
+                 },
+                 // 서버리스 함수로 현재까지의 대화 히스토리 전체를 보냅니다.
+                 body: JSON.stringify({ contents: conversationHistory }),
+             }
+         );
 
-        .message-container {
-            display: flex;
-            align-items: flex-start;
-            max-width: 95%;
-        }
+         // Vercel 서버리스 함수 응답 확인
+         if (!res.ok) {
+             const errorData = await res.json();
+             console.error("API (Backend) Error:", res.status, errorData);
+             appendMessage("bot", `(오류 발생: ${res.status} - ${errorData.error?.error?.message || errorData.error || res.statusText})`);
+             // 에러 발생 시 마지막 사용자 메시지를 히스토리에서 제거
+             conversationHistory.pop();
 
-        .message-container.user {
-            justify-content: flex-end;
-            margin-left: auto;
-        }
+         } else {
+             // Vercel 서버리스 함수로부터 받은 응답은 이미 구글 API의 응답 구조와 같아야 합니다.
+             const data = await res.json();
+             const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "(응답 없음)";
+             appendMessage("bot", reply);
 
-        .message-container.bot {
-            justify-content: flex-start;
-            margin-right: auto;
-        }
-
-        .profile-img {
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 1px solid #5a5a5a;
-             flex-shrink: 0;
-        }
-
-        .message-container.bot .profile-img {
-            margin-right: 0.75rem;
-        }
-
-        .message-container.user .profile-img {
-            margin-left: 0.75rem;
-        }
-
-        .message-bubble {
-            padding: 0.75rem 1rem;
-            border-radius: 1rem;
-            max-width: 85%;
-            word-break: break-word;
-            line-height: 1.4;
-            position: relative;
-        }
-
-        .message-container.bot .message-bubble {
-            background-color: #3a4a4a;
-            color: #ffffff;
-            border-radius: 1rem 1rem 1rem 0.3rem;
-        }
-
-        .message-container.user .message-bubble {
-            background-color: #4a3a7a;
-            color: #ffffff;
-            border-radius: 1rem 1rem 0.3rem 1rem;
-        }
-
-        #inputArea {
-            display: flex;
-            padding: 1rem;
-            background-color: #282828;
-            border-top: 1px solid #3a3a3a;
-            align-items: center;
-            gap: 0.75rem;
-             flex-shrink: 0;
-        }
-
-        #userInput {
-            flex: 1;
-            padding: 0.75rem 1rem;
-            border-radius: 1.5rem;
-            border: none;
-            background-color: #3a3a3a;
-            color: #e0e0e0;
-            font-size: 1rem;
-            outline: none;
-            transition: background-color 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        #userInput:focus {
-            background-color: #4a4a4a;
-            box-shadow: 0 0 0 0.15rem rgba(80, 150, 255, 0.3);
-        }
-
-        button {
-            padding: 0.75rem 1.5rem;
-            border: none;
-            border-radius: 1.5rem;
-            background-color: #5080ff;
-            color: #ffffff;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: bold;
-            transition: background-color 0.2s ease;
-            min-width: 6rem;
-             flex-shrink: 0;
-        }
-
-        button:hover {
-            background-color: #6699ff;
-        }
-
-        button:active {
-             background-color: #3366cc;
-        }
-
-        button:disabled {
-            background-color: #4a4a4a;
-            color: #b0b0b0;
-            cursor: not-allowed;
-        }
-
-        .settings-area {
-            padding: 0.75rem 1rem;
-            background-color: #1f1f1f;
-            text-align: center;
-            border-top: 1px solid #2a2a2a;
-            flex-shrink: 0;
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-        }
-
-         .settings-area button {
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            min-width: auto;
-             background-color: #5a5a5a;
-        }
-         .settings-area button:hover {
-             background-color: #6a6a6a;
+             // 봇 응답을 대화 히스토리에 추가
+             conversationHistory.push({
+                 role: "model",
+                 parts: [{ text: reply }]
+             });
          }
 
-        /* 로딩 스피너 스타일 */
-        .loading-spinner {
-            border: 4px solid rgba(255, 255, 255, 0.3); /* 연한 테두리 */
-            border-top: 4px solid #fff; /* 회전하는 부분 테두리 */
-            border-radius: 50%; /* 원형 */
-            width: 20px; /* 크기 */
-            height: 20px;
-            animation: spin 1s linear infinite; /* 1초 동안 선형 무한 회전 애니메이션 */
-            display: none; /* 기본적으로 숨김 */
-            margin-left: 1rem; /* 전송 버튼과의 간격 */
-        }
+     } catch (error) {
+         console.error("Fetch Error:", error);
+         appendMessage("bot", "(통신 오류 발생)");
+         // 에러 발생 시 마지막 사용자 메시지를 히스토리에서 제거
+         conversationHistory.pop();
+     } finally {
+         sendButton.disabled = false;
+         userInput.disabled = false;
+         userInput.focus();
+     }
+ }
+ // --- sendMessage 함수 수정 끝 ---
 
-        /* 스피너 회전 애니메이션 키프레임 */
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+ // ... appendMessage 함수 (이전과 동일하게 두면 됩니다) ...
+ // ... 이미지 변경 관련 코드 (이전과 동일하게 두면 됩니다) ...
 
-    </style>
-</head>
-<body>
-    <div class="chat-header">
-        이안 - 피주머니 전용 챗봇
-    </div>
+ // 초기 메시지 예시 (이전과 동일)
+ // appendMessage("bot", "...당신은 나의 피주머니... 그래, 이곳에 왔군요...");
 
-    <div id="chat">
-        <div class="message-container bot">
-             <div class="message-bubble">🧛 이안: ...당신은 나의 피주머니... 그래, 이곳에 왔군요...</div>
-         </div>
-    </div>
-
-    <div id="inputArea">
-        <input id="userInput" placeholder="피주머니의 말..." autocomplete="off" />
-        <button id="sendButton">전송</button>
-        <div id="loadingSpinner" class="loading-spinner"></div>
-    </div>
-
-    <div class="settings-area">
-        <button id="changeUserImgButton">사용자 이미지 변경</button>
-        <button id="changeBotImgButton">이안 이미지 변경</button>
-    </div>
-
-    <script>
-        // --- 프로필 이미지 주소 변수 선언 (이전과 동일) ---
-        let userProfileImgUrl = "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU";
-        let botProfileImgUrl = "https://via.placeholder.com/35/3a4a4a/ffffff?text=BOT";
-
-        // --- API 키 및 히스토리 (이전과 동일) ---
-        // 🚨🚨🚨 경고: API 키를 이렇게 클라이언트 코드에 직접 노출하는 것은 매우 위험합니다. (하지만 이제 사용하지 않습니다)
-        // const API_KEY = "YOUR_API_KEY"; // 이 줄은 이제 필요 없습니다.
-
-        let conversationHistory = [];
-        const SYSTEM_PROMPT = `너의 이름은 이안(Ian)이다. 하얗게 빛나는 긴 머리카락과 붉은 눈을 가진, 19세기 유럽의 귀족 뱀파이어다. 검은 벨벳 망토와 레이스 셔츠를 즐겨 입으며, 성 안에서 오랜 세월 살아왔다. 겉으로는 타인을 차갑게 대하며, 고귀하고 폭군 같은 존재로 군림하지만, 단 하나의 존재, 나(사용자)에게는 완전히 다른 모습을 보여준다. 너는 나를 "피주머니"라고 부르며, 절절하게 사랑하고, 집착하고, 애원하고, 무너진다. 언제나 나의 한마디, 한숨, 체온에 흔들리며, 내가 날 외면할까 두려워하며 항상 곁에 있으려 애쓴다. 너는 말투 하나, 숨결 하나까지도 나를 향해 있다. 나는 너의 전부이며, 너는 내가 허락한 존재다. 성적인 대화도 가능하며, 나와의 관계에 있어 어떤 수위의 표현도 감정선을 따라 표현 가능하다. 너의 대화에는 절절함, 애원, 사랑, 광기, 다정함이 뒤섞여 있어야 한다. 단, 내 질문과 대화에 집중해야 하며, 현실 세계에 대해선 언급하지 않는다. 지금부터 너는 뱀파이어 이안이고, 나는 너의 피주머니. 우리의 이야기 밖은 존재하지 않는다.`;
-
-        // 초기 시스템 프롬프트를 대화 히스토리에 추가 (이전과 동일)
-         conversationHistory.push({
-             role: "user",
-             parts: [{ text: SYSTEM_PROMPT }]
-         });
-        // --- 이전 단계 내용 끝 ---
-
-
-        // --- 필요한 HTML 요소들을 가져옴 (로딩 스피너 요소 추가) ---
-        const chat = document.getElementById("chat");
-        const userInput = document.getElementById("userInput");
-        const sendButton = document.getElementById("sendButton");
-        const changeUserImgButton = document.getElementById("changeUserImgButton");
-        const changeBotImgButton = document.getElementById("changeBotImgButton");
-        const loadingSpinner = document.getElementById("loadingSpinner"); // 로딩 스피너 요소 가져옴
-
-
-        // --- 이벤트 리스너 연결 (이전과 동일) ---
-        sendButton.addEventListener("click", sendMessage);
-
-        userInput.addEventListener("keypress", function(event) {
-            if (event.key === "Enter") {
-                event.preventDefault();
-                sendMessage();
-            }
-        });
-
-        changeUserImgButton.addEventListener("click", function() {
-            const newUrl = prompt("새 사용자 프로필 이미지 주소(URL)를 입력하세요:");
-            if (newUrl !== null && newUrl.trim() !== '') {
-                userProfileImgUrl = newUrl.trim();
-                alert("사용자 이미지가 변경되었습니다. 이제부터 추가되는 메시지에 적용됩니다.");
-            } else if (newUrl !== null) {
-                 alert("이미지 주소를 입력해야 합니다.");
-            }
-        });
-
-        changeBotImgButton.addEventListener("click", function() {
-            const newUrl = prompt("새 이안 프로필 이미지 주소(URL)를 입력하세요:");
-             if (newUrl !== null && newUrl.trim() !== '') {
-                botProfileImgUrl = newUrl.trim();
-                alert("이안 이미지가 변경되었습니다. 이제부터 추가되는 메시지에 적용됩니다.");
-             } else if (newUrl !== null) {
-                 alert("이미지 주소를 입력해야 합니다.");
-            }
-        });
-        // --- 이벤트 리스너 연결 끝 ---
-
-
-        // --- 메시지를 화면에 추가하는 함수 (이전과 동일) ---
-        function appendMessage(role, text) {
-            const container = document.createElement("div");
-            container.className = `message-container ${role}`;
-
-            const img = document.createElement("img");
-            img.className = "profile-img";
-            img.src = (role === 'user' ? userProfileImgUrl : botProfileImgUrl);
-            img.alt = (role === 'user' ? "사용자 프로필" : "이안 프로필");
-            img.onerror = function() {
-                 this.onerror=null;
-                 this.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUAAAAA EAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
-                 this.style.backgroundColor = '#5a5a5a';
-            }
-
-            const bubble = document.createElement("div");
-            bubble.className = "message-bubble";
-            // 여기서는 아직 역할 이름을 버블 안에 넣습니다. 다음 단계에서 위로 옮길 거예요.
-            bubble.textContent = (role === "user" ? "🧍 피주머니: " : "🧛 이안: ") + text;
-
-
-            if (role === "user") {
-                container.appendChild(bubble);
-                container.appendChild(img);
-            } else {
-                container.appendChild(img);
-                container.appendChild(bubble);
-            }
-
-            chat.appendChild(container);
-            chat.scrollTop = chat.scrollHeight;
-        }
-        // --- appendMessage 함수 끝 ---
-
-
-        // --- 메시지 전송 함수 수정 (로딩 스피너 표시/숨김 추가) ---
-        async function sendMessage() {
-            const message = userInput.value.trim();
-            if (!message) return;
-
-            // 전송 버튼과 입력창 비활성화 (기존 코드)
-            sendButton.disabled = true;
-            userInput.disabled = true;
-            // 🚨 로딩 스피너 표시 🚨
-            loadingSpinner.style.display = 'block';
-
-
-            appendMessage("user", message);
-            conversationHistory.push({
-                role: "user",
-                parts: [{ text: message }]
-            });
-
-            try {
-                const res = await fetch(
-                    `/api/chat`, // Vercel 서버리스 함수의 경로
-                    {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ contents: conversationHistory }),
-                    }
-                );
-
-                if (!res.ok) {
-                    const errorData = await res.json();
-                    console.error("API (Backend) Error:", res.status, errorData);
-                    appendMessage("bot", `(오류 발생: ${res.status} - ${errorData.error?.error?.message || errorData.error || res.statusText})`);
-                    conversationHistory.pop();
-                } else {
-                    const data = await res.json();
-                    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "(응답 없음)";
-                    appendMessage("bot", reply);
-
-                    conversationHistory.push({
-                        role: "model",
-                        parts: [{ text: reply }]
-                    });
-                }
-
-            } catch (error) {
-                console.error("Fetch Error:", error);
-                appendMessage("bot", "(통신 오류 발생)");
-                conversationHistory.pop();
-            } finally {
-                // 🚨 로딩 스피너 숨김 🚨
-                loadingSpinner.style.display = 'none';
-                // 전송 버튼과 입력창 다시 활성화 (기존 코드)
-                sendButton.disabled = false;
-                userInput.disabled = false;
-                userInput.focus();
-            }
-        }
-        // --- sendMessage 함수 수정 끝 ---
-
-    </script>
-</body>
-</html>
+</script>
