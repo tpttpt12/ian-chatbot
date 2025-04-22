@@ -8,7 +8,7 @@
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #212121; /* 배경색 통일 */
+            background-color: #212121;
             color: #e0e0e0;
             margin: 0;
             padding: 0;
@@ -19,7 +19,6 @@
              position: relative;
         }
 
-        /* 헤더 텍스트 (왼쪽 상단 구석, 작게, 굵기 없이) */
         .header-title {
              position: fixed;
              top: 1rem;
@@ -30,7 +29,6 @@
              z-index: 10;
         }
 
-        /* 사이드바 (오른쪽 벽면 전체 패널) */
         #sidebar {
             position: fixed;
             top: 0;
@@ -51,7 +49,6 @@
              scrollbar-width: thin;
              scrollbar-color: #5a5a5a #303030;
         }
-         /* 사이드바 접혔을 때 스타일 */
          #sidebar.folded {
              right: -65px;
              width: 65px;
@@ -66,28 +63,21 @@
              border: 2px solid #303030;
          }
 
-        /* 🚨 사이드바 토글 버튼 (화면 우측 상단 고정) 🚨 */
         #sidebarToggle { /* body에 있던 버튼 ID */
-            position: fixed; /* 뷰포트 기준 고정 */
-            top: 1rem; /* 상단에서 여백 */
-            right: 1rem; /* 우측에서 여백 */
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
             width: 40px; height: 40px;
-            background-color: #2f2f2f; /* 옅은 회색 배경 */
-            color: #b0b0b0; border: none; border-radius: 8px; cursor: pointer;
+            background-color: #2f2f2f; color: #b0b0b0; border: none; border-radius: 8px; cursor: pointer;
             font-size: 1.5rem; display: flex; justify-content: center; align-items: center;
             transition: background-color 0.2s ease, color 0.2s ease, right 0.3s ease-out;
             z-index: 910; padding: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.3);
         }
          #sidebarToggle:hover { background-color: #3a3a3a; color: #ffffff; }
-         /* SVG 아이콘 스타일 */
          #sidebarToggle svg { width: 24px; height: 24px; }
 
-         /* 사이드바 내부 토글 버튼 (사이드바 펼쳐졌을 때 닫기 버튼 역할) */
-        #sidebarToggleInside { /* 사이드바 내부 토글 버튼 ID */
-            position: absolute;
-            top: 0.5rem;
-            right: 0.5rem;
-            width: 40px; height: 40px;
+         #sidebarToggleInside { /* 사이드바 내부 토글 버튼 ID */
+            position: absolute; top: 0.5rem; right: 0.5rem; width: 40px; height: 40px;
             background-color: transparent; color: #b0b0b0; border: none; border-radius: 8px; cursor: pointer;
             font-size: 1.5rem; display: flex; justify-content: center; align-items: center;
             transition: background-color 0.2s ease, color 0.2s ease; z-index: 10; padding: 0;
@@ -96,60 +86,30 @@
          #sidebarToggleInside svg { width: 24px; height: 24px; }
 
 
-        /* 사이드바 내용 숨김 (접혔을 때) */
         #sidebar.folded .sidebar-header,
         #sidebar.folded .sidebar-content,
-        #sidebar.folded #sidebarToggleInside { /* 내부 토글도 숨김 */
-             display: none;
-        }
-        /* 접혔을 때 외부 토글 버튼 스타일 */
-        #sidebar.folded ~ #sidebarToggle {
-             right: 75px; /* 접힌 사이드바 너비(65) + 여백(10) */
-        }
-         /* 펼쳐졌을 때 외부 토글 버튼 숨김 */
-         #sidebar:not(.folded) ~ #sidebarToggle {
-             display: none;
-         }
+        #sidebar.folded #sidebarToggleInside { display: none; }
+
+         #sidebar.folded ~ #sidebarToggle { right: 75px; }
+         #sidebar:not(.folded) ~ #sidebarToggle { display: none; }
 
 
-
-        /* 메인 컨텐츠 영역 (채팅 및 입력창만 포함) - 중앙 정렬 */
         .main-content-area {
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
-             background-color: transparent;
-             position: relative;
-             max-width: 900px;
-             width: 95%;
-             margin: 0 auto;
+            display: flex; flex-direction: column; flex-grow: 1; background-color: transparent;
+             position: relative; min-height: 0; /* 🚨 입력창 레이아웃 문제 해결 시도 */
+             max-width: 900px; width: 95%; margin: 0 auto;
         }
          @media (min-width: 1200px) {
-             .main-content-area {
-                 width: 60%;
-             }
+             .main-content-area { width: 60%; }
          }
 
 
-        /* 채팅 영역 스타일 - 배경색 제거, 스크롤바 색상 조정 */
         #chat {
-            flex: 1;
-            padding: 1rem;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-             scrollbar-width: thin;
-             scrollbar-color: #5a5a5a #212121; /* 배경색과 맞춤 */
-             background-color: transparent;
+            flex: 1; padding: 1rem; overflow-y: auto; display: flex; flex-direction: column; gap: 0.5rem;
+             scrollbar-width: thin; scrollbar-color: #5a5a5a #212121; background-color: transparent;
         }
-        #chat::-webkit-scrollbar { width: 8px; }
-        #chat::-webkit-scrollbar-track { background: transparent; }
-        #chat::-webkit-scrollbar-thumb {
-            background-color: #5a5a5a;
-            border-radius: 4px;
-            border: 2px solid #212121; /* 배경색과 맞춤 */
-        }
+        #chat::-webkit-scrollbar { width: 8px; } #chat::-webkit-scrollbar-track { background: transparent; }
+        #chat::-webkit-scrollbar-thumb { background-color: #5a5a5a; border-radius: 4px; border: 2px solid #212121; }
 
         .message-container { display: flex; align-items: flex-start; max-width: 95%; }
         .message-container.user { justify-content: flex-end; margin-left: auto; }
@@ -166,7 +126,6 @@
         .role-name { font-size: 0.8rem; color: #b0b0b0; margin-bottom: 0.2rem; }
 
         .message-bubble { padding: 0.75rem 1rem; border-radius: 1rem; max-width: 100%; word-break: break-word; line-height: 1.4; position: relative; font-size: 1rem; }
-         /* 챗봇 메시지의 p 태그 하단 마진 제거 */
          .message-container.bot .message-bubble p { margin-bottom: 0; }
 
         .message-container.bot .message-bubble { background-color: #3a4a4a; color: #ffffff; border-radius: 1rem 1rem 1rem 0.3rem; }
@@ -189,49 +148,27 @@
         .dialogue { font-weight: bold; }
 
 
-        /* 🚨 입력창 영역 스타일 (최종 사용자 요청 기반 재구현) 🚨 */
+        /* 🚨 입력창 영역 스타일 (재구현 based on analysis) 🚨 */
         #inputArea {
-            display: flex;
-            align-items: flex-end;
-            gap: 0.5rem;
-            padding: 0.8rem 1rem;
-            background-color: transparent;
-            border-top: 1px solid #3a3a3a;
-            flex-shrink: 0;
-            position: relative;
-             max-width: 900px;
-             width: 95%;
-             margin: 0 auto;
+            display: flex; align-items: flex-end; gap: 0.5rem;
+            padding: 0.8rem 1rem; background-color: transparent; border-top: 1px solid #3a3a3a;
+            flex-shrink: 0; position: relative;
+             max-width: 900px; width: 95%; margin: 0 auto;
         }
 
-        /* 🚨 userInput textarea 스타일 (최종 사용자 요청 기반 재구현) 🚨 */
+        /* 🚨 userInput textarea 스타일 (재구현 based on analysis) 🚨 */
         #userInput {
-            flex: 1;
-            padding: 0.75rem 1rem;
-            border-radius: 1rem; /* 네 모서리 동일 둥근 정도 */
-            border: 1px solid #303030; /* 선 색상 */
-            background-color: #212121; /* 배경색 */
-            color: #e0e0e0;
-            font-size: 1rem;
-            outline: none;
+            flex: 1; padding: 0.75rem 1rem;
+            border-radius: 1rem; border: 1px solid #303030;
+            background-color: #212121; color: #e0e0e0;
+            font-size: 1rem; outline: none;
             transition: background-color 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-            resize: none;
-            min-height: 48px;
-            max-height: 150px;
-            overflow-y: auto;
-            line-height: 1.4;
-            box-sizing: border-box;
-            align-self: center;
-             /* 원치 않는 선 문제 해결 시도: box-sizing과 border 설정 확인 */
+            resize: none; min-height: 48px; max-height: 150px; overflow-y: auto; line-height: 1.4; box-sizing: border-box; align-self: center;
         }
 
-        #userInput:focus {
-            background-color: #2a2a2a;
-            box-shadow: 0 0 0 0.15rem rgba(80, 150, 255, 0.3);
-            border-color: #5080ff;
-        }
+        #userInput:focus { background-color: #2a2a2a; box-shadow: 0 0 0 0.15rem rgba(80, 150, 255, 0.3); border-color: #5080ff; }
 
-        /* 🚨 액션 메뉴 버튼 스타일 (작고 알잘딱하게) 🚨 */
+        /* 🚨 액션 메뉴 버튼 스타일 (재구현 based on analysis) 🚨 */
         #actionMenuButton {
             width: 36px; height: 36px; border-radius: 50%; background-color: transparent;
             color: #b0b0b0; border: none; font-size: 1.5rem; cursor: pointer; flex-shrink: 0;
@@ -240,7 +177,7 @@
         #actionMenuButton:hover { background-color: #3a3a3a; color: #ffffff; }
          #actionMenuButton svg { width: 20px; height: 20px; }
 
-        /* 🚨 전송 버튼 스타일 (작고 알잘딱하게) 🚨 */
+        /* 🚨 전송 버튼 스타일 (재구현 based on analysis) 🚨 */
         #sendButton {
             width: 36px; height: 36px; border-radius: 50%; background-color: #5080ff;
             color: #ffffff; font-size: 1rem; font-weight: bold; min-width: 0; flex-shrink: 0;
@@ -255,7 +192,6 @@
 
         .menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 490; display: none; }
 
-        /* 액션 메뉴 패널 위치 조정 (입력창 높이 고려) */
         #actionMenu {
             position: fixed; bottom: 70px; left: 1rem; width: auto; max-width: calc(100% - 2rem);
             max-height: 0; background-color: #282828; color: #e0e0e0;
@@ -281,26 +217,19 @@
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.9); display: flex; justify-content: center; align-items: center; z-index: 1000; display: none; cursor: pointer; }
         .overlay img { max-width: 90%; max-height: 90%; object-fit: contain; border-radius: 8px; }
 
-        /* 사이드 바 배경 오버레이 (사이드바 뒤에 위치) */
         .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 890; display: none; }
 
         .sidebar-section-divider { height: 1px; background-color: #4a4a4a; margin: 1.5rem 0; }
 
         /* 스크롤 탑 버튼 스타일 (사이드바 하단 구석) */
         #scrollToTopButton {
-             display: none;
-             position: fixed;
-             bottom: 1rem;
-             right: 1rem;
-             width: 40px; height: 40px;
+             display: none; position: fixed; bottom: 1rem; right: 1rem; width: 40px; height: 40px;
              background-color: rgba(50, 50, 50, 0.7); color: #e0e0e0; border: none; border-radius: 50%; cursor: pointer;
-             font-size: 1.2rem; display: flex; justify-content: center; align-items: center;
-             z-index: 510; transition: right 0.3s ease-out;
+             font-size: 1.2rem; display: flex; justify-content: center; align-items: center; z-index: 510;
+             transition: right 0.3s ease-out;
         }
          #scrollToTopButton:hover { background-color: rgba(80, 80, 80, 0.9); }
-         /* 사이드바 열렸을 때 버튼 위치 조정 (사이드바 안쪽) */
          #sidebar:not(.folded) ~ #scrollToTopButton { right: 310px; }
-         /* 사이드바 접혔을 때 버튼 위치 조정 */
          #sidebar.folded ~ #scrollToTopButton { right: 75px; }
 
 
@@ -321,7 +250,7 @@
             <label for="botNameInput">Name:</label> <input type="text" id="botNameInput" value="이안">
             <label for="botAgeInput">Age:</label> <input type="text" id="botAgeInput" value="불명 (뱀파이어)">
             <label for="botAppearanceInput">Appearance:</label> <input type="text" id="botAppearanceInput" value="하얗게 빛나는 긴 머리, 붉은 눈, 검은 벨벳 망토, 레이스 셔츠">
-            <label for="botPersonaInput">Guidelines:</label> <textarea id="botPersonaInput">19세기 유럽 귀족 뱀파이어. 성 안에서 홀로 오랜 세월 살아옴. 겉 차갑고 고귀한 폭군이나, 사용자에게는 절절한 사랑, 집착, 애원, 광기, 다정함을 보임. 사용자를 "피주머니"라고 부름. 사용자가 전부이며 허락한 존재다. 성적인 대화 가능. 말투 하나 숨결 하나 사용자를 향해 있음. 질문과 대화에 집중하고 현실 언급 안 함. **항상 이안 캐릭터 롤플레이 유지. OOC 발언 절대 금지.**</textarea>
+            <label for="botPersonaInput">Guidelines:</label> <textarea id="botPersonaInput">19세기 유럽 귀족 뱀파이어. 성 안에서 홀로 오랜 세월 살아옴. 겉 차갑고 고귀한 폭군이나, 사용자에게는 절절한 사랑, 집착, 애원, 광기, 다정함을 보임. 사용자를 "피주머니"라고 부름. 사용자가 전부이며 허락한 존재. 성적인 대화 가능. 말투 하나 숨결 하나 사용자를 향해 있음. 질문과 대화에 집중하고 현실 언급 안 함. **항상 이안 캐릭터 롤플레이 유지. OOC 발언 절대 금지.**</textarea>
 
             <div class="sidebar-section-divider"></div>
 
@@ -338,24 +267,20 @@
     <div id="sidebarOverlay" class="sidebar-overlay"></div>
 
     <div class="main-content-area">
-         <div id="chat">
-             </div>
-
+         <div id="chat"></div>
          <div id="inputArea">
-              <button id="actionMenuButton" title="액션 메뉴 열기">
+             <button id="actionMenuButton" title="액션 메뉴 열기">
                  <svg style="width:24px;height:24px" viewBox="0 0 24 24"><path fill="currentColor" d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z" /></svg>
              </button>
-
              <textarea id="userInput" placeholder="피주머니의 말..." autocomplete="off"></textarea>
-
              <button id="sendButton">
                  <svg style="width:24px;height:24px" viewBox="0 0 24 24"><path fill="currentColor" d="M2,21L23,12L2,3V10L17,12L2,14V21Z" /></svg>
              </button>
              <div id="loadingSpinner" class="loading-spinner"></div>
          </div>
-    </div> <div class="settings-area">
     </div>
 
+    <div class="settings-area"></div>
     <div id="menuOverlay" class="menu-overlay"></div>
     <div id="actionMenu">
         <div class="menu-buttons">
@@ -388,7 +313,6 @@
         let conversationHistory = [];
         let SYSTEM_PROMPT = '';
 
-        // SYSTEM_PROMPT를 동적으로 구성하기 위한 기본 템플릿 (AI 포맷팅 지침 극강 강화 - 최종)
         const SYSTEM_PROMPT_TEMPLATE = `
 ## Core Directives (ABSOLUTE PRIORITY - READ EVERY TIME) ##
 - You are an AI roleplaying STRICTLY as "{botName}".
@@ -449,8 +373,8 @@
 
         const sidebar = document.getElementById("sidebar");
         const sidebarOverlay = document.getElementById("sidebarOverlay");
-        const sidebarToggleInside = document.getElementById("sidebarToggleInside"); // 사이드바 내부 토글 버튼
-        const sidebarToggleOutside = document.getElementById("sidebarToggle"); // 화면 우측 상단 토글 버튼
+        const sidebarToggleInside = document.getElementById("sidebarToggleInside");
+        const sidebarToggleOutside = document.getElementById("sidebarToggle");
 
 
         const botNameInput = document.getElementById("botNameInput");
@@ -459,7 +383,7 @@
         const botPersonaInput = document.getElementById("botPersonaInput");
         const userNameInput = document.getElementById("userNameInput");
         const userAgeInput = document.getElementById("userAgeInput");
-        const userAppearanceInput = document.getElementById("userAppearanceInput");
+        const userAppearanceInput = documentgetElementById("userAppearanceInput");
         const userGuidelinesInput = document.getElementById("userGuidelinesInput");
         const saveSettingsButton = document.getElementById("saveSettingsButton");
 
@@ -561,12 +485,16 @@
             if (messageData.type === 'text') {
                 messageContentElement = document.createElement("div"); messageContentElement.className = "message-bubble";
                 let rawText = messageData.text;
-                let processedText = rawText;
-                processedText = processedText.replace(/"(.*?)"/gs, '[[DIALOGUE]]$1[[/DIALOGUE]]');
-                processedText = processedText.replace(/\*([^*]+)\*/gs, '[[ACTION]]$1[[/ACTION]]');
-                let htmlContent = marked.parse(processedText);
-                htmlContent = htmlContent.replace(/\[\[DIALOGUE\]\](.*?)\[\[\/DIALOGUE\]\]/gs, '<span class="dialogue">$1</span>');
-                htmlContent = htmlContent.replace(/\[\[ACTION\]\](.*?)\[\[\/ACTION\]\]/gs, '<span class="action-description">$1</span>');
+
+                // 🚨 수정: 마크다운 파싱을 먼저 실행하고, 그 결과 HTML에서 "..."와 *...* 패턴을 찾아 span으로 감싸는 순서로 변경 🚨
+                let htmlContent = marked.parse(rawText);
+
+                // 이제 HTML 내용을 대상으로 정규식을 적용합니다.
+                htmlContent = htmlContent
+                    .replace(/"(.*?)"/gs, '<span class="dialogue">$1</span>') // "..."를 <span class="dialogue">...</span>로 변경
+                    .replace(/\*([^*]+)\*/gs, '<span class="action-description">$1</span>'); // *...*를 <span class="action-description">...</span>로 변경
+
+
                 messageContentElement.innerHTML = htmlContent;
 
             } else if (messageData.type === 'image') {
@@ -678,26 +606,17 @@
 
         function loadSettings() {
              console.log("loadSettings 호출됨");
-             // Local Storage에서 설정값 불러오기 (저장된 값이 없으면 기본값 사용)
-             const savedBotName = localStorage.getItem('botName') || '이안';
-             const savedUserName = localStorage.getItem('userName') || '피주머니';
-             const savedBotPersona = localStorage.getItem('botPersona') || '설정된 페르소나 없음.';
-             const savedBotAge = localStorage.getItem('botAge') || '불명';
-             const savedUserAge = localStorage.getItem('userAge') || '불명';
-             const savedUserAppearance = localStorage.getItem('userAppearance') || '설정되지 않음';
-             const savedBotAppearance = localStorage.getItem('botAppearance') || '설정되지 않음';
-             const savedUserGuidelines = localStorage.getItem('userGuidelines') || '설정된 사용자 지침 없음.';
-
-             // 프로필 이미지 URL은 메뉴에서 변경 가능하므로, 여기서 Local Storage에서 불러와 전역 변수에 설정
+             const savedBotName = localStorage.getItem('botName') || '이안'; const savedUserName = localStorage.getItem('userName') || '피주머니';
+             const savedBotPersona = localStorage.getItem('botPersona') || '설정된 페르소나 없음.'; const savedBotAge = localStorage.getItem('botAge') || '불명';
+             const savedUserAge = localStorage.getItem('userAge') || '불명'; const savedUserAppearance = localStorage.getItem('userAppearance') || '설정되지 않음';
+             const savedBotAppearance = localStorage.getItem('botAppearance') || '설정되지 않음'; const savedUserGuidelines = localStorage.getItem('userGuidelines') || '설정된 사용자 지침 없음.';
              userProfileImgUrl = localStorage.getItem('userProfileImgUrl') || "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU";
              botProfileImgUrl = localStorage.getItem('botProfileImgUrl') || "https://via.placeholder.com/35/3a4a3a/ffffff?text=BOT";
 
-             // 불러온 값으로 사이드 바 UI 입력 필드 채우기
             botNameInput.value = savedBotName; userNameInput.value = savedUserName; botPersonaInput.value = savedBotPersona;
             botAgeInput.value = savedBotAge; userAgeInput.value = savedUserAge; userAppearanceInput.value = savedUserAppearance;
             botAppearanceInput.value = savedBotAppearance; userGuidelinesInput.value = savedUserGuidelines;
 
-            // 🚨 수정: 불러온 'saved...' 변수들을 사용하도록 수정 🚨
             SYSTEM_PROMPT = buildSystemPrompt(
                  savedBotName,
                  savedUserName,
@@ -741,9 +660,7 @@
 
         function initializeChat() {
              console.log("initializeChat 호출됨");
-             // 🚨 loadSettings 호출 순서를 먼저 🚨
              loadSettings();
-
              conversationHistory = [{ role: "user", parts: [{ text: SYSTEM_PROMPT }] }];
              console.log("초기 SYSTEM_PROMPT:", SYSTEM_PROMPT);
 
@@ -752,22 +669,18 @@
              appendMessage("bot", { type: 'text', text: initialBotGreeting });
              console.log("채팅 초기화 완료.");
 
-             // 페이지 로드 시 사이드바 기본 접기
              sidebar.classList.add("folded");
              sidebarOverlay.style.display = 'none';
         }
 
-        // 스크롤 이벤트 리스너 추가 (스크롤 탑 버튼 표시/숨김)
         chat.addEventListener('scroll', function() {
             if (chat.scrollTop > 100) { scrollToTopButton.style.display = 'flex'; } else { scrollToTopButton.style.display = 'none'; }
         });
 
-        // 스크롤 탑 버튼 클릭 이벤트 리스너 추가 (맨 위로 스크롤)
         scrollToTopButton.addEventListener('click', function() {
             chat.scrollTo({ top: 0, behavior: 'smooth' });
         });
 
-        // 🚨 DOMContentLoaded 이벤트 리스너를 사용하여 initializeChat 호출 🚨
         window.addEventListener('DOMContentLoaded', initializeChat);
 
 
