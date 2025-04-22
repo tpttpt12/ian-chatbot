@@ -1211,19 +1211,15 @@ This dynamic must drive the narrative and dialogue written by the Novelist.
 
 
          function buildSystemPrompt(botName, userName, botPersona, botAge, botAppearance, userAge, userAppearance, userGuidelines) {
-             let finalPrompt = SYSTEM_PROMPT_TEMPLATE
-                 .replace('{botName}', botName || '이안')
-                 .replace('{botAge}', botAge || '불명')
-
-
-                 .replace('{botAppearance}', botAppearance || '설정되지 않음')
-                 .replace('{botPersona}', botPersona || '설정된 페르소나 없음.')
-                 .replace('{userName}', userName || '피주머니')
-                 .replace('{userAge}', userAge || '불명')
-                 .replace('{userAppearance}', userAppearance || '설정되지 않음')
-
-
-                 .replace('{userGuidelines}', userGuidelines || '설정된 사용자 지침 없음.');
+let finalPrompt = SYSTEM_PROMPT_TEMPLATE
+    .replaceAll('{botName}', botName || '이안')
+    .replaceAll('{botAge}', botAge || '불명')
+    .replaceAll('{botAppearance}', botAppearance || '설정되지 않음')
+    .replaceAll('{botPersona}', botPersona || '설정된 페르소나 없음.')
+    .replaceAll('{userName}', userName || '피주머니')
+    .replaceAll('{userAge}', userAge || '불명')
+    .replaceAll('{userAppearance}', userAppearance || '설정되지 않음')
+    .replaceAll('{userGuidelines}', userGuidelines || '설정된 사용자 지침 없음.');
 
              return finalPrompt.trim();
          }
