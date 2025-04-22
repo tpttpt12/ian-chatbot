@@ -707,9 +707,10 @@
 userInput.addEventListener("keydown", function(event) {
     if (event.key === "Enter") {
         if (event.shiftKey) {
-            // 줄바꿈 허용 (기본 동작 유지)
+            // 줄바꿈 허용 → 아무 것도 하지 않음
             return;
         } else {
+            // 전송 (기본 줄바꿈 막고 전송)
             event.preventDefault();
             sendMessage();
         }
