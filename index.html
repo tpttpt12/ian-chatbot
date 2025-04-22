@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial=1.0" />
     <title>이안 - 피주머니 전용 챗봇</title>
     <style>
-        /* 기존 CSS 유지 및 새로운 레이아웃, 메뉴 스타일 추가 */
+        /* 기존 CSS 유지 */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #1a1a1a;
@@ -73,7 +73,6 @@
             object-fit: cover;
             border: 1px solid #5a5a5a;
             flex-shrink: 0;
-            /* 프로필 이미지는 클릭 가능하지 않음 */
         }
 
          /* 이미지 로드 실패 시 대체할 회색 동그라미 스타일 (이전과 동일) */
@@ -169,18 +168,18 @@
             align-items: center;
             gap: 0.75rem;
              flex-shrink: 0;
-             position: relative; /* 메뉴 패널 기준 */
+             position: relative;
         }
 
-        /* 새로 추가될 + 버튼 스타일 */
+        /* + 버튼 스타일 */
         #actionMenuButton {
-            width: 40px; /* 동그란 버튼 크기 */
+            width: 40px;
             height: 40px;
-            border-radius: 50%; /* 원형 */
-            background-color: #5a5a5a; /* 색상 */
+            border-radius: 50%;
+            background-color: #5a5a5a;
             color: #ffffff;
             border: none;
-            font-size: 1.5rem; /* + 기호 크기 */
+            font-size: 1.5rem;
             cursor: pointer;
             flex-shrink: 0;
             display: flex;
@@ -220,8 +219,8 @@
             font-weight: bold;
             min-width: 6rem;
             flex-shrink: 0;
-             border: none; /* 상속 문제 방지 */
-             cursor: pointer; /* 상속 문제 방지 */
+             border: none;
+             cursor: pointer;
         }
          #sendButton:hover { background-color: #6699ff; }
          #sendButton:active { background-color: #3366cc; }
@@ -231,83 +230,81 @@
             cursor: not-allowed;
          }
 
-
-        /* 이미지 메시지 보내기 버튼 스타일 (이전과 동일) */
-        #sendImageButton {
-            padding: 0.5rem;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            min-width: 0;
-            background-color: #5a5a5a;
-            font-size: 1.2rem;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-             border: none; /* 상속 문제 방지 */
-             cursor: pointer; /* 상속 문제 방지 */
-        }
-         #sendImageButton:hover { background-color: #6a6a6a; }
-
-
         /* 기존 하단 설정 영역 숨김 */
         .settings-area {
             display: none;
         }
 
+        /* --- 액션 메뉴 배경 오버레이 스타일 --- */
+        .menu-overlay {
+            position: fixed; /* 화면 전체 고정 */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* 반투명 검은 배경 */
+            z-index: 490; /* 메뉴 패널 아래, 채팅창 위 */
+            display: none; /* 기본 숨김 */
+        }
+
         /* --- 액션 메뉴 패널 스타일 --- */
         #actionMenu {
-            position: fixed; /* 화면 아래 고정 */
+            position: fixed;
             bottom: 0;
             left: 0;
             width: 100%;
-            height: 0; /* 기본적으로 높이 0으로 숨김 */
-            background-color: #282828; /* 배경색 */
+            /* height: 0; /* 기본적으로 높이 0으로 숨김 */
+             max-height: 0; /* 높이 대신 max-height 사용 */
+            background-color: #282828;
             color: #e0e0e0;
             border-top: 1px solid #3a3a3a;
-            padding: 0 1rem; /* 기본 패딩 */
-            overflow-y: auto; /* 내용 많으면 스크롤 */
-            transition: height 0.3s ease-out, padding 0.3s ease-out; /* 높이와 패딩 애니메이션 */
-            z-index: 500; /* 입력창 위에, 오버레이 아래 */
+            padding: 0 1rem;
+            overflow-y: auto;
+            transition: max-height 0.3s ease-out, padding 0.3s ease-out; /* max-height와 패딩 애니메이션 */
+            z-index: 500;
             display: flex;
             flex-direction: column;
-            align-items: center; /* 버튼들을 중앙 정렬 */
+            align-items: center;
         }
 
         /* 메뉴가 보일 때의 스타일 */
         #actionMenu.visible {
-            height: 200px; /* 보일 때의 높이 (조절 가능) */
-            padding: 1rem; /* 보일 때의 패딩 */
+            /* height: 200px; /* 보일 때의 높이 (조절 가능) */
+            max-height: 300px; /* 보일 때의 최대 높이 (조절 가능) */
+            padding: 1rem;
         }
 
-        /* 메뉴 내부 버튼 컨테이너 */
+        /* 메뉴 내부 버튼 컨테이너 (한 줄 가로 배열) */
         #actionMenu .menu-buttons {
-            display: flex;
-            flex-wrap: wrap; /* 버튼들이 넘치면 줄바꿈 */
-            gap: 1rem; /* 버튼들 간 간격 */
+            display: flex; /* 가로 배열 */
+            /* flex-wrap: wrap; /* 줄바꿈 안 함 */
+            gap: 0.75rem; /* 버튼들 간 간격 */
             justify-content: center; /* 버튼들 가운데 정렬 */
             width: 100%;
-            max-width: 400px; /* 버튼 영역 최대 너비 */
+            max-width: 400px;
+             padding-bottom: 1rem; /* 메뉴 하단 패딩 */
         }
 
 
-        /* 메뉴 내부 버튼 스타일 */
+        /* 메뉴 내부 버튼 스타일 (가로 텍스트) */
         #actionMenu button {
-            flex-basis: calc(50% - 0.5rem); /* 두 개씩 표시 (간격 고려) */
-            max-width: 150px; /* 버튼 최대 너비 */
-            padding: 1rem; /* 버튼 내부 패딩 */
-            border-radius: 8px; /* 버튼 모서리 둥글게 */
+            flex-basis: auto; /* flex-basis 해제 */
+            max-width: none; /* 최대 너비 해제 */
+            /* width: auto; /* 내용에 맞게 너비 자동 조절 */
+             min-width: 80px; /* 버튼 최소 너비 */
+            padding: 0.75rem 1rem; /* 버튼 내부 패딩 */
+            border-radius: 8px;
             border: none;
-            background-color: #3a3a3a; /* 버튼 배경색 */
+            background-color: #3a3a3a;
             color: #e0e0e0;
             font-size: 1rem;
             cursor: pointer;
             transition: background-color 0.2s ease;
-             display: flex; /* 내용 중앙 정렬 */
-             flex-direction: column; /* 텍스트 세로 정렬 */
-             align-items: center;
-             justify-content: center;
-             text-align: center;
+            display: flex;
+            /* flex-direction: column; /* 세로 정렬 해제 */
+            align-items: center;
+            justify-content: center;
+            text-align: center;
         }
          #actionMenu button:hover {
              background-color: #4a4a4a;
@@ -359,6 +356,7 @@
     <div class="settings-area">
         </div>
 
+    <div id="menuOverlay" class="menu-overlay"></div>
     <div id="actionMenu">
         <div class="menu-buttons">
             <button id="menuUserImgButton">유저 변경</button>
@@ -391,9 +389,6 @@
         const chat = document.getElementById("chat");
         const userInput = document.getElementById("userInput");
         const sendButton = document.getElementById("sendButton");
-        // const sendImageButton = document.getElementById("sendImageButton"); // 이제 사용 안 함 (메뉴 안으로 이동)
-        // const changeUserImgButton = document.getElementById("changeUserImgButton"); // 이제 사용 안 함 (메뉴 안으로 이동)
-        // const changeBotImgButton = document.getElementById("changeBotImgButton"); // 이제 사용 안 함 (메뉴 안으로 이동)
         const loadingSpinner = document.getElementById("loadingSpinner");
         const imageOverlay = document.getElementById("imageOverlay");
         const overlayImage = document.getElementById("overlayImage");
@@ -401,13 +396,14 @@
         // 🚨 새로운 메뉴 관련 요소들 🚨
         const actionMenuButton = document.getElementById("actionMenuButton"); // + 버튼
         const actionMenu = document.getElementById("actionMenu"); // 메뉴 패널 요소
+        const menuOverlay = document.getElementById("menuOverlay"); // 메뉴 배경 오버레이 요소
         const menuUserImgButton = document.getElementById("menuUserImgButton"); // 메뉴 안의 유저 변경 버튼
         const menuBotImgButton = document.getElementById("menuBotImgButton"); // 메뉴 안의 캐릭터 변경 버튼
         const menuImageButton = document.getElementById("menuImageButton"); // 메뉴 안의 이미지 삽입 버튼
         const menuSituationButton = document.getElementById("menuSituationButton"); // 메뉴 안의 상황 버튼
 
 
-        // --- 이벤트 리스너 연결 (기존 버튼 기능 -> 메뉴 버튼으로 연결 예정) ---
+        // --- 이벤트 리스너 연결 ---
         sendButton.addEventListener("click", sendMessage);
 
         userInput.addEventListener("keypress", function(event) {
@@ -421,32 +417,45 @@
         actionMenuButton.addEventListener("click", function() {
             // actionMenu 요소에 'visible' 클래스를 추가/제거하여 CSS 애니메이션 발동
             actionMenu.classList.toggle("visible");
+            // 메뉴 상태에 따라 메뉴 배경 오버레이 표시/숨김
+            if (actionMenu.classList.contains("visible")) {
+                menuOverlay.style.display = 'block'; // 보이기
+            } else {
+                menuOverlay.style.display = 'none'; // 숨기기
+            }
              // 필요하다면 + 버튼을 X 버튼으로 바꾸는 시각적 변화 추가 가능
         });
 
-        // 🚨 메뉴 안의 버튼 이벤트 (기존 기능 연결 예정) 🚨
+        // 🚨 메뉴 배경 오버레이 클릭 이벤트 (메뉴 닫기) 🚨
+        menuOverlay.addEventListener("click", function() {
+            actionMenu.classList.remove("visible"); // 메뉴 닫기
+            menuOverlay.style.display = 'none'; // 메뉴 배경 오버레이 숨기기
+        });
+
+
+        // 🚨 메뉴 안의 버튼 이벤트 (기존 기능 연결) 🚨
         menuUserImgButton.addEventListener("click", function() {
-             // 여기에 기존 changeUserImgButton 클릭 시 실행되던 코드를 가져오거나 함수 호출
-             changeProfileImage('user'); // 아래에 함수로 분리 예정
+             changeProfileImage('user');
              actionMenu.classList.remove("visible"); // 메뉴 닫기
+             menuOverlay.style.display = 'none'; // 메뉴 배경 오버레이 숨기기
         });
 
         menuBotImgButton.addEventListener("click", function() {
-             // 여기에 기존 changeBotImgButton 클릭 시 실행되던 코드를 가져오거나 함수 호출
-             changeProfileImage('bot'); // 아래에 함수로 분리 예정
+             changeProfileImage('bot');
              actionMenu.classList.remove("visible"); // 메뉴 닫기
+             menuOverlay.style.display = 'none'; // 메뉴 배경 오버레이 숨기기
         });
 
         menuImageButton.addEventListener("click", function() {
-            // 여기에 sendImageMessage 함수 호출
-            sendImageMessage(); // 아래에 함수로 분리 예정
+            sendImageMessage();
              actionMenu.classList.remove("visible"); // 메뉴 닫기
+             menuOverlay.style.display = 'none'; // 메뉴 배경 오버레이 숨기기
         });
 
         menuSituationButton.addEventListener("click", function() {
-            // 여기에 새로운 상황 생성 기능 호출 예정
-            alert("상황 생성 기능은 아직 구현되지 않았습니다."); // 임시 알림
+            sendSituationRequest(); // 아래에 함수 구현 예정
              actionMenu.classList.remove("visible"); // 메뉴 닫기
+             menuOverlay.style.display = 'none'; // 메뉴 배경 오버레이 숨기기
         });
 
 
@@ -456,8 +465,7 @@
         });
 
 
-        // --- 메시지를 화면에 추가하는 함수 (이전과 동일, 메시지 타입 구분) ---
-        // messageData는 { type: 'text', text: '...' } 또는 { type: 'image', url: '...' } 형태
+        // --- 메시지를 화면에 추가하는 함수 (이전과 동일) ---
         function appendMessage(role, messageData) {
             const container = document.createElement("div");
             container.className = `message-container ${role}`;
@@ -497,18 +505,16 @@
 
             } else if (messageData.type === 'image') {
                  messageContentElement = document.createElement("img");
-                 messageContentElement.className = "message-image-thumbnail"; // 이미지 썸네일 스타일
+                 messageContentElement.className = "message-image-thumbnail";
                  messageContentElement.src = messageData.url;
                  messageContentElement.alt = "이미지 메시지";
 
-                 // 이미지 로드 실패 시 대체 (썸네일 자체에 대한 onerror)
                  messageContentElement.onerror = function() {
                      console.warn(`Failed to load image message from "${this.src}". Using fallback.`);
                      this.onerror = null;
                      this.classList.add('error');
                  }
 
-                 // 🚨 이미지 썸네일 클릭 이벤트 리스너 추가 (확대 기능) 🚨
                  messageContentElement.addEventListener("click", function() {
                      if (!this.classList.contains('error')) {
                          overlayImage.src = this.src;
@@ -519,15 +525,11 @@
                  });
             }
 
-
-            // 래퍼 안에 이름과 내용 요소 추가 (세로 배치)
             contentWrapper.appendChild(roleName);
             if (messageContentElement) {
                  contentWrapper.appendChild(messageContentElement);
             }
 
-
-            // 전체 컨테이너 안에 이미지(또는 대체 요소)와 내용 래퍼 추가 (가로 배치, 역할에 따라 순서 다름)
             if (role === "user") {
                 container.appendChild(contentWrapper);
                 container.appendChild(img);
@@ -541,7 +543,7 @@
         }
 
 
-        // --- 메시지 전송 함수 수정 (API 호출 시 텍스트 메시지만 필터링) ---
+        // --- 메시지 전송 함수 (API 호출 시 텍스트 메시지만 필터링) ---
         async function sendMessage() {
             const message = userInput.value.trim();
             if (!message) return;
@@ -550,7 +552,6 @@
             userInput.disabled = true;
             loadingSpinner.style.display = 'block';
 
-            // 사용자 텍스트 메시지를 화면에 추가하고 히스토리에 저장
             appendMessage("user", { type: 'text', text: message });
             conversationHistory.push({
                 role: "user",
@@ -558,7 +559,6 @@
             });
 
             try {
-                // API 호출 시, conversationHistory 배열에서 텍스트 메시지만 골라내어 새로운 배열 생성
                 const textOnlyContents = conversationHistory.map(entry => {
                     return {
                          role: entry.role,
@@ -566,12 +566,10 @@
                     };
                 }).filter(entry => entry.parts.length > 0);
 
-                 // 만약 텍스트 메시지가 전혀 없다면 (예: 이미지 메시지만 보낸 후) API 호출을 건너뛸 수 있습니다.
                  if (textOnlyContents.length === 0) {
                      console.log("No text content to send to API.");
-                     return; // API 호출 건너뛰고 함수 종료
+                     return;
                  }
-
 
                 const res = await fetch(
                     `/api/chat`,
@@ -606,7 +604,6 @@
                 loadingSpinner.style.display = 'none';
                 sendButton.disabled = false;
                 userInput.disabled = false;
-                 // sendImageButton.disabled = false; // 이제 메뉴 안으로 이동
                 userInput.focus();
             }
         }
@@ -618,28 +615,19 @@
             if (imageUrl !== null && imageUrl.trim() !== '') {
                  sendButton.disabled = true;
                  userInput.disabled = true;
-                 // sendImageButton.disabled = true; // 이제 메뉴 안으로 이동
+                 // sendImageButton.disabled = true;
 
 
                  appendMessage("user", { type: 'image', url: imageUrl.trim() });
-                 // 히스토리에는 이미지 URL과 함께 저장 (나중에 이미지도 처리하려면 필요)
-                 // 현재 API는 이미지 part를 기대하지 않으므로, 텍스트 'image'와 URL을 함께 넣어둡니다.
-                 // 나중에 모델이 이미지를 처리하게 하려면 parts 형식을 Gemini API 이미지 part 형식으로 바꿔야 합니다.
                  conversationHistory.push({
                      role: "user",
-                     parts: [{ text: 'image', 'imageUrl': imageUrl.trim() }]
+                     // 이미지 메시지는 현재 API에게 보내지 않지만, 히스토리에는 기록
+                     parts: [{ text: 'image', 'imageUrl': imageUrl.trim() }] // 예시 구조
                  });
 
                  sendButton.disabled = false;
                  userInput.disabled = false;
-                 // sendImageButton.disabled = false; // 이제 메뉴 안으로 이동
                  userInput.focus();
-
-                 // 참고: 이미지 메시지를 보낸 후 AI가 이 이미지를 '보고' 반응하게 하려면
-                 // 백엔드 코드를 수정하여 conversationHistory의 이미지 part를 인식하고
-                 // 구글 API 호출 시 Gemini API의 이미지 part 형식에 맞춰 보내줘야 합니다.
-                 // 이는 현재 코드에서는 구현되지 않았습니다.
-                 // 지금은 이미지만 화면에 표시되고 대화 히스토리에 기록될 뿐, AI는 이 이미지를 '보지' 못합니다.
 
             } else if (imageUrl !== null) {
                  alert("이미지 주소를 입력해야 합니다.");
@@ -658,10 +646,6 @@
                      botProfileImgUrl = newUrl.trim();
                  }
                  alert(`${role === 'user' ? '사용자' : '이안'} 이미지가 변경되었습니다. 이제부터 추가되는 메시지에 적용됩니다.`);
-
-                 // 🚨 이미 표시된 메시지의 프로필 이미지 업데이트 기능 (필요하다면 구현) 🚨
-                 // 이 코드는 현재 새 메시지에만 적용됩니다. 이미 표시된 모든 메시지의 프로필 이미지를 바꾸려면 아래와 같은 함수를 구현해야 합니다.
-                 // updateAllProfileImages(role);
              } else if (newUrl !== null) {
                   alert("이미지 주소를 입력해야 합니다.");
              }
@@ -670,10 +654,6 @@
         // --- '상황' 기능 함수 (메뉴에서 호출됨, 구현 예정) ---
         async function sendSituationRequest() {
              alert("상황 생성 기능은 아직 구현되지 않았습니다.");
-             // 여기에 AI에게 상황 생성을 요청하는 프롬프트를 보내는 로직 구현 예정
-             // 예: AI에게 "새로운 상황과 사건을 만들어줘." 와 같은 메시지를 보내고 응답을 받아와서
-             // appendMessage 함수로 채팅창에 표시합니다.
-             // 이 기능은 sendMessage 함수와 유사하게 API를 호출하는 과정이 필요합니다.
         }
 
 
