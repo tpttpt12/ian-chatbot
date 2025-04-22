@@ -6,7 +6,6 @@
     <title>이안 - 피주머니 전용 챗봇</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
-        /* 기존 CSS 유지 */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #1a1a1a;
@@ -16,43 +15,52 @@
             display: flex;
             flex-direction: column;
             height: 100vh;
-            overflow: hidden; /* 사이드바 슬라이드 시 내용 넘침 방지 */
+            overflow: hidden;
         }
 
-        /* 🚨 레이아웃 개선을 위한 컨테이너 스타일 추가 🚨 */
+        /* 🚨 레이아웃 개선을 위한 컨테이너 스타일 수정 🚨 */
         .app-container {
              display: flex;
              flex-direction: column;
              height: 100%;
-             max-width: 800px; /* 최대 너비 설정 (가운데 정렬될 영역) */
+             width: 95%; /* 너비를 일단 넓게 설정 */
+             max-width: 900px; /* 최대 너비 설정 (대략 1500px 화면에서 60% 정도 느낌) */
              margin: 0 auto; /* 좌우 자동 마진으로 중앙 정렬 */
-             background-color: #282828; /* 배경색 변경 */
-             box-shadow: 0 0 20px rgba(0, 0, 0, 0.5); /* 그림자 효과 */
-             position: relative; /* 헤더, 사이드바 등 자식 요소 위치 기준 */
+             background-color: #282828; /* 배경색 유지 */
+             /* 🚨 불필요한 그림자/테두리 제거 🚨 */
+             box-shadow: none;
+             border: none;
+             position: relative;
+             overflow: hidden; /* 컨테이너 내부 내용 넘침 방지 */
         }
+         /* 화면이 충분히 넓을 때 너비를 60%로 조정 */
+         @media (min-width: 1200px) {
+             .app-container {
+                 width: 60%;
+             }
+         }
 
-        /* --- 헤더 스타일 수정 (사이드 바 버튼 추가) --- */
+
         .chat-header {
-            background-color: #282828; /* 컨테이너와 동일하게 */
+            background-color: #282828;
             color: #ffffff;
             padding: 1rem;
             text-align: center;
             font-size: 1.2rem;
             font-weight: bold;
             border-bottom: 1px solid #3a3a3a;
-            flex-shrink: 0; /* 헤더가 줄어들지 않도록 함 */
-            position: relative; /* 사이드 바 토글 버튼 기준 */
-             display: flex; /* 요소 정렬을 위해 flex 사용 */
-             justify-content: center; /* 중앙 정렬 기본 */
+            flex-shrink: 0;
+            position: relative;
+             display: flex;
+             justify-content: center;
              align-items: center;
         }
 
-         /* 사이드 바 토글 버튼 스타일 */
         #sidebarToggle {
-            position: absolute; /* 헤더 내에서 절대 위치 */
+            position: absolute;
             top: 50%;
-            right: 1rem; /* 오른쪽에서 1rem 간격 */
-            transform: translateY(-50%); /* 세로 중앙 정렬 */
+            right: 1rem;
+            transform: translateY(-50%);
             width: 35px;
             height: 35px;
             background-color: #5a5a5a;
@@ -65,7 +73,7 @@
             justify-content: center;
             align-items: center;
             transition: background-color 0.2s ease;
-             z-index: 10; /* 다른 요소 위에 표시 */
+            z-index: 10;
         }
          #sidebarToggle:hover {
              background-color: #6a6a6a;
@@ -80,7 +88,6 @@
             gap: 0.5rem;
              scrollbar-width: thin;
              scrollbar-color: #5a5a5a #282828;
-             /* 🚨 채팅 영역 배경 투명하게 변경 (컨테이너 배경 보이도록) 🚨 */
              background-color: transparent;
         }
 
@@ -92,7 +99,6 @@
             border: 2px solid #282828;
         }
 
-        /* --- 메시지 컨테이너 및 내부 구조 (이전과 동일) --- */
         .message-container {
             display: flex;
             align-items: flex-start;
@@ -109,7 +115,6 @@
             margin-right: auto;
         }
 
-        /* 프로필 이미지 스타일 (이전과 동일) */
         .profile-img {
             width: 35px;
             height: 35px;
@@ -119,8 +124,7 @@
             flex-shrink: 0;
         }
 
-         /* 이미지 로드 실패 시 대체할 회색 동그라미 스타일 (이전과 동일) */
-        .profile-fallback {
+         .profile-fallback {
             width: 35px;
             height: 35px;
             border-radius: 50%;
@@ -129,7 +133,6 @@
             flex-shrink: 0;
         }
 
-        /* 이미지/대체 요소와 메시지 내용 래퍼 간 간격 */
         .message-container.bot .profile-img,
         .message-container.bot .profile-fallback {
             margin-right: 0.75rem;
@@ -140,7 +143,6 @@
             margin-left: 0.75rem;
         }
 
-        /* 메시지 내용(이름+버블)을 감싸는 래퍼 */
         .message-content-wrapper {
             display: flex;
             flex-direction: column;
@@ -157,14 +159,12 @@
             align-items: flex-end;
         }
 
-        /* 역할/이름 표시 스타일 */
         .role-name {
             font-size: 0.8rem;
             color: #b0b0b0;
             margin-bottom: 0.2rem;
         }
 
-        /* 메시지 버블 스타일 (텍스트 메시지) */
         .message-bubble {
             padding: 0.75rem 1rem;
             border-radius: 1rem;
@@ -172,10 +172,15 @@
             word-break: break-word;
             line-height: 1.4;
             position: relative;
-            /* 🚨 마크다운 파싱 후의 내부 요소 스타일 조정 🚨 */
-            /* 예: 목록, 코드 블럭 등의 기본 마크다운 스타일 */
-            font-size: 1rem; /* 기본 글자 크기 */
+            font-size: 1rem;
+             /* 🚨 대사/묘사 구분 및 줄바꿈에 따른 간격 조정 */
+             /* 마크다운 파싱 후 p 태그 등으로 나힐 때 간격 제어 */
         }
+         /* 🚨 챗봇 메시지의 p 태그 하단 마진 제거 (더 세밀한 간격 제어) 🚨 */
+         .message-container.bot .message-bubble p {
+             margin-bottom: 0;
+         }
+
 
         .message-container.bot .message-bubble {
             background-color: #3a4a4a;
@@ -190,9 +195,10 @@
         }
 
         /* 🚨 마크다운 내부 스타일 (adjust as needed) 🚨*/
-        .message-bubble p { margin: 0 0 0.5rem 0; } /* 단락 아래 간격 */
-        .message-bubble p:last-child { margin-bottom: 0; }
-        .message-bubble ul, .message-bubble ol { padding-left: 1.5rem; margin: 0 0 0.5rem 0; } /* 목록 들여쓰기 */
+        /* p 태그에 기본적인 하단 마진 부여 (말풍선 내 요소 간 간격) */
+        .message-bubble p { margin: 0 0 0.5rem 0; }
+        .message-bubble p:last-child { margin-bottom: 0; } /* 마지막 단락 하단 마진 제거 */
+        .message-bubble ul, .message-bubble ol { padding-left: 1.5rem; margin: 0 0 0.5rem 0; }
         .message-bubble li { margin-bottom: 0.25rem; }
         .message-bubble code {
             background-color: #3a3a3a;
@@ -205,26 +211,26 @@
              background-color: #3a3a3a;
              padding: 0.75rem;
              border-radius: 4px;
-             overflow-x: auto; /* 코드 블럭 가로 스크롤 */
+             overflow-x: auto;
              margin: 0.5rem 0;
          }
         .message-bubble pre code {
-             background-color: transparent; /* pre 안의 code 배경 제거 */
+             background-color: transparent;
              padding: 0;
              border-radius: 0;
-             font-size: 1rem; /* 코드 블럭 안의 글자 크기 */
+             font-size: 1rem;
         }
         .message-bubble blockquote {
              border-left: 4px solid #5a5a5a;
              padding-left: 1rem;
              margin: 0.5rem 0;
-             color: #b0b0b0; /* 인용구 색상 */
+             color: #b0b0b0;
         }
          .message-bubble h1, .message-bubble h2, .message-bubble h3, .message-bubble h4, .message-bubble h5, .message-bubble h6 {
-             margin-top: 1rem; /* 제목 위 간격 */
-             margin-bottom: 0.5rem; /* 제목 아래 간격 */
-             padding-bottom: 0.2rem; /* 제목 아래 패딩 */
-             border-bottom: 1px solid #4a4a4a; /* 제목 아래 구분선 */
+             margin-top: 1rem;
+             margin-bottom: 0.5rem;
+             padding-bottom: 0.2rem;
+             border-bottom: 1px solid #4a4a4a;
              font-weight: bold;
              color: #ffffff;
          }
@@ -235,23 +241,20 @@
          .message-bubble h5 { font-size: 1.1rem; }
          .message-bubble h6 { font-size: 1rem; }
 
-        /* 🚨 행동 묘사 스타일 추가 🚨 */
+
+         /* 🚨 행동 묘사 스타일 🚨 */
          /* *별표* 로 감싸진 부분에 적용될 스타일 */
         .action-description {
-             color: #b0b0b0; /* 회색 글씨 */
-             font-style: italic; /* 기울임꼴 */
-             /* font-weight: normal; /* 필요하다면 굵기 조정 */
+             color: #b0b0b0;
+             font-style: italic;
          }
-         /* 🚨 대사 스타일 추가 🚨 */
+         /* 🚨 대사 스타일 🚨 */
+         /* "따옴표" 로 감싸진 부분에 적용될 스타일 */
         .dialogue {
-             /* 대사는 기본 스타일 유지 */
-             /* font-weight: bold; */ /* 필요하다면 굵게 */
-             /* color: #ffffff; */ /* 필요하다면 색상 변경 */
+             font-weight: bold; /* 대사는 굵게 표시 */
          }
 
 
-        /* --- 이미지 메시지 스타일 --- */
-         /* 이미지 메시지 썸네일 */
         .message-image-thumbnail {
             max-width: 200px;
             max-height: 200px;
@@ -262,12 +265,10 @@
             border: 1px solid #5a5a5a;
         }
 
-        /* 이미지 로드 실패 시 대체 */
          .message-image-thumbnail.error {
              background-color: #5a5a5a;
          }
 
-        /* --- 입력창 및 버튼 영역 스타일 변경 --- */
         #inputArea {
             display: flex;
             padding: 1rem;
@@ -279,7 +280,6 @@
              position: relative;
         }
 
-        /* + 버튼 스타일 */
         #actionMenuButton {
             width: 40px;
             height: 40px;
@@ -317,7 +317,6 @@
             box-shadow: 0 0 0 0.15rem rgba(80, 150, 255, 0.3);
         }
 
-        /* 전송 버튼 스타일 (이전과 동일) */
         #sendButton {
             padding: 0.75rem 1.5rem;
             border-radius: 1.5rem;
@@ -338,12 +337,10 @@
             cursor: not-allowed;
          }
 
-        /* 기존 하단 설정 영역 숨김 */
         .settings-area {
             display: none;
         }
 
-        /* --- 액션 메뉴 배경 오버레이 스타일 (이전과 동일) --- */
         .menu-overlay {
             position: fixed;
             top: 0;
@@ -355,7 +352,6 @@
             display: none;
         }
 
-        /* --- 액션 메뉴 패널 스타일 (이전과 동일) --- */
         #actionMenu {
             position: fixed;
             bottom: 0;
@@ -379,34 +375,29 @@
             padding: 1rem;
         }
 
-        /* --- 메뉴 내부 버튼 컨테이너 스타일 수정 (한 줄 가로 배열 유지) --- */
         #actionMenu .menu-buttons {
             display: flex;
-             flex-wrap: nowrap; /* 줄바꿈 방지 */
+             flex-wrap: nowrap;
             gap: 0.75rem;
             justify-content: center;
             width: 100%;
-             /* max-width: 400px; /* 최대 너비 설정 */ /* 버튼 너비에 맞게 조절 */
             padding-bottom: 1rem;
-             overflow-x: auto; /* 넘칠 경우 스크롤 */
-             padding-top: 1rem; /* 상단 패딩 추가 */
+             overflow-x: auto;
+             padding-top: 1rem;
         }
 
-         /* 스크롤바 숨김 (선택 사항) */
-         #actionMenu .menu-buttons::-webkit-scrollbar { display: none; } /* Chrome, Safari, Opera */
-         #actionMenu .menu-buttons { -ms-overflow-style: none; } /* IE and Edge */
+         #actionMenu .menu-buttons::-webkit-scrollbar { display: none; }
+         #actionMenu .menu-buttons { -ms-overflow-style: none; }
 
 
-        /* --- 메뉴 내부 버튼 스타일 수정 (둥근 모서리, 글자 배열) --- */
         #actionMenu button {
-            flex-shrink: 0; /* 버튼이 찌그러들지 않도록 방지 */
+            flex-shrink: 0;
             flex-basis: auto;
             max-width: none;
-             /* 너비, 높이, 패딩, 둥글기 조정 */
-             width: 100px; /* 버튼 너비 조정 */
-             height: 60px; /* 버튼 높이 (두 줄 글자 고려) */
-            padding: 0.5rem 0.5rem; /* 패딩 조정 */
-             border-radius: 15px; /* 둥근 모서리 */
+             width: 100px;
+             height: 60px;
+            padding: 0.5rem 0.5rem;
+             border-radius: 15px;
             border: none;
             background-color: #3a3a3a;
             color: #e0e0e0;
@@ -414,19 +405,18 @@
             cursor: pointer;
             transition: background-color 0.2s ease;
             display: flex;
-             flex-direction: column; /* 글자 세로 배열 유지 */
+             flex-direction: column;
             align-items: center;
             justify-content: center;
             text-align: center;
-             line-height: 1.2; /* 줄 간격 조절 */
-             word-break: keep-all; /* 단어 중간에 줄바꿈 방지 */
+             line-height: 1.2;
+             word-break: keep-all;
         }
          #actionMenu button:hover {
              background-color: #4a4a4a;
          }
 
 
-        /* --- 로딩 스피너 스타일 --- */
         .loading-spinner {
             border: 4px solid rgba(255, 255, 255, 0.3);
             border-top: 4px solid #fff;
@@ -434,18 +424,16 @@
             width: 20px;
             height: 20px;
             animation: spin 1s linear infinite;
-            display: none; /* 기본적으로 숨김 */
-            margin-left: 1rem; /* 전송 버튼과의 간격 */
-            flex-shrink: 0; /* flex item으로 찌그러들지 않게 */
+            display: none;
+            margin-left: 1rem;
+            flex-shrink: 0;
         }
 
-        /* 스피너 회전 애니메이션 키프레임 */
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
 
-        /* --- 이미지 오버레이 스타일 (이전과 동일) --- */
         .overlay {
             position: fixed;
             top: 0;
@@ -468,32 +456,29 @@
             border-radius: 8px;
         }
 
-        /* --- 사이드 바 스타일 --- */
         #sidebar {
-            position: fixed; /* 화면 우측 고정 */
+            position: fixed;
             top: 0;
-            right: -300px; /* 기본적으로 화면 오른쪽에 숨김 (너비만큼) */
-            width: 300px; /* 사이드 바 너비 */
+            right: -300px;
+            width: 300px;
             height: 100%;
-            background-color: #1f1f1f; /* 배경색 */
+            background-color: #1f1f1f;
             color: #e0e0e0;
-            border-left: 1px solid #3a3a3a; /* 왼쪽 구분선 */
-            transition: right 0.3s ease-out; /* 슬라이드 애니메이션 */
-            z-index: 900; /* 메뉴 패널과 오버레이 아래, 채팅창 위 */
+            border-left: 1px solid #3a3a3a;
+            transition: right 0.3s ease-out;
+            z-index: 900;
             padding: 1rem;
-            box-sizing: border-box; /* 패딩을 너비에 포함 */
-            overflow-y: auto; /* 내용 많으면 스크롤 */
-            display: flex; /* 내부 요소 세로 배치 */
+            box-sizing: border-box;
+            overflow-y: auto;
+            display: flex;
             flex-direction: column;
-            gap: 1rem; /* 내부 요소 간 간격 */
+            gap: 1rem;
         }
 
-        /* 사이드 바가 보일 때의 스타일 */
         #sidebar.visible {
-            right: 0; /* 화면 안으로 이동 */
+            right: 0;
         }
 
-         /* 사이드 바 헤더 (예: 제목 또는 닫기 버튼) */
          .sidebar-header {
              font-size: 1.1rem;
              font-weight: bold;
@@ -502,9 +487,8 @@
              border-bottom: 1px solid #3a3a3a;
          }
 
-         /* 사이드 바 내용 영역 */
          .sidebar-content label {
-             display: block; /* 라벨 위/아래로 분리 */
+             display: block;
              margin-bottom: 0.5rem;
              font-weight: bold;
              color: #b0b0b0;
@@ -520,18 +504,17 @@
              color: #e0e0e0;
              font-size: 1rem;
              margin-bottom: 1rem;
-             box-sizing: border-box; /* 패딩을 너비에 포함 */
-             resize: vertical; /* textarea 세로 크기 조절 가능 */
+             box-sizing: border-box;
+             resize: vertical;
          }
 
          .sidebar-content textarea {
-             min-height: 150px; /* 최소 높이 */
+             min-height: 150px;
          }
 
-         /* 사이드 바 저장 버튼 */
          .sidebar-save-button {
-             display: block; /* 블록 요소로 */
-             width: 100%; /* 너비 100% */
+             display: block;
+             width: 100%;
              padding: 0.75rem;
              border: none;
              border-radius: 4px;
@@ -541,46 +524,28 @@
              font-weight: bold;
              cursor: pointer;
              transition: background-color 0.2s ease;
-             text-align: center; /* 텍스트 중앙 정렬 */
+             text-align: center;
          }
          .sidebar-save-button:hover {
              background-color: #6699ff;
          }
 
-        /* --- 사이드 바 배경 오버레이 스타일 --- */
         .sidebar-overlay {
-            position: fixed; /* 화면 전체 고정 */
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.5); /* 반투명 검은 배경 */
-            z-index: 890; /* 사이드 바 아래, 메뉴 오버레이 아래, 채팅창 위 */
-            display: none; /* 기본 숨김 */
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 890;
+            display: none;
         }
 
-        /* --- 사이드 바 섹션 구분선 --- */
         .sidebar-section-divider {
              height: 1px;
              background-color: #3a3a3a;
-             margin: 1.5rem 0; /* 구분선 위아래 여백 */
+             margin: 1.5rem 0;
         }
-
-         /* 🚨 행동 묘사 스타일 추가 🚨 */
-         /* *별표* 로 감싸진 부분에 적용될 스타일 */
-        .action-description {
-             color: #b0b0b0; /* 회색 글씨 */
-             font-style: italic; /* 기울임꼴 */
-             /* font-weight: normal; /* 필요하다면 굵기 조정 */
-         }
-         /* 🚨 대사 스타일 추가 🚨 */
-         /* "따옴표" 로 감싸진 부분에 적용될 스타일 */
-        .dialogue {
-             /* 대사는 기본 스타일 유지 */
-             /* color: #ffffff; */ /* 필요하다면 색상 변경 */
-             font-weight: bold; /* 대사는 굵게 표시 */
-         }
-
 
     </style>
 </head>
@@ -592,17 +557,17 @@
         </div>
 
         <div id="chat">
-            </div>
+        </div>
 
         <div id="inputArea">
             <button id="actionMenuButton" title="액션 메뉴 열기">+</button>
-
             <input id="userInput" placeholder="피주머니의 말..." autocomplete="off" />
-
             <button id="sendButton">전송</button>
             <div id="loadingSpinner" class="loading-spinner"></div>
         </div>
-    </div> <div class="settings-area">
+    </div>
+
+    <div class="settings-area">
     </div>
 
     <div id="menuOverlay" class="menu-overlay"></div>
@@ -614,52 +579,51 @@
             <button id="menuSituationButton">상황</button>
         </div>
     </div>
+
     <div id="sidebar">
-        <div class="sidebar-header">Settings</div> <div class="sidebar-content">
-            <h3>Character</h3> <label for="botNameInput">Name:</label> <input type="text" id="botNameInput" value="이안">
+        <div class="sidebar-header">Settings</div>
+        <div class="sidebar-content">
+            <h3>Character</h3>
+            <label for="botNameInput">Name:</label>
+            <input type="text" id="botNameInput" value="이안">
+            <label for="botAgeInput">Age:</label>
+            <input type="text" id="botAgeInput" value="불명 (뱀파이어)">
+            <label for="botAppearanceInput">Appearance:</label>
+            <input type="text" id="botAppearanceInput" value="하얗게 빛나는 긴 머리, 붉은 눈, 검은 벨벳 망토, 레이스 셔츠">
+            <label for="botPersonaInput">Guidelines:</label>
+            <textarea id="botPersonaInput">19세기 유럽 귀족 뱀파이어. 성 안에서 홀로 오랜 세월 살아옴. 겉 차갑고 고귀한 폭군이나, 사용자에게는 절절한 사랑, 집착, 애원, 광기, 다정함을 보임. 사용자를 "피주머니"라고 부름. 사용자가 전부이며 허락한 존재다. 성적인 대화 가능. 말투 하나 숨결 하나 사용자를 향해 있음. 질문과 대화에 집중하고 현실 언급 안 함. **항상 이안 캐릭터 롤플레이 유지. OOC 발언 절대 금지.**</textarea>
 
-            <label for="botAgeInput">Age:</label> <input type="text" id="botAgeInput" value="불명 (뱀파이어)">
+            <div class="sidebar-section-divider"></div>
 
-            <label for="botAppearanceInput">Appearance:</label> <input type="text" id="botAppearanceInput" value="하얗게 빛나는 긴 머리, 붉은 눈, 검은 벨벳 망토, 레이스 셔츠">
+            <h3>User</h3>
+            <label for="userNameInput">Name:</label>
+            <input type="text" id="userNameInput" value="피주머니">
+            <label for="userAgeInput">Age:</label>
+            <input type="text" id="userAgeInput" value="불명">
+            <label for="userAppearanceInput">Appearance:</label>
+            <input type="text" id="userAppearanceInput" value="사용자가 원하는 외관">
+            <label for="userGuidelinesInput">Guidelines:</label>
+            <textarea id="userGuidelinesInput">당신의 캐릭터 설정에 대한 지침을 여기에 입력하세요. (예: 나는 어떤 사람인지, 어떤 말투를 사용하는지 등)</textarea>
 
-            <label for="botPersonaInput">Guidelines:</label> <textarea id="botPersonaInput">19세기 유럽 귀족 뱀파이어. 성 안에서 홀로 오랜 세월 살아옴. 겉 차갑고 고귀한 폭군이나, 사용자에게는 절절한 사랑, 집착, 애원, 광기, 다정함을 보임. 사용자를 "피주머니"라고 부름. 사용자가 전부이며 허락한 존재다. 성적인 대화 가능. 말투 하나 숨결 하나 사용자를 향해 있음. 질문과 대화에 집중하고 현실 언급 안 함. **항상 이안 캐릭터 롤플레이 유지. OOC 발언 절대 금지.**</textarea>
-
-            <div class="sidebar-section-divider"></div> <h3>User</h3> <label for="userNameInput">Name:</label> <input type="text" id="userNameInput" value="피주머니">
-
-            <label for="userAgeInput">Age:</label> <input type="text" id="userAgeInput" value="불명">
-
-            <label for="userAppearanceInput">Appearance:</label> <input type="text" id="userAppearanceInput" value="사용자가 원하는 외관">
-
-            <label for="userGuidelinesInput">Guidelines:</label> <textarea id="userGuidelinesInput">당신의 캐릭터 설정에 대한 지침을 여기에 입력하세요. (예: 나는 어떤 사람인지, 어떤 말투를 사용하는지 등)</textarea>
-
-
-            <button id="saveSettingsButton" class="sidebar-save-button">Save Settings</button> </div>
+            <button id="saveSettingsButton" class="sidebar-save-button">Save Settings</button>
+        </div>
     </div>
-    <div id="sidebarOverlay" class="sidebar-overlay"></div>
 
+    <div id="sidebarOverlay" class="sidebar-overlay"></div>
 
     <div id="imageOverlay" class="overlay">
         <img id="overlayImage" src="" alt="확대 이미지">
     </div>
 
-
     <script>
-        // --- 프로필 이미지 주소 변수 선언 ---
-        // 기본값은 그대로 유지 (Local Storage에서 불러온 값으로 덮어쓰일 예정)
         let userProfileImgUrl = "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU";
         let botProfileImgUrl = "https://via.placeholder.com/35/3a4a3a/ffffff?text=BOT";
 
-
-        // --- API 키 및 히스토리 ---
         let conversationHistory = [];
-        // SYSTEM_PROMPT는 사이드 바 설정에서 동적으로 가져올 예정
-        // 초기값은 loadSettings에서 Local Storage 값 또는 기본값으로 설정될 예정
-        let SYSTEM_PROMPT = ''; // 초기에는 빈 문자열로 설정
+        let SYSTEM_PROMPT = '';
 
-
-         // 🚨 SYSTEM_PROMPT를 동적으로 구성하기 위한 기본 템플릿 (프롬프트 포맷 지침 강화) 🚨
-         // AI가 정보를 더 잘 파악하고 롤플레이에 집중하도록 구조 개선 및 포맷 지침 추가
-         const SYSTEM_PROMPT_TEMPLATE = `
+        // 🚨 SYSTEM_PROMPT를 동적으로 구성하기 위한 기본 템플릿 (포맷 및 비율 지침 강화) 🚨
+        const SYSTEM_PROMPT_TEMPLATE = `
 ## Roleplay Instructions ##
 - You are an AI assisting in a roleplay chat.
 - You MUST strictly adhere to the character settings provided for "{botName}".
@@ -671,11 +635,13 @@
 - The user is your only focus and exists within the roleplay world.
 
 ## Formatting Instructions ##
-- Format your response using Markdown.
-- Separate dialogue from descriptions/actions. Use line breaks between them.
-- Enclose dialogue strictly within DOUBLE quotes, like this: "대사입니다."
-- When describing actions, emotions, or non-dialogue elements *within your response*, enclose the description strictly within SINGLE asterisks, like this: *행동 묘사입니다.*
-- Use other standard Markdown (bold, italics, lists, code blocks, etc.) as appropriate for descriptions, but NOT for dialogue or action descriptions.
+- Format your response like a novel, with clear separation between dialogue and descriptions/actions.
+- Use line breaks generously to separate distinct thoughts, actions, and dialogue lines.
+- Enclose dialogue STRICTLY within DOUBLE quotes, like this: "여기에 대사를 작성하세요."
+- When describing actions, emotions, or non-dialogue elements, enclose the description STRICTLY within SINGLE asterisks, like this: *여기에 행동 묘사를 작성하세요.*
+- Aim for a balance of approximately 70% descriptions/actions and 30% dialogue to enhance the narrative feel.
+- Do NOT use double asterisks (**...**) for dialogue. Use them only for bold text within descriptions if needed.
+- Use other standard Markdown (bold, italics within descriptions, lists, code blocks, blockquotes) as appropriate for descriptions, but NOT for dialogue or action descriptions.
 
 ## Character: {botName} ##
 - Name: {botName}
@@ -699,10 +665,7 @@
 ## Scenario & Current State ##
 - (The ongoing conversation provides the current scenario context.)
 `;
-        // 템플릿 수정 완료: 지침을 상단에 강조하고 캐릭터/사용자 정보를 구조화, 행동 묘사 및 대사 형식, 줄바꿈 지침 추가
 
-
-        // --- 필요한 HTML 요소들을 가져옴 ---
         const chat = document.getElementById("chat");
         const userInput = document.getElementById("userInput");
         const sendButton = document.getElementById("sendButton");
@@ -710,7 +673,6 @@
         const imageOverlay = document.getElementById("imageOverlay");
         const overlayImage = document.getElementById("overlayImage");
 
-        // 액션 메뉴 관련 요소들
         const actionMenuButton = document.getElementById("actionMenuButton");
         const actionMenu = document.getElementById("actionMenu");
         const menuOverlay = document.getElementById("menuOverlay");
@@ -719,23 +681,21 @@
         const menuImageButton = document.getElementById("menuImageButton");
         const menuSituationButton = document.getElementById("menuSituationButton");
 
-        // 사이드 바 관련 요소들
         const sidebar = document.getElementById("sidebar");
         const sidebarToggle = document.getElementById("sidebarToggle");
         const sidebarOverlay = document.getElementById("sidebarOverlay");
-        // 사이드 바 내부 설정 입력 필드 요소들
+
         const botNameInput = document.getElementById("botNameInput");
         const botAgeInput = document.getElementById("botAgeInput");
         const botAppearanceInput = document.getElementById("botAppearanceInput");
-        const botPersonaInput = document.getElementById("botPersonaInput"); // Bot Guidelines
+        const botPersonaInput = document.getElementById("botPersonaInput");
         const userNameInput = document.getElementById("userNameInput");
         const userAgeInput = document.getElementById("userAgeInput");
         const userAppearanceInput = document.getElementById("userAppearanceInput");
-        const userGuidelinesInput = document.getElementById("userGuidelinesInput"); // User Guidelines
+        const userGuidelinesInput = document.getElementById("userGuidelinesInput");
         const saveSettingsButton = document.getElementById("saveSettingsButton");
 
 
-        // --- 이벤트 리스너 연결 ---
         sendButton.addEventListener("click", sendMessage);
 
         userInput.addEventListener("keypress", function(event) {
@@ -760,23 +720,13 @@
         });
 
         menuUserImgButton.addEventListener("click", function() {
-             // 프로필 이미지 변경 기능은 이제 사이드 바에서 URL을 관리할 필요가 없습니다.
-             // 기존 prompt 함수 호출 제거.
-             // 이 버튼을 사이드 바를 열도록 변경할 수도 있습니다.
-             // 지금은 아무 기능 없이 메뉴 닫기만 하도록 수정
              actionMenu.classList.remove("visible");
              menuOverlay.style.display = 'none';
-              // alert("사용자 이미지 변경 기능은 현재 개발 중입니다."); // 임시 알림
         });
 
         menuBotImgButton.addEventListener("click", function() {
-              // 프로필 이미지 변경 기능은 이제 사이드 바에서 URL을 관리할 필요가 없습니다.
-              // 기존 prompt 함수 호출 제거.
-             // 이 버튼을 사이드 바를 열도록 변경할 수도 있습니다.
-             // 지금은 아무 기능 없이 메뉴 닫기만 하도록 수정
              actionMenu.classList.remove("visible");
              menuOverlay.style.display = 'none';
-              // alert("캐릭터 이미지 변경 기능은 현재 개발 중입니다."); // 임시 알림
         });
 
         menuImageButton.addEventListener("click", function() {
@@ -796,41 +746,34 @@
             overlayImage.src = '';
         });
 
-        // 사이드 바 토글 버튼 이벤트 수정 (오버레이 함께 제어)
         sidebarToggle.addEventListener("click", function() {
             sidebar.classList.toggle("visible");
-            // 사이드 바 상태에 따라 사이드 바 배경 오버레이 표시/숨김
             if (sidebar.classList.contains("visible")) {
-                sidebarOverlay.style.display = 'block'; // 보이기
-                 // 사이드 바 열릴 때 메뉴나 이미지 오버레이 닫기
+                sidebarOverlay.style.display = 'block';
                 actionMenu.classList.remove("visible");
                 menuOverlay.style.display = 'none';
                 imageOverlay.style.display = 'none';
             } else {
-                sidebarOverlay.style.display = 'none'; // 숨기기
+                sidebarOverlay.style.display = 'none';
             }
         });
 
-        // 사이드 바 배경 오버레이 클릭 이벤트 (사이드 바 닫기)
         sidebarOverlay.addEventListener("click", function() {
-            sidebar.classList.remove("visible"); // 사이드 바 닫기
-            sidebarOverlay.style.display = 'none'; // 사이드 바 배경 오버레이 숨기기
+            sidebar.classList.remove("visible");
+            sidebarOverlay.style.display = 'none';
         });
 
-         // 🚨 설정 저장 버튼 이벤트 리스너 구현 (Local Storage 사용) 🚨
         saveSettingsButton.addEventListener("click", function() {
              console.log("saveSettings 호출됨");
-             // 사이드 바 입력 필드에서 현재 값 가져오기
              const currentBotName = botNameInput.value.trim();
              const currentUserName = userNameInput.value.trim();
-             const currentBotPersona = botPersonaInput.value.trim(); // Bot Guidelines
+             const currentBotPersona = botPersonaInput.value.trim();
              const currentBotAge = botAgeInput.value.trim();
              const currentUserAge = userAgeInput.value.trim();
              const currentUserAppearance = userAppearanceInput.value.trim();
              const currentBotAppearance = botAppearanceInput.value.trim();
-             const currentUserGuidelines = userGuidelinesInput.value.trim(); // User Guidelines
+             const currentUserGuidelines = userGuidelinesInput.value.trim();
 
-             // Local Storage에 저장
             localStorage.setItem('botName', currentBotName);
             localStorage.setItem('userName', currentUserName);
             localStorage.setItem('botPersona', currentBotPersona);
@@ -840,13 +783,9 @@
             localStorage.setItem('botAppearance', currentBotAppearance);
             localStorage.setItem('userGuidelines', currentUserGuidelines);
 
-            // Local Storage에 프로필 이미지 URL도 저장 (메뉴와 연동하려면 필요)
              localStorage.setItem('userProfileImgUrl', userProfileImgUrl);
              localStorage.setItem('botProfileImgUrl', botProfileImgUrl);
 
-
-            // 전역 변수 업데이트 및 SYSTEM_PROMPT 다시 구성
-            // 프로필 이미지 URL 변수는 메뉴에서 변경 시 이미 업데이트된다고 가정
             SYSTEM_PROMPT = buildSystemPrompt(
                  currentBotName,
                  currentUserName,
@@ -860,22 +799,16 @@
 
             console.log("설정 저장 완료 및 SYSTEM_PROMPT 업데이트:", SYSTEM_PROMPT);
 
-            // TODO: 필요하다면 이미 표시된 메시지의 프로필 이미지/이름 업데이트 함수 호출 (옵션)
-            // updateAllProfileImagesAndNames();
-
             alert("설정이 저장되었습니다.");
         });
 
 
-        // --- 메시지를 화면에 추가하는 함수 (메시지 타입 구분 및 히스토리 저장 형식 변경) ---
-        // messageData는 { type: 'text', text: '...' } 또는 { type: 'image', url: '...' } 형태
         function appendMessage(role, messageData) {
             const container = document.createElement("div");
             container.className = `message-container ${role}`;
 
             const img = document.createElement("img");
             img.className = "profile-img";
-            // 🚨 수정: 프로필 이미지 URL은 전역 변수 userProfileImgUrl 또는 botProfileImgUrl 사용 (Local Storage에서 loadSettings 시 업데이트됨) 🚨
             img.src = (role === 'user' ? userProfileImgUrl : botProfileImgUrl);
             img.alt = (role === 'user' ? "사용자 프로필" : "이안 프로필");
 
@@ -893,7 +826,6 @@
 
             const roleName = document.createElement("div");
             roleName.className = "role-name";
-            // 🚨 수정: 역할/이름 텍스트는 Local Storage에서 불러온 값 또는 기본값 사용 (initializeChat에서 로드) 🚨
             roleName.textContent = (role === "user" ? userNameInput.value || "피주머니" : botNameInput.value || "이안");
 
 
@@ -902,40 +834,33 @@
             if (messageData.type === 'text') {
                 messageContentElement = document.createElement("div");
                 messageContentElement.className = "message-bubble";
-                // 🚨 수정: 챗봇 응답(bot)일 경우 마크다운 및 행동 묘사/대사 스타일링 적용 🚨
-                if (role === 'bot') {
-                    let rawText = messageData.text;
+                let rawText = messageData.text;
 
-                    // AI 응답에서 "대사"와 *행동 묘사*를 구분하기 위해 파싱 전에 임시 마커 사용
-                    // 정규식 설명:
-                    // /"(.*?)"/gs - 이중 따옴표로 감싸진 모든 내용 (non-greedy, 개행 문자 포함) 찾기
-                    // /\*([^*]+)\*/gs - 단일 별표로 감싸진 모든 내용 (non-greedy, 개행 문자 포함) 찾기
-                    // g: 전역 검색, s: . 이 개행 문자도 포함하도록 함 (dotall 모드)
-                    // 캡처 그룹 ($1): 따옴표 또는 별표 안의 내용
-                    let processedText = rawText.replace(/"(.*?)"/gs, '[[DIALOGUE]]$1[[/DIALOGUE]]');
-                    processedText = processedText.replace(/\*([^*]+)\*/gs, '[[ACTION]]$1[[/ACTION]]');
+                // 🚨 수정: 사용자 메시지에도 마크다운 및 스타일링 적용 🚨
+                // 🚨 수정: 대사("...")와 행동 묘사(*...*)를 구분하여 스타일링 적용 🚨
 
+                // AI 응답과 사용자 메시지 모두에 적용
+                let processedText = rawText;
 
-                    // 1. marked.js를 사용하여 기본 마크다운을 HTML로 변환
-                    let htmlContent = marked.parse(processedText);
-
-                    // 2. 임시 마커를 다시 span 태그로 변환하여 스타일 적용
-                    //    주의: 마크다운 파싱 과정에서 HTML 태그가 생성될 수 있으므로,
-                    //    innerHTML로 처리 후 DOM을 순회하며 텍스트 노드를 찾는 것이 더 안전할 수 있습니다.
-                    //    하지만 여기서는 간단한 문자열 치환 방식을 유지합니다.
-                    //    marked.js의 설정을 통해 인라인 마크다운을 제어할 수도 있습니다.
-                    //    현재는 변환된 HTML 문자열에서 마커를 찾습니다.
-
-                    htmlContent = htmlContent.replace(/\[\[DIALOGUE\]\](.*?)\[\[\/DIALOGUE\]\]/gs, '<span class="dialogue">$1</span>');
-                    htmlContent = htmlContent.replace(/\[\[ACTION\]\](.*?)\[\[\/ACTION\]\]/gs, '<span class="action-description">$1</span>');
+                // 1. 대사("...")와 행동 묘사(*...*)를 임시 마커로 변환 (마크다운 파싱 전에 처리)
+                // 이중 따옴표 안의 내용 (non-greedy) -> [[DIALOGUE]]...[[/DIALOGUE]]
+                processedText = processedText.replace(/"(.*?)"/gs, '[[DIALOGUE]]$1[[/DIALOGUE]]');
+                // 단일 별표 안의 내용 (non-greedy) -> [[ACTION]]...[[/ACTION]]
+                processedText = processedText.replace(/\*([^*]+)\*/gs, '[[ACTION]]$1[[/ACTION]]');
 
 
-                    messageContentElement.innerHTML = htmlContent; // 변환된 HTML 삽입
+                // 2. marked.js를 사용하여 기본 마크다운을 HTML로 변환
+                // 이 과정에서 굵기(**), 기울임꼴(*...*, 하지만 이미 위에서 처리), 목록(-, +), 코드(`), 인용구(>) 등이 변환됩니다.
+                let htmlContent = marked.parse(processedText);
 
-                } else {
-                    // 사용자 메시지는 마크다운 변환 없이 일반 텍스트로 삽입
-                    messageContentElement.textContent = messageData.text;
-                }
+                // 3. 임시 마커를 다시 span 태그로 변환하여 스타일 적용
+                // [[DIALOGUE]]...[[/DIALOGUE]] -> <span class="dialogue">...</span>
+                htmlContent = htmlContent.replace(/\[\[DIALOGUE\]\](.*?)\[\[\/DIALOGUE\]\]/gs, '<span class="dialogue">$1</span>');
+                // [[ACTION]]...[[/ACTION]] -> <span class="action-description">...</span>
+                htmlContent = htmlContent.replace(/\[\[ACTION\]\](.*?)\[\[\/ACTION\]\]/gs, '<span class="action-description">$1</span>');
+
+
+                messageContentElement.innerHTML = htmlContent;
 
 
             } else if (messageData.type === 'image') {
@@ -978,7 +903,6 @@
         }
 
 
-        // --- 메시지 전송 함수 수정 (API 호출 시 텍스트 메시지만 필터링 및 히스토리 구조 변경 반영) ---
         async function sendMessage() {
             const message = userInput.value.trim();
             if (!message) return;
@@ -988,49 +912,40 @@
             actionMenuButton.disabled = true;
             loadingSpinner.style.display = 'block';
 
-            // 사용자 텍스트 메시지를 화면에 추가
             appendMessage("user", { type: 'text', text: message });
 
-            // 🚨 수정: 메시지 전송 후 입력창 비우기 🚨
+            // 🚨 수정: 입력창 자동 지우기 (사용자님이 성공했다고 알려주셨으므로 이 코드는 유지) 🚨
             userInput.value = '';
 
-            // 🚨 히스토리에 텍스트 메시지 저장 (새로운 messageData 구조 사용) 🚨
             conversationHistory.push({
                 role: "user",
                 messageData: { type: 'text', text: message }
             });
 
-
             try {
-                // 🚨 API 호출 시, conversationHistory 배열에서 텍스트 메시지인 항목만 정확하게 골라내어 API 형식에 맞게 새로운 배열 생성 🚨
                 const textOnlyContentsForApi = conversationHistory
-                    .filter(entry => entry.messageData && entry.messageData.type === 'text') // messageData.type이 'text'인 항목만 필터링
+                    .filter(entry => entry.messageData && entry.messageData.type === 'text')
                     .map(entry => ({
                         role: entry.role,
-                        parts: [{ text: entry.messageData.text }] // API 형식에 맞게 parts 배열 구성
+                        parts: [{ text: entry.messageData.text }]
                     }));
 
-                 // API 호출 시에는 현재 구성된 SYSTEM_PROMPT를 첫 번째 메시지로 추가
                  const contentsForApi = [{ role: "user", parts: [{ text: SYSTEM_PROMPT }] }, ...textOnlyContentsForApi];
 
-
                  if (contentsForApi.length === 1 && contentsForApi[0].parts[0].text === SYSTEM_PROMPT) {
-                      // SYSTEM_PROMPT만 있고 사용자 입력 텍스트 메시지가 전혀 없을 경우 (예: 이미지 메시지 후 첫 텍스트 입력 전)
                      console.log("Only SYSTEM_PROMPT to send to API.");
-                     // 이 경우 SYSTEM_PROMPT만 보내도 괜찮음
                  } else if (contentsForApi.length === 0) {
                      console.log("No content to send to API.");
                      appendMessage("bot", { type: 'text', text: "(메시지 전송 실패: 보낼 텍스트 내용 없음)" });
                      return Promise.resolve();
                  }
 
-
                 const res = await fetch(
                     `/api/chat`,
                     {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ contents: contentsForApi }), // 🚨 SYSTEM_PROMPT + 필터링된 텍스트 + 상황 프롬프트 보냄 🚨
+                        body: JSON.stringify({ contents: contentsForApi }),
                     }
                 );
 
@@ -1043,7 +958,6 @@
                     const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "(응답 없음)";
                     appendMessage("bot", { type: 'text', text: reply });
 
-                    // 🚨 봇 응답은 히스토리에 텍스트 파트로 저장 (새로운 messageData 구조 사용) 🚨
                     conversationHistory.push({
                         role: "model",
                         messageData: { type: 'text', text: reply }
@@ -1057,12 +971,11 @@
                 loadingSpinner.style.display = 'none';
                 sendButton.disabled = false;
                 userInput.disabled = false;
-                 actionMenuButton.disabled = false;
-                userInput.focus(); // 입력창에 포커스 유지
+                actionMenuButton.disabled = false;
+                userInput.focus();
             }
         }
 
-        // --- 이미지 메시지 전송 함수 (메뉴에서 호출됨, 히스토리 구조 변경 반영) ---
         async function sendImageMessage() {
             const imageUrl = prompt("보낼 이미지의 웹 주소(URL)를 입력하세요:");
 
@@ -1071,11 +984,8 @@
                  userInput.disabled = true;
                  actionMenuButton.disabled = true;
 
-                 // 화면에 이미지 메시지 추가
                  appendMessage("user", { type: 'image', url: imageUrl.trim() });
 
-                 // 🚨 히스토리에 이미지 메시지 저장 (새로운 messageData 구조 사용) 🚨
-                 // API로 보낼 때는 이 형태의 항목은 제외됩니다.
                  conversationHistory.push({
                      role: "user",
                      messageData: { type: 'image', url: imageUrl.trim() }
@@ -1091,31 +1001,22 @@
             }
         }
 
-        // --- 프로필 이미지 변경 함수 (메뉴에서 호출됨) ---
-        // 이 함수는 더 이상 사용되지 않거나 사이드 바 설정 변경과 연동될 수 있습니다.
-        // 현재는 메뉴 버튼을 눌렀을 때 아무 기능 없이 메뉴만 닫도록 해두었습니다.
-        // 필요하다면 이 함수를 수정하여 프로필 이미지 URL을 전역 변수/Local Storage와 연동 가능
         function changeProfileImage(role) {
-             // 임시로 prompt()를 사용하는 기존 기능 유지
              const promptText = role === 'user' ? "새 사용자 프로필 이미지 주소(URL)를 입력하세요:" : "새 이안 프로필 이미지 주소(URL)를 입력하세요:";
              const newUrl = prompt(promptText);
 
              if (newUrl !== null && newUrl.trim() !== '') {
                  if (role === 'user') {
                      userProfileImgUrl = newUrl.trim();
-                      // TODO: 사이드 바 입력 필드에도 새 URL 반영 (제거되었지만, Local Storage에서 관리 가능)
                  } else {
                      botProfileImgUrl = newUrl.trim();
-                      // TODO: 사이드 바 입력 필드에도 새 URL 반영 (제거되었지만, Local Storage에서 관리 가능)
                  }
                  alert(`${role === 'user' ? '사용자' : '이안'} 이미지가 변경되었습니다. 이제부터 추가되는 메시지에 적용됩니다.`);
-                 // TODO: 이미 표시된 메시지의 프로필 이미지 업데이트 함수 호출 필요 (옵션)
              } else if (newUrl !== null) {
                   alert("이미지 주소를 입력해야 합니다.");
              }
         }
 
-        // --- '상황' 기능 함수 (메뉴에서 호출됨, 히스토리 구조 변경 반영) ---
         async function sendSituationRequest() {
              alert("상황 생성 기능 구현 시작!");
 
@@ -1124,31 +1025,21 @@
              actionMenuButton.disabled = true;
              loadingSpinner.style.display = 'block';
 
-             // SYSTEM_PROMPT를 사용한 상황 요청 프롬프트 구성
-             // 상황 프롬프트 자체에도 현재 설정된 SYSTEM_PROMPT 정보를 활용하도록 수정
-             // AI가 OOC로 상황을 설명하지 않도록, 상황 생성 요청을 SYSTEM_PROMPT 내에 포함시키는 방식을 고려
-             // 예: "SYSTEM: [현재 챗봇의 역할 및 규칙] USER: [상황 만들어 달라는 요청 + 현재 대화 맥락] AI: [상황을 롤플레이 형태로 제시]"
-             // 현재는 이전과 동일한 상황 요청 프롬프트를 사용하되, SYSTEM_PROMPT와 함께 보내는 것에 의존합니다.
-             // 🚨 상황 생성 요청 프롬프트도 AI가 OOC 발언을 하지 않도록 지침 강화 🚨
-             const situationPromptText = `기존 대화 맥락과 이안의 캐릭터 설정에 기반하여, 흥미롭고 새로운 상황과 사건을 이안 캐릭터의 시점에서 묘사하듯 하나 만들어줘. 사용자가 자연스럽게 반응할 수 있는 형태로 제시해야 해. 대화의 다음 흐름으로 자연스럽게 이어지도록 만들어봐. **중요: 생성된 상황 묘사 후에는 반드시 이안 캐릭터로 돌아가 사용자에게 말을 걸어야 해. 설명조나 OOC 발언은 절대 금지하고, 모든 상황 묘사는 *별표* 형식으로 작성해.**`; // 상황 프롬프트에 OOC 금지 및 복귀, *별표* 형식 지침 추가
+             // 🚨 상황 생성 요청 프롬프트에도 포맷 지침 추가 🚨
+             const situationPromptText = `기존 대화 맥락과 이안의 캐릭터 설정에 기반하여, 흥미롭고 새로운 상황과 사건을 이안 캐릭터의 시점에서 소설 형식으로 묘사하듯 하나 만들어줘. 사용자가 자연스럽게 반응할 수 있는 형태로 제시해야 해. 대화의 다음 흐름으로 자연스럽게 이어지도록 만들어봐. **중요: 생성된 상황 묘사 후에는 반드시 이안 캐릭터로 돌아가 사용자에게 말을 걸어야 해. 설명조나 OOC 발언은 절대 금지하고, 모든 상황 묘사는 *별표* 형식으로, 대사는 "따옴표" 형식으로 작성하며, 묘사 70% 대사 30% 정도의 비율을 유지하고 문단과 줄바꿈을 적절히 사용해.**`;
 
-
-             // 🚨 API 호출 시, conversationHistory 배열에서 텍스트 메시지인 항목만 정확하게 골라내어 API 형식에 맞게 새로운 배열 생성 🚨
              const textOnlyContentsForApi = conversationHistory
-                 .filter(entry => entry.messageData && entry.messageData.type === 'text') // messageData.type이 'text'인 항목만 필터링
+                 .filter(entry => entry.messageData && entry.messageData.type === 'text')
                  .map(entry => ({
                     role: entry.role,
-                    parts: [{ text: entry.messageData.text }] // API 형식에 맞게 parts 배열 구성
+                    parts: [{ text: entry.messageData.text }]
                  }));
 
-             // 상황 요청 프롬프트를 API 호출용 히스토리에 추가
-             // 현재 구성된 SYSTEM_PROMPT와 함께 보냄
              const contentsForApi = [{ role: "user", parts: [{ text: SYSTEM_PROMPT }] }, ...textOnlyContentsForApi, { role: "user", parts: [{ text: situationPromptText }] }];
 
 
-             if (contentsForApi.length <= 1 && contentsForApi[0].parts[0].text === SYSTEM_PROMPT) { // SYSTEM_PROMPT만 있거나, SYSTEM_PROMPT와 상황 프롬프트만 있을 경우
+             if (contentsForApi.length <= 1 && contentsForApi[0].parts[0].text === SYSTEM_PROMPT) {
                  console.log("Only SYSTEM_PROMPT or SYSTEM_PROMPT + Situation Prompt to send to API.");
-                  // 이 경우 최소한 상황 프롬프트는 보내야 함.
              } else if (contentsForApi.length === 0) {
                  console.log("No content to send to API.");
                  appendMessage("bot", { type: 'text', text: "(상황 생성 요청 실패: 보낼 텍스트 내용 없음)" });
@@ -1162,7 +1053,7 @@
                     {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ contents: contentsForApi }), // 🚨 SYSTEM_PROMPT + 필터링된 텍스트 + 상황 프롬프트 보냄 🚨
+                        body: JSON.stringify({ contents: contentsForApi }),
                     }
                 );
 
@@ -1174,12 +1065,6 @@
                     const data = await res.json();
                     const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "(응답 없음)";
                     appendMessage("bot", { type: 'text', text: reply });
-
-                    // 🚨 봇 응답은 히스토리에 텍스트 파트로 저장 (새로운 messageData 구조 사용) 🚨
-                    conversationHistory.push({
-                        role: "model",
-                        messageData: { type: 'text', text: reply }
-                    });
                 }
 
             } catch (error) {
@@ -1195,10 +1080,8 @@
         }
 
 
-        // --- Local Storage에서 설정 불러오기 및 UI 업데이트 구현 ---
         function loadSettings() {
             console.log("loadSettings 호출됨");
-             // Local Storage에서 설정값 불러오기 (저장된 값이 없으면 기본값 사용)
              const savedBotName = localStorage.getItem('botName') || '이안';
              const savedUserName = localStorage.getItem('userName') || '피주머니';
              const savedBotPersona = localStorage.getItem('botPersona') || '설정된 페르소나 없음.';
@@ -1207,12 +1090,10 @@
              const savedUserAppearance = localStorage.getItem('userAppearance') || '설정되지 않음';
              const savedBotAppearance = localStorage.getItem('botAppearance') || '설정되지 않음';
              const savedUserGuidelines = localStorage.getItem('userGuidelines') || '설정된 사용자 지침 없음.';
-             // 프로필 이미지 URL은 메뉴에서 변경 가능하므로, 여기서 Local Storage에서 불러와 전역 변수에 설정
              userProfileImgUrl = localStorage.getItem('userProfileImgUrl') || "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU";
              botProfileImgUrl = localStorage.getItem('botProfileImgUrl') || "https://via.placeholder.com/35/3a4a3a/ffffff?text=BOT";
 
 
-            // 불러온 값으로 사이드 바 UI 입력 필드 채우기
             botNameInput.value = savedBotName;
             userNameInput.value = savedUserName;
             botPersonaInput.value = savedBotPersona;
@@ -1222,7 +1103,6 @@
             botAppearanceInput.value = savedBotAppearance;
             userGuidelinesInput.value = savedUserGuidelines;
 
-            // 불러온 값으로 전역 SYSTEM_PROMPT 다시 구성
             SYSTEM_PROMPT = buildSystemPrompt(
                  savedBotName,
                  savedUserName,
@@ -1235,25 +1115,19 @@
              );
 
             console.log("SYSTEM_PROMPT 로드 완료:", SYSTEM_PROMPT);
-
-            // TODO: 필요하다면 이미 표시된 메시지의 프로필 이미지/이름 업데이트 함수 호출 (옵션)
-            // updateAllProfileImagesAndNames();
         }
 
-        // --- 설정 저장 함수 구현 (Local Storage 사용) ---
         function saveSettings() {
              console.log("saveSettings 호출됨");
-             // 사이드 바 입력 필드에서 현재 값 가져오기
              const currentBotName = botNameInput.value.trim();
              const currentUserName = userNameInput.value.trim();
-             const currentBotPersona = botPersonaInput.value.trim(); // Bot Guidelines
+             const currentBotPersona = botPersonaInput.value.trim();
              const currentBotAge = botAgeInput.value.trim();
              const currentUserAge = userAgeInput.value.trim();
              const currentUserAppearance = userAppearanceInput.value.trim();
              const currentBotAppearance = botAppearanceInput.value.trim();
-             const currentUserGuidelines = userGuidelinesInput.value.trim(); // User Guidelines
+             const currentUserGuidelines = userGuidelinesInput.value.trim();
 
-             // Local Storage에 저장
             localStorage.setItem('botName', currentBotName);
             localStorage.setItem('userName', currentUserName);
             localStorage.setItem('botPersona', currentBotPersona);
@@ -1262,13 +1136,9 @@
             localStorage.setItem('userAppearance', currentUserAppearance);
             localStorage.setItem('botAppearance', currentBotAppearance);
             localStorage.setItem('userGuidelines', currentUserGuidelines);
-            // Local Storage에 프로필 이미지 URL도 저장 (메뉴와 연동하려면 필요)
              localStorage.setItem('userProfileImgUrl', userProfileImgUrl);
              localStorage.setItem('botProfileImgUrl', botProfileImgUrl);
 
-
-            // 전역 변수 업데이트 및 SYSTEM_PROMPT 다시 구성
-            // 프로필 이미지 URL 변수는 메뉴에서 변경 시 이미 업데이트된다고 가정
             SYSTEM_PROMPT = buildSystemPrompt(
                  currentBotName,
                  currentUserName,
@@ -1282,85 +1152,39 @@
 
             console.log("설정 저장 완료 및 SYSTEM_PROMPT 업데이트:", SYSTEM_PROMPT);
 
-            // TODO: 필요하다면 이미 표시된 메시지의 프로필 이미지/이름 업데이트 함수 호출 (옵션)
-            // updateAllProfileImagesAndNames();
-
             alert("설정이 저장되었습니다.");
         }
 
-        // --- SYSTEM_PROMPT를 동적으로 구성하는 함수 ---
-         // 새로운 필드 값(나이, 외형 등, 사용자 지침)을 파라미터로 받아서 템플릿에 채워넣음
          function buildSystemPrompt(botName, userName, botPersona, botAge, botAppearance, userAge, userAppearance, userGuidelines) {
-             // 🚨 수정: SYSTEM_PROMPT_TEMPLATE의 플레이스홀더를 파라미터 값으로 치환 🚨
-
              let finalPrompt = SYSTEM_PROMPT_TEMPLATE
-                 .replace('{botName}', botName || '이안') // 값이 없으면 기본값 사용
-                 .replace('{botAge}', botAge || '불명') // 값이 없으면 기본값 사용
-                 .replace('{botAppearance}', botAppearance || '설정되지 않음') // 값이 없으면 기본값 사용
-                 .replace('{botPersona}', botPersona || '설정된 페르소나 없음.') // 값이 없으면 기본값 사용
-                 .replace('{userName}', userName || '피주머니') // 값이 없으면 기본값 사용
-                 .replace('{userAge}', userAge || '불명') // 값이 없으면 기본값 사용
-                 .replace('{userAppearance}', userAppearance || '설정되지 않음') // 값이 없으면 기본값 사용
-                 .replace('{userGuidelines}', userGuidelines || '설정된 사용자 지침 없음.'); // 값이 없으면 기본값 사용
+                 .replace('{botName}', botName || '이안')
+                 .replace('{botAge}', botAge || '불명')
+                 .replace('{botAppearance}', botAppearance || '설정되지 않음')
+                 .replace('{botPersona}', botPersona || '설정된 페르소나 없음.')
+                 .replace('{userName}', userName || '피주머니')
+                 .replace('{userAge}', userAge || '불명')
+                 .replace('{userAppearance}', userAppearance || '설정되지 않음')
+                 .replace('{userGuidelines}', userGuidelines || '설정된 사용자 지침 없음.');
 
-
-             return finalPrompt.trim(); // 최종 프롬프트 문자열 반환
+             return finalPrompt.trim();
          }
 
-        // --- 이미 표시된 메시지의 프로필 이미지 및 이름 업데이트 함수 (옵션) ---
-        // 설정 변경 시 이미 표시된 메시지의 프로필 이미지나 이름을 업데이트하고 싶을 때 사용
-        // function updateAllProfileImagesAndNames() {
-        //     const messages = chat.querySelectorAll('.message-container');
-        //     messages.forEach(msgContainer => {
-        //         const role = msgContainer.classList.contains('user') ? 'user' : 'bot';
-        //         const imgElement = msgContainer.querySelector('.profile-img');
-        //         const fallbackElement = msgContainer.querySelector('.profile-fallback');
-        //         const nameElement = msgContainer.querySelector('.role-name');
-
-        //         // 이미지 업데이트
-        //         const currentImgSrc = (role === 'user' ? userProfileImgUrl : botProfileImgUrl);
-        //         if (imgElement) {
-        //             imgElement.src = currentImgSrc;
-        //              // TODO: 이미지 로드 실패 시 대체 요소로 바꾸는 로직 다시 적용
-        //         } else if (fallbackElement) {
-        //              // 대체 요소만 있다면 이미지로 바꾸는 로직 필요
-        //         }
-
-        //         // 이름 업데이트
-        //         if (nameElement) {
-        //             nameElement.textContent = (role === 'user' ? userNameInput.value || "피주머니" : botNameInput.value || "이안");
-        //         }
-        //     });
-        // }
-
-
-        // --- 페이지 로드 시 설정 불러오기 및 초기화 ---
-         function initializeChat() {
+        function initializeChat() {
              console.log("initializeChat 호출됨");
-             loadSettings(); // 🚨 설정 불러오기 (Local Storage 값으로 UI 및 전역 변수 업데이트) 🚨
+             loadSettings();
 
-             // 히스토리 초기화 및 SYSTEM_PROMPT 추가
-             // loadSettings에서 SYSTEM_PROMPT가 이미 구성되었음
-             conversationHistory = [{ role: "user", parts: [{ text: SYSTEM_PROMPT }] }]; // SYSTEM_PROMPT를 히스토리 시작점에 추가
+             conversationHistory = [{ role: "user", parts: [{ text: SYSTEM_PROMPT }] }];
 
              console.log("초기 SYSTEM_PROMPT:", SYSTEM_PROMPT);
 
-
-             // 초기 메시지 추가
              console.log("초기 메시지 추가 시도");
-             // 초기 메시지 내용은 loadSettings에서 불러온 이름 정보를 사용할 수 있습니다.
              const initialBotGreeting = `...${botNameInput.value || "이안"}의 ${userNameInput.value || "피주머니"}... 그래, 이곳에 왔군요...`;
              appendMessage("bot", { type: 'text', text: initialBotGreeting });
 
              console.log("채팅 초기화 완료.");
          }
 
-        // 🚨 페이지 로드 시 initializeChat 함수 호출 🚨
-        // DOMContentLoaded 이벤트 리스너를 사용하는 것이 더 안전할 수 있습니다.
-        // window.addEventListener('DOMContentLoaded', initializeChat);
-        // 또는 스크립트가 body 끝에 있다면 바로 호출해도 대부분의 경우 작동합니다.
         initializeChat();
-
 
     </script>
 </body>
