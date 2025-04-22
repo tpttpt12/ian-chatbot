@@ -1362,11 +1362,39 @@ function closeImageOverlay() {
   overlayImage.src = "";
 }
 
+        document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll(".profile-img").forEach(img => {
+    img.addEventListener("click", () => {
+      openImageOverlay(img);
+    });
+  });
+});
+
+        function openImageOverlay(thumbnail) {
+  const overlay = document.getElementById("imageOverlay");
+  const overlayImage = document.getElementById("overlayImage");
+  overlayImage.src = thumbnail.src;
+  overlay.style.display = "flex";
+}
+
+function closeImageOverlay() {
+  const overlay = document.getElementById("imageOverlay");
+  const overlayImage = document.getElementById("overlayImage");
+  overlay.style.display = "none";
+  overlayImage.src = "";
+}
+
 
     </script>
     <div id="imageOverlay" class="overlay" onclick="closeImageOverlay()">
   <img id="overlayImage" src="" />
 </div>
+
+    <div id="imageOverlay" class="overlay" onclick="closeImageOverlay()">
+  <img id="overlayImage" src="" />
+</div>
+
+    
 
 </body>
 </html>
