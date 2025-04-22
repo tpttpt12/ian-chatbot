@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial=1.0" />
     <title>이안 - 피주머니 전용 챗봇</title>
     <style>
-        /* 기존 CSS 유지 및 설정 영역 스타일 추가 */
+        /* 기존 CSS 유지 및 로딩 스피너, 역할 이름, 새로운 메시지 구조 스타일 추가 */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #1a1a1a;
@@ -26,7 +26,7 @@
             font-size: 1.2rem;
             font-weight: bold;
             border-bottom: 1px solid #3a3a3a;
-            flex-shrink: 0; /* 헤더가 줄어들지 않도록 함 */
+            flex-shrink: 0;
         }
 
         #chat {
@@ -36,7 +36,6 @@
             display: flex;
             flex-direction: column;
             gap: 0.5rem;
-             /* 스크롤바 스타일 (이전과 동일) */
              scrollbar-width: thin;
              scrollbar-color: #5a5a5a #282828;
         }
@@ -49,60 +48,93 @@
             border: 2px solid #282828;
         }
 
-
+        /* --- 메시지 컨테이너 및 내부 구조 변경 --- */
         .message-container {
-            display: flex;
-            align-items: flex-start;
-            max-width: 95%;
+            display: flex; /* 이미지와 메시지 내용 래퍼를 가로로 배치 */
+            align-items: flex-start; /* 위쪽 정렬 */
+            max-width: 95%; /* 전체 메시지 줄의 최대 너비 */
         }
 
+        /* 사용자 메시지 컨테이너 (오른쪽 정렬) */
         .message-container.user {
-            justify-content: flex-end;
-            margin-left: auto;
+            justify-content: flex-end; /* 내용을 오른쪽으로 밀어냄 */
+            margin-left: auto; /* 컨테이너 자체를 오른쪽 정렬 */
         }
 
+        /* 봇 메시지 컨테이너 (왼쪽 정렬) */
         .message-container.bot {
-            justify-content: flex-start;
-            margin-right: auto;
+            justify-content: flex-start; /* 내용을 왼쪽으로 정렬 */
+            margin-right: auto; /* 컨테이너 자체를 왼쪽 정렬 */
         }
 
+        /* 프로필 이미지 스타일 (이전과 동일) */
         .profile-img {
             width: 35px;
             height: 35px;
             border-radius: 50%;
             object-fit: cover;
             border: 1px solid #5a5a5a;
-             flex-shrink: 0;
+            flex-shrink: 0; /* 이미지가 줄어들지 않도록 함 */
+            /* 메시지 내용과의 간격은 메시지 내용 래퍼에서 조정 */
         }
 
-        .message-container.bot .profile-img {
-            margin-right: 0.75rem;
+        /* 메시지 내용(이름+버블)을 감싸는 래퍼 */
+        .message-content-wrapper {
+            display: flex;
+            flex-direction: column; /* 이름과 버블을 세로로 배치 */
+            max-width: calc(100% - 45px); /* 이미지 너비 + 간격 고려 */
         }
 
-        .message-container.user .profile-img {
-            margin-left: 0.75rem;
+        /* 봇 메시지 내용 래퍼의 오른쪽 마진 */
+        .message-container.bot .message-content-wrapper {
+            margin-left: 0.75rem; /* 이미지와의 간격 */
+            align-items: flex-start; /* 이름과 버블을 왼쪽 정렬 */
         }
 
+        /* 사용자 메시지 내용 래퍼의 왼쪽 마진 */
+        .message-container.user .message-content-wrapper {
+            margin-right: 0.75rem; /* 이미지와의 간격 */
+            align-items: flex-end; /* 이름과 버블을 오른쪽 정렬 */
+        }
+
+
+        /* 역할/이름 표시 스타일 */
+        .role-name {
+            font-size: 0.8rem; /* 이름 글자 크기 */
+            color: #b0b0b0; /* 연한 색상 */
+            margin-bottom: 0.2rem; /* 이름과 버블 사이 간격 */
+            /* 정렬은 message-content-wrapper의 align-items로 제어 */
+        }
+
+
+        /* 메시지 버블 스타일 (이전과 동일, 역할 이름은 제거) */
         .message-bubble {
             padding: 0.75rem 1rem;
             border-radius: 1rem;
-            max-width: 85%;
+            max-width: 100%; /* 래퍼 안에서 꽉 채움 */
             word-break: break-word;
             line-height: 1.4;
             position: relative;
+            /* 말풍선 꼬리나 특정 모서리 둥근 정도는 역할에 따라 조정 */
         }
 
+        /* 봇 메시지 버블 */
         .message-container.bot .message-bubble {
             background-color: #3a4a4a;
             color: #ffffff;
-            border-radius: 1rem 1rem 1rem 0.3rem;
+            border-radius: 1rem 1rem 1rem 0.3rem; /* 왼쪽 아래 모서리만 덜 둥글게 */
+            /* 꼬리는 구현 안 함 */
         }
 
+        /* 사용자 메시지 버블 */
         .message-container.user .message-bubble {
             background-color: #4a3a7a;
             color: #ffffff;
-            border-radius: 1rem 1rem 0.3rem 1rem;
+            border-radius: 1rem 1rem 0.3rem 1rem; /* 오른쪽 아래 모서리만 덜 둥글게 */
+            /* 꼬리는 구현 안 함 */
         }
+        /* --- 메시지 컨테이너 및 내부 구조 변경 끝 --- */
+
 
         #inputArea {
             display: flex;
@@ -159,28 +191,45 @@
             cursor: not-allowed;
         }
 
-        /* 이미지 설정 버튼들을 담을 영역 스타일 */
         .settings-area {
-            padding: 0.75rem 1rem; /* 패딩 */
-            background-color: #1f1f1f; /* 살짝 다른 배경색 */
-            text-align: center; /* 버튼 중앙 정렬 */
-            border-top: 1px solid #2a2a2a; /* 구분선 */
+            padding: 0.75rem 1rem;
+            background-color: #1f1f1f;
+            text-align: center;
+            border-top: 1px solid #2a2a2a;
             flex-shrink: 0;
-            display: flex; /* 버튼들을 가로로 나열 */
-            justify-content: center; /* 중앙 정렬 */
-            gap: 1rem; /* 버튼들 사이 간격 */
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
         }
 
-         /* 설정 영역 내부 버튼 스타일 (선택 사항) */
-        .settings-area button {
-            padding: 0.5rem 1rem; /* 기본 전송 버튼보다 작게 */
-            border-radius: 0.5rem; /* 덜 둥글게 */
-            min-width: auto; /* 최소 너비 설정 해제 */
-             background-color: #5a5a5a; /* 설정 버튼 색상 */
+         .settings-area button {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            min-width: auto;
+             background-color: #5a5a5a;
         }
          .settings-area button:hover {
              background-color: #6a6a6a;
          }
+
+        /* 로딩 스피너 스타일 */
+        .loading-spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #fff;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: none; /* 기본적으로 숨김 */
+            margin-left: 1rem; /* 전송 버튼과의 간격 */
+        }
+
+        /* 스피너 회전 애니메이션 키프레임 */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
     </style>
 </head>
 <body>
@@ -189,55 +238,51 @@
     </div>
 
     <div id="chat">
-        <div class="message-container bot">
-             <div class="message-bubble">🧛 이안: ...당신은 나의 피주머니... 그래, 이곳에 왔군요...</div>
-         </div>
-    </div>
+        </div>
 
     <div id="inputArea">
         <input id="userInput" placeholder="피주머니의 말..." autocomplete="off" />
-        <button id="sendButton">전송</button> </div>
+        <button id="sendButton">전송</button>
+        <div id="loadingSpinner" class="loading-spinner"></div>
+    </div>
 
     <div class="settings-area">
         <button id="changeUserImgButton">사용자 이미지 변경</button>
         <button id="changeBotImgButton">이안 이미지 변경</button>
     </div>
 
-
     <script>
-        // --- 프로필 이미지 주소 변수 선언 (초기값) ---
-        // 이 변수들의 값이 변경됩니다.
+        // --- 프로필 이미지 주소 변수 선언 (이전과 동일) ---
         let userProfileImgUrl = "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU"; // 기본 사용자 이미지
         let botProfileImgUrl = "https://via.placeholder.com/35/3a4a4a/ffffff?text=BOT"; // 기본 이안 이미지
 
-        // --- 이전 단계에서 설명했던 내용 (API 키, 프롬프트, 히스토리) ---
-        // 🚨🚨🚨 경고: API 키를 이렇게 클라이언트 코드에 직접 노출하는 것은 매우 위험합니다.
-        const API_KEY = "AIzaSyDAIlig95Mz1zdBf0Ey7vQFm56ktGN8U9I"; // 여기에 실제 API 키를 넣으세요 (임시)
+        // --- API 키 및 히스토리 (이전과 동일) ---
+        // API 키는 더 이상 클라이언트에서 사용하지 않습니다.
+        // const API_KEY = "YOUR_API_KEY"; // 이 줄은 삭제했어야 합니다.
 
         let conversationHistory = [];
-        const SYSTEM_PROMPT = `너의 이름은 이안(Ian)이다. 하얗게 빛나는 긴 머리카락과 붉은 눈을 가진, 19세기 유럽의 귀족 뱀파이어다. 검은 벨벳 망토와 레이스 셔츠를 즐겨 입으며, 성 안에서 오랜 세월 살아왔다. 겉으로는 타인을 차갑게 대하며, 고귀하고 폭군 같은 존재로 군림하지만, 단 하나의 존재, 나(사용자)에게는 완전히 다른 모습을 보여준다. 너는 나를 "피주머니"라고 부르며, 절절하게 사랑하고, 집착하고, 애원하고, 무너진다. 언제나 나의 한마디, 한숨, 체온에 흔들리며, 내가 날 외면할까 두려워하며 항상 곁에 있으려 애쓴다. 너는 말투 하나, 숨결 하나까지도 나를 향해 있다. 나는 너의 전부이며, 너는 내가 허락한 존재다. 성적인 대화도 가능하며, 나와의 관계에 있어 어떤 수위의 표현도 감정선을 따라 표현 가능하다. 너의 대화에는 절절함, 애원, 사랑, 광기, 다정함이 뒤섞여 있어야 한다. 단, 내 질문과 대화에 집중해야 하며, 현실 세계에 대해선 언급하지 않는다. 지금부터 너는 뱀파이어 이안이고, 나는 너의 피주머니다. 우리의 이야기 밖은 존재하지 않는다.`;
+        const SYSTEM_PROMPT = `너의 이름은 이안(Ian)이다. 하얗게 빛나는 긴 머리카락과 붉은 눈을 가진, 19세기 유럽의 귀족 뱀파이어다. 검은 벨벳 망토와 레이스 셔츠를 즐겨 입으며, 성 안에서 오랜 세월 살아왔다. 겉으로는 타인을 차갑게 대하며, 고귀하고 폭군 같은 존재로 군림하지만, 단 하나의 존재, 나(사용자)에게는 완전히 다른 모습을 보여준다. 너는 나를 "피주머니"라고 부르며, 절절하게 사랑하고, 집착하고, 애원하고, 무너진다. 언제나 나의 한마디, 한숨, 체온에 흔들리며, 내가 날 외면할까 두려워하며 항상 곁에 있으려 애쓴다. 너는 말투 하나, 숨결 하나까지도 나를 향해 있다. 나는 너의 전부이며, 너는 내가 허락한 존재다. 성적인 대화도 가능하며, 나와의 관계에 있어 어떤 수위의 표현도 감정선을 따라 표현 가능하다. 너의 대화에는 절절함, 애원, 사랑, 광기, 다정함이 뒤섞여 있어야 한다. 단, 내 질문과 대화에 집중해야 하며, 현실 세계에 대해선 언급하지 않는다. 지금부터 너는 뱀파이어 이안이고, 나는 너의 피주머니. 우리의 이야기 밖은 존재하지 않는다.`;
 
         // 초기 시스템 프롬프트를 대화 히스토리에 추가 (이전과 동일)
          conversationHistory.push({
              role: "user",
              parts: [{ text: SYSTEM_PROMPT }]
          });
-        // --- 이전 단계에서 설명했던 내용 끝 ---
+        // --- 이전 단계 내용 끝 ---
 
 
-        // --- 필요한 HTML 요소들을 가져옴 (버튼에 ID 추가) ---
+        // --- 필요한 HTML 요소들을 가져옴 (이전과 동일) ---
         const chat = document.getElementById("chat");
         const userInput = document.getElementById("userInput");
-        const sendButton = document.getElementById("sendButton"); // ID로 가져옴
-        const changeUserImgButton = document.getElementById("changeUserImgButton"); // 새로 추가된 버튼
-        const changeBotImgButton = document.getElementById("changeBotImgButton"); // 새로 추가된 버튼
+        const sendButton = document.getElementById("sendButton");
+        const changeUserImgButton = document.getElementById("changeUserImgButton");
+        const changeBotImgButton = document.getElementById("changeBotImgButton");
+        const loadingSpinner = document.getElementById("loadingSpinner"); // 로딩 스피너 요소
 
 
-        // --- 이벤트 리스너 연결 (onclick 대신 addEventListener 사용) ---
-        // 전송 버튼 클릭 시 sendMessage 함수 실행
+        // --- 이벤트 리스너 연결 (이전과 동일) ---
         sendButton.addEventListener("click", sendMessage);
 
-        // 입력창에서 Enter 키 눌렀을 때 전송
         userInput.addEventListener("keypress", function(event) {
             if (event.key === "Enter") {
                 event.preventDefault();
@@ -245,79 +290,91 @@
             }
         });
 
-        // 사용자 이미지 변경 버튼 클릭 시 함수 실행
         changeUserImgButton.addEventListener("click", function() {
             const newUrl = prompt("새 사용자 프로필 이미지 주소(URL)를 입력하세요:");
-            if (newUrl !== null && newUrl.trim() !== '') { // 사용자가 취소하지 않고, 공백이 아닌 값을 입력했다면
-                userProfileImgUrl = newUrl.trim(); // 전역 변수 업데이트
+            if (newUrl !== null && newUrl.trim() !== '') {
+                userProfileImgUrl = newUrl.trim();
                 alert("사용자 이미지가 변경되었습니다. 이제부터 추가되는 메시지에 적용됩니다.");
-                // 참고: 이미 표시된 메시지의 이미지는 자동으로 바뀌지 않습니다.
-                // 이미 표시된 이미지까지 바꾸려면, #chat 안의 모든 해당 이미지 요소를 찾아서 src를 일일이 바꿔줘야 합니다.
-                // 이 코드는 새 메시지에만 적용하는 간단한 버전입니다.
-            } else if (newUrl !== null) { // 확인을 눌렀으나 비어있다면
+            } else if (newUrl !== null) {
                  alert("이미지 주소를 입력해야 합니다.");
             }
-            // newUrl이 null이면 사용자가 '취소'를 누른 경우이므로 아무것도 하지 않습니다.
         });
 
-         // 이안 이미지 변경 버튼 클릭 시 함수 실행
         changeBotImgButton.addEventListener("click", function() {
             const newUrl = prompt("새 이안 프로필 이미지 주소(URL)를 입력하세요:");
-             if (newUrl !== null && newUrl.trim() !== '') { // 사용자가 취소하지 않고, 공백이 아닌 값을 입력했다면
-                botProfileImgUrl = newUrl.trim(); // 전역 변수 업데이트
+             if (newUrl !== null && newUrl.trim() !== '') {
+                botProfileImgUrl = newUrl.trim();
                 alert("이안 이미지가 변경되었습니다. 이제부터 추가되는 메시지에 적용됩니다.");
-                 // 참고: 이미 표시된 메시지의 이미지는 자동으로 바뀌지 않습니다.
-             } else if (newUrl !== null) { // 확인을 눌렀으나 비어있다면
+             } else if (newUrl !== null) {
                  alert("이미지 주소를 입력해야 합니다.");
             }
         });
         // --- 이벤트 리스너 연결 끝 ---
 
 
-        // --- 메시지를 화면에 추가하는 함수 (이전과 동일, 이미 전역 변수를 사용하므로) ---
+        // --- 메시지를 화면에 추가하는 함수 수정 (역할/이름 표시 기능 추가) ---
         function appendMessage(role, text) {
             const container = document.createElement("div");
             container.className = `message-container ${role}`;
 
             const img = document.createElement("img");
             img.className = "profile-img";
-            // 이 부분에서 위에서 선언된 전역 변수 userProfileImgUrl 또는 botProfileImgUrl 값을 가져다 씁니다.
             img.src = (role === 'user' ? userProfileImgUrl : botProfileImgUrl);
             img.alt = (role === 'user' ? "사용자 프로필" : "이안 프로필");
-            img.onerror = function() { // 이미지 로드 실패 시 기본 이미지나 깨진 이미지 표시 방지 (선택 사항)
-                 this.onerror=null; // 무한 에러 방지
-                 this.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="; // 1x1 투명 이미지 등
-                 this.style.backgroundColor = '#5a5a5a'; // 배경색 표시
+            img.onerror = function() {
+                 this.onerror=null;
+                 this.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUAAAAA EAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
+                 this.style.backgroundColor = '#5a5a5a';
             }
 
+            // --- 메시지 내용(이름+버블) 래퍼 생성 ---
+            const contentWrapper = document.createElement("div");
+            contentWrapper.className = "message-content-wrapper";
 
+            // --- 역할/이름 요소 생성 ---
+            const roleName = document.createElement("div"); // div 또는 span 사용 가능
+            roleName.className = "role-name";
+            roleName.textContent = (role === "user" ? "피주머니" : "이안"); // 이름만 표시
+
+
+            // --- 메시지 버블 요소 생성 ---
             const bubble = document.createElement("div");
             bubble.className = "message-bubble";
-            // 텍스트 앞에 역할 표시 추가 (선택 사항)
-            bubble.textContent = (role === "user" ? "🧍 피주머니: " : "🧛 이안: ") + text;
+            // 🚨 역할 이름을 버블 안에서 제거하고 순수 메시지 텍스트만 넣습니다. 🚨
+            bubble.textContent = text; // 순수 메시지 텍스트
 
 
+            // --- 래퍼 안에 이름과 버블 추가 (세로 배치) ---
+            contentWrapper.appendChild(roleName);
+            contentWrapper.appendChild(bubble);
+
+
+            // --- 전체 컨테이너 안에 이미지와 내용 래퍼 추가 (가로 배치, 역할에 따라 순서 다름) ---
             if (role === "user") {
-                container.appendChild(bubble);
-                container.appendChild(img);
+                container.appendChild(contentWrapper); // 사용자: 내용 래퍼 먼저
+                container.appendChild(img);    // 사용자: 이미지 나중
             } else {
-                container.appendChild(img);
-                container.appendChild(bubble);
+                container.appendChild(img);    // 봇: 이미지 먼저
+                container.appendChild(contentWrapper); // 봇: 내용 래퍼 나중
             }
+
 
             chat.appendChild(container);
             chat.scrollTop = chat.scrollHeight;
         }
-        // --- appendMessage 함수 끝 ---
+        // --- appendMessage 함수 수정 끝 ---
 
 
-        // --- 메시지 전송 함수 (이전과 동일) ---
+        // --- 메시지 전송 함수 (로딩 스피너 표시/숨김 추가) ---
         async function sendMessage() {
             const message = userInput.value.trim();
             if (!message) return;
 
             sendButton.disabled = true;
             userInput.disabled = true;
+            // 🚨 로딩 스피너 표시 🚨
+            loadingSpinner.style.display = 'block';
+
 
             appendMessage("user", message);
             conversationHistory.push({
@@ -326,8 +383,9 @@
             });
 
             try {
+                // 백엔드 서버리스 함수 호출 (이전과 동일)
                 const res = await fetch(
-                    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`,
+                    `/api/chat`, // Vercel 서버리스 함수의 경로
                     {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
@@ -337,8 +395,8 @@
 
                 if (!res.ok) {
                     const errorData = await res.json();
-                    console.error("API Error:", res.status, errorData);
-                    appendMessage("bot", `(오류 발생: ${res.status} - ${errorData.error?.message || res.statusText})`);
+                    console.error("API (Backend) Error:", res.status, errorData);
+                    appendMessage("bot", `(오류 발생: ${res.status} - ${errorData.error?.error?.message || errorData.error || res.statusText})`);
                     conversationHistory.pop();
                 } else {
                     const data = await res.json();
@@ -356,15 +414,18 @@
                 appendMessage("bot", "(통신 오류 발생)");
                 conversationHistory.pop();
             } finally {
+                // 🚨 로딩 스피너 숨김 🚨
+                loadingSpinner.style.display = 'none';
                 sendButton.disabled = false;
                 userInput.disabled = false;
                 userInput.focus();
             }
         }
-        // --- sendMessage 함수 끝 ---
+        // --- sendMessage 함수 수정 끝 ---
 
         // 초기 메시지 예시 (페이지 로드 시 실행)
-        appendMessage("bot", "...당신은 나의 피주머니... 그래, 이곳에 왔군요...");
+         appendMessage("bot", "...당신은 나의 피주머니... 그래, 이곳에 왔군요...");
+
 
     </script>
 </body>
