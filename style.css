@@ -25,6 +25,7 @@ body {
     border: none;
     position: relative;
     overflow: hidden; /* Prevent container content overflow */
+    padding-bottom: 20px; /* 원하는 만큼 간격 조절 (예: 20px) */
 }
 
 /* Adjust width for wider screens */
@@ -199,12 +200,12 @@ body {
 /* User Name Text Style */
 .message-container.user .name-text {
     text-align: left;
-    order: 1;
+    order: 0;
 }
 
 /* Bot Name Text Style */
 .message-container.bot .name-text {
-    text-align: right;
+    text-align: left;
     order: 0;
 }
 
@@ -224,7 +225,7 @@ body {
 .message-container.user .role-name .delete-btn {
     margin-right: 10px;
     margin-left: 0;
-    order: 0;
+    order: 1;
 }
 
 /* Bot Delete Button Style */
@@ -241,14 +242,14 @@ body {
 
 /* Text Message Bubble Style */
 .message-bubble {
-    padding: 0.75rem 1rem;
+    padding: 0rem 1rem;
     border-radius: 1rem;
     max-width: 100%;
     word-break: break-word;
     line-height: 1.4;
     position: relative;
     font-size: 1rem;
-    white-space: pre-wrap;
+    white-space: normalv;
     margin-bottom: 0;
 }
 
@@ -325,11 +326,11 @@ body {
     align-items: stretch; /* Stretch children across the main axis (horizontally) */
     gap: 0.75rem; /* Gap between vertical items (textarea container and buttons row) */
 
-    padding: 1rem 1.5rem 2rem 1.5rem; /* Top: 1rem, Right: 1.5rem, Bottom: 2rem, Left: 1.5rem */
+    padding: 0.5rem 0.5rem 0.5rem 0.5rem; 
     background-color: #1E1E1E;
     box-shadow: 0 -20px 20px 0px rgba(30, 30, 30);
     z-index: 510; /* Ensure inputArea and its children (menu, spinner, input row) are above the overlay (z-index 490) */
-    border: 1px solid #a9a9a9;
+    border: 1px solid #2F2F2F;
     border-radius: 15px;
     flex-shrink: 0;
     position: relative; /* Needed for absolute positioning of menu and spinner */
@@ -394,7 +395,7 @@ body {
     padding: 0.75rem 1rem;
     border-radius: 1.5rem;
     border: none;
-    background-color: #3a3a3a;
+    background-color: #1E1E1E;
     color: #e0e0e0;
     font-size: 1rem;
     outline: none;
@@ -420,12 +421,12 @@ body {
 /* Adjusted for the new buttons row container */
 #sendButton {
     /* Keep existing styles */
-    width: 40px;
-    height: 40px;
+    width: 25px;
+    height: 25px;
     border-radius: 50%;
     background-color: #5080ff;
     color: #ffffff;
-    font-size: 1rem;
+    font-size: 0.6rem;
     flex-shrink: 0;
     border: none;
     cursor: pointer;
@@ -751,11 +752,11 @@ body {
     right: auto;
     transform: none;
 
-    width: 150px; /* Reduced width */
+    width: 100px; /* Reduced width */
     max-width: 150px; /* Reduced max-width */
 
     background-color: #1f1f1f;
-    border: 1px solid #3a3a3a;
+    border: 1px solid #2F2F2F;
     border-radius: 15px;
     padding: 0.3rem 0; /* Reduced padding */
     box-sizing: border-box;
