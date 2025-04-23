@@ -158,7 +158,7 @@ function saveSettings(slotNumber) {
     const settings = {
         botName: botNameInput.value,
         botAge: botAgeInput.value,
-        botAppearance: botAppearanceInput.value, // 여기서 userAppearanceInput.value 대신 botAppearanceInput.value 사용
+        botAppearance: botAppearanceInput.value,
         botPersona: botPersonaInput.value,
         botImageUrl: botImageUrlInput.value,
         userName: userNameInput.value,
@@ -232,7 +232,7 @@ function updateSystemPrompt() {
     SYSTEM_PROMPT = SYSTEM_PROMPT_TEMPLATE
         .replace(/{botName}/g, botNameInput.value || "캐릭터")
         .replace(/{botAge}/g, botAgeInput.value || "불명")
-        .replace(/{botAppearance}/g, botAppearanceInput.value || "알 수 없음") // 여기도 botAppearanceInput.value 사용
+        .replace(/{botAppearance}/g, botAppearanceInput.value || "알 수 없음")
         .replace(/{botPersona}/g, botPersonaInput.value || "설정 없음")
         .replace(/{userName}/g, userNameInput.value || "사용자")
         .replace(/{userAge}/g, userAgeInput.value || "불명")
@@ -414,17 +414,17 @@ function exportConversationAsTxt() {
         if (messageData.type === 'text') {
             let rawText = messageData.text; // 원본 텍스트 가져오기
 
-            // --- 사용자 요청에 따른 마크다운 처리 ---
+            // --- 사용자 요청에 따른 정확한 마크다운 처리 ---
             let processedText = rawText; // 원본 텍스트로 시작
 
-            // 1. *행동* -> 행동 (별표 제거)
-            processedText = processedText.replace(/\*([^*]+)\*\n?/g, '$1\n'); // 줄바꿈 포함 처리
-            // 2. **볼드** -> "볼드" (별표 제거하고 큰따옴표로 감쌈)
-            processedText = processedText.replace(/\*\*([^*]+)\*\*\n?/g, '"$1"\n'); // 줄바꿈 포함 처리
-            // 3. "대사" 는 이미 따옴표가 있으므로 그대로 둡니다. (추가 변환 없음)
+            // 1. *행동* -> 행동 (별표 제거) - 줄바꿈 처리 방식 개선
+            processedText = processedText.replace(/\*([^*]+)\*/g, '$1');
+            // 2. **볼드** -> "볼드" (별표 제거하고 큰따옴표로 감쌈) - 줄바꿈 처리 방식 개선
+            processedText = processedText.replace(/\*\*([^*]+)\*\*/g, '"$1"');
+            // 3. "대사" 는 이미 따옴표가 있으므로 그대로 둡니다. (추가 변환 없음) - 다른 마크다운 처리와 순서 중요
 
-            // 원하는 형식으로 줄바꿈 유지
-            // processedText = processedText.replace(/\n/g, '\n'); // 기존 줄바꿈 유지 - 위에서 이미 줄바꿈 처리
+             // 기존 줄바꿈 유지
+             processedText = processedText.replace(/\n/g, '\n');
 
             txtContent += `[${name}] : ${processedText.trim()}\n\n`; // 턴 사이에 엔터 두 번, 메시지 끝 공백 제거
 
@@ -457,11 +457,105 @@ function exportConversationAsTxt() {
 }
 
 // 요약 함수 (나중에 구현)
-function summarizeConversation() {
-    alert("요약 기능 구현 예정!"); // 임시 알림
-    // 여기에 이전 10턴을 가져와 API에 요약 요청하는 로직 추가
-    actionMenu.classList.remove("visible");
-    menuOverlay.style.display = 'none';
+async function summarizeConversation() { // async 함수로 변경
+    // 요약 요청 시 버튼 비활성화 및 스피너 표시
+    sendButton.disabled = true;
+    userInput.disabled = true;
+    actionMenuButton.disabled = true;
+    loadingSpinner.style.display = 'block';
+    // 요약 버튼 자체도 비활성화
+    menuSummarizeButton.disabled = true;
+
+
+    // 대화 기록에서 최근 10턴 가져오기
+    // conversationHistory는 가장 오래된 메시지가 앞에 있습니다.
+    // 따라서 마지막 10개를 가져오려면 slice 사용
+    const recentHistory = conversationHistory.slice(-10);
+
+    if (recentHistory.length === 0) {
+        appendMessage("bot", { type: 'text', text: "(요약할 대화 내용이 충분하지 않습니다.)" });
+         // 상태 초기화
+        sendButton.disabled = false;
+        userInput.disabled = false;
+        actionMenuButton.disabled = false;
+        loadingSpinner.style.display = 'none';
+        menuSummarizeButton.disabled = false;
+        actionMenu.classList.remove("visible");
+        menuOverlay.style.display = 'none';
+        return;
+    }
+
+    // 요약을 위한 프롬프트 구성
+    // 모델에게 이전 대화 내용을 전달하고 요약을 요청하는 내용
+    // 요약 프롬프트는 대화의 맥락을 제공하는 SYSTEM_PROMPT와 분리하여 마지막에 추가
+    const summaryPromptText = `Based on the following recent conversation turns, provide a concise summary from a third-person perspective. Focus on the main events and key points discussed. Format the summary as a plain text message. Do not include any introductory phrases like "Summary:" or "Here is the summary:". Just provide the summary text directly.`;
+
+    // API 전송을 위한 contents 배열 구성
+    // SYSTEM_PROMPT + 최근 10턴의 텍스트 메시지 + 요약 요청 프롬프트
+    const contentsForApi = [{ role: "user", parts: [{ text: SYSTEM_PROMPT }] }];
+
+     // 최근 대화 기록 중 텍스트 메시지만 API에 전달
+    recentHistory.forEach(entry => {
+        if (entry.messageData && entry.messageData.type === 'text') {
+            // API로 보낼 때는 원래 마크다운과 구조를 유지하는 것이 모델 이해에 더 좋을 수 있습니다.
+            // 여기서는 단순 텍스트만 추출해서 보냅니다.
+            // 더 나은 요약을 원한다면 마크다운을 유지하거나 구조화된 형태로 보내는 것을 고려
+            contentsForApi.push({
+                role: entry.role,
+                parts: [{ text: entry.messageData.text }]
+            });
+        }
+        // 이미지 메시지는 요약을 위해 API에 보내지 않습니다.
+    });
+
+    contentsForApi.push({ role: "user", parts: [{ text: summaryPromptText }] });
+
+
+    // API 호출
+    try {
+        const res = await fetch(
+            `/api/chat`,
+            {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ contents: contentsForApi }),
+            }
+        );
+
+        if (!res.ok) {
+            const errorData = await res.json();
+            console.error("API (Backend) Error for Summary:", res.status, errorData);
+            const errorText =
+                errorData?.error?.error?.message ||
+                errorData?.error ||
+                res.statusText;
+            appendMessage("bot", {
+                type: 'text',
+                text: `(요약 오류 발생: ${res.status} - ${errorText})`
+            });
+        } else { // 응답 성공
+            const data = await res.json();
+            const summaryText = data.candidates?.[0]?.content?.parts?.[0]?.text || "(요약 응답 없음)";
+            // 요약 결과를 시스템 메시지처럼 표시
+            appendMessage("bot", { type: 'text', text: `--- 대화 요약 ---\n${summaryText}\n---` });
+            // 요약 결과는 대화 기록에 추가하지 않습니다 (무한 요약 방지 및 기록 복잡성 감소)
+        }
+
+    } catch (error) {
+        console.error("Fetch Error for Summary:", error);
+        appendMessage("bot", { type: 'text', text: "(요약 통신 오류 발생)" });
+    } finally {
+        // API 호출 완료 시 상태 초기화
+        sendButton.disabled = false;
+        userInput.disabled = false;
+        actionMenuButton.disabled = false;
+        loadingSpinner.style.display = 'none';
+        menuSummarizeButton.disabled = false; // 요약 버튼 다시 활성화
+        userInput.focus();
+         // 메뉴 닫기
+        actionMenu.classList.remove("visible");
+        menuOverlay.style.display = 'none';
+    }
 }
 
 
@@ -697,15 +791,6 @@ async function sendSituationRequest() {
         actionMenu.classList.remove("visible");
         menuOverlay.style.display = 'none';
     }
-}
-
-
-// 요약 함수 (나중에 구현)
-function summarizeConversation() {
-    alert("요약 기능 구현 예정!"); // 임시 알림
-    // 여기에 이전 10턴을 가져와 API에 요약 요청하는 로직 추가
-    actionMenu.classList.remove("visible");
-    menuOverlay.style.display = 'none';
 }
 
 
