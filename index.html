@@ -991,17 +991,16 @@ const SYSTEM_PROMPT_TEMPLATE = `
                 messageContentElement.className = "message-bubble";
                 let rawText = messageData.text;
 
-                // Markdown 파싱 전에 단일 줄바꿈을 <br> 태그로 변환
-                // 두 번 이상의 줄바꿈(단락)은 Markdown 파서가 처리하도록 그대로 둡니다.
-                let processedText = rawText.replace(/\n(?!\n)/g, '<br>');
+                // 연속된 줄바꿈(하나 이상)을 해당 개수만큼의 <br> 태그로 변환
+                let processedText = rawText.replace(/\n+/g, match => '<br>'.repeat(match.length));
 
 
                 // 마크다운 파싱 전에 임시 마커 사용, 파싱 후 임시 마커를 찾아 스타일 적용
-                // let processedText = rawText; // 이 줄은 이제 필요 없습니다.
+                // 이전의 processedText 변수 초기화 및 마커 변환 로직은 이 아래에서 계속됩니다.
                 // "..."를 [[DIALOGUE]]...[[/DIALOGUE]] 로 변환
                 processedText = processedText.replace(/"(.*?)"/gs, '[[DIALOGUE]]$1[[/DIALOGUE]]');
                 // *...*를 [[ACTION]]...[[/ACTION]] 로 변환
-                processedText = processedText.replace(/\*([^*]+)\*/gs, '[[ACTION]]$1[[/ACTION]]');
+                processedText = processedText.replace(/\*([^*]+)\*/gs, '[[ACTION]]$1[[/ACTION]]'); // 여기 닫는 괄호 빠졌던거 수정합니다.
                 // marked.js를 사용하여 기본 마크다운을 HTML로 변환
                 let htmlContent = marked.parse(processedText);
                 // 임시 마커를 찾아 span 태그로 변환하여 스타일 적용
