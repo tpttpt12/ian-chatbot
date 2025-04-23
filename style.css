@@ -215,7 +215,7 @@ body {
 
   /* 캐릭터 메시지의 이름 텍스트 오른쪽 정렬 */
  .message-container.bot .name-text {
-     text-align: right;
+     text-align: left;
  }
 
 
