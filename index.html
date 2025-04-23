@@ -1161,30 +1161,32 @@ container.appendChild(deleteBtn);
              }
 
 
-            try {
-                const res = await fetch(
-                    `/api/chat`,
-                    {
-                        method: "POST",
+try {
+                const res = await fetch(
+                    `/api/chat`,
+                    {
+                        method: "POST",
 
 
-                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ contents: contentsForApi }),
-                    }
-                );
-if (!res.ok) {
-    const errorData = await res.json();
-    console.error("API (Backend) Error:", res.status, errorData);
+                         headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ contents: contentsForApi }),
+                    }
+                );
+                // 응답이 성공적이지 않다면 (오류라면)
+                if (!res.ok) {
+                    const errorData = await res.json();
+                    console.error("API (Backend) Error:", res.status, errorData);
 
-    const errorText =
-        errorData?.error?.error?.message ||
-        errorData?.error ||
-        res.statusText;
+                    const errorText =
+                        errorData?.error?.error?.message ||
+                        errorData?.error ||
+                        res.statusText;
 
-    appendMessage("bot", {
-        type: 'text',
-        text: `(오류 발생: ${res.status} - ${errorText})`
-    });
+                    appendMessage("bot", {
+                        type: 'text',
+                        text: `(오류 발생: ${res.status} - ${errorText})`
+                    });
+                } else { // 응답이 성공적이라면
                     const data = await res.json();
                     const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "(응답 없음)";
                     appendMessage("bot", { type: 'text', text: reply });
@@ -1194,17 +1196,17 @@ if (!res.ok) {
                     });
                 }
 
-            } catch (error) {
-                console.error("Fetch Error:", error);
-                appendMessage("bot", { type: 'text', text: "(통신 오류 발생)" });
- } finally {
-                sendButton.disabled = false;
-                userInput.disabled = false;
-                actionMenuButton.disabled = false;
-                loadingSpinner.style.display = 'none';
-                userInput.focus();
-            }
-        }
+            } catch (error) {
+                console.error("Fetch Error:", error);
+                appendMessage("bot", { type: 'text', text: "(통신 오류 발생)" });
+ } finally {
+                sendButton.disabled = false;
+                userInput.disabled = false;
+                actionMenuButton.disabled = false;
+                loadingSpinner.style.display = 'none';
+                userInput.focus();
+            }
+        }
 
 
         // loadSettings 함수 수정: 슬롯 번호를 인자로 받아 해당 슬롯의 설정을 로드
