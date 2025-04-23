@@ -399,8 +399,12 @@ async function sendMessage(messageOrImageUrl) {
     const imageUrlPattern = /\.(gif|jpe?g|png|webp|bmp)$/i;
     const isImageUrl = imageUrlPattern.test(message);
 
+        console.log("Checking if message is image URL:", message);
+        console.log("isImageUrl:", isImageUrl);
+
     // 이미지 메시지 처리
     if (isImageUrl) {
+                  console.log("Message is image URL, calling appendMessage:", message);
         // 이미지 URL이면 이미지 메시지로 처리
         appendMessage("user", { type: 'image', url: message });
         conversationHistory.push({ role: "user", messageData: { type: 'image', url: message } });
