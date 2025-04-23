@@ -334,7 +334,7 @@ function appendMessage(role, messageData) {
 
         // 마크다운 처리된 HTML에서 대사/행동 치환
         htmlContent = htmlContent.replace(/"(.*?)"/gs, '<span class="dialogue">"$1"</span>');
-        htmlContent = htmlContent.replace(/<em>(.*?)<\/em>/gs, '<span class="action-description">$1</span>');
+        // htmlContent = htmlContent.replace(/<em>(.*?)<\/em>/gs, '<span class="action-description">$1</span>');
         messageBodyElement.innerHTML = htmlContent;
 
         // 텍스트 메시지일 때는 contentWrapper에 메시지 버블 추가
