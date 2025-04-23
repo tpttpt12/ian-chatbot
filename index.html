@@ -29,18 +29,21 @@
             <div id="loadingSpinner" class="loading-spinner"></div>
             <div id="actionMenu">
                 <div class="menu-buttons">
-                     <button id="menuImageButton">이미지<br>삽입</button>
+                     <button id="menuImageButton">이미지</button>
                      <button id="menuSituationButton">상황</button>
                      <button id="menuSummarizeButton">요약</button>
                     <button id="menuExportTxtButton">내보내기</button>
                 </div>
             </div>
 
-            <div class="input-main-row">
+            <div class="input-textarea-container">
+                <textarea id="userInput" placeholder="유저의 말..." autocomplete="off"></textarea>
+            </div>
+
+            <div class="input-buttons-row">
                  <button id="actionMenuButton" title="액션 메뉴 열기">+</button>
-                 <textarea id="userInput" placeholder="유저의 말..." autocomplete="off"></textarea>
-                <button id="sendButton">
-                    <i class="fas fa-paper-plane"></i> </button>
+                 <button id="sendButton">
+                    ▶ </button>
             </div>
         </div>
         </div>
