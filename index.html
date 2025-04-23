@@ -260,7 +260,7 @@
 
         #inputArea {
             display: flex;
-            padding: 1rem;
+            padding: 3rem;
             background-color: #1E1E1E;
             /* border-top: 1px solid #3a3a3a; */ /* 구분선 제거 */
             align-items: center;
@@ -436,14 +436,14 @@
 
         /* 초기 공지 스타일 */
         .initial-notice {
-            text-align: center; /* 중앙 정렬 */
-            margin: 2rem auto 1rem auto; /* 위, 아래 여백 및 중앙 정렬 */
-            color: #b0b0b0; /* 글자색 설정 (메시지 버블과 다르게) */
-            font-size: 1rem;
-            padding: 0.5rem;
-            max-width: 80%; /* 너무 길어지지 않도록 최대 너비 설정 */
-            word-break: break-word;
-        }
+    text-align: center; /* 중앙 정렬 */
+    margin: 0.1rem auto 0.1rem auto; /* 위, 아래 여백 및 중앙 정렬 */
+    color: #404040; /* 글자색 변경 */
+    font-size: 0.6rem; /* 글자 크기 줄임 */
+    padding: 1rem;
+    max-width: 80%; /* 너무 길어지지 않도록 최대 너비 설정 */
+    word-break: break-word;
+}
 
         /* 공지 아래 구분선 스타일 */
         .notice-divider {
@@ -1426,7 +1426,7 @@ The scene should naturally invite the user ({userName}) to respond and smoothly 
              // console.log("초기 SYSTEM_PROMPT:", SYSTEM_PROMPT); // 콘솔 로그 제거
 
              // console.log("초기 메시지 추가 시도"); // 콘솔 로그 제거
-             // 초기 공지 메시지 및 구분선 추가 (말풍선 아님)
+             // 초기 공지 메시지 및 구분선 추가
              const initialNoticeText = `채팅을 시작합니다. 캐릭터와 사용자 설정을 확인해주세요.`;
              const noticeElement = document.createElement('div');
              noticeElement.className = 'initial-notice';
