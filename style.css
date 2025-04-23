@@ -97,7 +97,6 @@ body {
 /* Message Container Base Style */
 .message-container {
     display: flex;
-    align-items: flex-end;
     max-width: 85%;
     gap: 0.5rem;
 }
@@ -162,7 +161,7 @@ body {
 
 /* User Message Content Wrapper Style */
 .message-container.user .message-content-wrapper {
-    align-items: flex-start;
+    align-items: flex-end;
 }
 
 /* Bot Message Content Wrapper Style */
