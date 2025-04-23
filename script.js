@@ -81,7 +81,7 @@ const SYSTEM_PROMPT_TEMPLATE = `
 ## Scenario & Current State ##
 - (The ongoing conversation provides the current scenario context for the novel. Continue from the last turn.)
 `;
-const chat = document.getElementById("chat"); [cite: 33]
+const chat = document.getElementById("chat"); [cite:33]
         const userInput = document.getElementById("userInput"); // textarea로 변경됨 [cite: 33]
         const sendButton = document.getElementById("sendButton"); [cite: 33]
         const loadingSpinner = document.getElementById("loadingSpinner"); [cite: 34]
