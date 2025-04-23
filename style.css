@@ -107,9 +107,9 @@ body {
 
         /* 텍스트 메시지 컨테이너 스타일 (기존 유지) */
         .message-container.user {
-            justify-content: flex-end;
-            margin-left: auto;
-            flex-direction: row-reverse; /* 유저 메시지는 프로필 이미지가 오른쪽에 오도록 좌우 반전 */
+            justify-content: flex-start;
+            margin-right: auto;
+            flex-direction: row; /* 유저 메시지는 프로필 이미지가 오른쪽에 오도록 좌우 반전 */
         }
 
         .message-container.bot {
@@ -227,7 +227,7 @@ body {
             position: relative; /* 자식 요소의 absolute 위치 기준 */
             font-size: 1rem;
             /* 사용자 입력 줄바꿈 표시를 위한 설정 */
-             white-space: pre-wrap; /* 여러 줄 텍스트 유지 */
+             white-space: normal; /* 여러 줄 텍스트 유지 */
              margin-bottom: 0; /* 말풍선 자체 하단 마진 제거 시도 */
              /* 텍스트 메시지에만 해당 */
         }
