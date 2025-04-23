@@ -624,8 +624,7 @@ function appendInitialNotice() {
     const noticeContainer = document.createElement("div");
     noticeContainer.className = "initial-notice";
     noticeContainer.innerHTML = `
-        <strong>📢 중요 공지:</strong> 이 챗봇은 수위 높은 성적 묘사를 포함한 BL 에로 소설 작성을 목표로 합니다.
-        미성년자는 이용할 수 없습니다.
+        채팅을 시작합니다. 캐릭터와 사용자 설정을 확인해주세요.
     `;
     chat.appendChild(noticeContainer);
 
