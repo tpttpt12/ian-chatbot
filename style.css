@@ -1,327 +1,415 @@
 ㅁbody {
-    font-family: "Nanum Gothic", sans-serif; /* 나눔고딕 폰트 적용 */
-    background-color: #1E1E1E;
-    color: #e0e0e0;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    overflow: hidden;
-}
+            font-family: "Nanum Gothic", sans-serif; /* 나눔고딕 폰트 적용 */
+            background-color: #1E1E1E;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
 
-/* 레이아웃 개선을 위한 컨테이너 스타일 수정 */
-.app-container {
-     display: flex;
-     flex-direction: column;
-     height: 100%;
-     width: 95%; /* 너비를 일단 넓게 설정 */
-     max-width: 900px; /* 최대 너비 설정 (대략 1500px 화면에서 60% 정도 느낌) */
-     margin: 0 auto; /* 좌우 자동 마진으로 중앙 정렬 */
-     background-color: #1e1e1e; /* 배경색 유지 */
-     /* 불필요한 그림자/테두리 제거 */
-     box-shadow: none;
-     border: none;
-     position: relative;
-     overflow: hidden; /* 컨테이너 내부 내용 넘침 방지 */
-}
- /* 화면이 충분히 넓을 때 너비를 60%로 조정 */
- @media (min-width: 1200px) {
-     .app-container {
-         width: 60%;
-     }
- }
+        /* 레이아웃 개선을 위한 컨테이너 스타일 수정 */
+        .app-container {
+             display: flex;
+             flex-direction: column;
+             height: 100%;
+             width: 95%; /* 너비를 일단 넓게 설정 */
+             max-width: 900px; /* 최대 너비 설정 (대략 1500px 화면에서 60% 정도 느낌) */
+             margin: 0 auto; /* 좌우 자동 마진으로 중앙 정렬 */
+             background-color: #1e1e1e; /* 배경색 유지 */
+             /* 불필요한 그림자/테두리 제거 */
+             box-shadow: none;
+             border: none;
+             position: relative;
+             overflow: hidden; /* 컨테이너 내부 내용 넘침 방지 */
+        }
+         /* 화면이 충분히 넓을 때 너비를 60%로 조정 */
+         @media (min-width: 1200px) {
+             .app-container {
+                 width: 60%;
+             }
+         }
 
 
-.chat-header {
-    background-color: 1E1E1E;
-    color: #ffffff;
-    padding: 1rem;
-    text-align: center;
-    font-size: 1.2rem;
-    font-weight: bold;
-    /* border-bottom: 1px solid #3a3a3a; */ /* 구분선 제거 */
-    flex-shrink: 0;
-    position: relative;
-    display: flex;
-     justify-content: center;
-     align-items: center;
-}
+        .chat-header {
+            background-color: 1E1E1E;
+            color: #ffffff;
+            padding: 1rem;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            /* border-bottom: 1px solid #3a3a3a; */ /* 구분선 제거 */
+            flex-shrink: 0;
+            position: relative;
+            display: flex;
+             justify-content: center;
+             align-items: center;
+        }
 
-#sidebarToggle {
-    position: absolute;
-    top: 50%;
-    right: 1rem;
-    transform: translateY(-50%);
-    width: 35px;
-    height: 35px;
-    background-color: #5a5a5a;
-    color: #ffffff;
-    border: none;
-    border-radius: 50%;
-    cursor: pointer;
-    font-size: 1.2rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: background-color 0.2s ease;
-    z-index: 10;
-}
- #sidebarToggle:hover {
-     background-color: #6a6a6a;
- }
+        #sidebarToggle {
+            position: absolute;
+            top: 50%;
+            right: 1rem;
+            transform: translateY(-50%);
+            width: 35px;
+            height: 35px;
+            background-color: #5a5a5a;
+            color: #ffffff;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.2s ease;
+            z-index: 10;
+        }
+         #sidebarToggle:hover {
+             background-color: #6a6a6a;
+         }
 
 #chat {
-    flex: 1;
-    padding: 1rem;
-    overflow-y: auto; /* 스크롤은 되지만 스크롤바 숨김 */
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    /* 스크롤바 숨김 */
-     scrollbar-width: none; /* Firefox */
-     -ms-overflow-style: none; /* IE and Edge */
-     background-color: #1e1e1e;
- }
-/* Webkit 브라우저용 스크롤바 숨김 */
-#chat::-webkit-scrollbar {
-    display: none; /* Chrome, Safari, Opera */
-}
-/* 기존 스크롤바 스타일은 이제 필요 없으므로 제거하거나 주석 처리합니다. */
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto; /* 스크롤은 되지만 스크롤바 숨김 */
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            /* 스크롤바 숨김 */
+             scrollbar-width: none; /* Firefox */
+             -ms-overflow-style: none; /* IE and Edge */
+             background-color: #1e1e1e;
+         }
+        /* Webkit 브라우저용 스크롤바 숨김 */
+        #chat::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
+        }
+        /* 기존 스크롤바 스타일은 이제 필요 없으므로 제거하거나 주석 처리합니다. */
+        /*
+        #chat::-webkit-scrollbar-track { background: #1E1E1E; }
+        #chat::-webkit-scrollbar-thumb {
+            background-color: #5a5a5a;
+            border-radius: 4px;
+            border: 2px solid #1E1E1E;
+        }
+        */
+
+        .message-container {
+            display: flex;
+            align-items: flex-start; /* 기본 정렬 유지 */
+            max-width: 85%; /* 최대 너비 유지 */
+            /* 이미지 메시지일 때 중앙 정렬을 위해 flexbox 속성 조정은 JS에서 .image-message-block에 클래스를 추가하여 CSS로 처리 - 이 방식은 이제 사용 안 함 */
+            gap: 0.5rem; /* 프로필 이미지, contentWrapper 간 간격 */
+        }
+
+        /* 텍스트 메시지 컨테이너 스타일 (기존 유지) */
+        .message-container.user {
+            justify-content: flex-end;
+            margin-left: auto;
+            flex-direction: row-reverse; /* 유저 메시지는 프로필 이미지가 오른쪽에 오도록 좌우 반전 */
+        }
+
+        .message-container.bot {
+            justify-content: flex-start;
+            margin-right: auto;
+            flex-direction: row; /* 봇 메시지는 기본 순서 */
+        }
+
+        /* 이미지 메시지 컨테이너 스타일 (새로 추가 또는 수정) */
+        /* 이미지 메시지 컨테이너는 텍스트 메시지와 다르게 처리될 수 있습니다. */
+        /* appendMessage 함수에서 image-message-block 클래스를 .message-container에 추가하지 않고 별도의 블록으로 처리 */
+        /* 따라서 .message-container에 직접 flex-end/flex-start 정렬은 텍스트 메시지에만 해당됩니다. */
 
 
-/* 메시지 컨테이너 기본 스타일 */
-.message-container {
-    display: flex;
-    align-items: flex-start; /* 기본 정렬 유지 */
-    max-width: 85%; /* 최대 너비 유지 */
-    gap: 0.5rem; /* 프로필 이미지, contentWrapper 또는 이미지 블록 간 간격 */
-}
+        .profile-img {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1px solid #5a5a5a;
+            flex-shrink: 0;
+            /* 프로필 이미지 클릭 가능하도록 */
+             cursor: pointer;
+         }
 
-/* 유저 메시지 컨테이너 스타일 (채팅창 오른쪽 정렬, 프로필 오른쪽, 말풍선 왼쪽) */
-.message-container.user {
-    justify-content: flex-end; /* 컨테이너 자체를 오른쪽으로 정렬 */
-    margin-left: auto; /* 왼쪽 마진을 자동으로 밀어 오른쪽으로 붙임 */
-    margin-right: 0;
-    flex-direction: row-reverse; /* 요소 순서 반전 (Wrapper -> Profile) */
-}
-
-/* 캐릭터 메시지 컨테이너 스타일 (채팅창 왼쪽 정렬, 프로필 왼쪽, 말풍선 오른쪽) */
-.message-container.bot {
-    justify-content: flex-start; /* 컨테이너 자체를 왼쪽으로 정렬 */
-    margin-right: auto; /* 오른쪽 마진을 자동으로 밀어 왼쪽으로 붙임 */
-    margin-left: 0;
-    flex-direction: row; /* 요소 순서대로 (Profile -> Wrapper) 배치 */
-}
-
-/* 이미지 메시지 블록 전체 컨테이너 (중앙 정렬) - appendMessage에서 #chat에 직접 추가됨 */
- /* 이 컨테이너는 message-container가 아닌 #chat의 직접적인 자식 요소입니다. */
-.image-announcement {
-     display: block; /* 블록 요소로 만들어 한 줄 전체를 사용 */
-     margin: 0.1rem auto 0.5rem auto; /* 위쪽 여백 0.1rem, 아래쪽 여백 0.5rem, 좌우 auto로 중앙 정렬 */
-     width: 100%; /* 부모(.app-container 또는 #chat) 너비에 맞추되, max-width로 제한 */
-     max-width: 70%; /* 텍스트 버블과 비슷하거나 원하는 최대 너비 설정 */
-     text-align: center; /* 내부 이미지 및 콘텐츠 중앙 정렬 */
-     /* border: 1px solid #5a5a5a; */ /* 필요시 테두리 추가 */
-     border-radius: 8px; /* 컨테이너 모서리 둥글게 */
-     overflow: hidden; /* 내부 이미지 넘치는 부분 숨김 */
-     /* background-color: #282828; */ /* 배경색 설정 가능 */
-     position: relative; /* 내부 absolute 요소 기준 */
-     /* 다른 Flexbox 아이템이 추가될 때 크기가 줄어들지 않도록 함 */
-     flex-shrink: 0; /* 새로 추가 */
-     /* 역할별 스타일 (선택 사항, 필요하다면) */
-     /* &.user { ... } */
-     /* &.bot { ... } */
- }
+         .profile-fallback {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background-color: #5a5a5a;
+            border: 1px solid #5a5a5a;
+            flex-shrink: 0;
+            /* 프로필 이미지 클릭 가능하도록 */
+             cursor: pointer;
+         }
 
 
-.profile-img {
-    width: 35px;
-    height: 35px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 1px solid #5a5a5a;
-    flex-shrink: 0;
-    /* 프로필 이미지 클릭 가능하도록 */
-     cursor: pointer;
- }
+        .message-content-wrapper {
+            display: flex;
+            flex-direction: column; /* 이름과 버블을 세로로 배치 */
+            /* 역할에 따라 정렬 - 텍스트 메시지일 때만 contentWrapper 정렬 사용 */
+            flex: 1; /* 남은 공간 차지 */
+             min-width: 0; /* 부모의 flex에 의해 축소될 때 내용이 숨겨지지 않도록 함 */
+        }
 
- .profile-fallback {
-    width: 35px;
-    height: 35px;
-    border-radius: 50%;
-    background-color: #5a5a5a;
-    border: 1px solid #5a5a5a;
-    flex-shrink: 0;
-    /* 프로필 이미지 클릭 가능하도록 */
-     cursor: pointer;
- }
+        /* 유저 메시지일 때 contentWrapper를 오른쪽으로 정렬 (텍스트 메시지에만 해당) */
+        .message-container.user .message-content-wrapper { /* 텍스트 메시지인 경우 */
+            align-items: flex-end;
+        }
 
-/* 이름과 삭제 버튼, 텍스트 버블을 묶는 컨테이너 */
-.message-content-wrapper {
-    display: flex;
-    flex-direction: column; /* 이름/버튼과 버블을 세로로 배치 */
-    flex: 1; /* 남은 공간 차지 */
-     min-width: 0; /* 부모의 flex에 의해 축소될 때 내용이 숨겨지지 않도록 함 */
-    /* 기본 왼쪽 정렬 (필요에 따라 역할별로 오버라이드) */
-    /* align-items: flex-start; */ /* 기본값 사용 또는 역할별 설정 */
-}
-
-/* 유저 wrapper (align content LEFT) */
-.message-container.user .message-content-wrapper {
-    align-items: flex-start; /* Name/Delete와 Bubble을 왼쪽으로 정렬 */
-}
-
-/* 캐릭터 wrapper (align content RIGHT) */
-.message-container.bot .message-content-wrapper {
-    align-items: flex-end; /* Name/Delete와 Bubble을 오른쪽으로 정렬 */
-}
+         /* 캐릭터 메시지일 때 contentWrapper를 왼쪽으로 정렬 (텍스트 메시지에만 해당) */
+        .message-container.bot .message-content-wrapper { /* 텍스트 메시지인 경우 */
+            align-items: flex-start;
+         }
 
 
-/* Role name container (Name + Delete) */
-.role-name {
-    font-size: 0.8rem;
-    color: #b0b0b0;
-    margin-bottom: 0.2rem;
-    display: flex;
-    align-items: center;
-    /* width: 100%; */ /* 삭제! */
-    flex-shrink: 0;
-    /* Alignment within role-name depends on role */
-}
+        .role-name {
+            font-size: 0.8rem;
+            color: #b0b0b0;
+            margin-bottom: 0.2rem;
+            display: flex; /* flexbox 활성화 */
+            align-items: center; /* 세로 중앙 정렬 */
+            /* 역할에 따라 justify-content 설정 */
+            /* 이미지 메시지일 때 이름/삭제 버튼 블록의 스타일 */
+             flex-shrink: 0; /* 축소되지 않도록 함 */
+             /* flex: none; */ /* flex item이 되지 않도록 함 -> image-message-block과 같은 레벨에서 flex item으로 만듦 */
+             /* 이미지 메시지일 때 좌우 정렬은 message-container의 flexbox 순서와 gap으로 처리 */
 
-/* 유저 role name (align content LEFT) */
-.message-container.user .role-name {
-    justify-content: flex-start; /* 이름/삭제 블록을 왼쪽으로 정렬 */
-}
+        }
 
-/* 캐릭터 role name (align content RIGHT) */
-.message-container.bot .role-name {
-    justify-content: flex-end; /* 이름/삭제 블록을 오른쪽으로 정렬 */
-}
+        /* 유저 메시지의 이름 컨테이너 (오른쪽 정렬) */
+        .message-container.user .role-name { /* 텍스트/이미지 메시지 공통 */
+            justify-content: flex-end;
+         }
 
-
-/* 이름 텍스트 */
-.name-text {
-     flex-shrink: 0;
-     min-width: 0;
-     /* Text alignment depends on role */
- }
-
-/* 유저 name text (align LEFT) */
- .message-container.user .name-text {
-     text-align: left; /* 이름 텍스트 왼쪽 정렬 */
-     order: 1; /* 삭제 버튼 뒤에 오도록 */
- }
-
-/* 캐릭터 name text (align RIGHT) */
-.message-container.bot .name-text {
-    text-align: right; /* 이름 텍스트 오른쪽 정렬 */
-    order: 0; /* 삭제 버튼 앞에 오도록 (캐릭터는 이름이 먼저) */
-}
-
-/* Delete button */
-.delete-btn {
-    background: transparent;
-    border: none;
-    color: #aaa;
-    font-size: 1rem;
-    cursor: pointer;
-    padding: 0 0.2rem;
-    z-index: 1;
-    flex-shrink: 0;
-}
-
-/* 유저 삭제 버튼 (이름 왼쪽에 10px 간격) */
-.message-container.user .role-name .delete-btn {
-     margin-right: 10px; /* 이름 왼쪽에 간격 */
-     margin-left: 0;
-     order: 0; /* 이름(order 1) 앞에 오도록 */
- }
-
-/* 캐릭터 삭제 버튼 (이름 오른쪽에 10px 간격) */
-.message-container.bot .role-name .delete-btn {
-     margin-left: 10px; /* 이름 오른쪽에 간격 */
-     margin-right: 0;
-     order: 1; /* 이름(order 0) 뒤에 오도록 */
- }
-
-/* Text message bubble */
-.message-bubble {
-    padding: 0.75rem 1rem;
-    border-radius: 1rem;
-    max-width: 100%;
-    word-break: break-word;
-    line-height: 1.4;
-    position: relative;
-    font-size: 1rem;
-    white-space: pre-wrap; /* 줄바꿈 유지 */
-    margin-bottom: 0;
-}
-
-/* 캐릭터 bubble (point bottom right) */
-.message-container.bot .message-bubble {
-    background-color: #3a4a4a;
-    color: #ffffff;
-    border-radius: 1rem 1rem 1rem 0.3rem;
-}
-
-/* 유저 bubble (point bottom left) */
-.message-container.user .message-bubble {
-    background-color: #4a3a7a;
-    color: #ffffff;
-    border-radius: 1rem 1rem 0.3rem 1rem;
-}
+         /* 캐릭터 메시지의 이름 컨테이너 (왼쪽 정렬) */
+        .message-container.bot .role-name { /* 텍스트/이미지 메시지 공통 */
+            justify-content: flex-start;
+         }
 
 
-/* 이미지 페이드 컨테이너 스타일 (마스크 적용) */
-.image-fade-container {
-    position: relative;
-    display: block; /* 블록 요소 */
-    width: 100%; /* 부모(.image-announcement) 너비에 꽉 채우도록 */
-    height: auto; /* 이미지 비율에 맞게 높이 자동 */
-    overflow: hidden; /* 마스크 효과 적용을 위해 필요 */
-    /* 마스크를 이 컨테이너 자체에 적용하여 자식인 .chat-image에 영향을 줍니다. */
-    mask-image: linear-gradient(to right, rgba(0,0,0,0), rgba(0,0,0,1) 15%, rgba(0,0,0,1) 85%, rgba(0,0,0,0));
-    -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,0), rgba(0,0,0,1) 15%, rgba(0,0,0,1) 85%, rgba(0,0,0,0));
- }
+        /* 이름 텍스트를 담는 span에 대한 스타일 */
+        .name-text {
+             /* 이름 텍스트 스타일 */
+             /* 역할에 따라 text-align 설정 */
+        }
+
+         /* 유저 메시지의 이름 텍스트 오른쪽 정렬 */
+         .message-container.user .name-text { /* 텍스트/이미지 메시지 공통 */
+             text-align: right;
+         }
+
+          /* 캐릭터 메시지의 이름 텍스트 왼쪽 정렬 (기본값) */
+         .message-container.bot .name-text { /* 텍스트/이미지 메시지 공통 */
+             text-align: left;
+         }
 
 
- /* 실제 이미지 스타일 */
-.chat-image {
-     display: block; /* 인라인 요소의 하단 여백 제거 */
-     width: 100%; /* 부모 컨테이너 너비에 꽉 채우도록 */
-     height: auto; /* 비율 유지 */
-     border-radius: 0; /* 이미지 자체는 둥글게 하지 않고 부모 컨테이너(.image-announcement)의 border-radius 사용 */
-     object-fit: cover; /* 컨테이너에 맞게 잘라낼 경우 사용 */
-     cursor: pointer;
-     margin: 0;
-     padding: 0;
-     /* 마스크는 부모 컨테이너에 적용되었으므로 이미지 자체에는 filter: blur 없음 */
- }
+        /* 텍스트 메시지 버블 스타일 */
+        .message-bubble {
+            padding: 0.75rem 1rem;
+            border-radius: 1rem;
+            max-width: 100%;
+            word-break: break-word;
+            line-height: 1.4;
+            position: relative; /* 자식 요소의 absolute 위치 기준 */
+            font-size: 1rem;
+            /* 사용자 입력 줄바꿈 표시를 위한 설정 */
+             white-space: normal;
+             margin-bottom: 0; /* 말풍선 자체 하단 마진 제거 시도 */
+             /* 텍스트 메시지에만 해당 */
+        }
 
- /* 이미지 로드 오류 시 스타일 */
- .chat-image.error-image {
-     display: none; /* 이미지를 숨김 */
- }
+        .message-container.bot .message-bubble {
+            background-color: #3a4a4a;
+            color: #ffffff;
+            border-radius: 1rem 1rem 1rem 0.3rem;
+        }
 
- /* 이미지 오류 시 대체 텍스트 스타일 (script.txt에서 추가한 요소) */
- .image-error-text {
-     text-align: center;
-     color: #b0b0b0;
-     font-size: 0.9rem;
-     margin-top: 0.5rem; /* 이미지 자리 아래 여백 */
-     margin-bottom: 0.5rem;
- }
+        .message-container.user .message-bubble {
+            background-color: #4a3a7a;
+            color: #ffffff;
+            border-radius: 1rem 1rem 0.3rem 1rem;
+        }
+
+        /* 마크다운 내부 스타일 (adjust as needed) */
+        /* p 태그에 기본적인 하단 마진 부여 (말풍선 내 요소 간 간격) */
+        .message-bubble p { margin: 0 0 0.5rem 0; }
+        .message-bubble p:last-child { margin-bottom: 0; } /* 마지막 단락 하단 마진 제거 */
+        .message-bubble ul, .message-bubble ol { padding-left: 1.5rem; margin: 0 0 0.5rem 0; }
+        .message-bubble li { margin-bottom: 0.25rem; }
+        .message-bubble code {
+            background-color: #3a3a3a;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+            font-size: 0.9rem;
+        }
+        .message-bubble pre {
+             background-color: #3a3a3a;
+             padding: 0.75rem;
+             border-radius: 4px;
+             overflow-x: auto; /* 필요시 가로 스크롤바 유지 */
+             margin: 0.5rem 0;
+             white-space: pre-wrap; /* 공백 유지하며 줄바꿈 허용 */
+             word-wrap: break-word; /* 긴 단어 강제 줄바꿈 */
+             overflow-wrap: break-word; /* 표준 속성 */
+         }
+        .message-bubble pre code {
+             background-color: transparent;
+             padding: 0;
+             border-radius: 0;
+             font-size: 1rem;
+        }
+        .message-bubble blockquote {
+             border-left: 4px solid #5a5a5a;
+             padding-left: 1rem;
+             margin: 0.5rem 0;
+             color: #b0b0b0;
+         }
+         .message-bubble h1, .message-bubble h2, .message-bubble h3, .message-bubble h4, .message-bubble h5, .message-bubble h6 {
+             margin-top: 1rem;
+             margin-bottom: 0.5rem;
+             padding-bottom: 0.2rem;
+             border-bottom: 1px solid #4a4a4a;
+             font-weight: bold;
+             color: #ffffff;
+         }
+         .message-bubble h1 { font-size: 1.5rem; }
+         .message-bubble h2 { font-size: 1.4rem; }
+         .message-bubble h3 { font-size: 1.3rem; }
+         .message-bubble h4 { font-size: 1.2rem; }
+         .message-bubble h5 { font-size: 1.1rem; }
+         .message-bubble h6 { font-size: 1rem; }
 
 
-/* Input Area 전체 스타일 */
+         /* 행동 묘사 스타일 */
+         /* *별표* 로 감싸진 부분에 적용될 스타일 */
+        .action-description {
+             color: #b0b0b0;
+             font-style: italic;
+         }
+         /* 대사 스타일 */
+         /* "따옴표" 로 감싸진 부분에 적용될 스타일 */
+        .dialogue {
+             font-weight: bold;
+         }
+
+
+        /* .message-image-thumbnail 스타일은 이제 사용하지 않습니다. */
+        /*
+        .message-image-thumbnail {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 8px;
+            object-fit: cover;
+            cursor: pointer;
+            margin-top: 0.2rem;
+            border: 1px solid #5a5a5a;
+        }
+
+         .message-image-thumbnail.error {
+             background-color: #5a5a5a;
+         }
+        */
+
+
+        /* 이미지 메시지 블록 스타일 (새로 추가) */
+        .image-message-block {
+            flex: 1; /* 남은 공간을 모두 차지하도록 설정 */
+             max-width: calc(100% - (35px + 0.5rem * 2)); /* 프로필 이미지와 간격만큼 뺀 너비 */
+             margin: 0.2rem 0; /* 위아래 여백 */
+             display: flex; /* 중앙 정렬을 위해 flexbox 사용 */
+             justify-content: center; /* 가로 중앙 정렬 */
+             align-items: center; /* 세로 중앙 정렬 */
+             overflow: hidden; /* 페이드 효과 밖으로 넘치는 부분 숨김 */
+             position: relative; /* 내부 absolute 요소 기준 */
+             /* 이름/삭제 버튼과의 간격은 message-container의 gap으로 처리 */
+             /* 이미지 블록 자체의 배경색 설정 가능 */
+             background-color: #3a3a3a; /* 이미지 블록 배경색 (오류 시 유용) */
+             border-radius: 8px; /* 블록 자체 테두리 둥글게 */
+             padding: 0; /* 이미지 블록 자체 패딩 제거 */
+        }
+
+         /* 유저 이미지 메시지 블록 정렬 */
+         .message-container.user .image-message-block {
+             /* 이미 message-container의 flexbox 순서와 justify-content로 처리 */
+             /* align-self: flex-end; */ /* message-container가 block이 될 경우 필요 */
+         }
+
+         /* 캐릭터 이미지 메시지 블록 정렬 */
+         .message-container.bot .image-message-block {
+             /* 이미 message-container의 flexbox 순서와 justify-content로 처리 */
+             /* align-self: flex-start; */ /* message-container가 block이 될 경우 필요 */
+         }
+
+
+        /* 이미지 페이드 컨테이너 스타일 (사용자 제공 + 수정) */
+        .image-fade-container {
+            position: relative;
+            display: block; /* 블록 요소로 변경하여 부모 너비에 맞게 */
+             width: 100%; /* 부모(.image-message-block) 너비에 꽉 채우도록 */
+             height: auto; /* 이미지 비율에 맞게 높이 자동 */
+             overflow: hidden; /* 마스크 효과 적용을 위해 필요 */
+        }
+
+        /* 페이드 효과를 위한 ::before 의사 요소 */
+        .image-fade-container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1; /* 이미지 위에 오도록 */
+
+            /* 좌우 페이드 효과용 linear-gradient 마스크 */
+            /* 사용자 제공 코드 */
+            mask-image: linear-gradient(to right, transparent, black 20%, black 80%, transparent);
+            -webkit-mask-image: linear-gradient(to right, transparent, black 20%, black 80%, transparent);
+
+             /* 마스크 적용 대상은 기본적으로 컨테이너의 배경 또는 내용입니다. */
+             /* 여기서는 ::before 자체에 마스크를 적용하여 투명도를 조절합니다. */
+             /* 실제 이미지는 이 ::before 뒤에 배치됩니다. */
+             /* 따라서 ::before는 단순히 투명도를 조절하는 오버레이 역할을 합니다. */
+             background: black; /* 마스크가 적용될 배경색 (black 부분은 불투명, transparent 부분은 투명) */
+        }
+
+        /* 실제 이미지 스타일 (새로 추가/수정) */
+        .chat-image {
+             display: block; /* 인라인 요소의 하단 여백 제거 */
+             width: 100%; /* 부모 컨테이너 너비에 꽉 채우도록 */
+             height: auto; /* 비율 유지 */
+             border-radius: 8px; /* 테두리 둥글게 */
+             object-fit: cover; /* 컨테이너에 맞게 잘라낼 경우 사용 (여기서는 max-width로 비율 유지) */
+             /* border: 1px solid #5a5a5a; */ /* 테두리 - 이미지 블록 자체에 적용 */
+             cursor: pointer; /* 클릭 가능 표시 */
+             /* 마스크는 부모 컨테이너에 적용되었으므로 이미지 자체에는 filter: blur 없음 */
+             margin: 0; /* 이미지 자체 마진 제거 */
+             padding: 0; /* 이미지 자체 패딩 제거 */
+             /* 블러 효과는 마스크와 함께 적용되므로 이미지 자체에는 filter: blur 없음 */
+        }
+
+         /* 이미지 로드 오류 시 스타일 */
+         .chat-image.error-image {
+             /* background-color: #5a5a5a; */ /* 오류 시 배경색 - 이미지 블록 자체에 적용 */
+             /* 오류 아이콘 등 추가 가능 */
+         }
+
+
+/* Input Area 전체 스타일 (수정) */
 #inputArea {
     display: flex; /* Flexbox 사용 */
     flex-direction: column; /* 자식 요소들을 세로로 쌓습니다: textarea 위에 input-controls */
     padding: 1rem 1.5rem 2rem 1.5rem; /* 위: 1rem, 오른쪽: 1.5rem, 아래: 2rem, 왼쪽: 1.5rem */
     background-color: #1E1E1E;
-    align-items: stretch; /* 자식 요소들이 컨테이너 너비를 채우도록 늘립니다. */
+    /* border-top: 1px solid #3a3a3a; */ /* 구분선 제거 */
+    /* align-items는 자식 요소(textarea, input-controls)가 컨테이너 너비를 채우도록 stretch */
+    align-items: stretch;
     gap: 0.75rem; /* 자식 요소 (textarea와 input-controls) 간의 세로 간격 */
     flex-shrink: 0;
     position: relative; /* 내부 절대 위치 요소 기준 */
@@ -356,7 +444,7 @@
     box-shadow: 0 0 0 0.15rem rgba(80, 150, 255, 0.3);
 }
 
-/* '+' 버튼과 전송 버튼을 감싸는 컨테이너 스타일 */
+/* '+' 버튼과 전송 버튼을 감싸는 컨테이너 스타일 (새로 추가) */
 .input-controls {
     display: flex; /* Flexbox 사용 */
     justify-content: space-between; /* 왼쪽 끝과 오른쪽 끝에 요소 배치 */
@@ -364,6 +452,7 @@
     width: 100%; /* 부모 (#inputArea) 너비를 채우도록 */
     /* gap: 0.75rem; /* 버튼 간 간격은 필요에 따라 제거하거나 유지 */
 }
+
 
 /* '+' 버튼 스타일 (수정) */
 #actionMenuButton {
@@ -374,7 +463,7 @@
     background-color: transparent; /* 배경 투명 */
     color: #e0e0e0; /* 글자색 유지 */
     border: none; /* 테두리 없음 */
-    font-size: 1rem; /* 폰트 크기 (텍스트 크기) */
+    font-size: 1.5rem; /* 폰트 크기 (텍스트 크기) */
     cursor: pointer;
     flex-shrink: 0;
     display: flex; /* 내부 내용 중앙 정렬 (텍스트) */
@@ -570,109 +659,102 @@
  }
 
 .sidebar-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 890;
-    display: none;
- }
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 890;
+            display: none;
+         }
 
-.sidebar-section-divider {
-     height: 1px;
-     background-color: #3a3a3a;
-     margin: 1.5rem 0;
-}
+        .sidebar-section-divider {
+             height: 1px;
+             background-color: #3a3a3a;
+             margin: 1.5rem 0;
+        }
 
-/* 설정 슬롯 버튼 스타일 */
-.setting-slots {
-    margin-bottom: 1rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid #3a3a3a;
-}
+        /* 설정 슬롯 버튼 스타일 */
+        .setting-slots {
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #3a3a3a;
+        }
 
-.setting-slots h3 {
-    margin-top: 0;
-    margin-bottom: 0.5rem;
-    font-size: 1rem;
-    color: #b0b0b0;
-}
+        .setting-slots h3 {
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+            color: #b0b0b0;
+        }
 
-.slot-buttons-container {
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-}
+        .slot-buttons-container {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
 
-.slot-button {
-    width: 35px;
-    height: 35px;
-    border-radius: 50%;
-    background-color: #5a5a5a;
-    color: #ffffff;
+        .slot-button {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background-color: #5a5a5a;
+            color: #ffffff;
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            flex-shrink: 0;
+        }
+
+        .slot-button:hover {
+            background-color: #6a6a6a;
+        }
+
+        .slot-button.active {
+            background-color: #5080ff;
+            transform: scale(1.1);
+        }
+         .slot-button:active {
+             background-color: #3366cc;
+         }
+
+  .delete-btn {
+    background: transparent;
     border: none;
+    color: #aaa;
     font-size: 1rem;
     cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: background-color 0.2s ease, transform 0.1s ease;
-    flex-shrink: 0;
-}
+    /* position: absolute; */ /* 절대 위치 제거 */
+    /* top: 8px; right: 8px; */ /* 위치 속성 제거 */
+    padding: 0 0.2rem; /* 버튼 내부 패딩 조정 */
+    z-index: 1; /* 다른 요소 위에 오도록 z-index 유지 */
+    flex-shrink: 0; /* 이름이 길어져도 버튼 크기 고정 */
+    /* 이름과의 간격 및 위치는 아래 역할별 CSS에서 설정 */
+  }
 
-.slot-button:hover {
-    background-color: #6a6a6a;
-}
+    /* 캐릭터 메시지의 삭제 버튼 (이름 오른쪽에 10px 간격) */
+   .message-container.bot .role-name .delete-btn {
+        margin-left: 10px; /* 이름과의 간격 */
+        order: 1; /* 이름(order 0) 뒤에 오도록 */
+    }
 
-.slot-button.active {
-    background-color: #5080ff;
-    transform: scale(1.1);
-}
- .slot-button:active {
-     background-color: #3366cc;
+    /* 유저 메시지의 삭제 버튼 (이름 왼쪽에 10px 간격) */
+    .message-container.user .role-name .delete-btn {
+        margin-right: 10px; /* 이름과의 간격 */
+        order: 0; /* 이름(order 1) 앞에 오도록 */
+    }
+
+    /* 유저 메시지에서 이름 텍스트 순서 조정 */
+    .message-container.user .role-name .name-text {
+        order: 1; /* 삭제 버튼(order 0) 뒤에 오도록 */
+    }
+
+
+  .message-container {
+    position: relative;
  }
-
-.delete-btn {
- background: transparent;
- border: none;
- color: #aaa;
- font-size: 1rem;
- cursor: pointer;
- /* position: absolute; */ /* 절대 위치 제거 */
- /* top: 8px; right: 8px; */ /* 위치 속성 제거 */
- padding: 0 0.2rem; /* 버튼 내부 패딩 조정 */
- z-index: 1; /* 다른 요소 위에 오도록 z-index 유지 */
- flex-shrink: 0;
-}
-
-/* 유저 삭제 버튼 (이름 왼쪽에 10px 간격) */
-.message-container.user .role-name .delete-btn {
-     margin-right: 10px; /* 이름 왼쪽에 간격 */
-     margin-left: 0;
-     order: 0; /* 이름(order 1) 앞에 오도록 */
- }
-
-/* 캐릭터 삭제 버튼 (이름 오른쪽에 10px 간격) */
-.message-container.bot .role-name .delete-btn {
-     margin-left: 10px; /* 이름 오른쪽에 간격 */
-     margin-right: 0;
-     order: 1; /* 이름(order 0) 뒤에 오도록 */
- }
-
-/* 유저 이름 텍스트 순서 조정 */
-.message-container.user .name-text {
-    order: 1; /* 삭제 버튼(order 0) 뒤에 오도록 */
-}
-
-/* 캐릭터 이름 텍스트 */
-.message-container.bot .name-text {
-    order: 0; /* 삭제 버튼(order 1) 앞에 오도록 */
-}
-
-
-.message-container {
- position: relative;
-}
-    </style>
