@@ -81,26 +81,31 @@
              background-color: #6a6a6a;
          }
 
-        #chat {
+#chat {
             flex: 1;
             padding: 1rem;
-            overflow-y: auto;
+            overflow-y: auto; /* 스크롤은 되지만 스크롤바 숨김 */
             display: flex;
             flex-direction: column;
             gap: 0.5rem;
-            /* 스크롤바 스타일 */
-             scrollbar-width: thin;
-             scrollbar-color: #5a5a5a #1E1E1E; /* 썸네일색 트랙색 */
-             background-color: #1e1e1e; /* 부모 요소의 배경색을 따름 */
+            /* 스크롤바 숨김 */
+             scrollbar-width: none;  /* Firefox */
+             -ms-overflow-style: none;  /* IE and Edge */
+             background-color: #1e1e1e;
         }
-        /* Webkit 브라우저용 스크롤바 스타일 */
-        #chat::-webkit-scrollbar { width: 8px; }
+        /* Webkit 브라우저용 스크롤바 숨김 */
+        #chat::-webkit-scrollbar {
+            display: none;  /* Chrome, Safari, Opera */
+        }
+        /* 기존 스크롤바 스타일은 이제 필요 없으므로 제거하거나 주석 처리합니다. */
+        /*
         #chat::-webkit-scrollbar-track { background: #1E1E1E; }
         #chat::-webkit-scrollbar-thumb {
             background-color: #5a5a5a;
             border-radius: 4px;
             border: 2px solid #1E1E1E;
         }
+        */
 
         .message-container {
             display: flex;
@@ -258,15 +263,18 @@
              background-color: #5a5a5a;
          }
 
-        #inputArea {
+#inputArea {
             display: flex;
-            padding: 3rem;
+            padding: 1rem;
             background-color: #1E1E1E;
             /* border-top: 1px solid #3a3a3a; */ /* 구분선 제거 */
             align-items: center;
             gap: 0.75rem;
              flex-shrink: 0;
              position: relative;
+             /* 상단에 그림자 추가 */
+             box-shadow: 0 -10px 10px -5px rgba(0, 0, 0, 0.5); /* 위쪽으로 퍼지는 그림자 */
+             z-index: 1; /* 그림자가 채팅 내용 위로 오도록 설정 */
         }
 
         #actionMenuButton {
@@ -438,8 +446,8 @@
         .initial-notice {
     text-align: center; /* 중앙 정렬 */
     margin: 0.1rem auto 0.1rem auto; /* 위, 아래 여백 및 중앙 정렬 */
-    color: #404040; /* 글자색 변경 */
-    font-size: 0.6rem; /* 글자 크기 줄임 */
+    color: #515151; /* 글자색 변경 */
+    font-size: 0.9rem; /* 글자 크기 줄임 */
     padding: 1rem;
     max-width: 80%; /* 너무 길어지지 않도록 최대 너비 설정 */
     word-break: break-word;
