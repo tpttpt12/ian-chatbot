@@ -158,7 +158,7 @@ function saveSettings(slotNumber) {
     const settings = {
         botName: botNameInput.value,
         botAge: botAgeInput.value,
-        botAppearance: botAppearanceInput.value,
+        botAppearance: botAppearanceInput.value, // 여기서 userAppearanceInput.value 대신 botAppearanceInput.value 사용
         botPersona: botPersonaInput.value,
         botImageUrl: botImageUrlInput.value,
         userName: userNameInput.value,
@@ -232,7 +232,7 @@ function updateSystemPrompt() {
     SYSTEM_PROMPT = SYSTEM_PROMPT_TEMPLATE
         .replace(/{botName}/g, botNameInput.value || "캐릭터")
         .replace(/{botAge}/g, botAgeInput.value || "불명")
-        .replace(/{botAppearance}/g, botAppearanceInput.value || "알 수 없음")
+        .replace(/{botAppearance}/g, botAppearanceInput.value || "알 수 없음") // 여기도 botAppearanceInput.value 사용
         .replace(/{botPersona}/g, botPersonaInput.value || "설정 없음")
         .replace(/{userName}/g, userNameInput.value || "사용자")
         .replace(/{userAge}/g, userAgeInput.value || "불명")
@@ -402,7 +402,7 @@ function exportConversationAsTxt() {
              return; // continue 대신 return을 사용하여 forEach의 현재 반복을 건너뜁니다.
         }
 
-        // --- 이미지 메시지인 경우 여기서 제외 ---
+        // --- 사용자 요청: 이미지 메시지인 경우 여기서 제외 ---
         if (messageData.type === 'image') {
             return; // forEach의 현재 반복을 건너뛰어 이미지 메시지 제외
         }
@@ -412,22 +412,24 @@ function exportConversationAsTxt() {
         const name = (role === "user" ? userNameInput.value || "사용자" : botNameInput.value || "캐릭터");
 
         if (messageData.type === 'text') {
-            let processedText = messageData.text;
+            let rawText = messageData.text; // 원본 텍스트 가져오기
 
             // --- 사용자 요청에 따른 마크다운 처리 ---
+            let processedText = rawText; // 원본 텍스트로 시작
+
             // 1. *행동* -> 행동 (별표 제거)
-            processedText = processedText.replace(/\*([^*]+)\*/g, '$1');
+            processedText = processedText.replace(/\*([^*]+)\*\n?/g, '$1\n'); // 줄바꿈 포함 처리
             // 2. **볼드** -> "볼드" (별표 제거하고 큰따옴표로 감쌈)
-            processedText = processedText.replace(/\*\*([^*]+)\*\*/g, '"$1"');
+            processedText = processedText.replace(/\*\*([^*]+)\*\*\n?/g, '"$1"\n'); // 줄바꿈 포함 처리
             // 3. "대사" 는 이미 따옴표가 있으므로 그대로 둡니다. (추가 변환 없음)
 
             // 원하는 형식으로 줄바꿈 유지
-            processedText = processedText.replace(/\n/g, '\n'); // 기존 줄바꿈 유지
+            // processedText = processedText.replace(/\n/g, '\n'); // 기존 줄바꿈 유지 - 위에서 이미 줄바꿈 처리
 
-            txtContent += `[${name}] : ${processedText}\n\n`; // 턴 사이에 엔터 두 번
+            txtContent += `[${name}] : ${processedText.trim()}\n\n`; // 턴 사이에 엔터 두 번, 메시지 끝 공백 제거
 
         }
-        // 다른 메시지 타입이 있다면 여기에 추가 (현재는 이미지 제외)
+        // 다른 메시지 타입은 모두 제외 (현재는 이미지 제외)
     });
 
     // 마지막에 추가된 빈 줄 제거
@@ -449,7 +451,7 @@ function exportConversationAsTxt() {
     document.body.removeChild(link);
     URL.revokeObjectURL(link.href);
 
-    // 메뉴 닫기 (선택 사항)
+    // 메뉴 닫기
     actionMenu.classList.remove("visible");
     menuOverlay.style.display = 'none';
 }

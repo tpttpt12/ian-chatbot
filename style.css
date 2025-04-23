@@ -97,28 +97,37 @@ body {
         }
         */
 
+        /* 메시지 컨테이너 기본 스타일 (왼쪽 정렬) */
         .message-container {
             display: flex;
             align-items: flex-start; /* 기본 정렬 유지 */
             max-width: 85%; /* 최대 너비 유지 */
-            /* 이미지 메시지일 때 중앙 정렬을 위해 flexbox 속성 조정은 JS에서 .image-message-block에 클래스를 추가하여 CSS로 처리 - 이 방식은 이제 사용 안 함 */
-            gap: 0.5rem; /* 프로필 이미지, contentWrapper 간 간격 */
-        }
-
-        /* 텍스트 메시지 컨테이너 스타일 (기존 유지) */
-        .message-container.user {
-            justify-content: flex-start;
-            margin-left: auto;
-            flex-direction: row; /* 유저 메시지는 프로필 이미지가 오른쪽에 오도록 좌우 반전 */
-        }
-
-        .message-container.bot {
+            gap: 0.5rem; /* 프로필 이미지, contentWrapper 또는 이미지 블록 간 간격 */
+            /* 모든 메시지 컨테이너는 기본적으로 왼쪽 정렬 */
             justify-content: flex-start;
             margin-right: auto;
-            flex-direction: row; /* 봇 메시지는 기본 순서 */
+            margin-left: 0; /* 왼쪽 마진 초기화 */
         }
 
-        /* 이미지 메시지 컨테이너 스타일 (새로 추가 - 이 컨테이너는 appendMessage에서 #chat에 직접 추가됩니다) */
+        /* 텍스트 메시지 컨테이너 스타일 */
+        /* .message-container.user 스타일을 유저 요청에 맞게 수정 (말풍선 왼쪽, 프로필 오른쪽) */
+        .message-container.user {
+            /* 컨테이너 자체는 왼쪽에 정렬 유지 (기본 스타일 따름) */
+            /* justify-content: flex-start; */
+            /* margin-right: auto; */
+            /* margin-left: 0; */
+            flex-direction: row; /* 요소 순서대로 (contentWrapper -> 프로필 이미지) 배치 */
+        }
+
+        /* .message-container.bot 스타일은 기존대로 유지 (프로필 왼쪽, 말풍선 오른쪽) */
+        .message-container.bot {
+            /* 컨테이너 자체는 왼쪽에 정렬 유지 (기본 스타일 따름) */
+            /* justify-content: flex-start; */
+            /* margin-right: auto; */
+            flex-direction: row; /* 요소 순서대로 (프로필 -> contentWrapper) 배치 */
+        }
+
+        /* 이미지 메시지 블록 전체 컨테이너 (중앙 정렬) - appendMessage에서 #chat에 직접 추가됨 */
          .image-announcement {
              display: block; /* 블록 요소로 만들어 한 줄 전체를 사용 */
              margin: 0.1rem auto 0.5rem auto; /* 위쪽 여백 0.1rem, 아래쪽 여백 0.5rem, 좌우 auto로 중앙 정렬 */
@@ -130,7 +139,11 @@ body {
              overflow: hidden; /* 내부 이미지 넘치는 부분 숨김 */
              /* background-color: #282828; */ /* 배경색 설정 가능 */
              position: relative; /* 내부 absolute 요소 기준 */
-             flex-shrink: 0;
+             /* 다른 Flexbox 아이템이 추가될 때 크기가 줄어들지 않도록 함 */
+             flex-shrink: 0; /* 새로 추가 */
+             /* 역할별 스타일 (선택 사항, 필요하다면) */
+             /* &.user { ... } */
+             /* &.bot { ... } */
          }
 
 
@@ -156,23 +169,26 @@ body {
              cursor: pointer;
          }
 
-
+        /* 이름과 삭제 버튼, 텍스트 버블을 묶는 컨테이너 */
         .message-content-wrapper {
             display: flex;
-            flex-direction: column; /* 이름과 버블을 세로로 배치 */
-            /* 역할에 따라 정렬 - 텍스트 메시지일 때만 contentWrapper 정렬 사용 */
+            flex-direction: column; /* 이름/버튼과 버블을 세로로 배치 */
             flex: 1; /* 남은 공간 차지 */
              min-width: 0; /* 부모의 flex에 의해 축소될 때 내용이 숨겨지지 않도록 함 */
+            /* 기본 왼쪽 정렬 */
+            align-items: flex-start;
         }
 
-        /* 유저 메시지일 때 contentWrapper를 오른쪽으로 정렬 (텍스트 메시지에만 해당) */
+        /* 유저 메시지일 때 contentWrapper 정렬 (텍스트 버블 자체의 정렬) */
+        /* 유저 메시지의 말풍선이 왼쪽에 오도록 align-items: flex-start 유지 */
         .message-container.user .message-content-wrapper {
-            align-items: flex-end; /* 텍스트 버블과 이름 컨테이너를 오른쪽으로 정렬 */
+            align-items: flex-start;
         }
 
-         /* 캐릭터 메시지일 때 contentWrapper를 왼쪽으로 정렬 (텍스트 메시지에만 해당) */
-        .message-container.bot .message-content-wrapper {
-            align-items: flex-start; /* 텍스트 버블과 이름 컨테이너를 왼쪽으로 정렬 */
+         /* 캐릭터 메시지일 때 contentWrapper 정렬 (텍스트 버블 자체의 정렬) */
+        /* 캐릭터 메시지의 말풍선이 오른쪽에 오도록 align-items: flex-end 로 변경 */
+         .message-container.bot .message-content-wrapper {
+             align-items: flex-end; /* 말풍선을 오른쪽으로 정렬 */
          }
 
 
@@ -182,39 +198,36 @@ body {
             margin-bottom: 0.2rem;
             display: flex; /* 이름과 삭제 버튼을 가로로 배치 */
             align-items: center; /* 세로 중앙 정렬 */
-            /* 역할에 따라 justify-content 설정 */
              flex-shrink: 0; /* 축소되지 않도록 함 */
-             width: 100%; /* 부모(.message-content-wrapper) 너비를 채우도록 */
+             /* width: 100%; */ /* 부모 너비를 채우지 않고 내용에 맞게 */
              box-sizing: border-box; /* 패딩 포함 너비 계산 */
         }
 
-        /* 유저 메시지의 이름 컨테이너 (오른쪽 정렬) */
+        /* 유저 메시지의 이름 컨테이너 (왼쪽 정렬) */
         .message-container.user .role-name {
-            justify-content: flex-end;
+            justify-content: flex-start; /* 이름/버튼 묶음을 왼쪽으로 정렬 */
          }
 
-         /* 캐릭터 메시지의 이름 컨테이너 (왼쪽 정렬) */
+         /* 캐릭터 메시지의 이름 컨테이너 (오른쪽 정렬) */
         .message-container.bot .role-name {
-            justify-content: flex-start;
+            justify-content: flex-end; /* 이름/버튼 묶음을 오른쪽으로 정렬 */
          }
 
 
         /* 이름 텍스트를 담는 span에 대한 스타일 */
         .name-text {
-             /* 이름 텍스트 스타일 */
-             /* 역할에 따라 text-align 설정 */
              flex-shrink: 0; /* 이름 텍스트가 길어지더라도 옆으로 표시되도록 flex-shrink 방지 */
              min-width: 0; /* 텍스트 내용이 길 때 넘치지 않도록 */
          }
 
-         /* 유저 메시지의 이름 텍스트 오른쪽 정렬 */
+         /* 유저 메시지의 이름 텍스트 왼쪽 정렬 (기본값) */
          .message-container.user .name-text {
-             text-align: right;
+             text-align: left;
          }
 
-          /* 캐릭터 메시지의 이름 텍스트 왼쪽 정렬 (기본값) */
+          /* 캐릭터 메시지의 이름 텍스트 오른쪽 정렬 */
          .message-container.bot .name-text {
-             text-align: left;
+             text-align: right;
          }
 
 
@@ -228,7 +241,7 @@ body {
             position: relative; /* 자식 요소의 absolute 위치 기준 */
             font-size: 1rem;
             /* 사용자 입력 줄바꿈 표시를 위한 설정 */
-             white-space: normal; /* 여러 줄 텍스트 유지 */
+             white-space: pre-wrap; /* 여러 줄 텍스트 유지 */
              margin-bottom: 0; /* 말풍선 자체 하단 마진 제거 시도 */
              /* 텍스트 메시지에만 해당 */
         }
@@ -242,7 +255,7 @@ body {
         .message-container.user .message-bubble {
             background-color: #4a3a7a;
             color: #ffffff;
-            border-radius: 1rem 1rem 0.3rem 1rem;
+            border-radius: 1rem 1rem 0.3rem 1rem; /* 유저 메시지 말풍선 왼쪽 아래 뾰족 */
         }
 
         /* 마크다운 내부 스타일 (adjust as needed) */
@@ -309,48 +322,7 @@ body {
          }
 
 
-        /* .message-image-thumbnail 스타일은 이제 사용하지 않습니다. */
-        /*
-        .message-image-thumbnail {
-            max-width: 200px;
-            max-height: 200px;
-            border-radius: 8px;
-            object-fit: cover;
-            cursor: pointer;
-            margin-top: 0.2rem;
-            border: 1px solid #5a5a5a;
-        }
-
-         .message-image-thumbnail.error {
-             background-color: #5a5a5a;
-         }
-        */
-
-        /* 기존 .image-message-block 스타일은 이제 필요 없습니다. */
-        /*
-        .image-message-block {
-            flex: 1;
-             max-width: calc(100% - (35px + 0.5rem * 2));
-             margin: 0.2rem 0;
-             display: flex;
-             justify-content: center;
-             align-items: center;
-             overflow: hidden;
-             position: relative;
-             background-color: #3a3a3a;
-             border-radius: 8px;
-             padding: 0;
-        }
-
-         .message-container.user .image-message-block {
-         }
-
-         .message-container.bot .image-message-block {
-         }
-        */
-
-
-        /* 이미지 페이드 컨테이너 스타일 (수정 - 마스크 적용) */
+         /* 이미지 페이드 컨테이너 스타일 (마스크 적용) */
         .image-fade-container {
             position: relative;
             display: block; /* 블록 요소 */
@@ -420,6 +392,7 @@ body {
             justify-content: center;
             align-items: center;
             transition: background-color 0.2s ease;
+            z-index: 10;
         }
          #actionMenuButton:hover {
              background-color: #6a6a6a;
@@ -453,24 +426,26 @@ body {
             box-shadow: 0 0 0 0.15rem rgba(80, 150, 255, 0.3);
         }
 
+        /* 전송 버튼 스타일 수정: 원형으로 */
         #sendButton {
+            /* 기존 padding: 0.75rem 1.5rem; 제거 */
+            /* 기존 min-width: 6rem; 제거 */
             width: 40px; /* 버튼의 너비를 고정 */
             height: 40px; /* 버튼의 높이를 고정 (너비와 같게) */
             border-radius: 50%; /* 테두리를 50% 둥글게 만들어 원형으로 만듦 */
-            background-color: #5080ff;
-            color: #ffffff;
-            font-size: 1rem;
-            font-weight: bold;
-            min-width: 6rem;
-            flex-shrink: 0;
-             border: none;
-             cursor: pointer;
-             display: flex;
-             justify-content: center; /* 가로 중앙 정렬 */
-             align-items: center; /* 세로 중앙 정렬 */
-             transition: background-color 0.2s ease; /* 호버 애니메이션 유지 */
-             padding: 0; /* 내부 패딩 제거 (크기 고정했으므로) *
-         }
+            background-color: #5080ff; /* 배경색 유지 */
+            color: #ffffff; /* 글자색 (아이콘 색상) 유지 */
+            font-size: 1rem; /* 폰트 크기 (아이콘 크기) 유지 */
+            flex-shrink: 0; /* 축소 방지 유지 */
+            border: none; /* 테두리 없음 유지 */
+            cursor: pointer; /* 마우스 오버 시 커서 모양 유지 */
+            /* 아이콘(또는 내부 요소)을 가운데 정렬하기 위해 Flexbox 사용 */
+            display: flex;
+            justify-content: center; /* 가로 중앙 정렬 */
+            align-items: center; /* 세로 중앙 정렬 */
+            transition: background-color 0.2s ease; /* 호버 애니메이션 유지 */
+            padding: 0; /* 내부 패딩 제거 (크기 고정했으므로) */
+        }
          #sendButton:hover { background-color: #6699ff; }
          #sendButton:active { background-color: #3366cc; }
          #sendButton:disabled {
@@ -781,7 +756,7 @@ body {
     /* top: 8px; right: 8px; */ /* 위치 속성 제거 */
     padding: 0 0.2rem; /* 버튼 내부 패딩 조정 */
     z-index: 1; /* 다른 요소 위에 오도록 z-index 유지 */
-    flex-shrink: 0; /* 이름이 길어져도 버튼 크기 고정 */
+    flex-shrink: 0; /* 이름이 길어지더라도 버튼 크기 고정 */
     /* 이름과의 간격 및 위치는 아래 역할별 CSS에서 설정 */
   }
 
@@ -794,12 +769,12 @@ body {
     /* 유저 메시지의 삭제 버튼 (이름 왼쪽에 10px 간격) */
     .message-container.user .role-name .delete-btn {
         margin-right: 10px; /* 이름과의 간격 */
-        order: 0; /* 이름(order 1) 앞에 오도록 */
+        order: 1; /* 이름(order 0) 뒤에 오도록 */
     }
 
     /* 유저 메시지에서 이름 텍스트 순서 조정 */
     .message-container.user .role-name .name-text {
-        order: 1; /* 삭제 버튼(order 0) 뒤에 오도록 */
+        order: 0; /* 삭제 버튼(order 1) 앞에 오도록 */
     }
 
 
