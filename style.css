@@ -108,7 +108,7 @@ body {
         /* 텍스트 메시지 컨테이너 스타일 (기존 유지) */
         .message-container.user {
             justify-content: flex-start;
-            margin-right: auto;
+            margin-left: auto;
             flex-direction: row; /* 유저 메시지는 프로필 이미지가 오른쪽에 오도록 좌우 반전 */
         }
 
