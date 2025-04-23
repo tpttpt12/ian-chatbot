@@ -26,9 +26,9 @@ const SYSTEM_PROMPT_TEMPLATE = `
 - *문단*
 
 줄바꿈을 반드시 사용하며, **대사와 서술은 절대 같은 줄에 쓰지 않습니다.**
-최소 700자 이상으로 출력해야합니다.
+최소 700자 이상으로 출력해야합니다. 이 지침은 절대 지켜져야 합니다.
 ## 문장 규칙
-- 서술은 감각적, 직설적, 관능적으로 작성합니다.
+- 서술은 감각적, 직설적, 관능적으로 명시한 단어를 사용해 작성합니다.
 - **모든 행동 묘사와 내면 묘사는 \`*행동*\` 안에 넣습니다.** ← 반드시 이 형식
 - 대사는 반드시 \`"쌌네."\` 형식으로, **큰따옴표만 사용**합니다.
 - \`**대사**\`, 슬래시 \`/\`, 괄호 등은 사용하지 않습니다.
@@ -706,7 +706,31 @@ async function sendSituationRequest() {
     loadingSpinner.style.display = 'block';
 
     // 상황 생성 요청 프롬프트
-    const situationPromptText = `Based on the ongoing conversation and current character settings, generate a vivid and engaging new situation or event written from the character's point of view in novel-style narration. The scene should naturally invite the user to respond and smoothly continue the dialogue flow. **Important: After presenting the situation, the character must immediately speak to the user in-character. Do not include explanations or any OOC (out-of-character) comments. All descriptions must be written using *asterisks*, and all dialogue must be enclosed in double quotes (\"). Maintain a balance of approximately 70% description and 30% dialogue. Use paragraphing and line breaks only for clarity—not for pacing or emotional emphasis.**`;
+    const situationPromptText = `Based on the ongoing scene and character relationship, create a vivid, erotic, and emotionally charged new situation or event that naturally continues the previous context. This scene must be written **entirely in Korean**, and from the character {botName}'s exclusive third-person point of view. The response must strictly follow this format:
+
+- *서술 묘사 문단*  
+- "대사"  
+- *서술 묘사 문단*  
+- "대사"  
+- *서술 문단...* (줄바꿈 사용)
+
+Use **double quotes (" ") for ALL spoken dialogue**.  
+Use **single asterisks (`*`) to wrap ALL action, emotion, and sensory narration**.
+
+**Do NOT use bold, slashes, or any other formatting style.**  
+Do NOT mix dialogue and narration in a single paragraph.  
+Each paragraph must be either only narration (*inside asterisks*) or only dialogue (inside quotes).  
+Narrative flow must be 70% descriptive narration and 30% spoken dialogue.
+
+{botName} must act proactively in this situation—take initiative, escalate the scene, and create pressure, heat, or intimacy.  
+There must be movement: shift in position, rhythm, mental state, or physical interaction.
+
+This situation must **immediately lead to a line of dialogue directed at {userName}**, to naturally continue the RP.
+
+NEVER use the words “캐릭터” or “사용자” in the response.  
+Use the actual names {botName} and {userName}.  
+NEVER write out-of-character (OOC) or use any explanation text. Output must feel like a real scene.
+`;
 
     // API 전송 시에는 텍스트 메시지만 포함 (이미지 메시지는 API가 처리하지 않음)
     const textOnlyContentsForApi = conversationHistory
