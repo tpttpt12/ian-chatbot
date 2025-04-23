@@ -166,7 +166,7 @@
             position: relative;
             font-size: 1rem;
             /* 사용자 입력 줄바꿈 표시를 위한 설정 */
-             white-space: pre-wrap;
+             white-space: normal;
              /* 말풍선 자체 하단 마진 제거 시도 */
              margin-bottom: 0;
          }
@@ -265,7 +265,7 @@
 
 #inputArea {
             display: flex;
-            padding: 1rem;
+            padding: 1rem 1.5rem 2rem 1.5rem; /* 위: 1rem, 오른쪽: 1.5rem, 아래: 2rem, 왼쪽: 1.5rem */
             background-color: #1E1E1E;
             /* border-top: 1px solid #3a3a3a; */ /* 구분선 제거 */
             align-items: center;
@@ -273,7 +273,7 @@
              flex-shrink: 0;
              position: relative;
              /* 상단에 그림자 추가 */
-             box-shadow: 0 -10px 10px -5px rgba(0, 0, 0, 0.5); /* 위쪽으로 퍼지는 그림자 */
+             box-shadow: 0 -20px 20px 0px rgba(30, 30, 30); /* 위쪽으로 퍼지는 그림자 */
              z-index: 1; /* 그림자가 채팅 내용 위로 오도록 설정 */
         }
 
