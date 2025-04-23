@@ -97,7 +97,7 @@ body {
 /* Message Container Base Style */
 .message-container {
     display: flex;
-    align-items: flex-start;
+    align-items: flex-end;
     max-width: 85%;
     gap: 0.5rem;
 }
@@ -167,7 +167,7 @@ body {
 
 /* Bot Message Content Wrapper Style */
 .message-container.bot .message-content-wrapper {
-    align-items: flex-end;
+    align-items: flex-start;
 }
 
 /* Role Name Container Style */
@@ -189,7 +189,7 @@ body {
 .message-container.bot .role-name {
     justify-content: flex-start;
 }
-
+s
 /* Name Text Style */
 .name-text {
     flex-shrink: 0;
@@ -198,7 +198,7 @@ body {
 
 /* User Name Text Style */
 .message-container.user .name-text {
-    text-align: lright;
+    text-align: right;
     order: 0;
 }
 
@@ -818,7 +818,7 @@ body {
     flex-direction: column;
     flex-wrap: nowrap;
     gap: 0; /* Keep no gap for text items */
-    justify-content: flex-start;
+    justify-content: flex-end;
     width: 100%;
     padding-bottom: 0;
 }
