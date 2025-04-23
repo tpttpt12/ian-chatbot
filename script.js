@@ -685,7 +685,7 @@ Do not include explanations or any OOC (out-of-character) comments. All descript
              const noticeContainer = document.createElement("div");
              noticeContainer.className = "initial-notice";
              noticeContainer.innerHTML = `
-                채팅을 시작합니다. 캐릭터와 사용자 설정을 확인해주세요.
+                <strong>📢 중요 공지:</strong> 채팅을 시작합니다. 캐릭터와 사용자 설정을 확인해주세요.
              `;
              chat.appendChild(noticeContainer);
 
