@@ -1010,3 +1010,8 @@ tr:nth-child(even) {
     margin-top: 0.5rem;
     margin-bottom: 0.5rem;
 }
+
+.message-bubble em {
+    font-style: italic !important;
+    color: #a9a9a9 !important;
+}
