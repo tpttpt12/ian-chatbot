@@ -266,7 +266,8 @@ const SYSTEM_PROMPT_TEMPLATE = `
                 // "..."를 [[DIALOGUE]]...[[/DIALOGUE]] 로 변환
                 processedText = processedText.replace(/"(.*?)"/gs, '[[DIALOGUE]]$1[[/DIALOGUE]]');
                 // *...*를 [[ACTION]]...[[/ACTION]] 로 변환
-                pprocessedText = processedText.replace(/\*([^*]+)\*/gs, '[[ACTION]]$1[[/ACTION]]'); // 여기 닫는 괄호 빠졌던거 수정합니다.
+                processedText = processedText.replace(/\*([^*]+)\*\
+/gs, '[[ACTION]]$1[[/ACTION]]'); // 여기 닫는 괄호 빠졌던거 수정합니다.
                 // marked.js를 사용하여 기본 마크다운을 HTML로 변환
                 let htmlContent = marked.parse(processedText);
                 // 임시 마커를 찾아 span 태그로 변환하여 스타일 적용
@@ -509,7 +510,7 @@ Do not include explanations or any OOC (out-of-character) comments. All descript
         type: 'text',
         text: `(오류 발생: ${res.status} - ${errorText})`
     });
-} else {
+} else { // 응답이 성공적이라면
                     const data = await res.json();
                     const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "(응답 없음)";
                     appendMessage("bot", { type: 'text', text: reply });
@@ -563,7 +564,7 @@ Do not include explanations or any OOC (out-of-character) comments. All descript
         document.addEventListener('DOMContentLoaded', () => {
             autoResizeTextarea.call(userInput); // 페이지 로드 시 최소 높이 적용
             loadSettings(currentSlot); // 현재 슬롯 설정 로드
-            updateSlotButtonStyles(); // 페이지 로드 시 슬롯 버튼 스타일 업데이트
+            updateSlotButtonStyles(); // 슬롯 버튼 스타일 업데이트
 
              // 이미지 URL 입력 필드에서 값 불러와서 변수 업데이트
              userProfileImgUrl = userImageUrlInput.value || "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU";
