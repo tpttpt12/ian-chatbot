@@ -698,48 +698,51 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: transparent;
     z-index: 490; /* 사이드바(900) 아래, 오버레이(890) 아래, 액션 메뉴(500) 아래 */
     display: none; /* 기본적으로 숨김 */
 }
 
 /* 액션 메뉴 컨테이너 스타일 */
+/* #actionMenu가 이제 #inputArea의 자식이므로, #inputArea를 기준으로 위치를 잡습니다. */
 #actionMenu {
-    /* 화면 하단 고정 대신 inputArea 기준 위치로 변경 */
-    position: absolute; /* 부모 (#inputArea) 기준 절대 위치 (실제로는 뷰포트 기준) */
-    /* bottom: calc(100% + 10px); <-- 이 부분을 수정 */
-    bottom: 6rem; /* 뷰포트 하단에서 6rem 위쪽에 배치 (입력창 위에 오도록 조절) */
+    position: absolute; /* 부모 (#inputArea, position: relative) 기준 절대 위치 */
+    /* bottom: calc(100% + 10px); <-- 이전 위치 계산 방식. 이제 #inputArea의 바닥에서 계산합니다. */
+    bottom: calc(100% + 10px); /* #inputArea 높이의 100% + 10px 만큼 위로 이동 -> #inputArea 바로 위 */
+    /* left: 50%; transform: translateX(-50%); <-- 이전 중앙 정렬 방식. 오른쪽 버튼 기준으로 정렬합니다. */
+    right: 0.5rem; /* #inputArea의 오른쪽 패딩(1.5rem)보다 조금 안쪽으로 조절 (버튼 위치 고려) */
+    left: auto; /* left 속성 제거 */
+    transform: none; /* transform 속성 제거 */
 
-    left: 50%; /* Input area가 중앙에 있으므로 메뉴도 중앙 정렬 */
-    transform: translateX(-50%); /* 중앙 정렬 보정 */
 
-    width: 90%; /* 너비 설정 */
-    max-width: 300px; /* 최대 너비 설정 (조정 가능) */
+    width: 180px; /* 텍스트 메뉴 항목에 맞게 너비 조정 */
+    max-width: 180px; /* 최대 너비 설정 */
+
     background-color: #1f1f1f; /* 배경색 */
     border: 1px solid #3a3a3a; /* 테두리 */
     border-radius: 15px; /* 모서리 둥글게 */
-    padding: 1rem;
+    padding: 0.5rem 0; /* 상하 패딩 조정 */
     box-sizing: border-box;
     z-index: 500; /* 오버레이(490) 위에 오도록 */
     display: flex;
-    flex-direction: column;
-    align-items: stretch; /* 내부 버튼들이 너비를 채우도록 */
+    flex-direction: column; /* 항목들을 세로로 나열 */
+    align-items: stretch; /* 내부 항목들이 너비를 채우도록 */
 
-    /* 시작 상태: 숨겨져 있다가 보일 때 */
+    /* 시작 상태: 숨겨져 있다가 보일 때 '뿅' 애니메이션 */
     opacity: 0;
     visibility: hidden;
-    /* transform: translate(-50%, 20px); <-- 초기 transform은 제거하여 혼동 방지 */
+    /* transform: translate(-50%, 20px); <-- 이전 애니메이션 시작 위치. 제거합니다. */
 
     /* transition: opacity 0.3s ease-out, transform 0.3s ease-out, visibility 0.3s ease-out; <-- transition 속성 간소화 */
-    transition: opacity 0.3s ease-out, visibility 0.3s ease-out; /* 간소화된 transition */
+    transition: opacity 0.3s ease-out, visibility 0.3s ease-out; /* opacity와 visibility만 transition */
 }
 
 /* 액션 메뉴 보일 때 스타일 */
 #actionMenu.visible {
     opacity: 1;
     visibility: visible;
-    /* transform: translate(-50%, 0); <-- visible 상태에서의 transform은 중앙 정렬만 유지 */
-     transform: translateX(-50%); /* 중앙 정렬 transform 유지 */
+    /* transform: translate(-50%, 0); <-- 이전 애니메이션 끝 위치. transform 속성 제거 */
+    transform: none; /* visible 상태에서도 transform 없음 */
 }
 
 /* 액션 메뉴 꼬리 스타일 */
@@ -747,8 +750,11 @@ body {
     content: "";
     position: absolute;
     bottom: -10px; /* 액션 메뉴 하단에서 아래로 */
-    left: 50%; /* 가로 중앙 정렬 */
-    transform: translateX(-50%); /* 중앙 정렬 보정 */
+    /* left: 50%; transform: translateX(-50%); <-- 이전 꼬리 위치 */
+    right: 10px; /* 메뉴 오른쪽 끝에서 10px 떨어진 곳에 꼬리 위치 */
+    left: auto; /* left 속성 제거 */
+    transform: none; /* transform 속성 제거 */
+
     width: 0;
     height: 0;
     border-left: 10px solid transparent; /* 왼쪽 변 투명 */
@@ -758,47 +764,59 @@ body {
 }
 /* 꼬리 테두리 추가 (선택 사항) */
 #actionMenu::before {
-     content: "";
-     position: absolute;
-     bottom: -12px; /* 꼬리 바로 아래 */
-     left: 50%; /* 가로 중앙 정렬 */
-     transform: translateX(-50%); /* 중앙 정렬 보정 */
-     width: 0;
-     height: 0;
-     border-left: 12px solid transparent;
-     border-right: 12px solid transparent;
-     border-top: 12px solid #3a3a3a; /* 테두리 색상 */
-     z-index: 500; /* 메뉴 꼬리(501) 아래에 오도록 */
+    content: "";
+    position: absolute;
+    bottom: -12px; /* 꼬리 바로 아래 */
+    /* left: 50%; transform: translateX(-50%); <-- 이전 꼬리 테두리 위치 */
+    right: 9px; /* 메뉴 오른쪽 끝에서 9px 떨어진 곳에 꼬리 테두리 위치 */
+    left: auto; /* left 속성 제거 */
+     transform: none; /* transform 속성 제거 */
+
+    width: 0;
+    height: 0;
+    border-left: 12px solid transparent;
+    border-right: 12px solid transparent;
+    border-top: 12px solid #3a3a3a; /* 테두리 색상 */
+    z-index: 500; /* 메뉴 꼬리(501) 아래에 오도록 */
  }
 
 
 /* 액션 메뉴 내부 버튼 컨테이너 스타일 */
 .menu-buttons {
     display: flex;
-    flex-wrap: wrap; /* 버튼이 많아지면 다음 줄로 넘어가도록 */
-    gap: 10px; /* 버튼 간 간격 */
-    justify-content: center; /* 버튼들 중앙 정렬 */
+    flex-direction: column; /* 버튼 세로로 쌓기 */
+    flex-wrap: nowrap; /* 줄바꿈 방지 */
+    gap: 0; /* 버튼 간 간격 제거 */
+    justify-content: flex-start; /* 시작 정렬 */
     width: 100%; /* 부모 (#actionMenu) 너비를 채우도록 */
-    padding-bottom: 0; /* 하단 여백 - 필요시 조정 */
+    padding-bottom: 0;
 }
 
 /* 액션 메뉴 내부 버튼 스타일 */
+/* 버튼을 단순 텍스트 링크처럼 보이게 수정 */
 #actionMenu button {
-    flex-basis: calc(50% - 5px); /* 두 개씩 배치되도록 너비 설정 (간격 고려) */
-    padding: 1rem;
-    border: none;
-    border-radius: 8px;
-    background-color: #3a3a3a;
-    color: #e0e0e0;
+    /* flex-basis: calc(50% - 5px); <-- 이전 버튼 너비 설정. 제거 */
+    flex-basis: auto; /* 자동으로 너비 결정 */
+    width: 100%; /* 버튼이 부모 (.menu-buttons) 너비를 채우도록 */
+    padding: 0.75rem 1rem; /* 텍스트 클릭 느낌을 위한 패딩 조정 */
+    border: none; /* 테두리 제거 */
+    border-radius: 0; /* 모서리 둥글기 제거 */
+    /* background-color: #3a3a3a; <-- 이전 배경색. 투명으로 변경 */
+    background-color: transparent; /* 배경 투명 */
+    color: #e0e0e0; /* 글자색 */
     font-size: 1rem;
     cursor: pointer;
-    transition: background-color 0.2s ease;
-    text-align: center;
-    z-index: 502; /* 액션 메뉴(500) 위에 오도록 설정 */
+    /* transition: background-color 0.2s ease; <-- transition 속성 추가 */
+    transition: background-color 0.2s ease, color 0.2s ease; /* 배경 및 글자색 transition */
+    /* text-align: center; <-- 이전 중앙 정렬. 왼쪽으로 변경 */
+    text-align: left; /* 텍스트 왼쪽 정렬 */
+    z-index: 502; /* 다른 요소 위에 오도록 설정 */
 }
 
 #actionMenu button:hover {
-    background-color: #4a4a4a;
+    /* background-color: #4a4a4a; <-- hover 시 배경색 조정 */
+    background-color: #3a3a3a; /* hover 시 배경색 */
+    color: #ffffff; /* hover 시 글자색 */
 }
 
 /* 이미지 메시지 블록 스타일 (appendMessage 함수에서 #chat의 직접적인 자식으로 추가됨) */
