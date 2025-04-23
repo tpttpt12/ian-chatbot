@@ -103,7 +103,6 @@ body {
     justify-content: flex-end; /* 컨테이너 자체를 오른쪽으로 정렬 */
     margin-left: auto; /* 왼쪽 마진을 자동으로 밀어 오른쪽으로 붙임 */
     margin-right: 0;
-    flex-direction: row-reverse; /* 요소 순서 반전 (프로필 이미지가 오른쪽에 오도록) */
 }
 
 /* 캐릭터 메시지 컨테이너 스타일 (채팅창 왼쪽 정렬, 프로필 왼쪽, 말풍선 오른쪽) */
@@ -170,7 +169,6 @@ body {
 /* 유저 메시지일 때 contentWrapper 정렬 (텍스트 버블 자체의 정렬) */
 /* 유저 메시지의 말풍선은 오른쪽에 오도록 align-items: flex-end */
 .message-container.user .message-content-wrapper {
-    align-items: flex-end; /* 텍스트 버블과 이름 컨테이너를 오른쪽으로 정렬 */
 }
 
  /* 캐릭터 메시지일 때 contentWrapper 정렬 (텍스트 버블 자체의 정렬) */
