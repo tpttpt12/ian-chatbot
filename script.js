@@ -329,13 +329,12 @@ function appendMessage(role, messageData) {
         const messageBodyElement = document.createElement("div");
         messageBodyElement.className = "message-bubble"; // 텍스트 메시지는 버블 클래스 사용
         let rawText = messageData.text;
-        // 마크다운 처리 및 HTML 변환 (내보내기와 별개)
-        let processedTextHtml = rawText.replace(/\n+/g, match => '<br>'.repeat(match.length));
-        processedTextHtml = processedTextHtml.replace(/"(.*?)"/gs, '[[DIALOGUE]]$1[[/DIALOGUE]]');
-        processedTextHtml = processedTextHtml.replace(/\*([^*]+)\*/gs, '[[ACTION]]$1[[/ACTION]]');
-        let htmlContent = marked.parse(processedTextHtml);
-        htmlContent = htmlContent.replace(/\[\[DIALOGUE\]\](.*?)\[\[\/DIALOGUE\]\]/gs, '<span class="dialogue">$1</span>');
-        htmlContent = htmlContent.replace(/\[\[ACTION\]\](.*?)\[\[\/ACTION\]\]/gs, '<span class="action-description">$1</span>');
+        // 순서 바꿈: 먼저 마크다운 처리
+        let htmlContent = marked.parse(rawText); // 원본 텍스트 먼저 마크다운 파싱
+
+        // 마크다운 처리된 HTML에서 대사/행동 치환
+        htmlContent = htmlContent.replace(/"(.*?)"/gs, '<span class="dialogue">"$1"</span>');
+        htmlContent = htmlContent.replace(/<em>(.*?)<\/em>/gs, '<span class="action-description">$1</span>');
         messageBodyElement.innerHTML = htmlContent;
 
         // 텍스트 메시지일 때는 contentWrapper에 메시지 버블 추가
