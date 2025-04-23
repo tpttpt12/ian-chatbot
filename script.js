@@ -116,7 +116,7 @@ const SYSTEM_PROMPT_TEMPLATE = `
         // 슬롯 버튼 관련 요소 가져오기
         const slotButtons = document.querySelectorAll('.slot-button');
 
-        // --- 함수 정의 ---
+        // --- 함수 정의 --- (이벤트 리스너보다 먼저 정의)
 
         // 이미지 오버레이 열기/닫기 함수
         function openImageOverlay(element) { // 이미지 또는 프로필 이미지를 받도록 수정
@@ -181,6 +181,7 @@ const SYSTEM_PROMPT_TEMPLATE = `
              // 여기서는 새 메시지부터 적용되도록 합니다.
         }
 
+
         // 설정 로드 함수 (localStorage 사용)
         function loadSettings(slotNumber) {
             const savedSettings = localStorage.getItem(`settings_slot_${slotNumber}`);
@@ -221,6 +222,7 @@ const SYSTEM_PROMPT_TEMPLATE = `
              // 메시지를 다시 로드하거나 appendMessage를 다시 호출해야 할 수 있습니다.
              // 여기서는 생략하고 새 메시지부터 적용되도록 합니다.
         }
+
 
         // 슬롯 버튼 스타일 업데이트 함수
         function updateSlotButtonStyles() {
@@ -409,45 +411,67 @@ const SYSTEM_PROMPT_TEMPLATE = `
 
             chat.appendChild(container);
             chat.scrollTop = chat.scrollHeight;
+
+             // 이미지 로드 오류 시 대체 표시 처리를 위한 CSS 클래스 추가는 appendMessage 내부에서 합니다.
+             // console.log(`Appended message (${messageData.type}) for role: ${role}`); // 디버깅 로그 제거
+
         }
 
 
-        async function sendMessage() {
-            const message = userInput.value.trim();
-            if (!message) return;
+        // 메시지 전송 (텍스트 또는 이미지 URL) 함수
+        async function sendMessage(messageOrImageUrl) {
+            // sendButton 클릭 또는 sendImageMessage 호출 시 사용됨
+            const message = typeof messageOrImageUrl === 'string' ? messageOrImageUrl.trim() : userInput.value.trim(); // 인자로 URL이 오면 사용, 아니면 입력창 값 사용
 
+            // 입력값이 비어있으면 아무것도 하지 않음
+            if (!message) {
+                // 이미지가 아닌 경우에만 입력창 값 사용 (이미지 프롬프트는 이미 trim 됨)
+                 if (typeof messageOrImageUrl !== 'string') {
+                    userInput.value = ''; // 입력창 비우기
+                    autoResizeTextarea.call(userInput); // textarea 높이 초기화
+                 }
+                 return;
+            }
+
+
+            // 이미지 URL인지 확인 (간단한 패턴 매칭)
+            const imageUrlPattern = /\.(gif|jpe?g|png|webp|bmp)$/i;
+            const isImageUrl = imageUrlPattern.test(message);
+
+            // 이미지 메시지 처리
+            if (isImageUrl) {
+                 // 이미지 URL이면 이미지 메시지로 처리
+                 appendMessage("user", { type: 'image', url: message });
+                 conversationHistory.push({ role: "user", messageData: { type: 'image', url: message } });
+
+                  // 이미지 URL 입력 후에는 API 호출 없이 즉시 표시 및 상태 초기화
+                  sendButton.disabled = false;
+                  userInput.disabled = false;
+                  actionMenuButton.disabled = false;
+                  loadingSpinner.style.display = 'none'; // 로딩 스피너 숨김
+                  userInput.value = ''; // 입력창 비우기
+                  autoResizeTextarea.call(userInput); // textarea 높이 초기화
+                  userInput.focus();
+                  return; // 이미지 메시지 처리 완료 후 함수 종료
+            }
+
+            // --- 텍스트 메시지 처리 및 API 호출 ---
+
+            // 텍스트 메시지일 경우에만 버튼 비활성화 및 스피너 표시
             sendButton.disabled = true;
             userInput.disabled = true;
             actionMenuButton.disabled = true;
             loadingSpinner.style.display = 'block';
 
-            // 이미지 URL인지 확인 (간단한 패턴 매칭)
-            const imageUrlPattern = /\.(gif|jpe?g|png|webp|bmp)$/i;
-            if (imageUrlPattern.test(message)) {
-                 // 이미지 URL이면 이미지 메시지로 처리
-                 appendMessage("user", { type: 'image', url: message });
-                 conversationHistory.push({ role: "user", messageData: { type: 'image', url: message } });
-                  // 이미지 URL 입력 후에는 API 호출 없이 즉시 표시
-                  sendButton.disabled = false;
-                  userInput.disabled = false;
-                  actionMenuButton.disabled = false;
-                  loadingSpinner.style.display = 'none';
-                  userInput.value = ''; // 입력창 비우기
-                  autoResizeTextarea.call(userInput); // textarea 높이 초기화
-                  userInput.focus();
-                  return; // 이미지 메시지 처리 후 함수 종료
-            }
-
-
-            // 이미지 URL이 아니면 일반 텍스트 메시지로 처리하고 API 호출
+            // 텍스트 메시지 UI에 추가
             appendMessage("user", { type: 'text', text: message });
 
-            // 입력창 자동 지우기
+            // 입력창 자동 지우기 및 높이 초기화
             userInput.value = '';
-            // textarea 높이 초기화 (min-height 유지)
             autoResizeTextarea.call(userInput);
 
 
+            // 텍스트 메시지를 대화 기록에 추가
             conversationHistory.push({ role: "user", messageData: { type: 'text', text: message } });
 
 
@@ -464,11 +488,15 @@ const SYSTEM_PROMPT_TEMPLATE = `
                 const contentsForApi = [{ role: "user", parts: [{ text: SYSTEM_PROMPT }] }, ...textOnlyContentsForApi];
 
                 if (contentsForApi.length === 1 && contentsForApi[0].parts[0].text === SYSTEM_PROMPT) {
-                    // console.log("Only SYSTEM_PROMPT to send to API.");
+                     // SYSTEM_PROMPT 외 사용자 텍스트가 없을 경우 API 호출 안 함
+                     // console.log("Only SYSTEM_PROMPT to send to API."); // 디버그 로그 제거
+                     appendMessage("bot", { type: 'text', text: "(API 호출 스킵: 보낼 텍스트 내용 없음)" });
+                     return Promise.resolve(); // 함수 종료
                 } else if (contentsForApi.length === 0) {
-                    // console.log("No content to send to API.");
-                    appendMessage("bot", { type: 'text', text: "(메시지 전송 실패: 보낼 텍스트 내용 없음)" });
-                    return Promise.resolve();
+                     // 예외적인 경우 (발생하지 않아야 함)
+                     // console.log("No content to send to API."); // 디버그 로그 제거
+                     appendMessage("bot", { type: 'text', text: "(메시지 전송 실패: 보낼 텍스트 내용 없음)" });
+                     return Promise.resolve(); // 함수 종료
                 }
 
 
@@ -484,17 +512,17 @@ const SYSTEM_PROMPT_TEMPLATE = `
                 );
 
                 if (!res.ok) {
-    const errorData = await res.json();
-    console.error("API (Backend) Error:", res.status, errorData);
-    const errorText =
-        errorData?.error?.error?.message ||
-        errorData?.error ||
-        res.statusText;
-    appendMessage("bot", {
-        type: 'text',
-        text: `(오류 발생: ${res.status} - ${errorText})`
-    });
-} else { // 응답이 성공적이라면
+                    const errorData = await res.json();
+                    console.error("API (Backend) Error:", res.status, errorData);
+                    const errorText =
+                        errorData?.error?.error?.message ||
+                        errorData?.error ||
+                        res.statusText;
+                    appendMessage("bot", {
+                        type: 'text',
+                        text: `(오류 발생: ${res.status} - ${errorText})`
+                    });
+                } else { // 응답이 성공적이라면
                     const data = await res.json();
                     const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "(응답 없음)";
                     appendMessage("bot", { type: 'text', text: reply });
@@ -508,6 +536,7 @@ const SYSTEM_PROMPT_TEMPLATE = `
                 console.error("Fetch Error:", error);
                 appendMessage("bot", { type: 'text', text: "(통신 오류 발생)" });
             } finally {
+                // API 호출이 완료되면 (성공 또는 실패) 버튼 활성화 및 스피너 숨김
                 sendButton.disabled = false;
                 userInput.disabled = false;
                 actionMenuButton.disabled = false;
@@ -517,32 +546,36 @@ const SYSTEM_PROMPT_TEMPLATE = `
         }
 
 
-        // '+' 버튼 메뉴의 이미지 삽입 버튼 클릭 시 호출되는 함수 (수정됨)
+        // '+' 버튼 메뉴의 이미지 삽입 버튼 클릭 시 호출되는 함수
         async function sendImageMessage() {
             const imageUrl = prompt("보낼 이미지의 웹 주소(URL)를 입력하세요:");
             if (imageUrl !== null && imageUrl.trim() !== '') {
                  // 입력된 URL의 유효성을 간단히 검사
                  const imageUrlPattern = /\.(gif|jpe?g|png|webp|bmp)$/i;
                  if (imageUrlPattern.test(imageUrl.trim())) {
-                      // 유효한 URL 형식일 경우 메시지 전송
-                      // 이미지 메시지는 API 호출 없이 바로 채팅창에 추가되도록 sendMessage 함수를 활용
-                      sendMessage(imageUrl.trim()); // sendMessage 함수가 이미지 URL 처리 로직을 포함
+                      // 유효한 URL 형식일 경우 sendMessage 함수에 이미지 URL을 인자로 전달
+                      // sendMessage 함수 내부에서 이미지 메시지인지 판단하여 처리
+                      sendMessage(imageUrl.trim());
                  } else {
                       alert("유효한 이미지 주소(jpg, png, gif 등)를 입력해주세요.");
                  }
             } else if (imageUrl !== null) {
-                alert("이미지 주소를 입력해야 합니다.");
+                // 사용자가 프롬프트에서 취소하거나 빈 문자열 입력 시
+                //console.log("이미지 주소 입력 취소 또는 빈 문자열 입력"); // 디버그 로그 제거
             }
         }
+
 
         // '+' 버튼 메뉴의 상황 버튼 클릭 시 호출되는 함수
         async function sendSituationRequest() {
              alert("상황 생성 기능 구현 시작!"); // 기능 구현 알림 유지
 
+             // 상황 생성 요청 시에만 버튼 비활성화 및 스피너 표시
              sendButton.disabled = true;
              userInput.disabled = true;
              actionMenuButton.disabled = true;
              loadingSpinner.style.display = 'block';
+
 
              // 상황 생성 요청 프롬프트
              const situationPromptText = `Based on the ongoing conversation and current character settings, generate a vivid and engaging new situation or event written from the character's point of view in novel-style narration.
@@ -564,16 +597,28 @@ Do not include explanations or any OOC (out-of-character) comments. All descript
 
 
              if (contentsForApi.length <= 1 && contentsForApi[0].parts[0].text === SYSTEM_PROMPT) {
-                 // console.log("Only SYSTEM_PROMPT or SYSTEM_PROMPT + Situation Prompt to send to API."); // 콘솔 로그 제거
-             } else if (contentsForApi.length === 0) {
-                 // console.log("No content to send to API."); // 콘솔 로그 제거
-                 appendMessage("bot", { type: 'text', text: "(상황 생성 요청 실패: 보낼 텍스트 내용 없음)" });
-                 sendButton.disabled = false; // finally 블록 밖에서 활성화
+                 // SYSTEM_PROMPT 외 사용자 텍스트가 없을 경우 API 호출 안 함
+                 // console.log("Only SYSTEM_PROMPT or SYSTEM_PROMPT + Situation Prompt to send to API."); // 디버그 로그 제거
+                 appendMessage("bot", { type: 'text', text: "(상황 생성 요청 스킵: 보낼 텍스트 내용 없음)" }); // 메시지 수정
+                 // API 호출 없으므로 상태 초기화
+                 sendButton.disabled = false;
                  userInput.disabled = false;
                  actionMenuButton.disabled = false;
                  loadingSpinner.style.display = 'none';
                  userInput.focus();
-                 return Promise.resolve();
+                 return Promise.resolve(); // 함수 종료
+
+             } else if (contentsForApi.length === 0) {
+                  // 예외적인 경우 (발생하지 않아야 함)
+                 // console.log("No content to send to API."); // 디버그 로그 제거
+                 appendMessage("bot", { type: 'text', text: "(상황 생성 요청 실패: 보낼 텍스트 내용 없음)" }); // 메시지 수정
+                 // API 호출 없으므로 상태 초기화
+                 sendButton.disabled = false;
+                 userInput.disabled = false;
+                 actionMenuButton.disabled = false;
+                 loadingSpinner.style.display = 'none';
+                 userInput.focus();
+                 return Promise.resolve(); // 함수 종료
              }
 
 
@@ -590,17 +635,17 @@ Do not include explanations or any OOC (out-of-character) comments. All descript
                 );
                 // 응답이 성공적이지 않다면 (오류라면)
                 if (!res.ok) {
-    const errorData = await res.json();
-    console.error("API (Backend) Error:", res.status, errorData);
-    const errorText =
-        errorData?.error?.error?.message ||
-        errorData?.error ||
-        res.statusText;
-    appendMessage("bot", {
-        type: 'text',
-        text: `(상황 생성 오류 발생: ${res.status} - ${errorText})` // 오류 메시지 수정
-    });
-} else { // 응답이 성공적이라면
+                    const errorData = await res.json();
+                    console.error("API (Backend) Error:", res.status, errorData);
+                    const errorText =
+                        errorData?.error?.error?.message ||
+                        errorData?.error ||
+                        res.statusText;
+                    appendMessage("bot", {
+                        type: 'text',
+                        text: `(상황 생성 오류 발생: ${res.status} - ${errorText})` // 오류 메시지 수정
+                    });
+                } else { // 응답이 성공적이라면
                     const data = await res.json();
                     const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "(응답 없음)";
                     appendMessage("bot", { type: 'text', text: reply });
@@ -614,6 +659,7 @@ Do not include explanations or any OOC (out-of-character) comments. All descript
                 console.error("Fetch Error:", error);
                 appendMessage("bot", { type: 'text', text: "(상황 생성 통신 오류 발생)" }); // 오류 메시지 수정
             } finally {
+                // API 호출이 완료되면 (성공 또는 실패) 버튼 활성화 및 스피너 숨김
                 sendButton.disabled = false;
                 userInput.disabled = false;
                 actionMenuButton.disabled = false;
@@ -623,20 +669,48 @@ Do not include explanations or any OOC (out-of-character) comments. All descript
         }
 
 
+        // 초기화 함수 및 DOMContentLoaded 리스너는 함수 정의 뒤에 배치
+
+        // --- 초기화 함수 ---
+        function initializeChat() {
+            // 필요한 초기화 로직 (예: 환영 메시지 표시 등)
+             // loadSettings(currentSlot); // DOMContentLoaded에서 이미 호출됨
+             // updateSystemPrompt(); // loadSettings에서 호출됨
+
+             // 초기 공지 메시지 및 구분선 추가
+            appendInitialNotice();
+        }
+
+        // 초기 공지 메시지 추가 함수
+        function appendInitialNotice() {
+             const noticeContainer = document.createElement("div");
+             noticeContainer.className = "initial-notice";
+             noticeContainer.innerHTML = `
+                <strong>📢 중요 공지:</strong> 이 챗봇은 수위 높은 성적 묘사를 포함한 BL 에로 소설 작성을 목표로 합니다. 미성년자는 이용할 수 없습니다.
+             `;
+             chat.appendChild(noticeContainer);
+
+             const divider = document.createElement("div");
+             divider.className = "notice-divider";
+             chat.appendChild(divider);
+        }
+
         // --- 이벤트 리스너 ---
 
-        sendButton.addEventListener("click", sendMessage);
+        // 전송 버튼 클릭 이벤트
+        sendButton.addEventListener("click", () => sendMessage(userInput.value)); // 입력창 값 전달
+
 
         // keydown 이벤트 리스너 수정: Shift+Enter는 줄바꿈, Enter만 누르면 전송
         userInput.addEventListener("keydown", function(event) {
             if (event.key === "Enter" && !event.shiftKey) {
                 event.preventDefault(); // 기본 Enter 동작 (줄바꿈) 막기
-                sendMessage();
+                sendMessage(userInput.value); // 입력창 값 전달
             }
-           
              // Shift + Enter는 기본 동작 (줄바꿈)이 실행되도록 별도 처리 없음
         });
 
+        // 액션 메뉴 버튼 클릭 이벤트
         actionMenuButton.addEventListener("click", function() {
             actionMenu.classList.toggle("visible");
             if (actionMenu.classList.contains("visible")) {
@@ -646,25 +720,29 @@ Do not include explanations or any OOC (out-of-character) comments. All descript
             }
         });
 
+        // 메뉴 오버레이 클릭 시 메뉴 닫기
         menuOverlay.addEventListener("click", function() {
             actionMenu.classList.remove("visible");
             menuOverlay.style.display = 'none';
         });
 
+        // 이미지 삽입 메뉴 버튼 클릭
         menuImageButton.addEventListener("click", function() {
-            sendImageMessage();
+            sendImageMessage(); // sendImageMessage 함수 호출
              actionMenu.classList.remove("visible");
              menuOverlay.style.display = 'none';
         });
 
+        // 상황 메뉴 버튼 클릭
         menuSituationButton.addEventListener("click", function() {
-            sendSituationRequest();
+            sendSituationRequest(); // sendSituationRequest 함수 호출
              actionMenu.classList.remove("visible");
              menuOverlay.style.display = 'none';
         });
-        
-        // 오버레이 자체 클릭 시 닫기 이벤트 리스너는 HTML에 onclick="closeImageOverlay()"로 이미 존재하므로 JS에서는 추가할 필요 없습니다.
 
+        // 이미지 오버레이 클릭 시 닫기 이벤트 리스너는 HTML에 onclick="closeImageOverlay()"로 이미 존재하므로 JS에서는 추가할 필요 없습니다.
+
+        // 사이드바 토글 버튼 클릭
         sidebarToggle.addEventListener("click", function() {
             sidebar.classList.toggle("visible");
             if (sidebar.classList.contains("visible")) {
@@ -679,17 +757,18 @@ Do not include explanations or any OOC (out-of-character) comments. All descript
             }
         });
 
+        // 사이드바 오버레이 클릭 시 사이드바 닫기
         sidebarOverlay.addEventListener("click", function() {
             sidebar.classList.remove("visible");
             sidebarOverlay.style.display = 'none';
         });
 
-        // 기존 saveSettingsButton 클릭 이벤트 수정: 현재 활성화된 슬롯에 저장
+        // 설정 저장 버튼 클릭 이벤트
         saveSettingsButton.addEventListener("click", function() {
-             saveSettings(currentSlot);
+             saveSettings(currentSlot); // saveSettings 함수 호출
         });
 
-        // 슬롯 버튼 클릭 이벤트 리스너 추가
+        // 슬롯 버튼 클릭 이벤트 리스너
         slotButtons.forEach(button => {
             button.addEventListener('click', function() {
                 const slotNumber = parseInt(this.textContent);
@@ -706,7 +785,7 @@ Do not include explanations or any OOC (out-of-character) comments. All descript
         userInput.addEventListener('input', autoResizeTextarea);
 
 
-        // 페이지 로드 완료 시 실행
+        // 페이지 로드 완료 시 실행 (마지막에 배치)
         document.addEventListener('DOMContentLoaded', () => {
             autoResizeTextarea.call(userInput); // textarea 높이 초기화
             loadSettings(currentSlot); // 현재 슬롯 설정 로드
