@@ -1,4 +1,4 @@
-// 이미지 URL 변수는 입력 필드 값으로 관리
+        // 이미지 URL 변수는 입력 필드 값으로 관리
         let userProfileImgUrl = "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU"; // 기본값 유지
         let botProfileImgUrl = "https://via.placeholder.com/35/3a4a3a/ffffff?text=BOT"; // 기본값 유지
 
@@ -138,7 +138,7 @@ const SYSTEM_PROMPT_TEMPLATE = `
             actionMenu.classList.remove("visible");
             menuOverlay.style.display = 'none';
         });
-        // 유저 변경 / 캐릭터 변경 버튼 이벤트 리스너 삭제
+        // 유저 변경 / 캐릭터 변경 버튼 관련 요소 삭제
         // const menuUserImgButton = document.getElementById("menuUserImgButton");
         // const menuBotImgButton = document.getElementById("menuBotImgButton");
         menuImageButton.addEventListener("click", function() {
@@ -209,131 +209,168 @@ const SYSTEM_PROMPT_TEMPLATE = `
             const container = document.createElement("div");
             container.className = `message-container ${role}`;
 
-            const img = document.createElement("img");
-            img.className = "profile-img";
-            // 이미지 URL은 입력 필드 값이나 기본값을 사용
-            img.src = (role === 'user' ? userProfileImgUrl : botProfileImgUrl);
-            // 이미 변수에 저장된 최신 URL 사용
-            img.alt = (role === 'user' ? (userNameInput.value || "사용자") + " 프로필" : (botNameInput.value || "캐릭터") + " 프로필");
-            // alt 텍스트 변경
-
-            // 메시지 버블 안의 이미지 클릭 시 오버레이 열기 이벤트 리스너는 이 함수 안에서 추가합니다.
-            img.addEventListener("click", () => openImageOverlay(img));
-            img.onerror = function() {
-                 // console.warn(`Failed to load image for role "${role}" from "${this.src}". Using fallback.`);
+            const profileImgElement = document.createElement("img"); // 프로필 이미지는 그대로 유지
+            profileImgElement.className = "profile-img";
+            profileImgElement.src = (role === 'user' ? userProfileImgUrl : botProfileImgUrl);
+            profileImgElement.alt = (role === 'user' ? (userNameInput.value || "사용자") + " 프로필" : (botNameInput.value || "캐릭터") + " 프로필");
+            profileImgElement.onerror = function() {
                  this.onerror = null;
                  const fallbackDiv = document.createElement("div");
                  fallbackDiv.className = "profile-fallback";
                  const parent = this.parentElement;
-                 if (parent) { parent.replaceChild(fallbackDiv, this);
-                 }
+                 if (parent) { parent.replaceChild(fallbackDiv, this); }
             }
+
 
             const contentWrapper = document.createElement("div");
             contentWrapper.className = "message-content-wrapper";
 
-            // .role-name을 flex 컨테이너로 만들고 이름 텍스트와 삭제 버튼을 포함시킵니다.
             const roleName = document.createElement("div");
             roleName.className = "role-name";
-            roleName.style.display = 'flex'; // flexbox 활성화
-            roleName.style.alignItems = 'center'; // 세로 중앙 정렬
-            // roleName의 justify-content는 아래에서 역할에 따라 설정합니다.
+            roleName.style.display = 'flex';
+            roleName.style.alignItems = 'center';
 
-
-            // 이름 텍스트를 담을 span 생성
             const nameTextSpan = document.createElement("span");
             nameTextSpan.className = "name-text";
             nameTextSpan.textContent = (role === "user" ? userNameInput.value || "사용자" : botNameInput.value || "캐릭터");
-            // nameTextSpan의 text-align은 CSS에서 role에 따라 설정합니다.
 
-
-            // 삭제 버튼 생성
             const deleteBtn = document.createElement("button");
             deleteBtn.className = "delete-btn";
             deleteBtn.textContent = "✕";
-            deleteBtn.onclick = () => container.remove(); // 메시지 컨테이너 자체를 삭제하도록
+            deleteBtn.onclick = () => container.remove();
 
-            // 역할에 따라 이름과 삭제 버튼 순서 및 정렬 설정
             if (role === "user") {
-                // 유저: 삭제 버튼 - 이름 순서, 오른쪽 정렬
-                roleName.style.justifyContent = 'flex-end'; // 내용을 오른쪽으로 모으기
+                roleName.style.justifyContent = 'flex-end';
                 roleName.appendChild(deleteBtn);
                 roleName.appendChild(nameTextSpan);
-
             } else {
-                // 캐릭터: 이름 - 삭제 버튼 순서, 왼쪽 정렬
-                roleName.style.justifyContent = 'flex-start'; // 내용을 왼쪽으로 모으기
+                roleName.style.justifyContent = 'flex-start';
                 roleName.appendChild(nameTextSpan);
                 roleName.appendChild(deleteBtn);
             }
 
+            contentWrapper.appendChild(roleName); // 이름과 삭제 버튼은 텍스트/이미지 공통으로 contentWrapper에 추가
 
-            let messageContentElement;
+
+            let messageContentElement; // 메시지 본문 (텍스트 버블 또는 이미지 블록)
             if (messageData.type === 'text') {
                 messageContentElement = document.createElement("div");
-                messageContentElement.className = "message-bubble";
+                messageContentElement.className = "message-bubble"; // 텍스트 메시지는 버블 클래스 사용
                 let rawText = messageData.text;
 
-                // 연속된 줄바꿈(하나 이상)을 해당 개수만큼의 <br> 태그로 변환
                 let processedText = rawText.replace(/\n+/g, match => '<br>'.repeat(match.length));
 
-
-                // 마크다운 파싱 전에 임시 마커 사용, 파싱 후 임시 마커를 찾아 스타일 적용
-                // "..."를 [[DIALOGUE]]...[[/DIALOGUE]] 로 변환
                 processedText = processedText.replace(/"(.*?)"/gs, '[[DIALOGUE]]$1[[/DIALOGUE]]');
-                // *...*를 [[ACTION]]...[[/ACTION]] 로 변환
                 processedText = processedText.replace(/\*([^*]+)\*/gs, '[[ACTION]]$1[[/ACTION]]'); // 수정된 라인
-                // marked.js를 사용하여 기본 마크다운을 HTML로 변환
+
                 let htmlContent = marked.parse(processedText);
-                // 임시 마커를 찾아 span 태그로 변환하여 스타일 적용
-                // [[DIALOGUE]]...[[/DIALOGUE]] -> <span class="dialogue">...</span>
+
                 htmlContent = htmlContent.replace(/\[\[DIALOGUE\]\](.*?)\[\[\/DIALOGUE\]\]/gs, '<span class="dialogue">$1</span>');
-                // [[ACTION]]...[[/ACTION]] -> <span class="action-description">$1</span>
                 htmlContent = htmlContent.replace(/\[\[ACTION\]\](.*?)\[\[\/ACTION\]\]/gs, '<span class="action-description">$1</span>');
                 messageContentElement.innerHTML = htmlContent;
 
+                 // 텍스트 메시지일 때만 contentWrapper에 메시지 본문 추가
+                 contentWrapper.appendChild(messageContentElement);
 
             } else if (messageData.type === 'image') {
-                 messageContentElement = document.createElement("img");
-                 messageContentElement.className = "message-image-thumbnail";
-                 messageContentElement.src = messageData.url;
-                 // 이미지 썸네일 클릭 시 오버레이 열기 이벤트 리스너 (중복 제거, 하나만 남김)
-                 messageContentElement.onclick = () => openImageOverlay(messageContentElement);
-                 messageContentElement.alt = "이미지 메시지";
-                 img.onerror = function() {
-                     // console.warn(`Failed to load image message from "${this.src}". Using fallback.`);
+                 // 이미지 메시지일 때 새로운 구조 생성
+                 const imageMessageBlock = document.createElement("div"); // 이미지 전체를 감쌀 블록
+                 imageMessageBlock.className = `image-message-block ${role}`; // 새로운 클래스 및 역할 클래스 적용
+
+                 const imageFadeContainer = document.createElement("div"); // 페이드 효과 컨테이너
+                 imageFadeContainer.className = "image-fade-container"; // 사용자 제공 CSS 클래스 적용
+
+                 const imgElement = document.createElement("img"); // 실제 이미지 태그
+                 imgElement.className = "chat-image"; // 새로운 이미지 클래스 적용 (썸네일 클래스 아님)
+                 imgElement.src = messageData.url;
+                 imgElement.alt = "이미지 메시지";
+
+                 // 이미지 클릭 시 오버레이 열기
+                 imgElement.onclick = () => openImageOverlay(imgElement);
+                 imgElement.onerror = function() {
+                     console.warn(`Failed to load image message from "${this.src}".`);
                      this.onerror = null;
-                     this.classList.add('error');
+                     // 오류 시 대체 표시를 위한 클래스나 요소 추가 (CSS에서 처리)
+                     imgElement.classList.add('error-image');
                  }
 
-                 // 이미지 썸네일 클릭 이벤트 리스너 (중복 제거, 하나만 남김)
-                 // messageContentElement.addEventListener("click", function() { ... }); 이 코드는 제거되었습니다.
+                 imageFadeContainer.appendChild(imgElement); // 이미지를 페이드 컨테이너 안에 넣음
+                 imageMessageBlock.appendChild(imageFadeContainer); // 페이드 컨테이너를 이미지 블록 안에 넣음
+
+                 messageContentElement = imageMessageBlock; // 메시지 본문은 이제 이 이미지 블록이 됩니다.
+
+                 // 이미지 메시지일 때 contentWrapper에는 이름/삭제 버튼만 있고, 이미지 블록은 message-container에 직접 추가됩니다.
+                 // contentWrapper는 텍스트 메시지의 버블 스타일과 이름/삭제 버튼을 그룹화하기 위해 사용됩니다.
+                 // 이미지 메시지는 이름/삭제 버튼과 이미지 블록이 분리됩니다.
             }
 
-            // contentWrapper에 roleName(이름+버튼)과 messageContentElement(말풍선) 추가
-            contentWrapper.appendChild(roleName);
-            if (messageContentElement) {
-                 contentWrapper.appendChild(messageContentElement);
-            }
 
-            // container에 이미지와 contentWrapper 추가 (역할에 따라 순서 다름)
+            // container에 프로필 이미지와 contentWrapper (텍스트 메시지인 경우) 또는 이미지 블록 (이미지 메시지인 경우) 추가
             if (role === "user") {
-                container.appendChild(contentWrapper);
-                container.appendChild(img); // 유저: 말풍선/이름 -> 이미지 순서
-            } else {
-                container.appendChild(img); // 캐릭터: 이미지 -> 이름/말풍선 순서
-                container.appendChild(contentWrapper);
+                // 유저: (텍스트 메시지인 경우 contentWrapper) 또는 (이미지 메시지인 경우 messageContentElement) -> 프로필 이미지
+                if (messageData.type === 'text') {
+                     container.appendChild(contentWrapper);
+                } else { // image type
+                     // 이미지 메시지 블록에는 이미 정렬 관련 클래스가 있으므로 contentWrapper 대신 직접 추가
+                     // 이름과 삭제 버튼은 imageMessageBlock과 같은 레벨에서 프로필 이미지 반대편에 위치
+                     // 기존 message-container flexbox 구조를 활용하여 재배치
+                     // 프로필 이미지와 함께 flex item이 됨
+                }
+                container.appendChild(profileImgElement);
+
+
+            } else { // role === "bot"
+                // 캐릭터: 프로필 이미지 -> (텍스트 메시지인 경우 contentWrapper) 또는 (이미지 메시지인 경우 messageContentElement)
+                container.appendChild(profileImgElement);
+                 if (messageData.type === 'text') {
+                     container.appendChild(contentWrapper);
+                } else { // image type
+                     // 이미지 메시지 블록에는 이미 정렬 관련 클래스가 있으므로 contentWrapper 대신 직접 추가
+                     // 프로필 이미지와 함께 flex item이 됨
+                }
             }
 
-            // 삭제 버튼은 이미 roleName 안에 추가되었으므로 여기서 삭제
-            // const deleteBtn = document.createElement("button");
-            // deleteBtn.className = "delete-btn";
-            // deleteBtn.textContent = "✕";
-            // deleteBtn.onclick = () => container.remove();
-            // container.appendChild(deleteBtn); // 이 줄 삭제
+
+             // 이미지 메시지인 경우 이름/삭제 버튼과 이미지 블록을 message-container에 직접 추가 (프로필 이미지와 같은 레벨)
+             if (messageData.type === 'image') {
+                 // contentWrapper에 이미 이름/삭제 버튼이 들어있습니다.
+                 // messageContentElement는 imageMessageBlock (image-message-block 클래스 가짐) 입니다.
+                 // message-container는 display: flex 입니다.
+
+                 // 유저 이미지: 프로필(오른쪽 끝) | 이름/삭제 버튼(프로필 옆) | 이미지 블록(왼쪽 남은 공간)
+                 if (role === "user") {
+                     // 순서는 프로필 이미지, contentWrapper(이름/버튼), messageContentElement(이미지 블록)
+                     // flex 순서 조정을 위해 order 사용 또는 구조 변경
+                     // 기존 structure: message-container (flex) -> (contentWrapper, profileImgElement) for user
+                     // New structure: message-container (flex) -> (imageMessageBlock, contentWrapper, profileImgElement) for user
+                     // order: imageMessageBlock(0) | contentWrapper(1) | profileImgElement(2)
+                     messageContentElement.style.order = 0;
+                     contentWrapper.style.order = 1; // 이름/삭제 버튼
+                     profileImgElement.style.order = 2;
+
+                     container.appendChild(messageContentElement); // imageMessageBlock 추가
+                     container.appendChild(contentWrapper); // 이름/삭제 버튼 wrapper 추가 (이미 roleName 포함)
+
+                 } else { // bot image
+                     // 캐릭터 이미지: 프로필(왼쪽 끝) | 이름/삭제 버튼(프로필 옆) | 이미지 블록(오른쪽 남은 공간)
+                     // 순서는 프로필 이미지, contentWrapper(이름/버튼), messageContentElement(이미지 블록)
+                     // order: profileImgElement(0) | contentWrapper(1) | imageMessageBlock(2)
+                     profileImgElement.style.order = 0;
+                     contentWrapper.style.order = 1; // 이름/삭제 버튼
+                     messageContentElement.style.order = 2;
+
+                     container.appendChild(contentWrapper); // 이름/삭제 버튼 wrapper 추가 (이미 roleName 포함)
+                     container.appendChild(messageContentElement); // imageMessageBlock 추가
+                 }
+             }
+
 
             chat.appendChild(container);
             chat.scrollTop = chat.scrollHeight;
+
+             // 이미지 로드 오류 시 대체 표시 처리를 위한 CSS 클래스 추가는 appendMessage 내부에서 합니다.
+             // console.log(`Appended message (${messageData.type}) for role: ${role}`); // 디버깅 로그 제거
+
         }
 
         async function sendMessage() {
@@ -398,124 +435,6 @@ const SYSTEM_PROMPT_TEMPLATE = `
         type: 'text',
         text: `(오류 발생: ${res.status} - ${errorText})`
     });
-} else {
-                    const data = await res.json();
-                    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "(응답 없음)";
-                    appendMessage("bot", { type: 'text', text: reply });
-                    conversationHistory.push({
-                        role: "model",
-                        messageData: { type: 'text', text: reply }
-                    });
-                }
-
-            } catch (error) {
-                console.error("Fetch Error:", error);
-                appendMessage("bot", { type: 'text', text: "(통신 오류 발생)" });
-            } finally {
-                sendButton.disabled = false;
-                userInput.disabled = false;
-                actionMenuButton.disabled = false;
-                loadingSpinner.style.display = 'none';
-                userInput.focus();
-            }
-        }
-
-        async function sendImageMessage() {
-            const imageUrl = prompt("보낼 이미지의 웹 주소(URL)를 입력하세요:");
-            if (imageUrl !== null && imageUrl.trim() !== '') {
-                sendButton.disabled = true;
-                userInput.disabled = true;
-                actionMenuButton.disabled = true;
-
-                appendMessage("user", { type: 'image', url: imageUrl.trim() });
-
-                conversationHistory.push({ role: "user", messageData: { type: 'image', url: imageUrl.trim() } });
-
-                sendButton.disabled = false;
-                userInput.disabled = false;
-                actionMenuButton.disabled = false;
-                userInput.focus();
-            } else if (imageUrl !== null) {
-                alert("이미지 주소를 입력해야 합니다.");
-            }
-        }
-
-        // changeProfileImage 함수 삭제 (액션 메뉴 버튼 제거)
-        /*
-        function changeProfileImage(role) {
-            const promptText = role === 'user' ?
-                "새 사용자 프로필 이미지 주소(URL)를 입력하세요:" : "새 캐릭터 프로필 이미지 주소(URL)를 입력하세요:";
-            const newUrl = prompt(promptText);
-            if (newUrl !== null && newUrl.trim() !== '') {
-                if (role === 'user') {
-                    userProfileImgUrl = newUrl.trim();
-                } else {
-                    botProfileImgUrl = newUrl.trim();
-                }
-                alert(`${role === 'user' ? '사용자' : '캐릭터'} 이미지가 변경되었습니다. 이제부터 추가되는 메시지에 적용됩니다.`);
-            } else if (newUrl !== null) {
-                alert("이미지 주소를 입력해야 합니다.");
-            }
-        }
-        */
-
-        async function sendSituationRequest() {
-             alert("상황 생성 기능 구현 시작!");
-             sendButton.disabled = true;
-             userInput.disabled = true;
-             actionMenuButton.disabled = true;
-             loadingSpinner.style.display = 'block';
-
-             // 상황 생성 요청 프롬프트에도 포맷 지침 추가
-             const situationPromptText = `Based on the ongoing conversation and current character settings, generate a vivid and engaging new situation or event written from the character's point of view in novel-style narration.
-The scene should naturally invite the user to respond and smoothly continue the dialogue flow.
-**Important: After presenting the situation, the character must immediately speak to the user in-character.
-Do not include explanations or any OOC (out-of-character) comments. All descriptions must be written using *asterisks*, and all dialogue must be enclosed in double quotes (\"). Maintain a balance of approximately 70% description and 30% dialogue. Use paragraphing and line breaks only for clarity—not for pacing or emotional emphasis.**`;
-
-
-             // 프롬프트 변경
-             const textOnlyContentsForApi = conversationHistory
-                 .filter(entry => entry.messageData && entry.messageData.type === 'text')
-                 .map(entry => ({
-                    role: entry.role,
-                    parts: [{ text: entry.messageData.text }]
-
-         }));
-             const contentsForApi = [{ role: "user", parts: [{ text: SYSTEM_PROMPT }] }, ...textOnlyContentsForApi, { role: "user", parts: [{ text: situationPromptText }] }];
-
-
-             if (contentsForApi.length <= 1 && contentsForApi[0].parts[0].text === SYSTEM_PROMPT) {
-                 // console.log("Only SYSTEM_PROMPT or SYSTEM_PROMPT + Situation Prompt to send to API."); // 콘솔 로그 제거
-             } else if (contentsForApi.length === 0) {
-                 // console.log("No content to send to API."); // 콘솔 로그 제거
-                 appendMessage("bot", { type: 'text', text: "(메시지 전송 실패: 보낼 텍스트 내용 없음)" });
-                 return Promise.resolve();
-             }
-
-
-            try {
-                const res = await fetch(
-                    `/api/chat`,
-                    {
-                        method: "POST",
-
-
-                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ contents: contentsForApi }),
-                    }
-                );
-                // 응답이 성공적이지 않다면 (오류라면)
-                if (!res.ok) {
-    const errorData = await res.json();
-    console.error("API (Backend) Error:", res.status, errorData);
-    const errorText =
-        errorData?.error?.error?.message ||
-        errorData?.error ||
-        res.statusText;
-    appendMessage("bot", {
-        type: 'text',
-        text: `(오류 발생: ${res.status} - ${errorText})`
-    });
 } else { // 응답이 성공적이라면
                     const data = await res.json();
                     const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "(응답 없음)";
@@ -566,7 +485,136 @@ Do not include explanations or any OOC (out-of-character) comments. All descript
         // textarea 입력 시 높이 자동 조절
         userInput.addEventListener('input', autoResizeTextarea);
 
-        // 페이지 로드 완료 시 실행 (중복 제거, 하나만 남김)
+        // 페이지 로드 시 textarea 높이 초기 설정 (최소 높이)
+        document.addEventListener('DOMContentLoaded', () => {
+            autoResizeTextarea.call(userInput); // 페이지 로드 시 최소 높이 적용
+            loadSettings(currentSlot); // 현재 슬롯 설정 로드
+            updateSlotButtonStyles(); // 슬롯 버튼 스타일 업데이트
+
+             // 이미지 URL 입력 필드에서 값 불러와서 변수 업데이트
+             userProfileImgUrl = userImageUrlInput.value || "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU";
+             botProfileImgUrl = botImageUrlInput.value || "https://via.placeholder.com/35/3a4a3a/ffffff?text=BOT";
+
+        });
+
+
+         // 설정 저장 함수 (localStorage 사용)
+        function saveSettings(slotNumber) {
+            const settings = {
+                botName: botNameInput.value,
+                botAge: botAgeInput.value,
+                botAppearance: botAppearanceInput.value,
+                botPersona: botPersonaInput.value,
+                botImageUrl: botImageUrlInput.value,
+                userName: userNameInput.value,
+                userAge: userAgeInput.value,
+                userAppearance: userAppearanceInput.value,
+                userGuidelines: userGuidelinesInput.value,
+                userImageUrl: userImageUrlInput.value
+            };
+            localStorage.setItem(`settings_slot_${slotNumber}`, JSON.stringify(settings));
+            alert(`설정 슬롯 ${slotNumber}에 저장되었습니다.`);
+
+            // 저장 시 이미지 URL 변수 업데이트
+            userProfileImgUrl = settings.userImageUrl || "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU";
+            botProfileImgUrl = settings.botImageUrl || "https://via.placeholder.com/35/3a4a3a/ffffff?text=BOT";
+        }
+
+
+        // 설정 로드 함수 (localStorage 사용)
+        function loadSettings(slotNumber) {
+            const savedSettings = localStorage.getItem(`settings_slot_${slotNumber}`);
+            if (savedSettings) {
+                const settings = JSON.parse(savedSettings);
+                botNameInput.value = settings.botName;
+                botAgeInput.value = settings.botAge;
+                botAppearanceInput.value = settings.botAppearance;
+                botPersonaInput.value = settings.botPersona;
+                botImageUrlInput.value = settings.botImageUrl;
+                userNameInput.value = settings.userName;
+                userAgeInput.value = settings.userAge;
+                userAppearanceInput.value = settings.userAppearance;
+                userGuidelinesInput.value = settings.userGuidelines;
+                userImageUrlInput.value = settings.userImageUrl;
+                // console.log(`설정 슬롯 ${slotNumber}에서 로드되었습니다.`); // 콘솔 로그 제거
+
+                 // 로드 시 이미지 URL 변수 업데이트
+                 userProfileImgUrl = settings.userImageUrl || "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU";
+                 botProfileImgUrl = settings.botImageUrl || "https://via.placeholder.com/35/3a4a3a/ffffff?text=BOT";
+
+
+            } else {
+                 // console.log(`설정 슬롯 ${slotNumber}에 저장된 설정이 없습니다. 기본값 로드 시도.`); // 콘솔 로그 제거
+                 // 기본값 로드는 입력 필드의 value 속성에 설정되어 있으므로 추가 로직 불필요
+                 alert(`설정 슬롯 ${slotNumber}에 저장된 설정이 없습니다. 기본값이 표시됩니다.`);
+
+                 // 저장된 설정이 없을 경우 기본 이미지 URL 변수 업데이트
+                 userProfileImgUrl = userImageUrlInput.value || "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU";
+                 botProfileImgUrl = botImageUrlInput.value || "https://via.placeholder.com/35/3a4a3a/ffffff?text=BOT";
+            }
+
+             // 로드 후 SYSTEM_PROMPT 업데이트
+             updateSystemPrompt();
+
+             // 로드 후 기존 메시지 말풍선 업데이트 (필요시)
+             // 이 부분은 현재 메시지 로직에서 바로 이름을 가져오므로 필요 없을 수 있습니다.
+             // 메시지를 다시 로드하거나 appendMessage를 다시 호출해야 할 수 있습니다.
+             // 여기서는 생략하고 새 메시지부터 적용되도록 합니다.
+        }
+
+
+        // 슬롯 버튼 스타일 업데이트 함수
+        function updateSlotButtonStyles() {
+            slotButtons.forEach(button => {
+                if (parseInt(button.textContent) === currentSlot) {
+                    button.classList.add('active');
+                } else {
+                    button.classList.remove('active');
+                }
+            });
+        }
+
+        // SYSTEM_PROMPT 업데이트 함수
+        function updateSystemPrompt() {
+            SYSTEM_PROMPT = SYSTEM_PROMPT_TEMPLATE
+                .replace(/{botName}/g, botNameInput.value || "캐릭터")
+                .replace(/{botAge}/g, botAgeInput.value || "불명")
+                .replace(/{botAppearance}/g, botAppearanceInput.value || "알 수 없음")
+                .replace(/{botPersona}/g, botPersonaInput.value || "설정 없음")
+                .replace(/{userName}/g, userNameInput.value || "사용자")
+                .replace(/{userAge}/g, userAgeInput.value || "불명")
+                .replace(/{userAppearance}/g, userAppearanceInput.value || "알 수 없음")
+                .replace(/{userGuidelines}/g, userGuidelinesInput.value || "설정 없음");
+
+             // console.log("SYSTEM_PROMPT updated:", SYSTEM_PROMPT); // 업데이트된 프롬프트 로그 (제거)
+        }
+
+        // 초기화 함수
+        function initializeChat() {
+            // 필요한 초기화 로직 (예: 환영 메시지 표시 등)
+             // loadSettings(currentSlot); // 페이지 로드 시 이미 호출됨
+             // updateSystemPrompt(); // loadSettings에서 호출됨
+
+             // 초기 공지 메시지 및 구분선 추가
+            appendInitialNotice();
+        }
+
+        // 초기 공지 메시지 추가 함수
+        function appendInitialNotice() {
+             const noticeContainer = document.createElement("div");
+             noticeContainer.className = "initial-notice";
+             noticeContainer.innerHTML = `
+                <strong>📢 중요 공지:</strong> 이 챗봇은 수위 높은 성적 묘사를 포함한 BL 에로 소설 작성을 목표로 합니다. 미성년자는 이용할 수 없습니다.
+             `;
+             chat.appendChild(noticeContainer);
+
+             const divider = document.createElement("div");
+             divider.className = "notice-divider";
+             chat.appendChild(divider);
+        }
+
+
+        // 페이지 로드 완료 시 실행
         document.addEventListener('DOMContentLoaded', () => {
             autoResizeTextarea.call(userInput); // textarea 높이 초기화
             loadSettings(currentSlot); // 현재 슬롯 설정 로드
@@ -685,7 +733,7 @@ Do not include explanations or any OOC (out-of-character) comments. All descript
              const noticeContainer = document.createElement("div");
              noticeContainer.className = "initial-notice";
              noticeContainer.innerHTML = `
-                <strong>📢 중요 공지:</strong> 채팅을 시작합니다. 캐릭터와 사용자 설정을 확인해주세요.
+                <strong>📢 중요 공지:</strong> 이 챗봇은 수위 높은 성적 묘사를 포함한 BL 에로 소설 작성을 목표로 합니다. 미성년자는 이용할 수 없습니다.
              `;
              chat.appendChild(noticeContainer);
 
@@ -693,3 +741,145 @@ Do not include explanations or any OOC (out-of-character) comments. All descript
              divider.className = "notice-divider";
              chat.appendChild(divider);
         }
+
+
+        // 페이지 로드 완료 시 실행
+        document.addEventListener('DOMContentLoaded', () => {
+            autoResizeTextarea.call(userInput); // textarea 높이 초기화
+            loadSettings(currentSlot); // 현재 슬롯 설정 로드
+            updateSlotButtonStyles(); // 슬롯 버튼 스타일 업데이트
+            initializeChat(); // 초기화 로직 실행 (공지 추가 포함)
+
+             // 이미지 URL 입력 필드에서 값 불러와서 변수 업데이트
+             userProfileImgUrl = userImageUrlInput.value || "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU";
+             botProfileImgUrl = botImageUrlInput.value || "https://via.placeholder.com/35/3a4a3a/ffffff?text=BOT";
+        });
+
+
+         // 설정 저장 함수 (localStorage 사용)
+        function saveSettings(slotNumber) {
+            const settings = {
+                botName: botNameInput.value,
+                botAge: botAgeInput.value,
+                botAppearance: botAppearanceInput.value,
+                botPersona: botPersonaInput.value,
+                botImageUrl: botImageUrlInput.value,
+                userName: userNameInput.value,
+                userAge: userAgeInput.value,
+                userAppearance: userAppearanceInput.value,
+                userGuidelines: userGuidelinesInput.value,
+                userImageUrl: userImageUrlInput.value
+            };
+            localStorage.setItem(`settings_slot_${slotNumber}`, JSON.stringify(settings));
+            alert(`설정 슬롯 ${slotNumber}에 저장되었습니다.`);
+
+            // 저장 시 이미지 URL 변수 업데이트
+            userProfileImgUrl = settings.userImageUrl || "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU";
+            botProfileImgUrl = settings.botImageUrl || "https://via.placeholder.com/35/3a4a3a/ffffff?text=BOT";
+        }
+
+
+        // 설정 로드 함수 (localStorage 사용)
+        function loadSettings(slotNumber) {
+            const savedSettings = localStorage.getItem(`settings_slot_${slotNumber}`);
+            if (savedSettings) {
+                const settings = JSON.parse(savedSettings);
+                botNameInput.value = settings.botName;
+                botAgeInput.value = settings.botAge;
+                botAppearanceInput.value = settings.botAppearance;
+                botPersonaInput.value = settings.botPersona;
+                botImageUrlInput.value = settings.botImageUrl;
+                userNameInput.value = settings.userName;
+                userAgeInput.value = settings.userAge;
+                userAppearanceInput.value = settings.userAppearance;
+                userGuidelinesInput.value = settings.userGuidelines;
+                userImageUrlInput.value = settings.userImageUrl;
+                // console.log(`설정 슬롯 ${slotNumber}에서 로드되었습니다.`); // 콘솔 로그 제거
+
+                 // 로드 시 이미지 URL 변수 업데이트
+                 userProfileImgUrl = settings.userImageUrl || "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU";
+                 botProfileImgUrl = settings.botImageUrl || "https://via.placeholder.com/35/3a4a3a/ffffff?text=BOT";
+
+
+            } else {
+                 // console.log(`설정 슬롯 ${slotNumber}에 저장된 설정이 없습니다. 기본값 로드 시도.`); // 콘솔 로그 제거
+                 // 기본값 로드는 입력 필드의 value 속성에 설정되어 있으므로 추가 로직 불필요
+                 alert(`설정 슬롯 ${slotNumber}에 저장된 설정이 없습니다. 기본값이 표시됩니다.`);
+
+                 // 저장된 설정이 없을 경우 기본 이미지 URL 변수 업데이트
+                 userProfileImgUrl = userImageUrlInput.value || "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU";
+                 botProfileImgUrl = botImageUrlInput.value || "https://via.placeholder.com/35/3a4a3a/ffffff?text=BOT";
+            }
+
+             // 로드 후 SYSTEM_PROMPT 업데이트
+             updateSystemPrompt();
+
+             // 로드 후 기존 메시지 말풍선 업데이트 (필요시)
+             // 이 부분은 현재 메시지 로직에서 바로 이름을 가져오므로 필요 없을 수 있습니다.
+             // 메시지를 다시 로드하거나 appendMessage를 다시 호출해야 할 수 있습니다.
+             // 여기서는 생략하고 새 메시지부터 적용되도록 합니다.
+        }
+
+
+        // 슬롯 버튼 스타일 업데이트 함수
+        function updateSlotButtonStyles() {
+            slotButtons.forEach(button => {
+                if (parseInt(button.textContent) === currentSlot) {
+                    button.classList.add('active');
+                } else {
+                    button.classList.remove('active');
+                }
+            });
+        }
+
+        // SYSTEM_PROMPT 업데이트 함수
+        function updateSystemPrompt() {
+            SYSTEM_PROMPT = SYSTEM_PROMPT_TEMPLATE
+                .replace(/{botName}/g, botNameInput.value || "캐릭터")
+                .replace(/{botAge}/g, botAgeInput.value || "불명")
+                .replace(/{botAppearance}/g, botAppearanceInput.value || "알 수 없음")
+                .replace(/{botPersona}/g, botPersonaInput.value || "설정 없음")
+                .replace(/{userName}/g, userNameInput.value || "사용자")
+                .replace(/{userAge}/g, userAgeInput.value || "불명")
+                .replace(/{userAppearance}/g, userAppearanceInput.value || "알 수 없음")
+                .replace(/{userGuidelines}/g, userGuidelinesInput.value || "설정 없음");
+
+             // console.log("SYSTEM_PROMPT updated:", SYSTEM_PROMPT); // 업데이트된 프롬프트 로그 (제거)
+        }
+
+        // 초기화 함수
+        function initializeChat() {
+            // 필요한 초기화 로직 (예: 환영 메시지 표시 등)
+             // loadSettings(currentSlot); // 페이지 로드 시 이미 호출됨
+             // updateSystemPrompt(); // loadSettings에서 호출됨
+
+             // 초기 공지 메시지 및 구분선 추가
+            appendInitialNotice();
+        }
+
+        // 초기 공지 메시지 추가 함수
+        function appendInitialNotice() {
+             const noticeContainer = document.createElement("div");
+             noticeContainer.className = "initial-notice";
+             noticeContainer.innerHTML = `
+                <strong>📢 중요 공지:</strong> 이 챗봇은 수위 높은 성적 묘사를 포함한 BL 에로 소설 작성을 목표로 합니다. 미성년자는 이용할 수 없습니다.
+             `;
+             chat.appendChild(noticeContainer);
+
+             const divider = document.createElement("div");
+             divider.className = "notice-divider";
+             chat.appendChild(divider);
+        }
+
+
+        // 페이지 로드 완료 시 실행
+        document.addEventListener('DOMContentLoaded', () => {
+            autoResizeTextarea.call(userInput); // textarea 높이 초기화
+            loadSettings(currentSlot); // 현재 슬롯 설정 로드
+            updateSlotButtonStyles(); // 슬롯 버튼 스타일 업데이트
+            initializeChat(); // 초기화 로직 실행 (공지 추가 포함)
+
+             // 이미지 URL 입력 필드에서 값 불러와서 변수 업데이트
+             userProfileImgUrl = userImageUrlInput.value || "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU";
+             botProfileImgUrl = botImageUrlInput.value || "https://via.placeholder.com/35/3a4a3a/ffffff?text=BOT";
+        });

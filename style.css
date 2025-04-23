@@ -99,10 +99,12 @@ body {
 
         .message-container {
             display: flex;
-            align-items: flex-start;
-            max-width: 85%;
+            align-items: flex-start; /* 기본 정렬 유지 */
+            max-width: 85%; /* 최대 너비 유지 */
+            /* 이미지 메시지일 때 중앙 정렬을 위해 flexbox 속성 조정은 JS에서 .image-message-block에 클래스를 추가하여 CSS로 처리 */
         }
 
+        /* 텍스트 메시지 컨테이너 스타일 (기존 유지) */
         .message-container.user {
             justify-content: flex-end;
             margin-left: auto;
@@ -112,6 +114,12 @@ body {
             justify-content: flex-start;
             margin-right: auto;
         }
+
+        /* 이미지 메시지 컨테이너 스타일 (새로 추가 또는 수정) */
+        /* 이미지 메시지 컨테이너는 텍스트 메시지와 다르게 처리될 수 있습니다. */
+        /* appendMessage 함수에서 image-message-block 클래스를 .message-container에 추가하지 않고 별도의 블록으로 처리 */
+        /* 따라서 .message-container에 직접 flex-end/flex-start 정렬은 텍스트 메시지에만 해당됩니다. */
+
 
         .profile-img {
             width: 35px;
@@ -131,28 +139,34 @@ body {
             flex-shrink: 0;
         }
 
-        .message-container.bot .profile-img,
-        .message-container.bot .profile-fallback {
+        .message-container.bot .profile-img { /* 텍스트 메시지일 때만 적용 */
             margin-right: 0.75rem;
         }
 
-        .message-container.user .profile-img,
-        .message-container.user .profile-fallback {
+        .message-container.user .profile-img { /* 텍스트 메시지일 때만 적용 */
             margin-left: 0.75rem;
         }
+
+        /* 이미지 메시지일 때 프로필 이미지 간격 조정 */
+        .message-container .profile-img { /* 이미지, 이름/버튼, 이미지 블록이 모두 flex item이 됨 */
+             margin: 0 0.75rem; /* 이름/버튼, 이미지 블록과의 간격 */
+        }
+
 
         .message-content-wrapper {
             display: flex;
             flex-direction: column;
             /* 역할에 따라 정렬 */
+            flex: 1; /* 남은 공간 차지 */
+             /* 텍스트 메시지일 때만 사용 */
         }
 
-        /* 유저 메시지일 때 contentWrapper를 오른쪽으로 정렬 */
+        /* 유저 메시지일 때 contentWrapper를 오른쪽으로 정렬 (텍스트 메시지에만 해당) */
         .message-container.user .message-content-wrapper {
             align-items: flex-end;
         }
 
-         /* 캐릭터 메시지일 때 contentWrapper를 왼쪽으로 정렬 */
+         /* 캐릭터 메시지일 때 contentWrapper를 왼쪽으로 정렬 (텍스트 메시지에만 해당) */
         .message-container.bot .message-content-wrapper {
             align-items: flex-start;
         }
@@ -165,17 +179,28 @@ body {
             display: flex; /* flexbox 활성화 */
             align-items: center; /* 세로 중앙 정렬 */
             /* 역할에 따라 justify-content 설정 */
+            /* 이미지 메시지일 때 이름/삭제 버튼 블록의 스타일 */
+             flex-shrink: 0; /* 축소되지 않도록 함 */
+             /* flex: none; */ /* flex item이 되지 않도록 함 -> image-message-block과 같은 레벨에서 flex item으로 만듦 */
+             /* 이미지 메시지일 때 좌우 정렬은 message-container의 flexbox 순서와 gap으로 처리 */
+
         }
 
         /* 유저 메시지의 이름 컨테이너 (오른쪽 정렬) */
-        .message-container.user .role-name {
-            justify-content: flex-end; /* 내용을 오른쪽으로 모으기 */
+        .message-container.user .role-name { /* 텍스트 메시지에만 해당 */
+            justify-content: flex-end;
         }
 
          /* 캐릭터 메시지의 이름 컨테이너 (왼쪽 정렬) */
-        .message-container.bot .role-name {
-            justify-content: flex-start; /* 내용을 왼쪽으로 모으기 */
+        .message-container.bot .role-name { /* 텍스트 메시지에만 해당 */
+            justify-content: flex-start;
         }
+
+         /* 이미지 메시지일 때 이름 컨테이너 스타일 조정 */
+        .image-message-block + .message-content-wrapper { /* 이미지 블록 바로 뒤에 오는 contentWrapper (이름/버튼) */
+             /* 텍스트 메시지와는 다른 정렬 및 간격 */
+        }
+
 
         /* 이름 텍스트를 담는 span에 대한 스타일 */
         .name-text {
@@ -184,16 +209,20 @@ body {
         }
 
          /* 유저 메시지의 이름 텍스트 오른쪽 정렬 */
-         .message-container.user .name-text {
+         .message-container.user .name-text { /* 텍스트 메시지에만 해당 */
              text-align: right;
          }
 
           /* 캐릭터 메시지의 이름 텍스트 왼쪽 정렬 (기본값) */
-         .message-container.bot .name-text {
+         .message-container.bot .name-text { /* 텍스트 메시지에만 해당 */
              text-align: left;
          }
 
+         /* 이미지 메시지일 때 이름 텍스트 스타일 조정 */
+         /* .image-message-block + .message-content-wrapper .name-text { ... } */
 
+
+        /* 텍스트 메시지 버블 스타일 */
         .message-bubble {
             padding: 0.75rem 1rem;
             border-radius: 1rem;
@@ -205,12 +234,8 @@ body {
             /* 사용자 입력 줄바꿈 표시를 위한 설정 */
              white-space: normal;
              margin-bottom: 0; /* 말풍선 자체 하단 마진 제거 시도 */
+             /* 텍스트 메시지에만 해당 */
          }
-         /* 챗봇 메시지의 p 태그 하단 마진 제거 (더 세밀한 간격 제어) */
-         .message-container.bot .message-bubble p {
-             margin-bottom: 0;
-         }
-
 
         .message-container.bot .message-bubble {
             background-color: #3a4a4a;
@@ -288,6 +313,8 @@ body {
          }
 
 
+        /* .message-image-thumbnail 스타일은 이제 사용하지 않습니다. */
+        /*
         .message-image-thumbnail {
             max-width: 200px;
             max-height: 200px;
@@ -301,6 +328,84 @@ body {
          .message-image-thumbnail.error {
              background-color: #5a5a5a;
          }
+        */
+
+
+        /* 이미지 메시지 블록 스타일 (새로 추가) */
+        .image-message-block {
+            /* flex: 1; */ /* 남은 공간을 모두 차지하도록 설정 */
+             max-width: 100%; /* 부모(.message-container)의 85% 안에서 최대 100% */
+             margin: 0.2rem 0; /* 위아래 여백 */
+             display: flex; /* 중앙 정렬을 위해 flexbox 사용 */
+             justify-content: center; /* 가로 중앙 정렬 */
+             align-items: center; /* 세로 중앙 정렬 */
+             overflow: hidden; /* 페이드 효과 밖으로 넘치는 부분 숨김 */
+             position: relative; /* 내부 absolute 요소 기준 */
+             /* 이름/삭제 버튼과의 간격은 message-container의 gap으로 처리 */
+        }
+
+         /* 유저 이미지 메시지 블록 정렬 */
+         .message-container.user .image-message-block {
+             /* 이미 message-container의 flexbox 순서와 justify-content로 처리 */
+             /* align-self: flex-end; */ /* message-container가 block이 될 경우 필요 */
+         }
+
+         /* 캐릭터 이미지 메시지 블록 정렬 */
+         .message-container.bot .image-message-block {
+             /* 이미 message-container의 flexbox 순서와 justify-content로 처리 */
+             /* align-self: flex-start; */ /* message-container가 block이 될 경우 필요 */
+         }
+
+
+        /* 이미지 페이드 컨테이너 스타일 (사용자 제공 + 수정) */
+        .image-fade-container {
+            position: relative;
+            display: inline-block; /* 이미지 크기에 맞게 줄어들도록 */
+             max-width: 100%; /* 부모(.image-message-block) 너비에 맞게 */
+             overflow: hidden; /* 마스크 효과 적용을 위해 필요 */
+        }
+
+        /* 페이드 효과를 위한 ::before 의사 요소 */
+        .image-fade-container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1; /* 이미지 위에 오도록 */
+
+            /* 좌우 페이드 효과용 linear-gradient 마스크 */
+            /* 사용자 제공 코드 */
+            mask-image: linear-gradient(to right, transparent, black 20%, black 80%, transparent);
+            -webkit-mask-image: linear-gradient(to right, transparent, black 20%, black 80%, transparent);
+
+             /* 마스크 적용 대상은 기본적으로 컨테이너의 배경 또는 내용입니다. */
+             /* 여기서는 ::before 자체에 마스크를 적용하여 투명도를 조절합니다. */
+             /* 실제 이미지는 이 ::before 뒤에 배치됩니다. */
+             /* 따라서 ::before는 단순히 투명도를 조절하는 오버레이 역할을 합니다. */
+             background: black; /* 마스크가 적용될 배경색 (black 부분은 불투명, transparent 부분은 투명) */
+        }
+
+        /* 실제 이미지 스타일 (새로 추가/수정) */
+        .chat-image {
+             display: block; /* 인라인 요소의 하단 여백 제거 */
+             max-width: 100%; /* 부모 컨테이너 너비에 맞게 크기 조절 */
+             height: auto; /* 비율 유지 */
+             border-radius: 8px; /* 테두리 둥글게 */
+             object-fit: cover; /* 컨테이너에 맞게 잘라낼 경우 사용 (여기서는 max-width로 비율 유지) */
+             border: 1px solid #5a5a5a; /* 테두리 */
+             cursor: pointer; /* 클릭 가능 표시 */
+             /* 마스크는 부모 컨테이너에 적용되었으므로 이미지 자체에는 마스크 스타일 없음 */
+        }
+
+         /* 이미지 로드 오류 시 스타일 */
+         .chat-image.error-image {
+             background-color: #5a5a5a; /* 오류 시 배경색 */
+             /* 오류 이미지 아이콘 등 추가 가능 */
+         }
+
 
 #inputArea {
             display: flex;
@@ -331,9 +436,9 @@ body {
             align-items: center;
             transition: background-color 0.2s ease;
         }
-        #actionMenuButton:hover {
-            background-color: #6a6a6a;
-        }
+         #actionMenuButton:hover {
+             background-color: #6a6a6a;
+         }
 
 
         /* textarea 스타일 수정: 스크롤바 제거 및 모서리 둥글게 */
