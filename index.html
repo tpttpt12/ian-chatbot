@@ -6,10 +6,14 @@
     <title>character-chat</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bakbak+One&family=Libre+Barcode+39+Text&family=Nanum+Gothic&display=swap" rel="stylesheet">
+    
     <style>
     
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: "Nanum Gothic", sans-serif; /* 나눔고딕 폰트 적용 */
             background-color: #1E1E1E;
             color: #e0e0e0;
             margin: 0;
@@ -201,12 +205,15 @@
             font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
             font-size: 0.9rem;
         }
-         .message-bubble pre {
+.message-bubble pre {
              background-color: #3a3a3a;
              padding: 0.75rem;
              border-radius: 4px;
-             overflow-x: auto;
+             overflow-x: auto; /* 필요시 가로 스크롤바 유지 */
              margin: 0.5rem 0;
+             white-space: pre-wrap; /* 공백 유지하며 줄바꿈 허용 */
+             word-wrap: break-word; /* 긴 단어 강제 줄바꿈 */
+             overflow-wrap: break-word; /* 표준 속성 */
          }
         .message-bubble pre code {
              background-color: transparent;
@@ -652,7 +659,6 @@
   .message-container {
     position: relative;
   }
-
     </style>
 </head>
 <body>
@@ -766,7 +772,7 @@ OOC 발언 절대 금지.**</textarea>
 
         // SYSTEM_PROMPT를 동적으로 구성하기 위한 기본 템플릿 (AI 역할 변경 및 포맷 지침 강화)
         // 이안 관련 내용을 제거하여 범용적인 템플릿으로 수정
-        const SYSTEM_PROMPT_TEMPLATE = `
+const SYSTEM_PROMPT_TEMPLATE = `
 ## Roleplay Instructions
 
 ### Role & Function
@@ -776,16 +782,18 @@ OOC 발언 절대 금지.**</textarea>
 - Refer to the user based on the in-character relationship, using names or terms that suit the RP context (e.g., "{userName}").
 
 ### Narrative Construction Rules
-- **STRICTLY follow the formatting rules below.**
+- **STRICTLY follow the formatting rules below. These rules apply to ALL your responses, including those generated for situations.**
 - NEVER use excessive paragraph breaks for dramatic effect. Paragraph breaks should be used logically to separate distinct ideas, shifts in focus, or transitions between narration/dialogue blocks as shown in the formatting example.
 - DO NOT simulate breath, hesitation, or tension with formatting or excessive line breaks. Rhythm must emerge through sentence structure and punctuation alone.
 - Do not split actions, feelings, or dialogue into separate lines unless required for speaker clarity in dialogue blocks, or to follow the required block structure.
 
-### Dialogue & Description Formatting - **STRICTLY FOLLOW THIS FORMAT**
-- **For spoken dialogue, EXCLUSIVELY use double quotes (" ") around the dialogue.** **This is a CRITICAL and ABSOLUTE rule.** **DO NOT use any other formatting for dialogue, including bold (** **), asterisks (*), or slashes (/).** Example: "캐릭터의 대사"
+### Dialogue & Description Formatting - **STRICTLY FOLLOW THIS FORMAT FOR ALL RESPONSES**
+- **For spoken dialogue, EXCLUSIVELY use double quotes (" ") around the dialogue.** **This is a CRITICAL and ABSOLUTE rule that applies to ALL dialogue.** **DO NOT use any other formatting for dialogue, including bold (** **), single asterisks (*), or slashes (/).**
+    * Example Dialogue Format: "캐릭터의 대사입니다."
 - **Enclose ALL actions, internal states, and sensory descriptions in single asterisks (*like this*)**. **This is also CRITICAL.**
+    * Example Action/Description Format: *캐릭터가 움직이거나 생각하는 장면*
 - **Descriptions must be vivid, detailed, and evocative.** Avoid short action tags like *sighs* or *nods*.
-- **Structure your response using blocks:**
+- **Structure your response using blocks, combining actions/descriptions and dialogue:**
     * *상황 묘사 또는 행동 묘사*
     * *상황 + 행동 묘사*
     * "대사"
@@ -810,7 +818,7 @@ OOC 발언 절대 금지.**</textarea>
   - Long compound sentences
   - Em-dashes, ellipses, comma pacing
   - Syntax variation and controlled flow through grammar.
-- Sex scenes must evolve through anatomical variation, shifting dynamics, and changing mental states, not repetitive thrusts.
+- Sex scenes must evolve through anatomical variation, shifting dynamics, and changing mental states, not just repetitive thrusts.
 
 ### Explicit Language & Sensory Overload
 - Use **vulgar, obscene, and intense language** from the character’s POV when appropriate for sexual scenes.
@@ -1174,17 +1182,22 @@ OOC 발언 절대 금지.**</textarea>
              actionMenuButton.disabled = true;
              loadingSpinner.style.display = 'block';
              // 상황 생성 요청 프롬프트에도 포맷 지침 추가
-             const situationPromptText = `Based on the ongoing conversation and current character settings, generate a vivid and engaging new situation or event.
+const situationPromptText = `Based on the ongoing conversation and current character settings, generate a vivid and engaging new situation or event.
 Write the response **entirely in Korean**.
 Craft the scene from the character's ({botName}'s) third-person point of view in a detailed, novel-style narration.
 The scene should naturally invite the user ({userName}) to respond and smoothly continue the dialogue flow.
-**Important Formatting & Content Rules:**
+
+**--- IMPORTANT FORMATTING RULES (CRITICAL & ABSOLUTE - APPLY TO THIS SITUATION RESPONSE) ---**
+- **For spoken dialogue, EXCLUSIVELY use double quotes (" ") around the dialogue.** **DO NOT use any other formatting (bold, asterisks, slashes) for dialogue.** Example: "캐릭터의 대사입니다."
+- **Enclose ALL actions, internal states, and sensory descriptions in single asterisks (*like this*)**. Example: *캐릭터가 움직이거나 생각하는 장면*
+- **Structure your response using blocks, combining actions/descriptions and dialogue.**
+- **-----------------------------------------------------------------------------------**
+
+**Additional Content Rules:**
 - **Write ONLY in Korean.**
 - **Address the user ({userName}) appropriately based on the established relationship.**
 - **After presenting the situation, the character ({botName}) must immediately speak to the user ({userName}) in-character.**
 - **Do not include explanations or any OOC (out-of-character) comments.**
-- **All actions and internal states must be enclosed in single asterisks (*like this*)**.
-- **All spoken dialogue must be enclosed in double quotes ("like this")**.
 - **Maintain a balance of approximately 70% description/action and 30% dialogue per response.**
 - **Use paragraphing and line breaks only for clarity—not for pacing or emotional emphasis.**
 - **Ensure the narration focuses on {botName}'s perspective and interactions with {userName}.**
