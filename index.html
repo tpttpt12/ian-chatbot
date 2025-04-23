@@ -1048,8 +1048,6 @@ container.appendChild(deleteBtn);
                     .filter(entry => entry.messageData && entry.messageData.type === 'text')
                     .map(entry => ({
                         role: entry.role,
-
-
                          parts: [{ text: entry.messageData.text }]
                     }));
                 const contentsForApi = [{ role: "user", parts: [{ text: SYSTEM_PROMPT }] }, ...textOnlyContentsForApi];
