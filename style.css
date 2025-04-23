@@ -101,15 +101,15 @@ body {
             display: flex;
             align-items: flex-start; /* 기본 정렬 유지 */
             max-width: 85%; /* 최대 너비 유지 */
-            /* 이미지 메시지일 때 중앙 정렬을 위해 flexbox 속성 조정은 JS에서 .image-message-block에 클래스를 추가하여 CSS로 처리 */
-            gap: 0.5rem; /* 프로필 이미지, 이름/버튼, 메시지 본문 간 간격 */
+            /* 이미지 메시지일 때 중앙 정렬을 위해 flexbox 속성 조정은 JS에서 .image-message-block에 클래스를 추가하여 CSS로 처리 - 이 방식은 이제 사용 안 함 */
+            gap: 0.5rem; /* 프로필 이미지, contentWrapper 간 간격 */
         }
 
         /* 텍스트 메시지 컨테이너 스타일 (기존 유지) */
         .message-container.user {
             justify-content: flex-end;
             margin-left: auto;
-            flex-direction: row-reverse; /* 유저 메시지는 기본적으로 좌우 반전 */
+            flex-direction: row-reverse; /* 유저 메시지는 프로필 이미지가 오른쪽에 오도록 좌우 반전 */
         }
 
         .message-container.bot {
@@ -118,10 +118,19 @@ body {
             flex-direction: row; /* 봇 메시지는 기본 순서 */
         }
 
-        /* 이미지 메시지 컨테이너 스타일 (새로 추가 또는 수정) */
-        /* 이미지 메시지 컨테이너는 텍스트 메시지와 다르게 처리될 수 있습니다. */
-        /* appendMessage 함수에서 image-message-block 클래스를 .message-container에 추가하지 않고 별도의 블록으로 처리 */
-        /* 따라서 .message-container에 직접 flex-end/flex-start 정렬은 텍스트 메시지에만 해당됩니다. */
+        /* 이미지 메시지 컨테이너 스타일 (새로 추가 - 이 컨테이너는 appendMessage에서 #chat에 직접 추가됩니다) */
+         .image-announcement {
+             display: block; /* 블록 요소로 만들어 한 줄 전체를 사용 */
+             margin: 0.1rem auto 0.5rem auto; /* 위쪽 여백 0.1rem, 아래쪽 여백 0.5rem, 좌우 auto로 중앙 정렬 */
+             width: 100%; /* 부모(.app-container 또는 #chat) 너비에 맞추되, max-width로 제한 */
+             max-width: 70%; /* 텍스트 버블과 비슷하거나 원하는 최대 너비 설정 */
+             text-align: center; /* 내부 이미지 및 콘텐츠 중앙 정렬 */
+             /* border: 1px solid #5a5a5a; */ /* 필요시 테두리 추가 */
+             border-radius: 8px; /* 컨테이너 모서리 둥글게 */
+             overflow: hidden; /* 내부 이미지 넘치는 부분 숨김 */
+             /* background-color: #282828; */ /* 배경색 설정 가능 */
+             position: relative; /* 내부 absolute 요소 기준 */
+         }
 
 
         .profile-img {
@@ -131,9 +140,9 @@ body {
             object-fit: cover;
             border: 1px solid #5a5a5a;
             flex-shrink: 0;
-             /* 프로필 이미지 클릭 가능하도록 */
+            /* 프로필 이미지 클릭 가능하도록 */
              cursor: pointer;
-        }
+         }
 
          .profile-fallback {
             width: 35px;
@@ -142,69 +151,68 @@ body {
             background-color: #5a5a5a;
             border: 1px solid #5a5a5a;
             flex-shrink: 0;
-             /* 프로필 이미지 클릭 가능하도록 */
+            /* 프로필 이미지 클릭 가능하도록 */
              cursor: pointer;
-        }
+         }
 
 
         .message-content-wrapper {
             display: flex;
-            flex-direction: column;
-            /* 역할에 따라 정렬 */
+            flex-direction: column; /* 이름과 버블을 세로로 배치 */
+            /* 역할에 따라 정렬 - 텍스트 메시지일 때만 contentWrapper 정렬 사용 */
             flex: 1; /* 남은 공간 차지 */
-             /* 텍스트 메시지일 때만 사용 */
-             /* 이미지 메시지일 때는 이름/삭제 버튼만 포함 */
+             min-width: 0; /* 부모의 flex에 의해 축소될 때 내용이 숨겨지지 않도록 함 */
         }
 
         /* 유저 메시지일 때 contentWrapper를 오른쪽으로 정렬 (텍스트 메시지에만 해당) */
-        .message-container.user .message-content-wrapper { /* 텍스트 메시지인 경우 */
-            align-items: flex-end;
+        .message-container.user .message-content-wrapper {
+            align-items: flex-end; /* 텍스트 버블과 이름 컨테이너를 오른쪽으로 정렬 */
         }
 
          /* 캐릭터 메시지일 때 contentWrapper를 왼쪽으로 정렬 (텍스트 메시지에만 해당) */
-        .message-container.bot .message-content-wrapper { /* 텍스트 메시지인 경우 */
-            align-items: flex-start;
-        }
+        .message-container.bot .message-content-wrapper {
+            align-items: flex-start; /* 텍스트 버블과 이름 컨테이너를 왼쪽으로 정렬 */
+         }
 
 
         .role-name {
             font-size: 0.8rem;
             color: #b0b0b0;
             margin-bottom: 0.2rem;
-            display: flex; /* flexbox 활성화 */
+            display: flex; /* 이름과 삭제 버튼을 가로로 배치 */
             align-items: center; /* 세로 중앙 정렬 */
             /* 역할에 따라 justify-content 설정 */
-            /* 이미지 메시지일 때 이름/삭제 버튼 블록의 스타일 */
              flex-shrink: 0; /* 축소되지 않도록 함 */
-             /* flex: none; */ /* flex item이 되지 않도록 함 -> image-message-block과 같은 레벨에서 flex item으로 만듦 */
-             /* 이미지 메시지일 때 좌우 정렬은 message-container의 flexbox 순서와 gap으로 처리 */
-
+             width: 100%; /* 부모(.message-content-wrapper) 너비를 채우도록 */
+             box-sizing: border-box; /* 패딩 포함 너비 계산 */
         }
 
         /* 유저 메시지의 이름 컨테이너 (오른쪽 정렬) */
-        .message-container.user .role-name { /* 텍스트/이미지 메시지 공통 */
+        .message-container.user .role-name {
             justify-content: flex-end;
-        }
+         }
 
          /* 캐릭터 메시지의 이름 컨테이너 (왼쪽 정렬) */
-        .message-container.bot .role-name { /* 텍스트/이미지 메시지 공통 */
+        .message-container.bot .role-name {
             justify-content: flex-start;
-        }
+         }
 
 
         /* 이름 텍스트를 담는 span에 대한 스타일 */
         .name-text {
              /* 이름 텍스트 스타일 */
              /* 역할에 따라 text-align 설정 */
-        }
+             flex-shrink: 0; /* 이름 텍스트가 길어지더라도 옆으로 표시되도록 flex-shrink 방지 */
+             min-width: 0; /* 텍스트 내용이 길 때 넘치지 않도록 */
+         }
 
          /* 유저 메시지의 이름 텍스트 오른쪽 정렬 */
-         .message-container.user .name-text { /* 텍스트/이미지 메시지 공통 */
+         .message-container.user .name-text {
              text-align: right;
          }
 
           /* 캐릭터 메시지의 이름 텍스트 왼쪽 정렬 (기본값) */
-         .message-container.bot .name-text { /* 텍스트/이미지 메시지 공통 */
+         .message-container.bot .name-text {
              text-align: left;
          }
 
@@ -213,13 +221,13 @@ body {
         .message-bubble {
             padding: 0.75rem 1rem;
             border-radius: 1rem;
-            max-width: 100%;
+            max-width: 100%; /* 부모 (.message-content-wrapper) 너비에 맞게 */
             word-break: break-word;
             line-height: 1.4;
             position: relative; /* 자식 요소의 absolute 위치 기준 */
             font-size: 1rem;
             /* 사용자 입력 줄바꿈 표시를 위한 설정 */
-             white-space: normal;
+             white-space: pre-wrap; /* 여러 줄 텍스트 유지 */
              margin-bottom: 0; /* 말풍선 자체 하단 마진 제거 시도 */
              /* 텍스트 메시지에만 해당 */
         }
@@ -248,8 +256,8 @@ body {
             border-radius: 4px;
             font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
             font-size: 0.9rem;
-         }
-.message-bubble pre {
+        }
+        .message-bubble pre {
              background-color: #3a3a3a;
              padding: 0.75rem;
              border-radius: 4px;
@@ -270,7 +278,7 @@ body {
              padding-left: 1rem;
              margin: 0.5rem 0;
              color: #b0b0b0;
-        }
+         }
          .message-bubble h1, .message-bubble h2, .message-bubble h3, .message-bubble h4, .message-bubble h5, .message-bubble h6 {
              margin-top: 1rem;
              margin-bottom: 0.5rem;
@@ -317,88 +325,69 @@ body {
          }
         */
 
-
-        /* 이미지 메시지 블록 스타일 (새로 추가) */
+        /* 기존 .image-message-block 스타일은 이제 필요 없습니다. */
+        /*
         .image-message-block {
-            flex: 1; /* 남은 공간을 모두 차지하도록 설정 */
-             max-width: calc(100% - (35px + 0.5rem * 2)); /* 프로필 이미지와 간격만큼 뺀 너비 */
-             margin: 0.2rem 0; /* 위아래 여백 */
-             display: flex; /* 중앙 정렬을 위해 flexbox 사용 */
-             justify-content: center; /* 가로 중앙 정렬 */
-             align-items: center; /* 세로 중앙 정렬 */
-             overflow: hidden; /* 페이드 효과 밖으로 넘치는 부분 숨김 */
-             position: relative; /* 내부 absolute 요소 기준 */
-             /* 이름/삭제 버튼과의 간격은 message-container의 gap으로 처리 */
-             /* 이미지 블록 자체의 배경색 설정 가능 */
-             background-color: #3a3a3a; /* 이미지 블록 배경색 (오류 시 유용) */
-             border-radius: 8px; /* 블록 자체 테두리 둥글게 */
-             padding: 0; /* 이미지 블록 자체 패딩 제거 */
+            flex: 1;
+             max-width: calc(100% - (35px + 0.5rem * 2));
+             margin: 0.2rem 0;
+             display: flex;
+             justify-content: center;
+             align-items: center;
+             overflow: hidden;
+             position: relative;
+             background-color: #3a3a3a;
+             border-radius: 8px;
+             padding: 0;
         }
 
-         /* 유저 이미지 메시지 블록 정렬 */
          .message-container.user .image-message-block {
-             /* 이미 message-container의 flexbox 순서와 justify-content로 처리 */
-             /* align-self: flex-end; */ /* message-container가 block이 될 경우 필요 */
          }
 
-         /* 캐릭터 이미지 메시지 블록 정렬 */
          .message-container.bot .image-message-block {
-             /* 이미 message-container의 flexbox 순서와 justify-content로 처리 */
-             /* align-self: flex-start; */ /* message-container가 block이 될 경우 필요 */
          }
+        */
 
 
-        /* 이미지 페이드 컨테이너 스타일 (사용자 제공 + 수정) */
+        /* 이미지 페이드 컨테이너 스타일 (수정 - 마스크 적용) */
         .image-fade-container {
             position: relative;
-            display: block; /* 블록 요소로 변경하여 부모 너비에 맞게 */
-             width: 100%; /* 부모(.image-message-block) 너비에 꽉 채우도록 */
-             height: auto; /* 이미지 비율에 맞게 높이 자동 */
-             overflow: hidden; /* 마스크 효과 적용을 위해 필요 */
+            display: block; /* 블록 요소 */
+            width: 100%; /* 부모(.image-announcement) 너비에 꽉 채우도록 */
+            height: auto; /* 이미지 비율에 맞게 높이 자동 */
+            overflow: hidden; /* 마스크 효과 적용을 위해 필요 */
+            /* 마스크를 이 컨테이너 자체에 적용하여 자식인 .chat-image에 영향을 줍니다. */
+            mask-image: linear-gradient(to right, rgba(0,0,0,0), rgba(0,0,0,1) 15%, rgba(0,0,0,1) 85%, rgba(0,0,0,0));
+            -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,0), rgba(0,0,0,1) 15%, rgba(0,0,0,1) 85%, rgba(0,0,0,0));
+            /* ::before 의사 요소는 마스크 적용을 위해 필요 없으므로 제거 */
         }
 
-        /* 페이드 효과를 위한 ::before 의사 요소 */
-        .image-fade-container::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1; /* 이미지 위에 오도록 */
 
-            /* 좌우 페이드 효과용 linear-gradient 마스크 */
-            /* 사용자 제공 코드 */
-            mask-image: linear-gradient(to right, transparent, black 20%, black 80%, transparent);
-            -webkit-mask-image: linear-gradient(to right, transparent, black 20%, black 80%, transparent);
-
-             /* 마스크 적용 대상은 기본적으로 컨테이너의 배경 또는 내용입니다. */
-             /* 여기서는 ::before 자체에 마스크를 적용하여 투명도를 조절합니다. */
-             /* 실제 이미지는 이 ::before 뒤에 배치됩니다. */
-             /* 따라서 ::before는 단순히 투명도를 조절하는 오버레이 역할을 합니다. */
-             background: black; /* 마스크가 적용될 배경색 (black 부분은 불투명, transparent 부분은 투명) */
-        }
-
-        /* 실제 이미지 스타일 (새로 추가/수정) */
+        /* 실제 이미지 스타일 */
         .chat-image {
              display: block; /* 인라인 요소의 하단 여백 제거 */
              width: 100%; /* 부모 컨테이너 너비에 꽉 채우도록 */
              height: auto; /* 비율 유지 */
-             border-radius: 8px; /* 테두리 둥글게 */
-             object-fit: cover; /* 컨테이너에 맞게 잘라낼 경우 사용 (여기서는 max-width로 비율 유지) */
-             /* border: 1px solid #5a5a5a; */ /* 테두리 - 이미지 블록 자체에 적용 */
-             cursor: pointer; /* 클릭 가능 표시 */
+             border-radius: 0; /* 이미지 자체는 둥글게 하지 않고 부모 컨테이너(.image-announcement)의 border-radius 사용 */
+             object-fit: cover; /* 컨테이너에 맞게 잘라낼 경우 사용 */
+             cursor: pointer;
+             margin: 0;
+             padding: 0;
              /* 마스크는 부모 컨테이너에 적용되었으므로 이미지 자체에는 filter: blur 없음 */
-             margin: 0; /* 이미지 자체 마진 제거 */
-             padding: 0; /* 이미지 자체 패딩 제거 */
-             /* 블러 효과는 마스크와 함께 적용되므로 이미지 자체에는 filter: blur 없음 */
-        }
+         }
 
          /* 이미지 로드 오류 시 스타일 */
          .chat-image.error-image {
-             /* background-color: #5a5a5a; */ /* 오류 시 배경색 - 이미지 블록 자체에 적용 */
-             /* 오류 아이콘 등 추가 가능 */
+             display: none; /* 이미지를 숨김 */
+         }
+
+         /* 이미지 오류 시 대체 텍스트 스타일 (script.txt에서 추가한 요소) */
+         .image-error-text {
+             text-align: center;
+             color: #b0b0b0;
+             font-size: 0.9rem;
+             margin-top: 0.5rem; /* 이미지 자리 아래 여백 */
+             margin-bottom: 0.5rem;
          }
 
 
@@ -456,7 +445,7 @@ body {
             overflow-y: auto; /* 높이가 2줄을 넘어가면 스크롤바 표시 */
             padding-top: 0.75rem; /* 상하 패딩 조정 */
             padding-bottom: 0.75rem;
-        }
+         }
 
         #userInput:focus {
             background-color: #4a4a4a;
@@ -590,7 +579,7 @@ body {
     padding: 1rem;
     max-width: 80%; /* 너무 길어지지 않도록 최대 너비 설정 */
     word-break: break-word;
-         }
+        }
 
         /* 공지 아래 구분선 스타일 */
         .notice-divider {
@@ -809,5 +798,5 @@ body {
 
   .message-container {
     position: relative;
-  }
+ }
     </style>
