@@ -265,6 +265,13 @@ s
     border-radius: 1rem 1rem 0.3rem 1rem;
 }
 
+/* 마크다운 이탤릭체(*) 텍스트 색상 설정 */
+/* 마크다운 파서가 <span class="markdown-italic"> 태그를 사용하는 경우 */
+.markdown-italic {
+    color: #a9a9a9; /* 원하는 회색 코드 (이 코드는 중간 정도의 회색입니다) */
+    font-style: italic; 만약 이탤릭체 스타일도 원하시면 이 줄을 추가하세요 */
+}
+
 /* Image Fade Container Style */
 .image-fade-container {
     position: relative;
@@ -745,8 +752,8 @@ s
     position: absolute; /* Relative to #inputArea */
     /* Calculate bottom position relative to the bottom of #inputArea, considering its bottom padding and the height of the buttons row */
     /* Approximate height of buttons row (40px) + inputArea bottom padding (2rem) + desired gap (10px) */
-    bottom: calc(2rem + 40px + 10px); /* inputArea bottom padding (2rem) + button height (40px) + gap (10px) */
-    left: 1.5rem; /* Align left edge with the left padding of inputArea */
+    bottom: calc(2.3rem + 0px + 10px); /* inputArea bottom padding (2rem) + button height (40px) + gap (10px) */
+    left: 0.3rem; /* Align left edge with the left padding of inputArea */
     right: auto;
     transform: none;
 
