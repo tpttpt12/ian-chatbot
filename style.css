@@ -767,3 +767,182 @@ body {
     margin-top: 0.5rem; /* 이미지 자리 아래 여백 */
     margin-bottom: 0.5rem;
 }
+
+/* 액션 메뉴 오버레이 스타일 */
+#menuOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 490; /* 사이드바(900) 아래, 오버레이(890) 아래, 액션 메뉴(500) 아래 */
+    display: none; /* 기본적으로 숨김 */
+}
+
+/* 액션 메뉴 컨테이너 스타일 */
+#actionMenu {
+    /* 화면 하단 고정 대신 inputArea 기준 위치로 변경 */
+    position: absolute; /* 부모 (#inputArea) 기준 절대 위치 */
+    bottom: calc(100% + 10px); /* inputArea 바로 위 (10px 여백) */
+    left: 50%; /* inputArea 너비 기준 중앙 정렬 */
+    transform: translateX(-50%); /* 중앙 정렬 보정 */
+    width: 90%; /* 너비 설정 */
+    max-width: 300px; /* 최대 너비 설정 (조정 가능) */
+    background-color: #1f1f1f; /* 배경색 */
+    border: 1px solid #3a3a3a; /* 테두리 */
+    border-radius: 15px; /* 모서리 둥글게 */
+    padding: 1rem;
+    box-sizing: border-box;
+    z-index: 500; /* 오버레이 위에 오도록 */
+    display: flex;
+    flex-direction: column;
+    align-items: stretch; /* 내부 버튼들이 너비를 채우도록 */
+    /* 시작 상태: 숨겨져 있다가 보일 때 '뿅' 애니메이션 */
+    opacity: 0;
+    visibility: hidden;
+    transform: translate(-50%, 20px); /* 초기 위치 (하단에서 살짝 아래) */
+    transition: opacity 0.3s ease-out, transform 0.3s ease-out, visibility 0.3s ease-out;
+}
+
+/* 액션 메뉴 보일 때 스타일 */
+#actionMenu.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, 0); /* 최종 위치 (inputArea 바로 위) */
+}
+
+/* 액션 메뉴 꼬리 스타일 */
+#actionMenu::after {
+    content: "";
+    position: absolute;
+    bottom: -10px; /* 액션 메뉴 하단에서 아래로 */
+    left: 50%; /* 가로 중앙 정렬 */
+    transform: translateX(-50%); /* 중앙 정렬 보정 */
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent; /* 왼쪽 변 투명 */
+    border-right: 10px solid transparent; /* 오른쪽 변 투명 */
+    border-top: 10px solid #1f1f1f; /* 위 변 색상 (말풍선 배경색과 동일) */
+    z-index: 501; /* 메뉴 자체보다 위에 오도록 (테두리가 겹치지 않게) */
+}
+/* 꼬리 테두리 추가 (선택 사항) */
+#actionMenu::before {
+     content: "";
+     position: absolute;
+     bottom: -12px; /* 꼬리 바로 아래 */
+     left: 50%; /* 가로 중앙 정렬 */
+     transform: translateX(-50%); /* 중앙 정렬 보정 */
+     width: 0;
+     height: 0;
+     border-left: 12px solid transparent;
+     border-right: 12px solid transparent;
+     border-top: 12px solid #3a3a3a; /* 테두리 색상 */
+     z-index: 500; /* 메뉴 꼬리(501) 아래에 오도록 */
+ }
+
+
+/* 액션 메뉴 내부 버튼 컨테이너 스타일 */
+.menu-buttons {
+    display: flex;
+    flex-wrap: wrap; /* 버튼이 많아지면 다음 줄로 넘어가도록 */
+    gap: 10px; /* 버튼 간 간격 */
+    justify-content: center; /* 버튼들 중앙 정렬 */
+    width: 100%; /* 부모 (#actionMenu) 너비를 채우도록 */
+    padding-bottom: 0; /* 하단 여백 - 필요시 조정 */
+}
+
+/* 액션 메뉴 내부 버튼 스타일 */
+#actionMenu button {
+    flex-basis: calc(50% - 5px); /* 두 개씩 배치되도록 너비 설정 (간격 고려) */
+    padding: 1rem;
+    border: none;
+    border-radius: 8px;
+    background-color: #3a3a3a;
+    color: #e0e0e0;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    text-align: center;
+    z-index: 502; /* 액션 메뉴(500) 위에 오도록 설정 */
+}
+
+#actionMenu button:hover {
+    background-color: #4a4a4a;
+}
+
+/* 이미지 메시지 블록 스타일 (appendMessage 함수에서 #chat의 직접적인 자식으로 추가됨) */
+/* 텍스트 메시지 컨테이너와는 별도로 스타일링 */
+.image-announcement {
+    display: block; /* 블록 요소로 만들어 한 줄 전체를 사용 */
+    margin: 0.5rem auto; /* 위아래 여백 및 중앙 정렬 */
+    width: 100%; /* 부모(.app-container 또는 #chat) 너비에 맞추되, max-width로 제한 */
+    max-width: 70%; /* 텍스트 버블과 비슷하거나 원하는 최대 너비 설정 */
+    text-align: center; /* 내부 이미지 및 콘텐츠 중앙 정렬 */
+    border: 1px solid #5a5a5a; /* 필요시 테두리 추가 */
+    border-radius: 8px; /* 컨테이너 모서리 둥글게 */
+    overflow: hidden; /* 내부 이미지 넘치는 부분 숨김 */
+    background-color: #282828; /* 배경색 설정 가능 */
+    position: relative; /* 내부 absolute 요소 기준 */
+    /* 다른 Flexbox 아이템이 추가될 때 크기가 줄어들지 않도록 함 */
+    flex-shrink: 0;
+}
+
+
+/* 이미지 페이드 컨테이너 스타일 */
+.image-fade-container {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: hidden;
+}
+
+/* 페이드 효과를 위한 ::before 의사 요소 */
+/* 이 요소는 실제 이미지 위에 겹쳐져서 마스크/투명도를 조절합니다. */
+.image-fade-container::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* 오버레이 클릭을 막지 않도록 함 */
+    z-index: 1; /* 이미지 위에 오도록 */
+
+    /* 좌우 페이드 효과용 linear-gradient 마스크 */
+    /* transparent 부분은 투명, black 부분은 불투명 */
+    mask-image: linear-gradient(to right, transparent, black 20%, black 80%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 20%, black 80%, transparent);
+
+    /* 마스크가 적용될 배경색 (여기서는 투명도를 조절하는 용도로 사용) */
+    /* 이 배경색 자체가 보이는 것은 아니지만, 마스크가 적용될 '대상'이 됩니다. */
+    background: black; /* 마스크를 적용하기 위한 임의의 배경색 */
+}
+
+/* 실제 이미지 스타일 */
+.chat-image {
+    display: block; /* 인라인 요소의 하단 여백 제거 */
+    width: 100%; /* 부모 컨테이너 너비에 꽉 채우도록 */
+    height: auto; /* 비율 유지 */
+    border-radius: 8px; /* 테두리 둥글게 */
+    object-fit: cover; /* 컨테이너에 맞게 잘라낼 경우 사용 (여기서는 max-width로 비율 유지) */
+    /* border: 1px solid #5a5a5a; */ /* 테두리 - 이미지 블록 자체에 적용 */
+    cursor: pointer; /* 클릭 가능 표시 */
+    margin: 0; /* 이미지 자체 마진 제거 */
+    padding: 0; /* 이미지 자체 패딩 제거 */
+}
+
+/* 이미지 로드 오류 시 스타일 */
+.chat-image.error-image {
+    display: none; /* 오류 이미지를 숨김 */
+}
+
+/* 이미지 오류 시 대체 텍스트 스타일 (script.js에서 추가한 요소) */
+.image-error-text {
+    text-align: center;
+    color: #b0b0b0;
+    font-size: 0.9rem;
+    margin-top: 0.5rem; /* 이미지 자리 아래 여백 */
+    margin-bottom: 0.5rem;
+}
