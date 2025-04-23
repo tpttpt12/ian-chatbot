@@ -130,6 +130,7 @@ body {
              overflow: hidden; /* 내부 이미지 넘치는 부분 숨김 */
              /* background-color: #282828; */ /* 배경색 설정 가능 */
              position: relative; /* 내부 absolute 요소 기준 */
+             flex-shrink: 0;
          }
 
 
