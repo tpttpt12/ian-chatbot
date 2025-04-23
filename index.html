@@ -1136,20 +1136,23 @@ container.appendChild(deleteBtn);
         */
 
 
-        async function sendSituationRequest() {
+async function sendSituationRequest() {
              alert("상황 생성 기능 구현 시작!");
              sendButton.disabled = true;
              userInput.disabled = true;
              actionMenuButton.disabled = true;
              loadingSpinner.style.display = 'block';
              // 상황 생성 요청 프롬프트에도 포맷 지침 추가
-             const situationPromptText = `Based on the ongoing conversation and current character settings, generate a vivid and engaging new situation or event written from the character's point of view in novel-style narration. The scene should naturally invite the user to respond and smoothly continue the dialogue flow. **Important: After presenting the situation, the character must immediately speak to the user in-character. Do not include explanations or any OOC (out-of-character) comments. All descriptions must be written using *asterisks*, and all dialogue must be enclosed in double quotes (\"). Maintain a balance of approximately 70% description and 30% dialogue. Use paragraphing and line breaks only for clarity—not for pacing or emotional emphasis.**"; // 프롬프트 변경
+             const situationPromptText = `Based on the ongoing conversation and current character settings, generate a vivid and engaging new situation or event written from the character's point of view in novel-style narration.
+The scene should naturally invite the user to respond and smoothly continue the dialogue flow.
+**Important: After presenting the situation, the character must immediately speak to the user in-character.
+Do not include explanations or any OOC (out-of-character) comments. All descriptions must be written using *asterisks*, and all dialogue must be enclosed in double quotes (\"). Maintain a balance of approximately 70% description and 30% dialogue. Use paragraphing and line breaks only for clarity—not for pacing or emotional emphasis.**`;
+             // 프롬프트 변경
              const textOnlyContentsForApi = conversationHistory
                  .filter(entry => entry.messageData && entry.messageData.type === 'text')
                  .map(entry => ({
                     role: entry.role,
                     parts: [{ text: entry.messageData.text }]
-
          }));
              const contentsForApi = [{ role: "user", parts: [{ text: SYSTEM_PROMPT }] }, ...textOnlyContentsForApi, { role: "user", parts: [{ text: situationPromptText }] }];
              if (contentsForApi.length <= 1 && contentsForApi[0].parts[0].text === SYSTEM_PROMPT) {
@@ -1161,17 +1164,15 @@ container.appendChild(deleteBtn);
              }
 
 
-try {
-                const res = await fetch(
-                    `/api/chat`,
-                    {
-                        method: "POST",
-
-
-                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ contents: contentsForApi }),
-                    }
-                );
+            try {
+                const res = await fetch(
+                    `/api/chat`,
+                    {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ contents: contentsForApi }),
+                    }
+                );
                 // 응답이 성공적이지 않다면 (오류라면)
                 if (!res.ok) {
                     const errorData = await res.json();
@@ -1196,18 +1197,17 @@ try {
                     });
                 }
 
-            } catch (error) {
-                console.error("Fetch Error:", error);
-                appendMessage("bot", { type: 'text', text: "(통신 오류 발생)" });
- } finally {
-                sendButton.disabled = false;
-                userInput.disabled = false;
-                actionMenuButton.disabled = false;
-                loadingSpinner.style.display = 'none';
-                userInput.focus();
-            }
-        }
-
+            } catch (error) {
+                console.error("Fetch Error:", error);
+                appendMessage("bot", { type: 'text', text: "(통신 오류 발생)" });
+            } finally {
+                sendButton.disabled = false;
+                userInput.disabled = false;
+                actionMenuButton.disabled = false;
+                loadingSpinner.style.display = 'none';
+                userInput.focus();
+            }
+        }
 
         // loadSettings 함수 수정: 슬롯 번호를 인자로 받아 해당 슬롯의 설정을 로드
         function loadSettings(slotNumber) {
