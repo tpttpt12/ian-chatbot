@@ -1,3 +1,5 @@
+/* This CSS code replaces the entire content of your style.css file */
+
 body {
     font-family: "Nanum Gothic", sans-serif;
     background-color: #1E1E1E;
@@ -232,6 +234,11 @@ body {
     order: 1;
 }
 
+/* Message Container (position: relative added) */
+.message-container {
+    position: relative;
+}
+
 /* Text Message Bubble Style */
 .message-bubble {
     padding: 0.75rem 1rem;
@@ -310,31 +317,39 @@ body {
 }
 
 /* Input Area Overall Style */
-/* Now #inputArea is a row flex container at the bottom */
-/* Adjusted z-index to be above menuOverlay */
+/* #inputArea is a column flex container for its children */
+/* Corrected flex-direction and z-index */
 #inputArea {
-    display: flex; /* Flexbox Use */
-    flex-direction: row; /* Children (button, textarea, button) arranged horizontally */
-    align-items: flex-end; /* Align children to the bottom */
-    gap: 0.75rem; /* Gap between horizontal items */
+    display: flex;
+    flex-direction: column; /* Stack children vertically */
+    align-items: stretch; /* Stretch children across the main axis (horizontally) */
+    gap: 0.75rem; /* Gap between vertical items (e.g., menu and input row) */
 
-    padding: 1rem 1.5rem 2rem 1.5rem; /* Top: 1rem, Right: 1.5rem, Bottom: 2rem, Left: 1.5rem */
+    padding: 1rem 1.5rem 2rem 1.5rem;
     background-color: #1E1E1E;
     box-shadow: 0 -20px 20px 0px rgba(30, 30, 30);
-    z-index: 510; /* Ensure inputArea and its children (menu, spinner) are above the overlay (z-index 490) */
+    z-index: 510; /* Ensure inputArea and its children (menu, spinner, input row) are above the overlay (z-index 490) */
     border: 1px solid #a9a9a9;
     border-radius: 15px;
-    flex-shrink: 0; /* Prevent shrinking */
+    flex-shrink: 0;
     position: relative; /* Needed for absolute positioning of menu and spinner */
-    /* Removed the column gap as this is now a row */
-    /* gap: 0.75rem; */
 }
 
 /* Removed unused .input-controls style */
 /* .input-controls { ... } */
 
+/* New style for the main input row container at the bottom */
+/* This div contains the +, textarea, and send button */
+.input-main-row {
+    display: flex; /* Arrange children (button, textarea, button) horizontally */
+    align-items: flex-end; /* Align children to the bottom */
+    gap: 0.75rem; /* Gap between horizontal items */
+    width: 100%; /* Fill the width of #inputArea (minus padding) */
+    margin-top: auto; /* Push this row to the bottom of #inputArea (column flex) */
+}
+
 /* '+' Button Style */
-/* Adjusted for the row flex container */
+/* Adjusted for the row flex container and position */
 #actionMenuButton {
     /* Keep existing visual styles */
     width: auto;
@@ -351,9 +366,8 @@ body {
     align-items: center;
     transition: color 0.2s ease;
     padding: 0.2rem 0.5rem;
-    /* Removed align-self: flex-end; */
     align-self: auto; /* Default alignment within the row */
-    z-index: 3; /* Ensure it's clickable */
+    z-index: 3;
     order: 0; /* Place it first (leftmost) in the row */
 }
 
@@ -363,10 +377,9 @@ body {
 }
 
 /* Textarea Style */
-/* Adjusted for the row flex container */
+/* Adjusted for the row flex container and reduced height */
 #userInput {
     flex: 1; /* Allow textarea to grow and fill available horizontal space */
-    /* Keep existing styles */
     padding: 0.75rem 1rem;
     border-radius: 1.5rem;
     border: none;
@@ -378,7 +391,8 @@ body {
     resize: none;
     line-height: 1.4;
     box-sizing: border-box;
-    min-height: calc(1em * 1.4 * 2 + 0.75rem * 2);
+    /* Adjusted min-height for approximately 1 line + padding */
+    min-height: calc(1em * 1.4 * 1 + 0.75rem * 2);
     height: auto;
     overflow-y: auto;
     padding-top: 0.75rem;
@@ -392,7 +406,7 @@ body {
 }
 
 /* Send Button Style */
-/* Adjusted for the row flex container */
+/* Adjusted for the row flex container and position */
 #sendButton {
     /* Keep existing styles */
     width: 40px;
@@ -409,10 +423,9 @@ body {
     align-items: center;
     transition: background-color 0.2s ease;
     padding: 0;
-    /* Removed align-self: flex-end; */
-    align-self: auto; /* Default alignment */
-    z-index: 3; /* Ensure it's clickable */
-    order: 2; /* Place after the textarea */
+    align-self: auto; /* Default alignment within the row */
+    z-index: 3;
+    order: 2; /* Place last (rightmost) in the row */
 }
 
 #sendButton:hover {
@@ -430,6 +443,7 @@ body {
 }
 
 /* Loading Spinner Style (Position Adjusted) */
+/* Position relative to #inputArea */
 #loadingSpinner {
     /* Keep existing styles */
     border: 4px solid rgba(255, 255, 255, 0.3);
@@ -441,7 +455,7 @@ body {
     display: none;
     /* Position relative to #inputArea */
     position: absolute;
-    /* Adjust position within the input area row */
+    /* Position relative to the bottom input row */
     bottom: 2rem; /* Position from the bottom padding of inputArea */
     right: 2rem; /* Position from the right padding of inputArea */
     z-index: 4; /* Ensure it's above input controls */
@@ -678,16 +692,18 @@ body {
     flex-shrink: 0;
 }
 
-/* Bot Message Delete Button Style */
-.message-container.bot .role-name .delete-btn {
-    margin-left: 10px;
-    order: 1;
-}
-
 /* User Message Delete Button Style */
 .message-container.user .role-name .delete-btn {
     margin-right: 10px;
+    margin-left: 0;
     order: 0;
+}
+
+/* Bot Message Delete Button Style */
+.message-container.bot .role-name .delete-btn {
+    margin-left: 10px;
+    margin-right: 0;
+    order: 1;
 }
 
 /* User Message Name Text Order Adjustment */
@@ -707,30 +723,29 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: transparent; /* Transparent background */
+    background-color: transparent; /* Background transparent */
     z-index: 490; /* Below #inputArea (510) */
     display: none;
 }
 
-/* Action Menu Container Style */
+/* Action Menu Container Style (Positioned Above Button, Smaller Size) */
 /* #actionMenu is inside #inputArea (position: relative, z-index: 510) */
-/* Position above the '+' button */
+/* Position above the '+' button in the bottom row */
 #actionMenu {
     position: absolute; /* Relative to #inputArea */
-    /* Position above the '+' button */
-    /* Align its bottom edge with the top edge of the input area, minus some margin */
+    /* Position its bottom edge above the top edge of the input-main-row */
     bottom: calc(100% - 1rem - 10px); /* Position 10px above the top padding (1rem) of inputArea */
     left: 1.5rem; /* Align left edge with the left padding of inputArea */
     right: auto;
     transform: none;
 
-    width: 180px;
-    max-width: 180px;
+    width: 150px; /* Reduced width */
+    max-width: 150px; /* Reduced max-width */
 
     background-color: #1f1f1f;
     border: 1px solid #3a3a3a;
     border-radius: 15px;
-    padding: 0.5rem 0;
+    padding: 0.3rem 0; /* Reduced padding */
     box-sizing: border-box;
     z-index: 500; /* Within #inputArea's stacking context (z=510), this is above other items (z=3, 4) */
 
@@ -762,7 +777,7 @@ body {
 
     width: 0;
     height: 0;
-    border-top: 10px solid #1f1f1f; /* Tail color */
+    border-top: 10px solid #1f1f1f; /* Tail color, pointing down */
     border-left: 10px solid transparent;
     border-right: 10px solid transparent;
     z-index: 501;
@@ -779,7 +794,7 @@ body {
 
     width: 0;
     height: 0;
-    border-top: 12px solid #3a3a3a; /* Tail border color */
+    border-top: 12px solid #3a3a3a; /* Tail border color, pointing down */
     border-left: 12px solid transparent;
     border-right: 12px solid transparent;
     z-index: 500;
@@ -790,26 +805,26 @@ body {
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;
-    gap: 0;
+    gap: 0; /* Keep no gap for text items */
     justify-content: flex-start;
     width: 100%;
     padding-bottom: 0;
 }
 
-/* Action Menu Internal Button Style (Text Link Look) */
+/* Action Menu Internal Button Style (Text Link Look, Smaller Font) */
 #actionMenu button {
     flex-basis: auto;
     width: 100%;
-    padding: 0.75rem 1rem;
+    padding: 0.5rem 1rem; /* Reduced padding */
     border: none;
     border-radius: 0;
     background-color: transparent;
     color: #e0e0e0;
-    font-size: 1rem;
+    font-size: 0.9rem; /* Reduced font size */
     cursor: pointer;
     transition: background-color 0.2s ease, color 0.2s ease;
     text-align: left;
-    z-index: 502; /* Ensure buttons are clickable within the menu */
+    z-index: 502;
 }
 
 #actionMenu button:hover {
