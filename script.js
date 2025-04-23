@@ -88,11 +88,12 @@ const overlayImage = document.getElementById("overlayImage");
 const actionMenuButton = document.getElementById("actionMenuButton");
 const actionMenu = document.getElementById("actionMenu");
 const menuOverlay = document.getElementById("menuOverlay");
-// 유저 변경 / 캐릭터 변경 버튼 관련 요소 삭제
-// const menuUserImgButton = document.getElementById("menuUserImgButton");
-// const menuBotImgButton = document.getElementById("menuBotImgButton");
+// 액션 메뉴 버튼 요소들 가져오기
 const menuImageButton = document.getElementById("menuImageButton");
 const menuSituationButton = document.getElementById("menuSituationButton");
+const menuExportTxtButton = document.getElementById("menuExportTxtButton"); // TXT 내보내기 버튼 요소
+const menuSummarizeButton = document.getElementById("menuSummarizeButton"); // 요약 버튼 요소
+
 
 const sidebar = document.getElementById("sidebar");
 const sidebarToggle = document.getElementById("sidebarToggle");
@@ -243,7 +244,7 @@ function updateSystemPrompt() {
 // 초기화 함수
 function initializeChat() {
     // 필요한 초기화 로직 (예: 환영 메시지 표시 등)
-    // loadSettings(currentSlot); // 페이지 로드 시 이미 호출됨
+    // loadSettings(currentSlot); // DOMContentLoaded에서 이미 호출됨
     // updateSystemPrompt(); // loadSettings에서 호출됨
 
     // 초기 공지 메시지 및 구분선 추가
@@ -255,8 +256,8 @@ function appendInitialNotice() {
     const noticeContainer = document.createElement("div");
     noticeContainer.className = "initial-notice";
     noticeContainer.innerHTML = `
-        채팅을 시작합니다.
-        사용자 설정을 확인해주세요.
+        <strong>📢 중요 공지:</strong> 이 챗봇은 수위 높은 성적 묘사를 포함한 BL 에로 소설 작성을 목표로 합니다.
+        미성년자는 이용할 수 없습니다.
     `;
     chat.appendChild(noticeContainer);
 
@@ -321,7 +322,9 @@ function appendMessage(role, messageData) {
             const fallbackDiv = document.createElement("div");
             fallbackDiv.className = "profile-fallback";
             const parent = this.parentElement;
-            if (parent) { parent.replaceChild(fallbackDiv, this); }
+            if (parent) {
+                parent.replaceChild(fallbackDiv, this);
+            }
         }
 
         const contentWrapper = document.createElement("div");
@@ -349,11 +352,11 @@ function appendMessage(role, messageData) {
         const messageBodyElement = document.createElement("div");
         messageBodyElement.className = "message-bubble"; // 텍스트 메시지는 버블 클래스 사용
         let rawText = messageData.text;
-        // 마크다운 처리 및 HTML 변환
-        let processedText = rawText.replace(/\n+/g, match => '<br>'.repeat(match.length));
-        processedText = processedText.replace(/"(.*?)"/gs, '[[DIALOGUE]]$1[[/DIALOGUE]]');
-        processedText = processedText.replace(/\*([^*]+)\*/gs, '[[ACTION]]$1[[/ACTION]]');
-        let htmlContent = marked.parse(processedText);
+        // 마크다운 처리 및 HTML 변환 (내보내기와 별개)
+        let processedTextHtml = rawText.replace(/\n+/g, match => '<br>'.repeat(match.length));
+        processedTextHtml = processedTextHtml.replace(/"(.*?)"/gs, '[[DIALOGUE]]$1[[/DIALOGUE]]');
+        processedTextHtml = processedTextHtml.replace(/\*([^*]+)\*/gs, '[[ACTION]]$1[[/ACTION]]');
+        let htmlContent = marked.parse(processedTextHtml);
         htmlContent = htmlContent.replace(/\[\[DIALOGUE\]\](.*?)\[\[\/DIALOGUE\]\]/gs, '<span class="dialogue">$1</span>');
         htmlContent = htmlContent.replace(/\[\[ACTION\]\](.*?)\[\[\/ACTION\]\]/gs, '<span class="action-description">$1</span>');
         messageBodyElement.innerHTML = htmlContent;
@@ -363,7 +366,7 @@ function appendMessage(role, messageData) {
 
         // message-container에 요소들을 역할에 따라 추가
         if (role === "user") {
-            // 유저: contentWrapper | 프로필 이미지 (CSS flex-direction: row-reverse 및 order로 배치)
+            // 유저: contentWrapper | 프로필 이미지 (CSS flex-direction: row 및 order로 배치)
             container.appendChild(contentWrapper);
             container.appendChild(profileImgElement);
         } else { // role === "bot"
@@ -378,6 +381,87 @@ function appendMessage(role, messageData) {
     // 메시지 추가 후 스크롤 이동
     chat.scrollTop = chat.scrollHeight;
 }
+
+// 대화 기록을 TXT 파일로 내보내는 함수 (수정됨)
+function exportConversationAsTxt() {
+    if (conversationHistory.length === 0) {
+        alert("내보낼 대화 내용이 없습니다.");
+        return;
+    }
+
+    let txtContent = "";
+
+    // SYSTEM_PROMPT는 내보내지 않습니다.
+    // conversationHistory 배열을 순회하며 텍스트 형식으로 변환
+    conversationHistory.forEach(entry => {
+        const role = entry.role; // "user" 또는 "model"
+        const messageData = entry.messageData; // { type: 'text', text: '...' } 또는 { type: 'image', url: '...' }
+
+        // SYSTEM_PROMPT 엔트리는 스킵
+        if (entry.role === 'user' && messageData.type === 'text' && messageData.text === SYSTEM_PROMPT) {
+             return; // continue 대신 return을 사용하여 forEach의 현재 반복을 건너뜁니다.
+        }
+
+        // --- 이미지 메시지인 경우 여기서 제외 ---
+        if (messageData.type === 'image') {
+            return; // forEach의 현재 반복을 건너뛰어 이미지 메시지 제외
+        }
+        // --- 이미지 메시지 제외 로직 끝 ---
+
+
+        const name = (role === "user" ? userNameInput.value || "사용자" : botNameInput.value || "캐릭터");
+
+        if (messageData.type === 'text') {
+            let processedText = messageData.text;
+
+            // --- 사용자 요청에 따른 마크다운 처리 ---
+            // 1. *행동* -> 행동 (별표 제거)
+            processedText = processedText.replace(/\*([^*]+)\*/g, '$1');
+            // 2. **볼드** -> "볼드" (별표 제거하고 큰따옴표로 감쌈)
+            processedText = processedText.replace(/\*\*([^*]+)\*\*/g, '"$1"');
+            // 3. "대사" 는 이미 따옴표가 있으므로 그대로 둡니다. (추가 변환 없음)
+
+            // 원하는 형식으로 줄바꿈 유지
+            processedText = processedText.replace(/\n/g, '\n'); // 기존 줄바꿈 유지
+
+            txtContent += `[${name}] : ${processedText}\n\n`; // 턴 사이에 엔터 두 번
+
+        }
+        // 다른 메시지 타입이 있다면 여기에 추가 (현재는 이미지 제외)
+    });
+
+    // 마지막에 추가된 빈 줄 제거
+    txtContent = txtContent.trimEnd();
+
+    // Blob 객체 생성
+    const blob = new Blob([txtContent], { type: 'text/plain;charset=utf-8' });
+
+    // 다운로드 링크 생성 및 클릭
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'chat_history.txt'; // 다운로드될 파일 이름
+    link.style.display = 'none'; // 화면에 보이지 않도록 숨김
+
+    document.body.appendChild(link); // 링크를 문서에 추가
+    link.click(); // 링크 클릭하여 다운로드 실행
+
+    // 사용 후 링크 제거 및 URL 해제
+    document.body.removeChild(link);
+    URL.revokeObjectURL(link.href);
+
+    // 메뉴 닫기 (선택 사항)
+    actionMenu.classList.remove("visible");
+    menuOverlay.style.display = 'none';
+}
+
+// 요약 함수 (나중에 구현)
+function summarizeConversation() {
+    alert("요약 기능 구현 예정!"); // 임시 알림
+    // 여기에 이전 10턴을 가져와 API에 요약 요청하는 로직 추가
+    actionMenu.classList.remove("visible");
+    menuOverlay.style.display = 'none';
+}
+
 
 // 메시지 전송 (텍스트 또는 이미지 URL) 함수
 async function sendMessage(messageOrImageUrl) {
@@ -399,13 +483,8 @@ async function sendMessage(messageOrImageUrl) {
     const imageUrlPattern = /\.(gif|jpe?g|png|webp|bmp)$/i;
     const isImageUrl = imageUrlPattern.test(message);
 
-        console.log("Checking if message is image URL:", message);
-        console.log("isImageUrl:", isImageUrl);
-
     // 이미지 메시지 처리
     if (isImageUrl) {
-                  console.log("Message is image URL, calling appendMessage:", message);
-        // 이미지 URL이면 이미지 메시지로 처리
         appendMessage("user", { type: 'image', url: message });
         conversationHistory.push({ role: "user", messageData: { type: 'image', url: message } });
         // 이미지 URL 입력 후에는 API 호출 없이 즉시 표시 및 상태 초기화
@@ -446,12 +525,10 @@ async function sendMessage(messageOrImageUrl) {
         const contentsForApi = [{ role: "user", parts: [{ text: SYSTEM_PROMPT }] }, ...textOnlyContentsForApi];
         if (contentsForApi.length === 1 && contentsForApi[0].parts[0].text === SYSTEM_PROMPT) {
             // SYSTEM_PROMPT 외 사용자 텍스트가 없을 경우 API 호출 안 함
-            // console.log("Only SYSTEM_PROMPT to send to API."); // 디버그 로그 제거
             appendMessage("bot", { type: 'text', text: "(API 호출 스킵: 보낼 텍스트 내용 없음)" });
             return Promise.resolve(); // 함수 종료
         } else if (contentsForApi.length === 0) {
             // 예외적인 경우 (발생하지 않아야 함)
-            // console.log("No content to send to API."); // 디버그 로그 제거
             appendMessage("bot", { type: 'text', text: "(메시지 전송 실패: 보낼 텍스트 내용 없음)" });
             return Promise.resolve(); // 함수 종료
         }
@@ -498,6 +575,7 @@ async function sendMessage(messageOrImageUrl) {
     }
 }
 
+
 // '+' 버튼 메뉴의 이미지 삽입 버튼 클릭 시 호출되는 함수
 async function sendImageMessage() {
     const imageUrl = prompt("보낼 이미지의 웹 주소(URL)를 입력하세요:");
@@ -515,7 +593,11 @@ async function sendImageMessage() {
         // 사용자가 프롬프트에서 취소하거나 빈 문자열 입력 시
         //console.log("이미지 주소 입력 취소 또는 빈 문자열 입력"); // 디버그 로그 제거
     }
+    // 메뉴 닫기 (기능 실행 후)
+    actionMenu.classList.remove("visible");
+    menuOverlay.style.display = 'none';
 }
+
 
 // '+' 버튼 메뉴의 상황 버튼 클릭 시 호출되는 함수
 async function sendSituationRequest() {
@@ -542,7 +624,6 @@ async function sendSituationRequest() {
 
     if (contentsForApi.length <= 1 && contentsForApi[0].parts[0].text === SYSTEM_PROMPT) {
         // SYSTEM_PROMPT 외 사용자 텍스트가 없을 경우 API 호출 안 함
-        // console.log("Only SYSTEM_PROMPT or SYSTEM_PROMPT + Situation Prompt to send to API."); // 디버그 로그 제거
         appendMessage("bot", { type: 'text', text: "(상황 생성 요청 스킵: 보낼 텍스트 내용 없음)" }); // 메시지 수정
         // API 호출 없으므로 상태 초기화
         sendButton.disabled = false;
@@ -550,10 +631,12 @@ async function sendSituationRequest() {
         actionMenuButton.disabled = false;
         loadingSpinner.style.display = 'none';
         userInput.focus();
+        // 메뉴 닫기 (기능 실행 후)
+        actionMenu.classList.remove("visible");
+        menuOverlay.style.display = 'none';
         return Promise.resolve(); // 함수 종료
     } else if (contentsForApi.length === 0) {
         // 예외적인 경우 (발생하지 않아야 함)
-        // console.log("No content to send to API."); // 디버그 로그 제거
         appendMessage("bot", { type: 'text', text: "(상황 생성 요청 실패: 보낼 텍스트 내용 없음)" }); // 메시지 수정
         // API 호출 없으므로 상태 초기화
         sendButton.disabled = false;
@@ -561,6 +644,9 @@ async function sendSituationRequest() {
         actionMenuButton.disabled = false;
         loadingSpinner.style.display = 'none';
         userInput.focus();
+        // 메뉴 닫기 (기능 실행 후)
+        actionMenu.classList.remove("visible");
+        menuOverlay.style.display = 'none';
         return Promise.resolve(); // 함수 종료
     }
 
@@ -594,6 +680,7 @@ async function sendSituationRequest() {
                 messageData: { type: 'text', text: reply }
             });
         }
+
     } catch (error) {
         console.error("Fetch Error:", error);
         appendMessage("bot", { type: 'text', text: "(상황 생성 통신 오류 발생)" }); // 오류 메시지 수정
@@ -604,8 +691,21 @@ async function sendSituationRequest() {
         actionMenuButton.disabled = false;
         loadingSpinner.style.display = 'none';
         userInput.focus();
+        // 메뉴 닫기 (기능 실행 후)
+        actionMenu.classList.remove("visible");
+        menuOverlay.style.display = 'none';
     }
 }
+
+
+// 요약 함수 (나중에 구현)
+function summarizeConversation() {
+    alert("요약 기능 구현 예정!"); // 임시 알림
+    // 여기에 이전 10턴을 가져와 API에 요약 요청하는 로직 추가
+    actionMenu.classList.remove("visible");
+    menuOverlay.style.display = 'none';
+}
+
 
 // 초기화 함수 및 DOMContentLoaded 리스너는 함수 정의 뒤에 배치
 
@@ -624,7 +724,8 @@ function appendInitialNotice() {
     const noticeContainer = document.createElement("div");
     noticeContainer.className = "initial-notice";
     noticeContainer.innerHTML = `
-        채팅을 시작합니다. 캐릭터와 사용자 설정을 확인해주세요.
+        <strong>📢 중요 공지:</strong> 이 챗봇은 수위 높은 성적 묘사를 포함한 BL 에로 소설 작성을 목표로 합니다.
+        미성년자는 이용할 수 없습니다.
     `;
     chat.appendChild(noticeContainer);
 
@@ -637,6 +738,7 @@ function appendInitialNotice() {
 
 // 전송 버튼 클릭 이벤트
 sendButton.addEventListener("click", () => sendMessage(userInput.value)); // 입력창 값 전달
+
 
 // keydown 이벤트 리스너 수정: Shift+Enter는 줄바꿈, Enter만 누르면 전송
 userInput.addEventListener("keydown", function(event) {
@@ -660,18 +762,28 @@ menuOverlay.addEventListener("click", function() {
     actionMenu.classList.remove("visible");
     menuOverlay.style.display = 'none';
 });
-// 이미지 삽입 메뉴 버튼 클릭
+// 이미지 삽입 메뉴 버튼 클릭 (기능 실행 후 메뉴 닫도록 수정됨)
 menuImageButton.addEventListener("click", function() {
     sendImageMessage(); // sendImageMessage 함수 호출
-    actionMenu.classList.remove("visible");
-    menuOverlay.style.display = 'none';
+    // sendImageMessage 함수 안에서 메뉴 닫도록 코드가 이동됨
 });
-// 상황 메뉴 버튼 클릭
+// 상황 메뉴 버튼 클릭 (기능 실행 후 메뉴 닫도록 수정됨)
 menuSituationButton.addEventListener("click", function() {
     sendSituationRequest(); // sendSituationRequest 함수 호출
-    actionMenu.classList.remove("visible");
-    menuOverlay.style.display = 'none';
+    // sendSituationRequest 함수 안에서 메뉴 닫도록 코드가 이동됨
 });
+// TXT 내보내기 메뉴 버튼 클릭 (새로 추가)
+menuExportTxtButton.addEventListener("click", function() {
+    exportConversationAsTxt(); // exportConversationAsTxt 함수 호출
+    // exportConversationAsTxt 함수 안에서 메뉴 닫도록 코드가 추가됨
+});
+// 요약 메뉴 버튼 클릭 (새로 추가)
+menuSummarizeButton.addEventListener("click", function() {
+    summarizeConversation(); // summarizeConversation 함수 호출
+    // summarizeConversation 함수 안에서 메뉴 닫도록 코드가 추가됨
+});
+
+
 // 이미지 오버레이 클릭 시 닫기 이벤트 리스너는 HTML에 onclick="closeImageOverlay()"로 이미 존재하므로 JS에서는 추가할 필요 없습니다.
 // 사이드바 토글 버튼 클릭
 sidebarToggle.addEventListener("click", function() {

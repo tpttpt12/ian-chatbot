@@ -454,8 +454,9 @@ body {
         }
 
         #sendButton {
-            padding: 0.75rem 1.5rem;
-            border-radius: 1.5rem; /* 둥글게 */
+            width: 40px; /* 버튼의 너비를 고정 */
+            height: 40px; /* 버튼의 높이를 고정 (너비와 같게) */
+            border-radius: 50%; /* 테두리를 50% 둥글게 만들어 원형으로 만듦 */
             background-color: #5080ff;
             color: #ffffff;
             font-size: 1rem;
@@ -464,6 +465,11 @@ body {
             flex-shrink: 0;
              border: none;
              cursor: pointer;
+             display: flex;
+             justify-content: center; /* 가로 중앙 정렬 */
+             align-items: center; /* 세로 중앙 정렬 */
+             transition: background-color 0.2s ease; /* 호버 애니메이션 유지 */
+             padding: 0; /* 내부 패딩 제거 (크기 고정했으므로) *
          }
          #sendButton:hover { background-color: #6699ff; }
          #sendButton:active { background-color: #3366cc; }
