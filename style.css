@@ -166,11 +166,6 @@ body {
     align-items: flex-start;
 }
 
-/* 유저 메시지일 때 contentWrapper 정렬 (텍스트 버블 자체의 정렬) */
-/* 유저 메시지의 말풍선은 오른쪽에 오도록 align-items: flex-end */
-.message-container.user .message-content-wrapper {
-}
-
  /* 캐릭터 메시지일 때 contentWrapper 정렬 (텍스트 버블 자체의 정렬) */
 /* 캐릭터 메시지의 말풍선은 오른쪽에 오도록 align-items: flex-end 유지 */
  .message-container.bot .message-content-wrapper {
