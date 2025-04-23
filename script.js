@@ -266,8 +266,7 @@ const SYSTEM_PROMPT_TEMPLATE = `
                 // "..."를 [[DIALOGUE]]...[[/DIALOGUE]] 로 변환
                 processedText = processedText.replace(/"(.*?)"/gs, '[[DIALOGUE]]$1[[/DIALOGUE]]');
                 // *...*를 [[ACTION]]...[[/ACTION]] 로 변환
-                processedText = processedText.replace(/\*([^*]+)\*\
-/gs, '[[ACTION]]$1[[/ACTION]]'); // 여기 닫는 괄호 빠졌던거 수정합니다.
+                processedText = processedText.replace(/\*([^*]+)\*/gs, '[[ACTION]]$1[[/ACTION]]'); // 이 줄을 이렇게 수정해주세요.
                 // marked.js를 사용하여 기본 마크다운을 HTML로 변환
                 let htmlContent = marked.parse(processedText);
                 // 임시 마커를 찾아 span 태그로 변환하여 스타일 적용
