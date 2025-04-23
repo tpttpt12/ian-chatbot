@@ -361,7 +361,10 @@ tr:nth-child(even) {
 
 
 /* 이전에 추가했던 .action-description 규칙은 그대로 두세요. */
-/* .action-description { color: #a9a9a9; font-style: italic; } */
+.action-description {
+    color: #a9a9a9;
+    font-style: italic;
+}
 /* 만약 *행동*도 이 위의 em, i 스타일을 따르게 하고 싶다면 .action-description 규칙을 삭제하세요. */
 /* 하지만 요청에 따라 *이거*는 회색으로 만든 것이므로, .action-description 규칙을 유지하는 것이 좋습니다. */v
 
