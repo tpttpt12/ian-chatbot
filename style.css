@@ -166,13 +166,6 @@ body {
     align-items: flex-start;
 }
 
- /* 캐릭터 메시지일 때 contentWrapper 정렬 (텍스트 버블 자체의 정렬) */
-/* 캐릭터 메시지의 말풍선은 오른쪽에 오도록 align-items: flex-end 유지 */
- .message-container.bot .message-content-wrapper {
-     align-items: flex-end; /* 말풍선을 오른쪽으로 정렬 */
- }
-
-
 .role-name {
     font-size: 0.8rem;
     color: #b0b0b0;
