@@ -738,18 +738,20 @@ body {
 /* 캐릭터 메시지의 삭제 버튼 (이름 오른쪽에 10px 간격) */
 .message-container.bot .role-name .delete-btn {
     margin-left: 10px; /* 이름과의 간격 */
+    margin-right: 0;
     order: 1; /* 이름(order 0) 뒤에 오도록 */
 }
 
 /* 유저 메시지의 삭제 버튼 (이름 왼쪽에 10px 간격) */
 .message-container.user .role-name .delete-btn {
     margin-right: 10px; /* 이름과의 간격 */
-    order: 1; /* 이름(order 0) 뒤에 오도록 */
+    margin-left: 0;
+    order: 0; /* 이름(order 0) 뒤에 오도록 */
 }
 
 /* 유저 메시지에서 이름 텍스트 순서 조정 */
 .message-container.user .role-name .name-text {
-    order: 0; /* 삭제 버튼(order 1) 앞에 오도록 */
+    order: 1; /* 삭제 버튼(order 1) 앞에 오도록 */
 }
 
 
