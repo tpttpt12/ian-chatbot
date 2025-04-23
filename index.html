@@ -5,13 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>character-chat</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bakbak+One&family=Libre+Barcode+39+Text&family=Nanum+Gothic&display=swap" rel="stylesheet">
-    
+
     <link rel="stylesheet" href="style.css">
-    
+
 </head>
 <body>
     <div class="app-container">
@@ -25,9 +27,10 @@
 
         <div id="inputArea">
              <button id="actionMenuButton" title="액션 메뉴 열기">+</button>
-        
+
              <textarea id="userInput" placeholder="유저의 말..." autocomplete="off"></textarea>
-            <button id="sendButton"></button>
+            <button id="sendButton">
+                <i class="fas fa-paper-plane"></i> </button>
             <div id="loadingSpinner" class="loading-spinner"></div>
         </div>
     </div>
@@ -39,11 +42,12 @@
     <div id="actionMenu">
         <div class="menu-buttons">
              <button id="menuImageButton">이미지<br>삽입</button>
+
              <button id="menuSituationButton">상황</button>
-            
+
              <button id="menuSummarizeButton">요약</button>
              <button id="menuExportTxtButton">내보내기</button>
-            
+
         </div>
     </div>
 
@@ -53,13 +57,13 @@
              <div class="setting-slots">
                  <h3>Setting Slots</h3>
                  <div class="slot-buttons-container">
-            
+
                      <button class="slot-button">1</button>
                      <button class="slot-button">2</button>
                      <button class="slot-button">3</button>
                      <button class="slot-button">4</button>
                      <button class="slot-button">5</button>
-  
+
                      <button class="slot-button">6</button>
                  </div>
              </div>
@@ -67,7 +71,7 @@
             <h3>Character</h3>
              <label for="botNameInput">Name:</label>
             <input type="text" id="botNameInput" value="이안">
-         
+
             <label for="botAgeInput">Age:</label>
             <input type="text" id="botAgeInput" value="불명 (뱀파이어)">
             <label for="botAppearanceInput">Appearance:</label>
@@ -98,7 +102,7 @@ OOC 발언 절대 금지.**</textarea>
             <label for="userGuidelinesInput">Guidelines:</label>
             <textarea id="userGuidelinesInput">당신의 캐릭터 설정에 대한 지침을 여기에 입력하세요.\n(예: 나는 어떤 사람인지, 어떤 말투를 사용하는지 등)</textarea>
              <label for="userImageUrlInput">Image URL:</label>
- 
+
              <input type="text" id="userImageUrlInput" value="">
 
 
