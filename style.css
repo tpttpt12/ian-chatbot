@@ -1,896 +1,924 @@
 body {
-    font-family: "Nanum Gothic", sans-serif; /* 나눔고딕 폰트 적용 */
-    background-color: #1E1E1E;
-    color: #e0e0e0;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    overflow: hidden;
+    font-family: "Nanum Gothic", sans-serif; /* 나눔고딕 폰트 적용 */
+    background-color: #1E1E1E;
+    color: #e0e0e0;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
 }
 
 /* 레이아웃 개선을 위한 컨테이너 스타일 수정 */
 .app-container {
-     display: flex;
-     flex-direction: column;
-     height: 100%;
-     width: 95%; /* 너비를 일단 넓게 설정 */
-     max-width: 900px; /* 최대 너비 설정 (대략 1500px 화면에서 60% 정도 느낌) */
-     margin: 0 auto; /* 좌우 자동 마진으로 중앙 정렬 */
-     background-color: #1e1e1e; /* 배경색 유지 */
-     /* 불필요한 그림자/테두리 제거 */
-     box-shadow: none;
-     border: none;
-     position: relative;
-     overflow: hidden; /* 컨테이너 내부 내용 넘침 방지 */
+     display: flex;
+     flex-direction: column;
+     height: 100%;
+     width: 95%; /* 너비를 일단 넓게 설정 */
+     max-width: 900px; /* 최대 너비 설정 (대략 1500px 화면에서 60% 정도 느낌) */
+     margin: 0 auto; /* 좌우 자동 마진으로 중앙 정렬 */
+     background-color: #1e1e1e; /* 배경색 유지 */
+     /* 불필요한 그림자/테두리 제거 */
+     box-shadow: none;
+     border: none;
+     position: relative;
+     overflow: hidden; /* 컨테이너 내부 내용 넘침 방지 */
 }
- /* 화면이 충분히 넓을 때 너비를 60%로 조정 */
- @media (min-width: 1200px) {
-     .app-container {
-         width: 60%;
-     }
- }
+ /* 화면이 충분히 넓을 때 너비를 60%로 조정 */
+ @media (min-width: 1200px) {
+     .app-container {
+         width: 60%;
+     }
+ }
 
 
 .chat-header {
-    background-color: 1E1E1E;
-    color: #ffffff;
-    padding: 1rem;
-    text-align: center;
-    font-size: 1.2rem;
-    font-weight: bold;
-    /* border-bottom: 1px solid #3a3a3a; */ /* 구분선 제거 */
-    flex-shrink: 0;
-    position: relative;
-    display: flex;
-     justify-content: center;
-     align-items: center;
+    background-color: 1E1E1E;
+    color: #ffffff;
+    padding: 1rem;
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    /* border-bottom: 1px solid #3a3a3a; */ /* 구분선 제거 */
+    flex-shrink: 0;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 #sidebarToggle {
-    position: absolute;
-    top: 50%;
-    right: 1rem;
-    transform: translateY(-50%);
-    width: 35px;
-    height: 35px;
-    background-color: #5a5a5a;
-    color: #ffffff;
-    border: none;
-    border-radius: 50%;
-    cursor: pointer;
-    font-size: 1.2rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: background-color 0.2s ease;
-    z-index: 10;
+    position: absolute;
+    top: 50%;
+    right: 1rem;
+    transform: translateY(-50%);
+    width: 35px;
+    height: 35px;
+    background-color: #5a5a5a;
+    color: #ffffff;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.2s ease;
+    z-index: 10;
 }
- #sidebarToggle:hover {
-     background-color: #6a6a6a;
- }
+ #sidebarToggle:hover {
+     background-color: #6a6a6a;
+ }
 
 #chat {
-    flex: 1;
-    padding: 1rem;
-    overflow-y: auto; /* 스크롤은 되지만 스크롤바 숨김 */
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    /* 스크롤바 숨김 */
-     scrollbar-width: none; /* Firefox */
-     -ms-overflow-style: none; /* IE and Edge */
-     background-color: #1e1e1e;
- }
+    flex: 1;
+    padding: 1rem;
+    overflow-y: auto; /* 스크롤은 되지만 스크롤바 숨김 */
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    /* 스크롤바 숨김 */
+     scrollbar-width: none; /* Firefox */
+     -ms-overflow-style: none; /* IE and Edge */
+     background-color: #1e1e1e;
+}
 /* Webkit 브라우저용 스크롤바 숨김 */
 #chat::-webkit-scrollbar {
-    display: none; /* Chrome, Safari, Opera */
+    display: none; /* Chrome, Safari, Opera */
 }
 /* 기존 스크롤바 스타일은 이제 필요 없으므로 제거하거나 주석 처리합니다. */
 
 
 /* 메시지 컨테이너 기본 스타일 */
 .message-container {
-    display: flex;
-    align-items: flex-start; /* 기본 정렬 유지 */
-    max-width: 85%; /* 최대 너비 유지 */
-    gap: 0.5rem; /* 프로필 이미지, contentWrapper 또는 이미지 블록 간 간격 */
+    display: flex;
+    align-items: flex-start; /* 기본 정렬 유지 */
+    max-width: 85%; /* 최대 너비 유지 */
+    gap: 0.5rem; /* 프로필 이미지, contentWrapper 또는 이미지 블록 간 간격 */
 }
 
 /* 유저 메시지 컨테이너 스타일 (채팅창 오른쪽 정렬, 프로필 오른쪽, 말풍선 왼쪽) */
 .message-container.user {
-    justify-content: flex-end; /* 컨테이너 자체를 오른쪽으로 정렬 */
-    margin-left: auto; /* 왼쪽 마진을 자동으로 밀어 오른쪽으로 붙임 */
-    margin-right: 0;
-    flex-direction: row-reverse; /* 요소 순서 반전 (Wrapper -> Profile) */
+    justify-content: flex-end; /* 컨테이너 자체를 오른쪽으로 정렬 */
+    margin-left: auto; /* 왼쪽 마진을 자동으로 밀어 오른쪽으로 붙임 */
+    margin-right: 0;
+    flex-direction: row-reverse; /* 요소 순서 반전 (Wrapper -> Profile) */
 }
 
 /* 캐릭터 메시지 컨테이너 스타일 (채팅창 왼쪽 정렬, 프로필 왼쪽, 말풍선 오른쪽) */
 .message-container.bot {
-    justify-content: flex-start; /* 컨테이너 자체를 왼쪽으로 정렬 */
-    margin-right: auto; /* 오른쪽 마진을 자동으로 밀어 왼쪽으로 붙임 */
-    margin-left: 0;
-    flex-direction: row; /* 요소 순서대로 (Profile -> Wrapper) 배치 */
+    justify-content: flex-start; /* 컨테이너 자체를 왼쪽으로 정렬 */
+    margin-right: auto; /* 오른쪽 마진을 자동으로 밀어 왼쪽으로 붙임 */
+    margin-left: 0;
+    flex-direction: row; /* 요소 순서대로 (Profile -> Wrapper) 배치 */
 }
 
 /* 이미지 메시지 블록 전체 컨테이너 (중앙 정렬) - appendMessage에서 #chat에 직접 추가됨 */
- /* 이 컨테이너는 message-container가 아닌 #chat의 직접적인 자식 요소입니다. */
+ /* 이 컨테이너는 message-container가 아닌 #chat의 직접적인 자식 요소입니다. */
 .image-announcement {
-     display: block; /* 블록 요소로 만들어 한 줄 전체를 사용 */
-     margin: 0.1rem auto 0.5rem auto; /* 위쪽 여백 0.1rem, 아래쪽 여백 0.5rem, 좌우 auto로 중앙 정렬 */
-     width: 100%; /* 부모(.app-container 또는 #chat) 너비에 맞추되, max-width로 제한 */
-     max-width: 70%; /* 텍스트 버블과 비슷하거나 원하는 최대 너비 설정 */
-     text-align: center; /* 내부 이미지 및 콘텐츠 중앙 정렬 */
-     /* border: 1px solid #5a5a5a; */ /* 필요시 테두리 추가 */
-     border-radius: 8px; /* 컨테이너 모서리 둥글게 */
-     overflow: hidden; /* 내부 이미지 넘치는 부분 숨김 */
-     /* background-color: #282828; */ /* 배경색 설정 가능 */
-     position: relative; /* 내부 absolute 요소 기준 */
-     /* 다른 Flexbox 아이템이 추가될 때 크기가 줄어들지 않도록 함 */
-     flex-shrink: 0; /* 새로 추가 */
-     /* 역할별 스타일 (선택 사항, 필요하다면) */
-     /* &.user { ... } */
-     /* &.bot { ... } */
- }
+     display: block; /* 블록 요소로 만들어 한 줄 전체를 사용 */
+     margin: 0.1rem auto 0.5rem auto; /* 위쪽 여백 0.1rem, 아래쪽 여백 0.5rem, 좌우 auto로 중앙 정렬 */
+     width: 100%; /* 부모(.app-container 또는 #chat) 너비에 맞추되, max-width로 제한 */
+     max-width: 70%; /* 텍스트 버블과 비슷하거나 원하는 최대 너비 설정 */
+     text-align: center; /* 내부 이미지 및 콘텐츠 중앙 정렬 */
+     /* border: 1px solid #5a5a5a; */ /* 필요시 테두리 추가 */
+     border-radius: 8px; /* 컨테이너 모서리 둥글게 */
+     overflow: hidden; /* 내부 이미지 넘치는 부분 숨김 */
+     /* background-color: #282828; */ /* 배경색 설정 가능 */
+     position: relative; /* 내부 absolute 요소 기준 */
+     /* 다른 Flexbox 아이템이 추가될 때 크기가 줄어들지 않도록 함 */
+     flex-shrink: 0; /* 새로 추가 */
+     /* 역할별 스타일 (선택 사항, 필요하다면) */
+     /* &.user { ... } */
+     /* &.bot { ... } */
+ }
 
 
 .profile-img {
-    width: 35px;
-    height: 35px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 1px solid #5a5a5a;
-    flex-shrink: 0;
-    /* 프로필 이미지 클릭 가능하도록 */
-     cursor: pointer;
- }
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid #5a5a5a;
+    flex-shrink: 0;
+    /* 프로필 이미지 클릭 가능하도록 */
+     cursor: pointer;
+}
 
- .profile-fallback {
-    width: 35px;
-    height: 35px;
-    border-radius: 50%;
-    background-color: #5a5a5a;
-    border: 1px solid #5a5a5a;
-    flex-shrink: 0;
-    /* 프로필 이미지 클릭 가능하도록 */
-     cursor: pointer;
- }
+ .profile-fallback {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background-color: #5a5a5a;
+    border: 1px solid #5a5a5a;
+    flex-shrink: 0;
+    /* 프로필 이미지 클릭 가능하도록 */
+     cursor: pointer;
+}
 
 /* 이름과 삭제 버튼, 텍스트 버블을 묶는 컨테이너 */
 .message-content-wrapper {
-    display: flex;
-    flex-direction: column; /* 이름/버튼과 버블을 세로로 배치 */
-    flex: 1; /* 남은 공간 차지 */
-     min-width: 0; /* 부모의 flex에 의해 축소될 때 내용이 숨겨지지 않도록 함 */
-    /* 기본 왼쪽 정렬 (필요에 따라 역할별로 오버라이드) */
-    /* align-items: flex-start; */ /* 기본값 사용 또는 역할별 설정 */
+    display: flex;
+    flex-direction: column; /* 이름/버튼과 버블을 세로로 배치 */
+    flex: 1; /* 남은 공간 차지 */
+     min-width: 0; /* 부모의 flex에 의해 축소될 때 내용이 숨겨지지 않도록 함 */
+    /* 기본 왼쪽 정렬 (필요에 따라 역할별로 오버라이드) */
+    /* align-items: flex-start; */ /* 기본값 사용 또는 역할별 설정 */
 }
 
 /* 유저 wrapper (align content LEFT) */
 .message-container.user .message-content-wrapper {
-    align-items: flex-start; /* Name/Delete와 Bubble을 왼쪽으로 정렬 */
+    align-items: flex-start; /* Name/Delete와 Bubble을 왼쪽으로 정렬 */
 }
 
 /* 캐릭터 wrapper (align content RIGHT) */
 .message-container.bot .message-content-wrapper {
-    align-items: flex-end; /* Name/Delete와 Bubble을 오른쪽으로 정렬 */
+    align-items: flex-end; /* Name/Delete와 Bubble을 오른쪽으로 정렬 */
 }
 
 
 /* Role name container (Name + Delete) */
 .role-name {
-    font-size: 0.8rem;
-    color: #b0b0b0;
-    margin-bottom: 0.2rem;
-    display: flex; /* flexbox 활성화 */
-    align-items: center; /* 세로 중앙 정렬 */
-    /* 역할에 따라 justify-content 설정 */
-    /* 이미지 메시지일 때 이름/삭제 버튼 블록의 스타일 */
-     flex-shrink: 0; /* 축소되지 않도록 함 */
-     /* flex: none; */ /* flex item이 되지 않도록 함 -> image-message-block과 같은 레벨에서 flex item으로 만듦 */
-     /* 이미지 메시지일 때 좌우 정렬은 message-container의 flexbox 순서와 gap으로 처리 */
+    font-size: 0.8rem;
+    color: #b0b0b0;
+    margin-bottom: 0.2rem;
+    display: flex; /* flexbox 활성화 */
+    align-items: center; /* 세로 중앙 정렬 */
+    /* 역할에 따라 justify-content 설정 */
+    /* 이미지 메시지일 때 이름/삭제 버튼 블록의 스타일 */
+     flex-shrink: 0; /* 축소되지 않도록 함 */
+     /* flex: none; */ /* flex item이 되지 않도록 함 -> image-message-block과 같은 레벨에서 flex item으로 만듦 */
+     /* 이미지 메시지일 때 좌우 정렬은 message-container의 flexbox 순서와 gap으로 처리 */
 
 }
 
 /* 유저 role name (align content LEFT) */
 .message-container.user .role-name { /* 텍스트/이미지 메시지 공통 */
-    justify-content: flex-start;
- }
+    justify-content: flex-start;
+}
 
 /* 캐릭터 role name (align content RIGHT) */
 .message-container.bot .role-name { /* 텍스트/이미지 메시지 공통 */
-    justify-content: flex-end;
- }
+    justify-content: flex-end;
+}
 
 
 /* 이름 텍스트 */
 .name-text {
-     flex-shrink: 0;
-     min-width: 0;
-     /* Text alignment depends on role */
- }
+     flex-shrink: 0;
+     min-width: 0;
+     /* Text alignment depends on role */
+}
 
 /* 유저 name text (align LEFT) */
- .message-container.user .name-text {
-     text-align: left; /* 이름 텍스트 왼쪽 정렬 */
-     order: 1; /* 삭제 버튼 뒤에 오도록 */
- }
+ .message-container.user .name-text {
+     text-align: left; /* 이름 텍스트 왼쪽 정렬 */
+     order: 1; /* 삭제 버튼 뒤에 오도록 */
+}
 
 /* 캐릭터 name text (align RIGHT) */
 .message-container.bot .name-text {
-    text-align: right; /* 이름 텍스트 오른쪽 정렬 */
-    order: 0; /* 삭제 버튼 앞에 오도록 (캐릭터는 이름이 먼저) */
+    text-align: right; /* 이름 텍스트 오른쪽 정렬 */
+    order: 0; /* 삭제 버튼 앞에 오도록 (캐릭터는 이름이 먼저) */
 }
 
 /* Delete button */
 .delete-btn {
- background: transparent;
- border: none;
- color: #aaa;
- font-size: 1rem;
- cursor: pointer;
- padding: 0 0.2rem;
- z-index: 1;
- flex-shrink: 0;
+ background: transparent;
+ border: none;
+ color: #aaa;
+ font-size: 1rem;
+ cursor: pointer;
+ padding: 0 0.2rem;
+ z-index: 1;
+ flex-shrink: 0;
 }
 
 /* 유저 삭제 버튼 (이름 왼쪽에 10px 간격) */
 .message-container.user .role-name .delete-btn {
-     margin-right: 10px; /* 이름 왼쪽에 간격 */
-     margin-left: 0;
-     order: 0; /* 이름(order 1) 앞에 오도록 */
- }
+     margin-right: 10px; /* 이름 왼쪽에 간격 */
+     margin-left: 0;
+     order: 0; /* 이름(order 1) 앞에 오도록 */
+}
 
 /* 캐릭터 삭제 버튼 (이름 오른쪽에 10px 간격) */
 .message-container.bot .role-name .delete-btn {
-     margin-left: 10px; /* 이름 오른쪽에 간격 */
-     margin-right: 0;
-     order: 1; /* 이름(order 0) 뒤에 오도록 */
- }
+     margin-left: 10px; /* 이름 오른쪽에 간격 */
+     margin-right: 0;
+     order: 1; /* 이름(order 0) 뒤에 오도록 */
+}
 
 /* Text message bubble */
 .message-bubble {
-    padding: 0.75rem 1rem;
-    border-radius: 1rem;
-    max-width: 100%;
-    word-break: break-word;
-    line-height: 1.4;
-    position: relative;
-    font-size: 1rem;
-    white-space: pre-wrap; /* 줄바꿈 유지 */
-    margin-bottom: 0;
+    padding: 0.75rem 1rem;
+    border-radius: 1rem;
+    max-width: 100%;
+    word-break: break-word;
+    line-height: 1.4;
+    position: relative;
+    font-size: 1rem;
+    white-space: pre-wrap; /* 줄바꿈 유지 */
+    margin-bottom: 0;
 }
 
 /* 캐릭터 bubble (point bottom right) */
 .message-container.bot .message-bubble {
-    background-color: #3a4a4a;
-    color: #ffffff;
-    border-radius: 1rem 1rem 1rem 0.3rem;
+    background-color: #3a4a4a;
+    color: #ffffff;
+    border-radius: 1rem 1rem 1rem 0.3rem;
 }
 
 /* 유저 bubble (point bottom left) */
 .message-container.user .message-bubble {
-    background-color: #4a3a7a;
-    color: #ffffff;
-    border-radius: 1rem 1rem 0.3rem 1rem;
+    background-color: #4a3a7a;
+    color: #ffffff;
+    border-radius: 1rem 1rem 0.3rem 1rem;
 }
 
 
 /* 이미지 페이드 컨테이너 스타일 (사용자 제공 + 수정) */
 .image-fade-container {
-    position: relative;
-    display: block; /* 블록 요소로 변경하여 부모 너비에 맞게 */
-     width: 100%; /* 부모(.image-message-block) 너비에 꽉 채우도록 */
-     height: auto; /* 이미지 비율에 맞게 높이 자동 */
-     overflow: hidden; /* 마스크 효과 적용을 위해 필요 */
+    position: relative;
+    display: block; /* 블록 요소로 변경하여 부모 너비에 맞게 */
+    width: 100%; /* 부모(.image-message-block) 너비에 꽉 채우도록 */
+    height: auto; /* 이미지 비율에 맞게 높이 자동 */
+    overflow: hidden; /* 마스크 효과 적용을 위해 필요 */
 }
 
 /* 페이드 효과를 위한 ::before 의사 요소 */
 .image-fade-container::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 1; /* 이미지 위에 오도록 */
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1; /* 이미지 위에 오도록 */
 
-    /* 좌우 페이드 효과용 linear-gradient 마스크 */
-    mask-image: linear-gradient(to right, transparent, black 20%, black 80%, transparent);
-    -webkit-mask-image: linear-gradient(to right, transparent, black 20%, black 80%, transparent);
+    /* 좌우 페이드 효과용 linear-gradient 마스크 */
+    mask-image: linear-gradient(to right, transparent, black 20%, black 80%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 20%, black 80%, transparent);
 
-     /* 마스크 적용 대상은 기본적으로 컨테이너의 배경 또는 내용입니다. */
-     /* 여기서는 ::before 자체에 마스크를 적용하여 투명도를 조절합니다. */
-     /* 실제 이미지는 이 ::before 뒤에 배치됩니다. */
-     /* 따라서 ::before는 단순히 투명도를 조절하는 오버레이 역할을 합니다. */
-     background: black; /* 마스크가 적용될 배경색 (black 부분은 불투명, transparent 부분은 투명) */
+     /* 마스크 적용 대상은 기본적으로 컨테이너의 배경 또는 내용입니다. */
+     /* 여기서는 ::before 자체에 마스크를 적용하여 투명도를 조절합니다. */
+     /* 실제 이미지는 이 ::before 뒤에 배치됩니다. */
+     /* 따라서 ::before는 단순히 투명도를 조절하는 오버레이 역할을 합니다. */
+     background: black; /* 마스크가 적용될 배경색 (black 부분은 불투명, transparent 부분은 투명) */
 }
 
 /* 실제 이미지 스타일 (새로 추가/수정) */
 .chat-image {
-     display: block; /* 인라인 요소의 하단 여백 제거 */
-     width: 100%; /* 부모 컨테이너 너비에 꽉 채우도록 */
-     height: auto; /* 비율 유지 */
-     border-radius: 8px; /* 테두리 둥글게 */
-     object-fit: cover; /* 컨테이너에 맞게 잘라낼 경우 사용 (여기서는 max-width로 비율 유지) */
-     /* border: 1px solid #5a5a5a; */ /* 테두리 - 이미지 블록 자체에 적용 */
-     cursor: pointer; /* 클릭 가능 표시 */
-     /* 마스크는 부모 컨테이너에 적용되었으므로 이미지 자체에는 filter: blur 없음 */
-     margin: 0; /* 이미지 자체 마진 제거 */
-     padding: 0; /* 이미지 자체 패딩 제거 */
-     /* 블러 효과는 마스크와 함께 적용되므로 이미지 자체에는 filter: blur 없음 */
+     display: block; /* 인라인 요소의 하단 여백 제거 */
+     width: 100%; /* 부모 컨테이너 너비에 꽉 채우도록 */
+     height: auto; /* 비율 유지 */
+     border-radius: 8px; /* 테두리 둥글게 */
+     object-fit: cover; /* 컨테이너에 맞게 잘라낼 경우 사용 (여기서는 max-width로 비율 유지) */
+     /* border: 1px solid #5a5a5a; */ /* 테두리 - 이미지 블록 자체에 적용 */
+     cursor: pointer; /* 클릭 가능 표시 */
+     /* 마스크는 부모 컨테이너에 적용되었으므로 이미지 자체에는 filter: blur 없음 */
+     margin: 0; /* 이미지 자체 마진 제거 */
+     padding: 0; /* 이미지 자체 패딩 제거 */
+     /* 블러 효과는 마스크와 함께 적용되므로 이미지 자체에는 filter: blur 없음 */
 }
 
- /* 이미지 로드 오류 시 스타일 */
- .chat-image.error-image {
-     /* background-color: #5a5a5a; */ /* 오류 시 배경색 - 이미지 블록 자체에 적용 */
-     /* 오류 아이콘 등 추가 가능 */
- }
+ /* 이미지 로드 오류 시 스타일 */
+ .chat-image.error-image {
+     /* background-color: #5a5a5a; */ /* 오류 시 배경색 - 이미지 블록 자체에 적용 */
+     /* 오류 아이콘 등 추가 가능 */
+ }
 
 
 /* Input Area 전체 스타일 (수정) */
+/* #inputArea는 flex-direction: column으로 자식들을 세로로 배열합니다. */
+/* z-index를 높여 오버레이 위에 오도록 설정 */
 #inputArea {
-    display: flex; /* Flexbox 사용 */
-    flex-direction: column; /* 자식 요소들을 세로로 쌓습니다: textarea 위에 input-controls */
-    padding: 1rem 1.5rem 2rem 1.5rem; /* 위: 1rem, 오른쪽: 1.5rem, 아래: 2rem, 왼쪽: 1.5rem */
-    background-color: #1E1E1E;
-    /* border-top: 1px solid #3a3a3a; */ /* 구분선 제거 */
-    /* align-items는 자식 요소(textarea, input-controls)가 컨테이너 너비를 채우도록 stretch */
-    align-items: stretch;
-    gap: 0.75rem; /* 자식 요소 (textarea와 input-controls) 간의 세로 간격 */
-    flex-shrink: 0;
-    position: relative; /* 내부 절대 위치 요소 기준 */
-    /* 상단에 그림자 추가 */
-    box-shadow: 0 -20px 20px 0px rgba(30, 30, 30);
-    z-index: 1;
-    border: 1px solid #a9a9a9; /* 1px 은색/어두운 회색 테두리 */
-    border-radius: 15px; /* 사방 둥글게 */
+    display: flex; /* Flexbox 사용 */
+    flex-direction: column; /* 자식 요소들을 세로로 쌓습니다. */
+    padding: 1rem 1.5rem 2rem 1.5rem; /* 위: 1rem, 오른쪽: 1.5rem, 아래: 2rem, 왼쪽: 1.5rem */
+    background-color: #1E1E1E;
+    /* border-top: 1px solid #3a3a3a; */ /* 구분선 제거 */
+    /* align-items는 자식 요소(textarea, input-controls)가 컨테이너 너비를 채우도록 stretch */
+    align-items: stretch;
+    gap: 0.75rem; /* #inputArea 내부의 세로 요소들 간의 간격 */
+    flex-shrink: 0;
+    position: relative; /* #actionMenu의 absolute 포지셔닝 기준이 됩니다. */
+    /* 상단에 그림자 추가 */
+    box-shadow: 0 -20px 20px 0px rgba(30, 30, 30);
+    /* z-index: 1; <-- 이 부분을 수정 */
+    z-index: 510; /* #inputArea와 그 자식(#actionMenu 포함)이 오버레이(z-index: 490) 위에 오도록 설정 */
+    border: 1px solid #a9a9a9; /* 1px 은색/어두운 회색 테두리 */
+    border-radius: 15px; /* 사방 둥글게 */
 }
 
-/* Textarea 스타일 (수정) */
-#userInput {
-    flex: 1; /* 남은 공간을 차지하여 높이가 늘어나도록 합니다. */
-    padding: 0.75rem 1rem;
-    border-radius: 1.5rem;
-    border: none;
-    background-color: #3a3a3a;
-    color: #e0e0e0;
-    font-size: 1rem;
-    outline: none;
-    transition: background-color 0.2s ease, box-shadow 0.2s ease;
-    resize: none; /* 크기 조절 비활성화 */
-    line-height: 1.4;
-    box-sizing: border-box;
-    min-height: calc(1em * 1.4 * 2 + 0.75rem * 2); /* 최소 높이 유지 */
-    height: auto; /* 내용에 따라 높이 자동 조절 */
-    overflow-y: auto; /* 필요시 스크롤바 표시 */
-    padding-top: 0.75rem;
-    padding-bottom: 0.75rem;
+/* 기존 .input-controls 스타일은 사용하지 않습니다. */
+/* .input-controls { ... } */
+
+
+/* 새로운 하단 컨트롤 묶음 컨테이너 스타일 */
+/* 이 div는 #inputArea 내부의 마지막 요소이며, 내부 요소들을 가로로 배열합니다. */
+.input-controls-bottom-row {
+    display: flex; /* 내부 요소들 (버튼, textarea) 가로 배열 */
+    align-items: flex-end; /* 내부 요소들을 하단에 정렬 */
+    gap: 0.75rem; /* 내부 요소들 간의 간격 */
+    width: 100%; /* 부모 (#inputArea) 너비에 꽉 채움 */
+    margin-top: auto; /* #inputArea (flex column) 내에서 이 요소를 가장 아래로 밀어냅니다. */
 }
 
-#userInput:focus {
-    background-color: #4a4a4a;
-    box-shadow: 0 0 0 0.15rem rgba(80, 150, 255, 0.3);
-}
 
-/* '+' 버튼과 전송 버튼을 감싸는 컨테이너 스타일 */
-.input-controls {
-    display: flex; /* Flexbox 사용 */
-    justify-content: space-between; /* 왼쪽 끝과 오른쪽 끝에 요소 배치 */
-    align-items: flex-end; /* 요소들을 아래쪽에 정렬 */
-    width: 100%; /* 부모 (#inputArea) 너비를 채우도록 */
-    /* gap: 0.75rem; /* 버튼 간 간격은 필요에 따라 제거하거나 유지 */
-    /* z-index는 개별 버튼에 설정 */
-} /* <-- 여기에 } 닫는 중괄호를 추가했습니다. */
-
-
-/* '+' 버튼 스타일 (수정) */
+/* '+' 버튼 스타일 */
+/* .input-controls-bottom-row 안에서 왼쪽(flex-start)에 위치하도록 조정 */
 #actionMenuButton {
-    /* 기존 원형 스타일 제거 */
-    width: auto; /* 내용에 맞게 너비 자동 조절 */
-    height: auto; /* 내용에 맞게 높이 자동 조절 */
-    border-radius: 0; /* 둥글게 하지 않음 */
-    background-color: transparent; /* 배경 투명 */
-    color: #e0e0e0; /* 글자색 유지 */
-    border: none; /* 테두리 없음 */
-    font-size: 1.5rem; /* 폰트 크기 (텍스트 크기) */
-    cursor: pointer;
-    flex-shrink: 0;
-    display: flex; /* 내부 내용 중앙 정렬 (텍스트) */
-    justify-content: center;
-    align-items: center;
-    transition: color 0.2s ease; /* 배경색 대신 글자색 트랜지션 */
-    padding: 0.2rem 0.5rem; /* 내부 패딩 조정 */
-    align-self: flex-end; /* 부모(.input-controls) 하단에 정렬 */
-    z-index: 3; /* 전송 버튼이나 스피너 위에 오도록 설정 */
+    /* 기존 스타일 유지 (크기, 색상, 배경 등) */
+    width: auto;
+    height: auto;
+    border-radius: 0;
+    background-color: transparent;
+    color: #e0e0e0;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: color 0.2s ease;
+    padding: 0.2rem 0.5rem;
+    /* align-self: flex-end; <-- 이전 스타일. .input-controls-bottom-row 안에서 조정하므로 제거 */
+    align-self: auto; /* 기본값 */
+    z-index: 3; /* 전송 버튼이나 스피너 위에 오도록 설정 */
+    order: 0; /* .input-controls-bottom-row 안에서 가장 첫 번째 (왼쪽)에 위치 */
 }
- #actionMenuButton:hover {
-     color: #ffffff; /* 호버 시 글자색 변경 */
-     background-color: transparent;
- }
+ #actionMenuButton:hover {
+     color: #ffffff;
+     background-color: transparent;
+}
 
 
-/* 전송 버튼 스타일 (수정) */
+/* Textarea 스타일 */
+/* .input-controls-bottom-row 안에서 남은 공간을 차지하도록 조정 */
+#userInput {
+    flex: 1; /* 남은 공간을 차지하여 너비가 늘어나도록 합니다. */
+    padding: 0.75rem 1rem;
+    border-radius: 1.5rem;
+    border: none;
+    background-color: #3a3a3a;
+    color: #e0e0e0;
+    font-size: 1rem;
+    outline: none;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+    resize: none; /* 크기 조절 비활성화 */
+    line-height: 1.4;
+    box-sizing: border-box;
+    min-height: calc(1em * 1.4 * 2 + 0.75rem * 2); /* 최소 높이 유지 */
+    height: auto; /* 내용에 따라 높이 자동 조절 */
+    overflow-y: auto; /* 필요시 스크롤바 표시 */
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+    order: 1; /* .input-controls-bottom-row 안에서 두 번째에 위치 */
+}
+#userInput:focus {
+    background-color: #4a4a4a;
+    box-shadow: 0 0 0 0.15rem rgba(80, 150, 255, 0.3);
+}
+
+
+/* 전송 버튼 스타일 */
+/* .input-controls-bottom-row 안에서 오른쪽에 위치하도록 조정 */
 #sendButton {
-    /* 기존 padding 제거 */
-    width: 40px; /* 작은 크기 */
-    height: 40px; /* 작은 크기 (아이콘에 맞게) */
-    border-radius: 50%; /* 원형 유지 (또는 네모로 변경 가능) */
-    background-color: #5080ff;
-    color: #ffffff;
-    font-size: 1rem; /* 아이콘 크기 */
-    flex-shrink: 0;
-    border: none;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: background-color 0.2s ease;
-    padding: 0;
-    align-self: flex-end; /* 부모(.input-controls) 하단에 정렬 */
-    z-index: 3; /* '+' 버튼이나 스피너 위에 오도록 설정 */
+    /* 기존 스타일 유지 */
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #5080ff;
+    color: #ffffff;
+    font-size: 1rem;
+    flex-shrink: 0;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.2s ease;
+    padding: 0;
+    /* align-self: flex-end; <-- 이전 스타일. .input-controls-bottom-row 안에서 조정하므로 제거 */
+    align-self: auto; /* 기본값 */
+    z-index: 3; /* 다른 요소 위에 오도록 설정 */
+    order: 2; /* .input-controls-bottom-row 안에서 세 번째 (오른쪽)에 위치 */
 }
- #sendButton:hover { background-color: #6699ff; }
- #sendButton:active { background-color: #3366cc; }
- #sendButton:disabled {
-    background-color: #4a4a4a;
-    color: #b0b0b0;
-    cursor: not-allowed;
- }
+#sendButton:hover { background-color: #6699ff; }
+#sendButton:active { background-color: #3366cc; }
+#sendButton:disabled {
+    background-color: #4a4a4a;
+    color: #b0b0b0;
+    cursor: not-allowed;
+}
 
-/* 로딩 스피너 스타일 (위치 조정) */
+
+/* 로딩 스피너 스타일 */
+/* #inputArea 기준으로 absolute 위치 유지 */
 #loadingSpinner {
-    border: 4px solid rgba(255, 255, 255, 0.3);
-    border-top: 4px solid #fff;
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    animation: spin 1s linear infinite;
-    display: none;
-    /* inputArea가 relative이므로 absolute로 위치 지정 */
-    position: absolute;
-    bottom: 3rem; /* inputArea 하단에서 조금 위 */
-    right: 2rem; /* inputArea 오른쪽에서 조금 안쪽 */
-    z-index: 4; /* 버튼들보다 더 위에 오도록 설정 */
+    /* 기존 스타일 유지 */
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top: 4px solid #fff;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    animation: spin 1s linear infinite;
+    display: none;
+    /* #inputArea 기준으로 위치 지정 */
+    position: absolute;
+    /* bottom: 3rem; right: 2rem; <-- 이전 위치. 새로운 하단 row에 맞춰 조정 */
+    bottom: calc(2rem + 0.75rem/2); /* 하단 row의 패딩과 gap 고려하여 대략적인 위치 설정 */
+    right: 2rem; /* #inputArea 오른쪽 패딩 안쪽 */
+    z-index: 4; /* 버튼들(z-index: 3) 위에 오도록 설정 */
 }
-
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 /* 초기 공지 스타일 */
 .initial-notice {
-    text-align: center; /* 중앙 정렬 */
-    margin: 0.1rem auto 0.1rem auto; /* 위, 아래 여백 및 중앙 정렬 */
-    color: #515151; /* 글자색 변경 */
-    font-size: 0.9rem; /* 글자 크기 줄임 */
-    padding: 1rem;
-    max-width: 80%; /* 너무 길어지지 않도록 최대 너비 설정 */
-    word-break: break-word;
+    text-align: center; /* 중앙 정렬 */
+    margin: 0.1rem auto 0.1rem auto; /* 위, 아래 여백 및 중앙 정렬 */
+    color: #515151; /* 글자색 변경 */
+    font-size: 0.9rem; /* 글자 크기 줄임 */
+    padding: 1rem;
+    max-width: 80%; /* 너무 길어지지 않도록 최대 너비 설정 */
+    word-break: break-word;
 }
 
 /* 공지 아래 구분선 스타일 */
 .notice-divider {
-    width: 90%; /* 가로선 너비 */
-    height: 1px;
-    background-color: #3a3a3a; /* 구분선 색상 */
-    margin: 0.5rem auto 1.5rem auto; /* 위, 아래 여백 및 중앙 정렬 */
+    width: 90%; /* 가로선 너비 */
+    height: 1px;
+    background-color: #3a3a3a; /* 구분선 색상 */
+    margin: 0.5rem auto 1.5rem auto; /* 위, 아래 여백 및 중앙 정렬 */
 }
 
 
+/* 이미지 확대 오버레이 스타일 */
 .overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.9);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-    display: none; /* Initially hidden */
-    cursor: pointer;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* 가장 위에 오도록 */
+    display: none; /* Initially hidden */
+    cursor: pointer;
 }
 
 .overlay img {
-    max-width: 90%;
-    max-height: 90%;
-    object-fit: contain;
-    border-radius: 8px;
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+    border-radius: 8px;
 }
 
+/* 사이드바 스타일 */
 #sidebar {
-    position: fixed;
-    top: 0;
-    right: -300px;
-    width: 300px;
-    height: 100%;
-    background-color: #1f1f1f;
-    color: #e0e0e0;
-    border-left: 1px solid #3a3a3a;
-    transition: right 0.3s ease-out;
-    z-index: 900;
-    padding: 1rem;
-    box-sizing: border-box;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    /* 스크롤바 스타일 */
-    scrollbar-width: thin;
-    scrollbar-color: #5a5a5a #1f1f1f; /* 썸네일색 트랙색 */
+    position: fixed;
+    top: 0;
+    right: -300px;
+    width: 300px;
+    height: 100%;
+    background-color: #1f1f1f;
+    color: #e0e0e0;
+    border-left: 1px solid #3a3a3a;
+    transition: right 0.3s ease-out;
+    z-index: 900; /* 오버레이들 위에 오도록 */
+    padding: 1rem;
+    box-sizing: border-box;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    /* 스크롤바 스타일 */
+    scrollbar-width: thin;
+    scrollbar-color: #5a5a5a #1f1f1f; /* 썸네일색 트랙색 */
 }
 /* Webkit 브라우저용 스크롤바 스타일 */
 #sidebar::-webkit-scrollbar { width: 8px; }
 #sidebar::-webkit-scrollbar-track { background: #1f1f1f; }
 #sidebar::-webkit-scrollbar-thumb {
-    background-color: #5a5a5a;
-    border-radius: 4px;
-    border: 2px solid #1f1f1f;
+    background-color: #5a5a5a;
+    border-radius: 4px;
+    border: 2px solid #1f1f1f;
 }
-
 
 #sidebar.visible {
-    right: 0;
+    right: 0;
 }
 
- .sidebar-header {
-     font-size: 1.1rem;
-     font-weight: bold;
-     margin-bottom: 1rem;
-     padding-bottom: 0.5rem;
-     border-bottom: 1px solid #3a3a3a;
- }
+ .sidebar-header {
+     font-size: 1.1rem;
+     font-weight: bold;
+     margin-bottom: 1rem;
+     padding-bottom: 0.5rem;
+     border-bottom: 1px solid #3a3a3a;
+ }
 
- .sidebar-content label {
-     display: block;
-     margin-bottom: 0.5rem;
-     font-weight: bold;
-     color: #b0b0b0;
- }
+ .sidebar-content label {
+     display: block;
+     margin-bottom: 0.5rem;
+     font-weight: bold;
+     color: #b0b0b0;
+ }
 
- /* 설정 입력 칸 스타일 수정: 모서리 둥글게 */
- .sidebar-content input[type="text"],
- .sidebar-content textarea {
-     width: 100%;
-     padding: 0.75rem;
-     border: none;
-     border-radius: 8px; /* 더 둥글게 */
-     background-color: #3a3a3a;
-     color: #e0e0e0;
-     font-size: 1rem;
-     margin-bottom: 1rem;
-     box-sizing: border-box;
-     resize: vertical;
- }
+ /* 설정 입력 칸 스타일 수정: 모서리 둥글게 */
+ .sidebar-content input[type="text"],
+ .sidebar-content textarea {
+     width: 100%;
+     padding: 0.75rem;
+     border: none;
+     border-radius: 8px; /* 더 둥글게 */
+     background-color: #3a3a3a;
+     color: #e0e0e0;
+     font-size: 1rem;
+     margin-bottom: 1rem;
+     box-sizing: border-box;
+     resize: vertical;
+ }
 
- .sidebar-content textarea {
-     min-height: 150px;
- }
+ .sidebar-content textarea {
+     min-height: 150px;
+ }
 
- .sidebar-save-button {
-     display: block;
-     width: 100%;
-     padding: 0.75rem;
-     border: none;
-     border-radius: 4px;
-     background-color: #5080ff;
-     color: #ffffff;
-     font-size: 1rem;
-     font-weight: bold;
-     cursor: pointer;
-     transition: background-color 0.2s ease;
-     text-align: center;
- }
- .sidebar-save-button:hover {
-     background-color: #6699ff;
- }
+ .sidebar-save-button {
+     display: block;
+     width: 100%;
+     padding: 0.75rem;
+     border: none;
+     border-radius: 4px;
+     background-color: #5080ff;
+     color: #ffffff;
+     font-size: 1rem;
+     font-weight: bold;
+     cursor: pointer;
+     transition: background-color 0.2s ease;
+     text-align: center;
+ }
+ .sidebar-save-button:hover {
+     background-color: #6699ff;
+ }
 
+/* 사이드바 오버레이 스타일 */
 .sidebar-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 890; /* 사이드바(900) 아래, 액션 메뉴(500) 위에 오도록 조정 */
-            display: none; /* 기본적으로 숨김 */
-         }
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 890; /* 사이드바(900) 아래에 오도록 */
+            display: none; /* 기본적으로 숨김 */
+         }
 
-        .sidebar-section-divider {
-             height: 1px;
-             background-color: #3a3a3a;
-             margin: 1.5rem 0;
-        }
+/* 사이드바 섹션 구분선 */
+.sidebar-section-divider {
+             height: 1px;
+             background-color: #3a3a3a;
+             margin: 1.5rem 0;
+        }
 
-        /* 설정 슬롯 버튼 스타일 */
-        .setting-slots {
-            margin-bottom: 1rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 1px solid #3a3a3a;
-        }
+/* 설정 슬롯 버튼 컨테이너 */
+.setting-slots {
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #3a3a3a;
+}
 
-        .setting-slots h3 {
-            margin-top: 0;
-            margin-bottom: 0.5rem;
-            font-size: 1rem;
-            color: #b0b0b0;
-        }
+.setting-slots h3 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+    color: #b0b0b0;
+}
 
-        .slot-buttons-container {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
+.slot-buttons-container {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
 
-        .slot-button {
-            width: 35px;
-            height: 35px;
-            border-radius: 50%; /* 동그라미 */
-            background-color: #5a5a5a;
-            color: #ffffff;
-            border: none;
-            font-size: 1rem;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: background-color 0.2s ease, transform 0.1s ease;
-            flex-shrink: 0;
-        }
+/* 설정 슬롯 버튼 */
+.slot-button {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%; /* 동그라미 */
+    background-color: #5a5a5a;
+    color: #ffffff;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    flex-shrink: 0;
+}
 
-        .slot-button:hover {
-            background-color: #6a6a6a;
-        }
+.slot-button:hover {
+    background-color: #6a6a6a;
+}
 
-        .slot-button.active {
-            background-color: #5080ff;
-            transform: scale(1.1);
-        }
-         .slot-button:active {
-             background-color: #3366cc;
-         }
+.slot-button.active {
+    background-color: #5080ff;
+    transform: scale(1.1);
+}
+         .slot-button:active {
+             background-color: #3366cc;
+         }
 
-  .delete-btn {
-    background: transparent;
-    border: none;
-    color: #aaa;
-    font-size: 1rem;
-    cursor: pointer;
-    /* position: absolute; */ /* 절대 위치 제거 */
-    /* top: 8px; right: 8px; */ /* 위치 속성 제거 */
-    padding: 0 0.2rem; /* 버튼 내부 패딩 조정 */
-    z-index: 1; /* 다른 요소 위에 오도록 z-index 유지 */
-    flex-shrink: 0; /* 이름이 길어지더라도 버튼 크기 고정 */
-    /* 이름과의 간격 및 위치는 아래 역할별 CSS에서 설정 */
-  }
+/* 메시지 삭제 버튼 */
+.delete-btn {
+  background: transparent;
+  border: none;
+  color: #aaa;
+  font-size: 1rem;
+  cursor: pointer;
+  /* position: absolute; */ /* 절대 위치 제거 */
+  /* top: 8px; right: 8px; */ /* 위치 속성 제거 */
+  padding: 0 0.2rem; /* 버튼 내부 패딩 조정 */
+  z-index: 1; /* 다른 요소 위에 오도록 z-index 유지 */
+  flex-shrink: 0; /* 이름이 길어지더라도 버튼 크기 고정 */
+  /* 이름과의 간격 및 위치는 아래 역할별 CSS에서 설정 */
+}
 
-    /* 캐릭터 메시지의 삭제 버튼 (이름 오른쪽에 10px 간격) */
-   .message-container.bot .role-name .delete-btn {
-        margin-left: 10px; /* 이름과의 간격 */
-        order: 1; /* 이름(order 0) 뒤에 오도록 */
-    }
+/* 캐릭터 메시지의 삭제 버튼 (이름 오른쪽에 10px 간격) */
+.message-container.bot .role-name .delete-btn {
+    margin-left: 10px; /* 이름과의 간격 */
+    order: 1; /* 이름(order 0) 뒤에 오도록 */
+}
 
-    /* 유저 메시지의 삭제 버튼 (이름 왼쪽에 10px 간격) */
-    .message-container.user .role-name .delete-btn {
-        margin-right: 10px; /* 이름과의 간격 */
-        order: 0; /* 이름(order 1) 앞에 오도록 */
-    }
+/* 유저 메시지의 삭제 버튼 (이름 왼쪽에 10px 간격) */
+.message-container.user .role-name .delete-btn {
+    margin-right: 10px; /* 이름과의 간격 */
+    order: 0; /* 이름(order 1) 앞에 오도록 */
+}
 
-    /* 유저 메시지에서 이름 텍스트 순서 조정 */
-    .message-container.user .role-name .name-text {
-        order: 1; /* 삭제 버튼(order 0) 뒤에 오도록 */
-    }
+/* 유저 메시지에서 이름 텍스트 순서 조정 */
+.message-container.user .role-name .name-text {
+    order: 1; /* 삭제 버튼(order 0) 뒤에 오도록 */
+}
 
-
-  .message-container {
-    position: relative;
- }
+/* 메시지 컨테이너 (position: relative 추가됨) */
+.message-container {
+    position: relative;
+}
 
 /* 액션 메뉴 오버레이 스타일 */
+/* 투명 오버레이 */
 #menuOverlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: transparent;
-    z-index: 490; /* 사이드바(900) 아래, 오버레이(890) 아래, 액션 메뉴(500) 아래 */
-    display: none; /* 기본적으로 숨김 */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: transparent; /* 배경 투명 */
+    /* z-index: 490; <-- 이 값 유지. #inputArea (510) 보다 아래에 오도록 */
+    z-index: 490;
+    display: none; /* 기본적으로 숨김 */
 }
 
 /* 액션 메뉴 컨테이너 스타일 */
-/* #actionMenu가 이제 #inputArea의 자식이므로, #inputArea를 기준으로 위치를 잡습니다. */
+/* #actionMenu가 이제 #inputArea (position: relative, z-index: 510)의 자식이므로, #inputArea를 기준으로 위치를 잡습니다. */
+/* '+' 버튼 (.input-controls-bottom-row 내부의 첫 요소) 바로 위에 오도록 위치 조정 */
 #actionMenu {
-    position: absolute; /* 부모 (#inputArea, position: relative) 기준 절대 위치 */
-    /* bottom: calc(100% + 10px); <-- 이전 위치 계산 방식. 이제 #inputArea의 바닥에서 계산합니다. */
-    bottom: calc(100% + 10px); /* #inputArea 높이의 100% + 10px 만큼 위로 이동 -> #inputArea 바로 위 */
-    /* left: 50%; transform: translateX(-50%); <-- 이전 중앙 정렬 방식. 오른쪽 버튼 기준으로 정렬합니다. */
-    right: 0.5rem; /* #inputArea의 오른쪽 패딩(1.5rem)보다 조금 안쪽으로 조절 (버튼 위치 고려) */
-    left: auto; /* left 속성 제거 */
-    transform: none; /* transform 속성 제거 */
+    position: absolute; /* 부모 (#inputArea) 기준 절대 위치 */
+    /* bottom, left, transform 속성으로 위치 조정 */
+    /* '+' 버튼의 위치를 고려하여 메뉴의 왼쪽 하단 모서리가 버튼 근처에 오도록 설정 */
+    bottom: calc(100% - 0.5rem); /* #inputArea 높이의 100% - 0.5rem 만큼 위로 이동 -> 하단 row 바로 위 */
+    left: 1.5rem; /* #inputArea 왼쪽 패딩에 맞춰 메뉴 왼쪽 끝 위치 */
+    /* right: auto; <-- 이전 스타일. left와 함께 사용 */
+    right: auto;
+    /* transform: none; <-- 이전 스타일 */
+    transform: none;
 
 
-    width: 180px; /* 텍스트 메뉴 항목에 맞게 너비 조정 */
-    max-width: 180px; /* 최대 너비 설정 */
+    width: 180px; /* 텍스트 메뉴 항목에 맞게 너비 조정 */
+    max-width: 180px; /* 최대 너비 설정 */
 
-    background-color: #1f1f1f; /* 배경색 */
-    border: 1px solid #3a3a3a; /* 테두리 */
-    border-radius: 15px; /* 모서리 둥글게 */
-    padding: 0.5rem 0; /* 상하 패딩 조정 */
-    box-sizing: border-box;
-    z-index: 500; /* 오버레이(490) 위에 오도록 */
-    display: flex;
-    flex-direction: column; /* 항목들을 세로로 나열 */
-    align-items: stretch; /* 내부 항목들이 너비를 채우도록 */
+    background-color: #1f1f1f; /* 배경색 */
+    border: 1px solid #3a3a3a; /* 테두리 */
+    border-radius: 15px; /* 모서리 둥글게 */
+    padding: 0.5rem 0; /* 상하 패딩 조정 */
+    box-sizing: border-box;
+    /* z-index: 500; <-- 이 값 유지. #inputArea (510) 안에 있으므로 오버레이(490) 보다 위에 옵니다. */
+    z-index: 500;
 
-    /* 시작 상태: 숨겨져 있다가 보일 때 '뿅' 애니메이션 */
-    opacity: 0;
-    visibility: hidden;
-    /* transform: translate(-50%, 20px); <-- 이전 애니메이션 시작 위치. 제거합니다. */
+    display: flex;
+    flex-direction: column; /* 항목들을 세로로 나열 */
+    align-items: stretch; /* 내부 항목들이 너비를 채우도록 */
 
-    /* transition: opacity 0.3s ease-out, transform 0.3s ease-out, visibility 0.3s ease-out; <-- transition 속성 간소화 */
-    transition: opacity 0.3s ease-out, visibility 0.3s ease-out; /* opacity와 visibility만 transition */
+    /* 시작 상태: 숨겨져 있다가 보일 때 '뿅' 애니메이션 */
+    opacity: 0;
+    visibility: hidden;
+    /* transition: opacity 0.3s ease-out, visibility 0.3s ease-out; <-- transition 유지 */
+    transition: opacity 0.3s ease-out, visibility 0.3s ease-out;
 }
 
 /* 액션 메뉴 보일 때 스타일 */
 #actionMenu.visible {
-    opacity: 1;
-    visibility: visible;
-    /* transform: translate(-50%, 0); <-- 이전 애니메이션 끝 위치. transform 속성 제거 */
-    transform: none; /* visible 상태에서도 transform 없음 */
+    opacity: 1;
+    visibility: visible;
+    transform: none; /* transform 없음 */
 }
 
 /* 액션 메뉴 꼬리 스타일 */
+/* 메뉴의 왼쪽 하단에서 '+' 버튼을 향하도록 위치 조정 */
 #actionMenu::after {
-    content: "";
-    position: absolute;
-    bottom: -10px; /* 액션 메뉴 하단에서 아래로 */
-    /* left: 50%; transform: translateX(-50%); <-- 이전 꼬리 위치 */
-    right: 10px; /* 메뉴 오른쪽 끝에서 10px 떨어진 곳에 꼬리 위치 */
-    left: auto; /* left 속성 제거 */
-    transform: none; /* transform 속성 제거 */
+    content: "";
+    position: absolute;
+    bottom: -10px; /* 메뉴 하단에서 아래로 */
+    left: 10px; /* 메뉴 왼쪽 끝에서 10px 떨어진 곳에 꼬리 위치 */
+    right: auto; /* right 속성 제거 */
+    transform: none; /* transform 속성 제거 */
 
-    width: 0;
-    height: 0;
-    border-left: 10px solid transparent; /* 왼쪽 변 투명 */
-    border-right: 10px solid transparent; /* 오른쪽 변 투명 */
-    border-top: 10px solid #1f1f1f; /* 위 변 색상 (말풍선 배경색과 동일) */
-    z-index: 501; /* 메뉴 자체보다 위에 오도록 (테두리가 겹치지 않게) */
+    width: 0;
+    height: 0;
+    /* border-top: 10px solid #1f1f1f; <-- 이전 스타일 (아래로 향하는 꼬리) 유지 */
+    border-top: 10px solid #1f1f1f; /* 꼬리 색상 (메뉴 배경색과 동일) */
+    border-left: 10px solid transparent; /* 왼쪽 변 투명 */
+    border-right: 10px solid transparent; /* 오른쪽 변 투명 */
+    z-index: 501; /* 메뉴 자체보다 위에 오도록 */
 }
 /* 꼬리 테두리 추가 (선택 사항) */
 #actionMenu::before {
-    content: "";
-    position: absolute;
-    bottom: -12px; /* 꼬리 바로 아래 */
-    /* left: 50%; transform: translateX(-50%); <-- 이전 꼬리 테두리 위치 */
-    right: 9px; /* 메뉴 오른쪽 끝에서 9px 떨어진 곳에 꼬리 테두리 위치 */
-    left: auto; /* left 속성 제거 */
-     transform: none; /* transform 속성 제거 */
+    content: "";
+    position: absolute;
+    bottom: -12px; /* 꼬리 바로 아래 */
+    left: 9px; /* 메뉴 왼쪽 끝에서 9px 떨어진 곳에 꼬리 테두리 위치 */
+    right: auto; /* right 속성 제거 */
+    transform: none; /* transform 속성 제거 */
 
-    width: 0;
-    height: 0;
-    border-left: 12px solid transparent;
-    border-right: 12px solid transparent;
-    border-top: 12px solid #3a3a3a; /* 테두리 색상 */
-    z-index: 500; /* 메뉴 꼬리(501) 아래에 오도록 */
- }
+    width: 0;
+    height: 0;
+    /* border-top: 12px solid #3a3a3a; <-- 이전 스타일 유지 */
+    border-top: 12px solid #3a3a3a; /* 테두리 색상 */
+    border-left: 12px solid transparent;
+    border-right: 12px solid transparent;
+    z-index: 500; /* 메뉴 꼬리(501) 아래에 오도록 */
+}
 
 
 /* 액션 메뉴 내부 버튼 컨테이너 스타일 */
 .menu-buttons {
-    display: flex;
-    flex-direction: column; /* 버튼 세로로 쌓기 */
-    flex-wrap: nowrap; /* 줄바꿈 방지 */
-    gap: 0; /* 버튼 간 간격 제거 */
-    justify-content: flex-start; /* 시작 정렬 */
-    width: 100%; /* 부모 (#actionMenu) 너비를 채우도록 */
-    padding-bottom: 0;
+    display: flex;
+    flex-direction: column; /* 버튼 세로로 쌓기 */
+    flex-wrap: nowrap; /* 줄바꿈 방지 */
+    gap: 0; /* 버튼 간 간격 제거 */
+    justify-content: flex-start; /* 시작 정렬 */
+    width: 100%; /* 부모 (#actionMenu) 너비를 채우도록 */
+    padding-bottom: 0;
 }
 
 /* 액션 메뉴 내부 버튼 스타일 */
-/* 버튼을 단순 텍스트 링크처럼 보이게 수정 */
+/* 텍스트 클릭 영역처럼 보이도록 스타일 수정 */
 #actionMenu button {
-    /* flex-basis: calc(50% - 5px); <-- 이전 버튼 너비 설정. 제거 */
-    flex-basis: auto; /* 자동으로 너비 결정 */
-    width: 100%; /* 버튼이 부모 (.menu-buttons) 너비를 채우도록 */
-    padding: 0.75rem 1rem; /* 텍스트 클릭 느낌을 위한 패딩 조정 */
-    border: none; /* 테두리 제거 */
-    border-radius: 0; /* 모서리 둥글기 제거 */
-    /* background-color: #3a3a3a; <-- 이전 배경색. 투명으로 변경 */
-    background-color: transparent; /* 배경 투명 */
-    color: #e0e0e0; /* 글자색 */
-    font-size: 1rem;
-    cursor: pointer;
-    /* transition: background-color 0.2s ease; <-- transition 속성 추가 */
-    transition: background-color 0.2s ease, color 0.2s ease; /* 배경 및 글자색 transition */
-    /* text-align: center; <-- 이전 중앙 정렬. 왼쪽으로 변경 */
-    text-align: left; /* 텍스트 왼쪽 정렬 */
-    z-index: 502; /* 다른 요소 위에 오도록 설정 */
+    /* flex-basis: calc(50% - 5px); <-- 이전 버튼 너비 설정. 제거 */
+    flex-basis: auto; /* 자동으로 너비 결정 */
+    width: 100%; /* 버튼이 부모 (.menu-buttons) 너비를 채우도록 */
+    padding: 0.75rem 1rem; /* 텍스트 클릭 느낌을 위한 패딩 조정 */
+    border: none; /* 테두리 제거 */
+    border-radius: 0; /* 모서리 둥글기 제거 */
+    /* background-color: #3a3a3a; <-- 이전 배경색. 투명으로 변경 */
+    background-color: transparent; /* 배경 투명 */
+    color: #e0e0e0; /* 글자색 */
+    font-size: 1rem;
+    cursor: pointer;
+    /* transition: background-color 0.2s ease; <-- transition 속성 추가 */
+    transition: background-color 0.2s ease, color 0.2s ease; /* 배경 및 글자색 transition */
+    /* text-align: center; <-- 이전 중앙 정렬. 왼쪽으로 변경 */
+    text-align: left; /* 텍스트 왼쪽 정렬 */
+    z-index: 502; /* 다른 요소 위에 오도록 설정 */
 }
 
 #actionMenu button:hover {
-    /* background-color: #4a4a4a; <-- hover 시 배경색 조정 */
-    background-color: #3a3a3a; /* hover 시 배경색 */
-    color: #ffffff; /* hover 시 글자색 */
+    /* background-color: #4a4a4a; <-- hover 시 배경색 조정 */
+    background-color: #3a3a3a; /* hover 시 배경색 */
+    color: #ffffff; /* hover 시 글자색 */
 }
 
 /* 이미지 메시지 블록 스타일 (appendMessage 함수에서 #chat의 직접적인 자식으로 추가됨) */
 /* 텍스트 메시지 컨테이너와는 별도로 스타일링 */
 .image-announcement {
-    display: block; /* 블록 요소로 만들어 한 줄 전체를 사용 */
-    margin: 0.5rem auto; /* 위아래 여백 및 중앙 정렬 */
-    width: 100%; /* 부모(.app-container 또는 #chat) 너비에 맞추되, max-width로 제한 */
-    max-width: 70%; /* 텍스트 버블과 비슷하거나 원하는 최대 너비 설정 */
-    text-align: center; /* 내부 이미지 및 콘텐츠 중앙 정렬 */
-    border: 1px solid #5a5a5a; /* 필요시 테두리 추가 */
-    border-radius: 8px; /* 컨테이너 모서리 둥글게 */
-    overflow: hidden; /* 내부 이미지 넘치는 부분 숨김 */
-    background-color: #282828; /* 배경색 설정 가능 */
-    position: relative; /* 내부 absolute 요소 기준 */
-    /* 다른 Flexbox 아이템이 추가될 때 크기가 줄어들지 않도록 함 */
-    flex-shrink: 0;
+    display: block; /* 블록 요소로 만들어 한 줄 전체를 사용 */
+    margin: 0.5rem auto; /* 위아래 여백 및 중앙 정렬 */
+    width: 100%; /* 부모(.app-container 또는 #chat) 너비에 맞추되, max-width로 제한 */
+    max-width: 70%; /* 텍스트 버블과 비슷하거나 원하는 최대 너비 설정 */
+    text-align: center; /* 내부 이미지 및 콘텐츠 중앙 정렬 */
+    border: 1px solid #5a5a5a; /* 필요시 테두리 추가 */
+    border-radius: 8px; /* 컨테이너 모서리 둥글게 */
+    overflow: hidden; /* 내부 이미지 넘치는 부분 숨김 */
+    background-color: #282828; /* 배경색 설정 가능 */
+    position: relative; /* 내부 absolute 요소 기준 */
+    /* 다른 Flexbox 아이템이 추가될 때 크기가 줄어들지 않도록 함 */
+    flex-shrink: 0;
 }
 
 
 /* 이미지 페이드 컨테이너 스타일 */
 .image-fade-container {
-    position: relative;
-    display: block;
-    width: 100%;
-    height: auto;
-    overflow: hidden;
+    position: relative;
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: hidden;
 }
 
 /* 페이드 효과를 위한 ::before 의사 요소 */
 /* 이 요소는 실제 이미지 위에 겹쳐져서 마스크/투명도를 조절합니다. */
 .image-fade-container::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none; /* 오버레이 클릭을 막지 않도록 함 */
-    z-index: 1; /* 이미지 위에 오도록 */
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* 오버레이 클릭을 막지 않도록 함 */
+    z-index: 1; /* 이미지 위에 오도록 */
 
-    /* 좌우 페이드 효과용 linear-gradient 마스크 */
-    /* transparent 부분은 투명, black 부분은 불투명 */
-    mask-image: linear-gradient(to right, transparent, black 20%, black 80%, transparent);
-    -webkit-mask-image: linear-gradient(to right, transparent, black 20%, black 80%, transparent);
+    /* 좌우 페이드 효과용 linear-gradient 마스크 */
+    /* transparent 부분은 투명, black 부분은 불투명 */
+    mask-image: linear-gradient(to right, transparent, black 20%, black 80%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 20%, black 80%, transparent);
 
-    /* 마스크가 적용될 배경색 (여기서는 투명도를 조절하는 용도로 사용) */
-    /* 이 배경색 자체가 보이는 것은 아니지만, 마스크가 적용될 '대상'이 됩니다. */
-    background: black; /* 마스크를 적용하기 위한 임의의 배경색 */
+    /* 마스크가 적용될 배경색 (여기서는 투명도를 조절하는 용도로 사용) */
+    /* 이 배경색 자체가 보이는 것은 아니지만, 마스크가 적용될 '대상'이 됩니다. */
+    background: black; /* 마스크를 적용하기 위한 임의의 배경색 */
 }
 
 /* 실제 이미지 스타일 */
 .chat-image {
-    display: block; /* 인라인 요소의 하단 여백 제거 */
-    width: 100%; /* 부모 컨테이너 너비에 꽉 채우도록 */
-    height: auto; /* 비율 유지 */
-    border-radius: 8px; /* 테두리 둥글게 */
-    object-fit: cover; /* 컨테이너에 맞게 잘라낼 경우 사용 (여기서는 max-width로 비율 유지) */
-    /* border: 1px solid #5a5a5a; */ /* 테두리 - 이미지 블록 자체에 적용 */
-    cursor: pointer; /* 클릭 가능 표시 */
-    margin: 0; /* 이미지 자체 마진 제거 */
-    padding: 0; /* 이미지 자체 패딩 제거 */
+    display: block; /* 인라인 요소의 하단 여백 제거 */
+    width: 100%; /* 부모 컨테이너 너비에 꽉 채우도록 */
+    height: auto; /* 비율 유지 */
+    border-radius: 8px; /* 테두리 둥글게 */
+    object-fit: cover; /* 컨테이너에 맞게 잘라낼 경우 사용 (여기서는 max-width로 비율 유지) */
+    /* border: 1px solid #5a5a5a; */ /* 테두리 - 이미지 블록 자체에 적용 */
+    cursor: pointer; /* 클릭 가능 표시 */
+    margin: 0; /* 이미지 자체 마진 제거 */
+    padding: 0; /* 이미지 자체 패딩 제거 */
 }
 
 /* 이미지 로드 오류 시 스타일 */
 .chat-image.error-image {
-    display: none; /* 오류 이미지를 숨김 */
+    display: none; /* 오류 이미지를 숨김 */
 }
 
 /* 이미지 오류 시 대체 텍스트 스타일 (script.js에서 추가한 요소) */
 .image-error-text {
-    text-align: center;
-    color: #b0b0b0;
-    font-size: 0.9rem;
-    margin-top: 0.5rem; /* 이미지 자리 아래 여백 */
-    margin-bottom: 0.5rem;
+    text-align: center;
+    color: #b0b0b0;
+    font-size: 0.9rem;
+    margin-top: 0.5rem; /* 이미지 자리 아래 여백 */
+    margin-bottom: 0.5rem;
 }
