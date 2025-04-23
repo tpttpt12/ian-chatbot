@@ -706,10 +706,13 @@ body {
 /* 액션 메뉴 컨테이너 스타일 */
 #actionMenu {
     /* 화면 하단 고정 대신 inputArea 기준 위치로 변경 */
-    position: absolute; /* 부모 (#inputArea) 기준 절대 위치 */
-    bottom: calc(100% + 10px); /* inputArea 바로 위 (10px 여백) */
-    left: 50%; /* inputArea 너비 기준 중앙 정렬 */
+    position: absolute; /* 부모 (#inputArea) 기준 절대 위치 (실제로는 뷰포트 기준) */
+    /* bottom: calc(100% + 10px); <-- 이 부분을 수정 */
+    bottom: 6rem; /* 뷰포트 하단에서 6rem 위쪽에 배치 (입력창 위에 오도록 조절) */
+
+    left: 50%; /* Input area가 중앙에 있으므로 메뉴도 중앙 정렬 */
     transform: translateX(-50%); /* 중앙 정렬 보정 */
+
     width: 90%; /* 너비 설정 */
     max-width: 300px; /* 최대 너비 설정 (조정 가능) */
     background-color: #1f1f1f; /* 배경색 */
@@ -717,22 +720,26 @@ body {
     border-radius: 15px; /* 모서리 둥글게 */
     padding: 1rem;
     box-sizing: border-box;
-    z-index: 500; /* 오버레이 위에 오도록 */
+    z-index: 500; /* 오버레이(490) 위에 오도록 */
     display: flex;
     flex-direction: column;
     align-items: stretch; /* 내부 버튼들이 너비를 채우도록 */
-    /* 시작 상태: 숨겨져 있다가 보일 때 '뿅' 애니메이션 */
+
+    /* 시작 상태: 숨겨져 있다가 보일 때 */
     opacity: 0;
     visibility: hidden;
-    transform: translate(-50%, 20px); /* 초기 위치 (하단에서 살짝 아래) */
-    transition: opacity 0.3s ease-out, transform 0.3s ease-out, visibility 0.3s ease-out;
+    /* transform: translate(-50%, 20px); <-- 초기 transform은 제거하여 혼동 방지 */
+
+    /* transition: opacity 0.3s ease-out, transform 0.3s ease-out, visibility 0.3s ease-out; <-- transition 속성 간소화 */
+    transition: opacity 0.3s ease-out, visibility 0.3s ease-out; /* 간소화된 transition */
 }
 
 /* 액션 메뉴 보일 때 스타일 */
 #actionMenu.visible {
     opacity: 1;
     visibility: visible;
-    transform: translate(-50%, 0); /* 최종 위치 (inputArea 바로 위) */
+    /* transform: translate(-50%, 0); <-- visible 상태에서의 transform은 중앙 정렬만 유지 */
+     transform: translateX(-50%); /* 중앙 정렬 transform 유지 */
 }
 
 /* 액션 메뉴 꼬리 스타일 */
