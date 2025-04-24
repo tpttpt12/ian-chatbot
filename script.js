@@ -996,16 +996,3 @@ document.addEventListener('DOMContentLoaded', () => {
     updateImagePreview(userImageUrlInputModal.value, userImagePreview); // updateImagePreview 함수는 위에서 정의됨
 
 }); // DOMContentLoaded 끝
-
-document.addEventListener("DOMContentLoaded", function () {
-    const menuOverlay = document.getElementById("menuOverlay");
-    const actionMenu = document.getElementById("actionMenu");
-
-    if (menuOverlay && actionMenu) {
-        menuOverlay.addEventListener("click", function () {
-            actionMenu.classList.remove("visible");
-            menuOverlay.style.display = 'none';
-        });
-    }
-});
-
