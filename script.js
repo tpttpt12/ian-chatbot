@@ -1010,8 +1010,6 @@ function updateSlotButtonStyles() {
     });
 }
 
-    }
-
     sidebarToggle.addEventListener("click", function () {
         settingsModalOverlay.style.display = 'flex';
         actionMenu.classList.remove("visible");
