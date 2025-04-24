@@ -285,7 +285,7 @@ function appendMessage(role, messageData) {
 
         // 구조 조립: imageAnnouncementContainer -> imageFadeContainer -> imgElement
         imageFadeContainer.appendChild(imgElement);
-        imageAnnouncementContainer.appendChild(imageAnnouncementContainer); // <-- 수정: imageAnnouncementContainer에 imageFadeContainer를 추가해야 함
+	imageAnnouncementContainer에 imageFadeContainer를 추가해야 함
         imageAnnouncementContainer.appendChild(imageFadeContainer); // Corrected line
 
 
