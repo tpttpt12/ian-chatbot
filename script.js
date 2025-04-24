@@ -1,3 +1,15 @@
+function autoQuoteUserInput(text) {
+  return text
+    .split('\n')
+    .map(line => {
+      const trimmed = line.trim();
+      if (trimmed.startsWith('*') && trimmed.endsWith('*')) return line;
+      if (trimmed.startsWith('"') && trimmed.endsWith('"')) return line;
+      return `"${trimmed}"`;
+    })
+    .join('\n');
+}
+
 // 이미지 URL 변수는 초기 로드 시 DOMContentLoaded에서 설정값으로 업데이트됩니다.
 let userProfileImgUrl = "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU";
 let botProfileImgUrl = "https://via.placeholder.com/35/3a4a3a/ffffff?text=BOT";
@@ -536,7 +548,10 @@ async function summarizeConversation() { // async 함수로 변경
 async function sendMessage(messageOrImageUrl) {
     // DOMContentLoaded 내부에서 가져온 변수를 사용한다고 가정합니다.
     // sendButton 클릭 또는 sendImageMessage 호출 시 사용됨
-    const message = typeof messageOrImageUrl === 'string' ? messageOrImageUrl.trim() : userInput.value.trim(); // 인자로 URL이 오면 사용, 아니면 입력창 값 사용
+    const message = typeof messageOrImageUrl === 'string'
+  ? messageOrImageUrl
+  : autoQuoteUserInput(userInput.value);
+ // 인자로 URL이 오면 사용, 아니면 입력창 값 사용
 
     // 입력값이 비어있으면 아무것도 하지 않음
     if (!message) {
