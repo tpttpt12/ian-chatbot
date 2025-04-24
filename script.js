@@ -924,6 +924,14 @@ updateSlotButtonStyles();
 
     // --- 새로운 모달 열기/닫기 이벤트 리스너 ---
 
+      // ≡ 버튼 클릭 시 모달 열기 (기존 사이드바 토글 기능 대체)
+    sidebarToggle.addEventListener("click", function() {
+        settingsModalOverlay.style.display = 'flex'; // 모달 오버레이를 보이게 함
+        // 다른 오버레이나 메뉴가 열려있으면 닫기 (선택 사항)
+        actionMenu.classList.remove("visible");
+        menuOverlay.style.display = 'none';
+        imageOverlay.style.display = 'none';
+
         // 모달이 열릴 때 현재 슬롯 설정 로드 및 스타일 업데이트
         loadSettings(currentSlot); // loadSettings 함수는 위에서 정의됨
         updateSlotButtonStyles(); // updateSlotButtonStyles 함수는 위에서 정의됨
