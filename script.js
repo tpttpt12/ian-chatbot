@@ -327,7 +327,6 @@ function appendMessage(role, messageData) {
         let rawText = messageData.text;
         // 순서 바꿈: 먼저 마크다운 처리
         let htmlContent = marked.parse(rawText, { breaks: true, gfm: true }); // 원본 텍스트 먼저 마크다운 파싱
-        rawText = rawText.replace(/\n/g, "<br>");
 
         // 마크다운 처리된 HTML에서 대사/행동 치환
         htmlContent = htmlContent.replace(/"(.*?)"/gs, '<span class="dialogue">"$1"</span>');
