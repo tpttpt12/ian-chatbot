@@ -1020,7 +1020,6 @@ tr:nth-child(even) {
     width: 100%;
     max-width: 70%;
     text-align: center;
-    border: 1px solid #5a5a5a;
     border-radius: 8px;
     overflow: hidden;
     position: relative;
