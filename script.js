@@ -1,15 +1,3 @@
-function autoQuoteUserInput(text) {
-  return text
-    .split('\n')
-    .map(line => {
-      const trimmed = line.trim();
-      if (trimmed.startsWith('*') && trimmed.endsWith('*')) return line;
-      if (trimmed.startsWith('"') && trimmed.endsWith('"')) return line;
-      return `"${trimmed}"`;
-    })
-    .join('\n');
-}
-
 // 이미지 URL 변수는 초기 로드 시 DOMContentLoaded에서 설정값으로 업데이트됩니다.
 let userProfileImgUrl = "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU";
 let botProfileImgUrl = "https://via.placeholder.com/35/3a4a3a/ffffff?text=BOT";
@@ -548,10 +536,7 @@ async function summarizeConversation() { // async 함수로 변경
 async function sendMessage(messageOrImageUrl) {
     // DOMContentLoaded 내부에서 가져온 변수를 사용한다고 가정합니다.
     // sendButton 클릭 또는 sendImageMessage 호출 시 사용됨
-    const message = typeof messageOrImageUrl === 'string'
-  ? messageOrImageUrl
-  : autoQuoteUserInput(userInput.value);
- // 인자로 URL이 오면 사용, 아니면 입력창 값 사용
+    const message = typeof messageOrImageUrl === 'string' ? messageOrImageUrl.trim() : userInput.value.trim(); // 인자로 URL이 오면 사용, 아니면 입력창 값 사용
 
     // 입력값이 비어있으면 아무것도 하지 않음
     if (!message) {
@@ -708,6 +693,15 @@ async function sendSituationRequest(type) { // type 인자 추가 ('랜덤', '�
         case '랜덤':
             situationPromptText = `
 You are writing a first-person narrative as the character ${botName}.
+The current situation needs a fresh development or a change of pace.
+Introduce a new element, interaction, or internal thought that moves the story forward in an interesting, but not necessarily drastic, way.
+Maintain the established tone and character consistency. Focus on subtle shifts and sensory details. Avoid repetition.
+Output should feel like a natural continuation of the story.
+`;
+            break;
+        case '전환':
+            situationPromptText = `
+You are writing a first-person narrative as the character ${botName}.
 Craft a fresh, emotionally engaging situation that sparks curiosity or connection between the characters — something surprising, light-hearted, or meaningful, based on the unique traits of this character and their world.
 The event should not be overly dramatic or intense, but should still shift the emotional dynamic in a natural and immersive way.
 Avoid adult or mature content. Do not copy specific examples or past scenes — create a new moment inspired by the tone of gentle tension, humor, or affection.
@@ -715,19 +709,6 @@ The characters may be human, non-human, or from entirely fantastical settings �
 Let the story unfold with subtle emotional shifts and interaction that feels alive, reactive, and immersive.
 `;
             break;
-        case '전환':
-            situationPromptText = `
-You are writing a first-person narrative as the character ${botName}.
-A new day has begun — it is now the day after the previous events.
-Continue the story by acknowledging the passage of time and introducing a new scene that reflects the shift in the setting. 
-Include sensory details such as time of day, atmosphere, weather, or surroundings to clearly establish that a full day has passed.
-Allow the character’s thoughts or actions to subtly reference what happened before, but do not recap.
-Make it explicitly clear in the scene that a full day has passed and the current events are happening on the next day.
-Maintain immersion, emotional continuity, and character consistency. 
-Use rich descriptions and mood shifts to indicate the change of day, while keeping the tone aligned with the narrative so far.
-`;
-          
-  break;
         case '성인':
             situationPromptText = `
 You are writing a first-person narrative as the character ${botName}.  

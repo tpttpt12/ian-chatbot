@@ -574,8 +574,8 @@ tr:nth-child(even) {
     width: 100vw;
     height: 100vh;
     background-color: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(4px); /* ✅ 흐림 효과 추가 */
-    -webkit-backdrop-filter: blur(4px); /* ✅ Safari 대응 */
+    backdrop-filter: blur(4px);          /* ✅ 흐림 효과 추가 */
+    -webkit-backdrop-filter: blur(4px);  /* ✅ Safari 대응 */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -590,86 +590,90 @@ tr:nth-child(even) {
     position: relative;
     background-color: #1f1f1f;
     color: #e0e0e0;
-    padding: 1.5rem; /* 모달 전체 내부 패딩 */
+    padding: 1.5rem;
     border-radius: 12px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
     width: 100%;
-    max-width: 550px; /* 모달 최대 너비 */
-    max-height: 70vh; /* 모달 최대 높이 */
-    overflow-y: auto; /* 스크롤 가능 */
-    -ms-overflow-style: none; /* IE and Edge 스크롤바 숨김 */
-    scrollbar-width: none; /* Firefox 스크롤바 숨김 */
+    max-width: 550px;
+    max-height: 70vh;
+    overflow-y: scroll; /* ✅ 스크롤은 가능하지만 숨김 처리 아래에서 */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }
 
-/* Chrome, Safari, Opera 스크롤바 숨김 */
 .modal-content::-webkit-scrollbar {
-    display: none;
+    display: none; /* ✅ 크롬용 스크롤 숨김 */
 }
-
 
 /* Modal Header Style */
 .modal-header {
-    padding: 0.5rem 1rem; /* 헤더 패딩 줄임 */
+    padding: 1rem;
     background-color: transparent;
     text-align: center;
-    font-size: 1rem; /* 헤더 글자 크기 줄임 */
+    font-size: 1.2rem;
     font-weight: bold;
     color: #ffffff;
     border-bottom: 1px solid #3a3a3a;
     margin-bottom: 1rem;
 }
 
+
 .modal-header h2 {
     margin: 0;
-    font-size: 1rem; /* h2 글자 크기 줄임 */
+    font-size: 1.2rem;
 }
 
 /* Close Button Style */
+.close-button {
+    background: transparent;
+    border: none;
+    color: #b0b0b0;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
 #closeModalButton {
     all: unset;
     position: absolute;
-    top: 0.8rem; /* 위치 조정 */
-    right: 0.8rem; /* 위치 조정 */
+    top: 1rem;
+    right: 1rem;
     cursor: pointer;
-    font-size: 1.3rem; /* 크기 줄임 */
+    font-size: 1.5rem;
     color: #aaa;
     background-color: transparent;
     transition: color 0.2s;
 }
 
-#closeModalButton:hover {
+.close-button:hover {
     color: #ffffff;
 }
-
 
 /* Modal Body Style */
 .modal-body {
     flex-grow: 1; /* Allow body to take up available space */
     display: flex;
     flex-direction: column;
-    gap: 1.2rem; /* 바디 섹션 간 간격 줄임 */
-    padding: 0 0.5rem; /* 좌우 패딩 줄임 */
+    gap: 1.5rem; /* Space between sections in the body */
 }
 
 /* Modal Footer Style */
 .modal-footer {
     border-top: 1px solid #3a3a3a; /* Separator line */
-    padding-top: 0.8rem; /* 푸터 위쪽 패딩 줄임 */
-    margin-top: 1rem; /* 바디와의 간격 추가 */
+    padding-top: 1rem;
+    margin-top: 0; /* Gap is handled by modal-content gap */
     display: flex;
     justify-content: flex-end; /* Align button to the right */
-    padding-bottom: 0.5rem; /* 푸터 아래쪽 패딩 */
-    padding-right: 0.5rem; /* 푸터 오른쪽 패딩 */
 }
 
 /* Save Button Style (in modal footer) */
 .modal-footer .save-button {
-    padding: 0.5rem 1rem; /* 저장 버튼 패딩 줄임 (크기 조절) */
+    padding: 0.75rem 1.5rem;
     border: none;
     border-radius: 4px;
     background-color: #5080ff;
     color: #ffffff;
-    font-size: 0.9rem; /* 저장 버튼 글자 크기 줄임 */
+    font-size: 1rem;
     font-weight: bold;
     cursor: pointer;
     transition: background-color 0.2s ease;
@@ -681,33 +685,34 @@ tr:nth-child(even) {
 
 /* Setting Slots Container Style (in modal) */
 .setting-slots-modal {
-    margin-bottom: 0;
-    padding-bottom: 0.8rem; /* 아래 패딩 줄임 */
+    margin-bottom: 0; /* Gap is handled by modal-body gap */
+    padding-bottom: 0.5rem;
     border-bottom: 1px solid #3a3a3a;
 }
 
 .setting-slots-modal h3 {
-    /* Setting Slots 글자 삭제로 이 스타일은 더 이상 사용되지 않음 */
-    display: none; /* 혹시 몰라 숨김 처리 */
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+    color: #b0b0b0;
 }
 
 /* Setting Slot Buttons Container Style (in modal) */
 .slot-buttons-container-modal {
     display: flex;
-    gap: 0.4rem; /* 슬롯 버튼 간격 줄임 */
+    gap: 0.5rem;
     flex-wrap: wrap;
-    justify-content: center; /* 중앙 정렬 */
 }
 
 /* Setting Slot Button Style (in modal) - Same as before, just included here */
 .slot-button {
-    width: 30px; /* 슬롯 버튼 크기 줄임 */
-    height: 30px; /* 슬롯 버튼 크기 줄임 */
+    width: 35px;
+    height: 35px;
     border-radius: 50%;
     background-color: #5a5a5a;
     color: #ffffff;
     border: none;
-    font-size: 0.9rem; /* 슬롯 버튼 글자 크기 줄임 */
+    font-size: 1rem;
     cursor: pointer;
     display: flex;
     justify-content: center;
@@ -735,7 +740,7 @@ tr:nth-child(even) {
 .resume-layout-container {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem; /* 캐릭터/유저 섹션 간 간격 줄임 */
+    gap: 2rem; /* Space between Character and User sections */
 }
 
 .character-info-section,
@@ -746,31 +751,31 @@ tr:nth-child(even) {
 .character-info-section h3,
 .user-info-section h3 {
     margin-top: 0;
-    margin-bottom: 0.8rem; /* 섹션 제목 아래 마진 줄임 */
-    font-size: 1rem; /* 섹션 제목 글자 크기 줄임 */
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
     color: #ffffff;
     border-bottom: 1px dotted #3a3a3a;
-    padding-bottom: 0.4rem; /* 섹션 제목 아래 패딩 줄임 */
+    padding-bottom: 0.5rem;
 }
 
 .info-grid {
     display: grid;
-    /* 이미지 영역과 프로필 정보 영역 */
-    grid-template-columns: 130px 1fr; /* 이미지 영역 너비 조정, 프로필 영역이 나머지 공간 차지 */
-    gap: 1rem; /* 그리드 간격 줄임 */
-    margin-bottom: 1rem; /* 그리드 아래 마진 줄임 (가이드라인과의 간격) */
+    /* Define columns: one for image/link, one for name/age/gender/appearance */
+    grid-template-columns: 120px 1fr; /* Adjust image column width as needed */
+    gap: 1.5rem; /* Gap between columns and rows */
+    margin-bottom: 1.5rem; /* Space below the grid before guidelines */
 
     /* Responsive adjustment */
     @media (max-width: 600px) {
         grid-template-columns: 1fr; /* Stack columns on smaller screens */
-        gap: 0.8rem; /* 작은 화면 그리드 간격 줄임 */
+        gap: 1rem;
     }
 }
 
 .info-item {
     display: flex;
     flex-direction: column;
-    gap: 0.4rem; /* 아이템 내 요소 간 간격 줄임 */
+    gap: 0.5rem; /* Space between elements within an item */
 }
 
 /* Style for the larger info item (Name, Age, Appearance) */
@@ -793,53 +798,44 @@ tr:nth-child(even) {
 
 .half-width-row {
     display: flex;
-    gap: 0.8rem; /* 성별/나이 입력창 간 간격 줄임 */
+    gap: 1rem; /* Space between age and gender inputs */
 }
 
 .half-width-item {
     flex: 1; /* Each item takes up half the space */
     display: flex;
     flex-direction: column;
-    gap: 0.4rem; /* 아이템 내 요소 간 간격 줄임 */
+    gap: 0.5rem;
 }
 
 
 /* Styles for labels, inputs, and textareas within the modal */
 .modal-body label {
     display: block;
-    margin-bottom: 0.1rem; /* 레이블 아래 마진 줄임 */
+    margin-bottom: 0.2rem;
     font-weight: bold;
     color: #b0b0b0;
-    font-size: 0.85rem; /* 레이블 글자 크기 줄임 */
+    font-size: 0.9rem;
 }
 
 .modal-body input[type="text"],
 .modal-body textarea {
     width: 100%;
-    padding: 0.5rem 0.7rem; /* 입력 필드/textarea 패딩 줄임 */
+    padding: 0.75rem;
     border: none;
-    border-radius: 6px; /* 테두리 둥글기 줄임 */
+    border-radius: 8px;
     background-color: #3a3a3a;
     color: #e0e0e0;
-    font-size: 0.9rem; /* 입력 필드/textarea 글자 크기 줄임 */
+    font-size: 1rem;
     margin-bottom: 0; /* Gap is handled by flex/grid gap */
     box-sizing: border-box;
     resize: vertical; /* Allow vertical resizing for textareas */
-    line-height: 1.4; /* 줄 높이 유지 */
 }
 
 .modal-body textarea {
-     min-height: 80px; /* textarea 최소 높이 줄임 */
-     /* 스크롤바 숨김 */
-     overflow-y: auto; /* 스크롤 기능 유지 */
-     scrollbar-width: none; /* Firefox */
-     -ms-overflow-style: none; /* IE and Edge */
+     min-height: 100px; /* Set a minimum height for textareas */
+     line-height: 1.4;
 }
-
-.modal-body textarea::-webkit-scrollbar {
-    display: none; /* Chrome, Safari, Opera */
-}
-
 
 .modal-body input[type="text"]:focus,
 .modal-body textarea:focus {
@@ -849,11 +845,8 @@ tr:nth-child(even) {
 
 /* Image Preview Area */
 .image-preview-area {
-    width: 130px; /* 이미지 영역 너비 */
-    /* height는 프로필 정보 영역의 Name, Gender, Age, Appearance 입력 필드의 높이 합과 비슷하게 조정 */
-    /* 대략 input 높이(0.9rem + 패딩) * 3 + textarea 최소 높이(80px) + gap + label height */
-    /* 여기서는 픽셀 값으로 명시하여 프로필 입력창 세트 높이와 맞춤 */
-    height: 180px; /* 대략적인 높이 (필요 시 추가 조정) */
+    width: 130px;  /* ✅ 이미지 영역 더 키움 */
+    height: 180px;
     border: 1px dashed #5a5a5a;
     border-radius: 10px;
     display: flex;
@@ -862,7 +855,7 @@ tr:nth-child(even) {
     background-color: #2d2d2d;
     flex-shrink: 0;
     overflow: hidden;
-    margin-top: 0; /* 상단 마진 제거 또는 줄임 */
+    margin-top: 0.5rem;
 }
 
 .image-preview-area img {
@@ -1131,24 +1124,36 @@ tr:nth-child(even) {
 }
 
 /* 아코디언 내부 옵션 버튼 스타일 */
-.accordion .option {
-  /* all: unset; */ /* <-- all: unset 대신 필요한 속성만 명시적으로 설정 */
-  background-color: transparent; /* 기본 배경 투명 */
-  border: none; /* 테두리 없음 */
-  cursor: pointer; /* 마우스 커서 포인터 */
-  font-size: 0.8rem; /* 수정 3: 글자 크기 줄이기 (기존 0.9rem -> 0.8rem) */
-  color: #aaa; /* 기본 글자색 */
-  padding: 0.5rem 1rem; /* 수정 1: 다른 메뉴 버튼과 동일한 패딩 적용 (기존 0.25rem 0) */
-  text-align: left; /* 수정 1: 텍스트 왼쪽 정렬 */
-  width: 100%; /* 너비 100% 채우기 */
-  box-sizing: border-box; /* 패딩 포함하여 너비 계산 */
-  transition: color 0.2s, background-color 0.2s; /* 부드러운 색상 전환 효과 */
+#situationOptions .option {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: #aaa;
+  padding: 0.5rem 1rem;
+  text-align: left;
+  width: 100%;
+  box-sizing: border-box;
+  transition: color 0.2s, background-color 0.2s;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-/* 아코디언 내부 옵션 버튼 마우스 오버 스타일 */
-.accordion .option:hover {
-  color: #fff; /* 기존 글자색 변경 유지 */
-  background-color: #3a3a3a; /* 수정 2: 마우스 오버 시 배경색 진하게 변경 (다른 메뉴 버튼 hover와 동일하게) */
+#situationOptions .option:hover {
+  color: #fff;
+  background-color: #3a3a3a;
+}
+
+#situationOptions {
+  background-color: #2a2a2a;
+  border-radius: 10px;
+  padding: 0.25rem 0;
+  margin-top: 0.3rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  /* ✅ 부드러운 전환 효과 */
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 /* 아코디언 숨김 스타일 (기존 유지) */
