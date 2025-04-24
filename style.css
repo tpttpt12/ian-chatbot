@@ -962,36 +962,6 @@ tr:nth-child(even) {
     color: #ffffff;
 }
 
-/* 아코디언 컨테이너 스타일 (원래대로 복구) */
-.accordion {
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-  margin-left: 1.5rem;
-  margin-top: 0.3rem;
-}
-
-/* 아코디언 내부 옵션 버튼 스타일 (원래대로 복구) */
-.accordion .option {
-  all: unset; /* 원래대로 */
-  font-size: 0.9rem; /* 원래대로 */
-  color: #e0e0e0; /* 원래대로 */
-  cursor: pointer;
-  transition: color 0.2s ease; /* 원래대로 */
-}
-
-/* 아코디언 내부 옵션 버튼 마우스 오버 스타일 (원래대로 복구) */
-.accordion .option:hover {
-  color: #ffffff; /* 원래대로 */
-  text-decoration: underline; /* 원래대로 */
-}
-
-/* 아코디언 숨김 스타일 */
-.accordion.hidden {
-  display: none;
-}
-
-
 /* Image Announcement Style */
 .image-announcement {
     display: block;
@@ -1079,4 +1049,33 @@ tr:nth-child(even) {
 .message-bubble em {
     font-style: italic;
     color: inherit; /* Use parent color by default */
+}
+
+/* 아코디언 컨테이너 스타일 (원래대로 복구) */
+.accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  margin-left: 1.5rem;
+  margin-top: 0.3rem;
+}
+
+/* 아코디언 내부 옵션 버튼 스타일 (원래대로 복구) */
+.accordion .option {
+  all: unset; /* 원래대로 */
+  font-size: 0.9rem; /* 원래대로 */
+  color: #e0e0e0; /* 원래대로 */
+  cursor: pointer;
+  transition: color 0.2s ease; /* 원래대로 */
+}
+
+/* 아코디언 내부 옵션 버튼 마우스 오버 스타일 (원래대로 복구) */
+.accordion .option:hover {
+  color: #ffffff; /* 원래대로 */
+  text-decoration: underline; /* 원래대로 */
+}
+
+/* 아코디언 숨김 스타일 */
+.accordion.hidden {
+  display: none;
 }
