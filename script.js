@@ -208,19 +208,6 @@ function loadSettings(slotNumber) {
     // 이 부분은 복잡하므로 현재는 새 메시지부터 적용되도록 합니다.
 }
 
-// 슬롯 버튼 스타일 업데이트 함수 (기존과 동일)
-// 함수 내부에서 요소들을 다시 가져오거나, DOMContentLoaded 내부에서 가져온 변수를 사용해야 합니다.
- // 여기서는 DOMContentLoaded 내부에서 가져온 변수를 사용한다고 가정합니다.
-function updateSlotButtonStyles() {
-    slotButtons.forEach(button => {
-        if (parseInt(button.textContent) === currentSlot) {
-            button.classList.add('active');
-        } else {
-            button.classList.remove('active');
-        }
-    });
-}
-
 // SYSTEM_PROMPT 업데이트 함수 - 모달 입력 필드를 참조하도록 수정
 // 함수 내부에서 요소들을 다시 가져오거나, DOMContentLoaded 내부에서 가져온 변수를 사용해야 합니다.
  // 여기서는 DOMContentLoaded 내부에서 가져온 변수를 사용한다고 가정합니다.
@@ -1023,20 +1010,6 @@ function updateSlotButtonStyles() {
     });
 }
 
-// --- DOMContentLoaded: 안전하게 실행 ---
-document.addEventListener("DOMContentLoaded", function () {
-    const menuOverlay = document.getElementById("menuOverlay");
-    const actionMenu = document.getElementById("actionMenu");
-    const sidebarToggle = document.getElementById("sidebarToggle");
-    const settingsModalOverlay = document.getElementById("settingsModalOverlay");
-    const closeModalButton = document.getElementById("closeModalButton");
-    const saveSettingsButtonModal = document.getElementById("saveSettingsButtonModal");
-
-    if (menuOverlay && actionMenu) {
-        menuOverlay.addEventListener("click", function () {
-            actionMenu.classList.remove("visible");
-            menuOverlay.style.display = 'none';
-        });
     }
 
     sidebarToggle.addEventListener("click", function () {
