@@ -622,43 +622,48 @@ tr:nth-child(even) {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent dark background */
-    display: flex; /* Use flexbox to center the modal content */
-    justify-content: center; /* Center horizontally */
-    align-items: center; /* Center vertically */
-    z-index: 950; /* Above chat, below image overlay */
-    display: none; /* Hidden by default */
-    overflow-y: auto; /* Allow scrolling within the overlay if content is too tall */
-    padding: 1rem; /* Add some padding around the content */
-    box-sizing: border-box; /* Include padding in the element's total width and height */
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem; /* More vertical padding */
+    overflow: hidden; /* 🔥 Hide internal scroll */
+    z-index: 950;
+    box-sizing: border-box;
 }
 
 /* Modal Content Style (The actual dialog box) */
 .modal-content {
-    background-color: #1f1f1f; /* Dark background */
-    color: #e0e0e0; /* Light text */
+    background-color: #1f1f1f;
+    color: #e0e0e0;
     padding: 1.5rem;
-    border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-    width: 95%; /* Responsive width */
-    max-width: 700px; /* Maximum width */
-    max-height: 95vh; /* Maximum height based on viewport height */
-    overflow-y: auto; /* Add scrollbar if content exceeds max height */
-    display: flex; /* Use flexbox for layout inside modal */
-    flex-direction: column; /* Stack header, body, footer vertically */
-    gap: 1rem; /* Space between sections */
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+    width: 100%;
+    max-width: 550px; /* 🔥 Reduce modal width */
+    max-height: 90vh;
+    overflow: hidden; /* 🔥 Remove inner scrollbar */
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    justify-content: center;
 }
 
 /* Modal Header Style */
 .modal-header {
+    width: 140px; /* 🔥 Make image preview bigger */
+    height: 140px;
+    border: 1px dashed #5a5a5a;
+    border-radius: 10px;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    border-bottom: 1px solid #3a3a3a; /* Separator line */
-    padding-bottom: 1rem;
-    margin-bottom: 0; /* Gap is handled by modal-content gap */
+    background-color: #2d2d2d;
+    flex-shrink: 0;
+    overflow: hidden;
+    margin-top: 0.5rem;
 }
 
 .modal-header h2 {
@@ -890,12 +895,11 @@ tr:nth-child(even) {
 }
 
 .image-preview-area img {
-    display: block;
-    width: 100%; /* Image fills the preview area */
-    height: 100%; /* Image fills the preview area */
-    object-fit: cover; /* Cover the area, cropping if necessary */
-    border-radius: 0; /* No border radius on the image itself inside the rounded container */
-    opacity: 0.8; /* Slightly dim image */
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 0;
+    opacity: 0.9;
 }
 
 /* Style for empty image preview */
