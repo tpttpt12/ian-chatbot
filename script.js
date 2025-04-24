@@ -1010,6 +1010,8 @@ function updateSlotButtonStyles() {
     });
 }
 
+    }
+
     sidebarToggle.addEventListener("click", function () {
         settingsModalOverlay.style.display = 'flex';
         actionMenu.classList.remove("visible");
@@ -1036,5 +1038,17 @@ function updateSlotButtonStyles() {
     const slotButtons = document.querySelectorAll('.slot-button');
     slotButtons.forEach(button => {
         button.addEventListener('click', function () {
-            const slotNumber = parseInt(this.text
+            const slotNumber = parseInt(this.textContent);
+            currentSlot = slotNumber;
+            updateSlotButtonStyles();
+            loadSettings(slotNumber);
+        });
+    });
 
+    autoResizeTextarea.call(userInput);
+    loadSettings(currentSlot);
+    updateSlotButtonStyles();
+    initializeChat();
+    updateImagePreview(botImageUrlInputModal.value, botImagePreview);
+    updateImagePreview(userImageUrlInputModal.value, userImagePreview);
+});
