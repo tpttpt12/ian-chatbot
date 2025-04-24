@@ -893,6 +893,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // 메뉴 오버레이 클릭 시 메뉴 닫기
+    console.log('Checking menuOverlay:', menuOverlay);s
     menuOverlay.addEventListener("click", function() {
         actionMenu.classList.remove("visible");
         menuOverlay.style.display = 'none';
