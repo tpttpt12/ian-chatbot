@@ -56,13 +56,26 @@ module.exports = async (req, res) => {
             body: JSON.stringify({ contents: contents })
         });
 
-        // 구글 API 응답 확인
-        if (!googleRes.ok) {
-            const errorData = await googleRes.json();
-            console.error("Error calling Google API:", googleRes.status, errorData);
-            res.status(googleRes.status).json({ error: `Error from Google API: ${errorData.error?.message || googleRes.statusText}` });
-            return;
-        }
+// 구글 API 응답 확인
+        if (!googleRes.ok) {
+            // 응답이 성공적이지 않다면 JSON 대신 텍스트로 오류 정보 시도
+            const errorText = await googleRes.text(); // <-- 수정된 부분
+            console.error("Error calling Google API:", googleRes.status, errorText);
+
+            // 프론트엔드에 보낼 오류 메시지 구성
+            let displayErrorMessage = `Error from Google API: ${googleRes.status}`;
+            try {
+                // 만약 오류 응답이 JSON 형태였다면 파싱해서 메시지 추가 시도
+                const errorJson = JSON.parse(errorText);
+                displayErrorMessage += `: ${errorJson.error?.message || errorText}`;
+            } catch (e) {
+                // JSON 파싱 실패 시 텍스트 오류 메시지 그대로 사용
+                displayErrorMessage += `: ${errorText}`;
+            }
+
+            res.status(googleRes.status).json({ error: displayErrorMessage });
+            return;
+        }
 
         // 구글 API 응답을 JSON으로 파싱
         const googleData = await googleRes.json();
