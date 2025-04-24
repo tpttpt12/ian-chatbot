@@ -1009,7 +1009,15 @@ function updateSlotButtonStyles() {
         }
     });
 }
-
+// ✅ DOMContentLoaded 열기
+document.addEventListener("DOMContentLoaded", function () {
+    const menuOverlay = document.getElementById("menuOverlay");
+    const actionMenu = document.getElementById("actionMenu");
+    const sidebarToggle = document.getElementById("sidebarToggle");
+    const settingsModalOverlay = document.getElementById("settingsModalOverlay");
+    const closeModalButton = document.getElementById("closeModalButton");
+    const saveSettingsButtonModal = document.getElementById("saveSettingsButtonModal");
+  
     sidebarToggle.addEventListener("click", function () {
         settingsModalOverlay.style.display = 'flex';
         actionMenu.classList.remove("visible");
