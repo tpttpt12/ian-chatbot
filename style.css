@@ -362,24 +362,28 @@ tr:nth-child(even) {
 
 /* Image Fade Container Style */
 .image-fade-container {
-    position: relative;
-    display: block;
-    width: 100%;
-    height: auto;
-    overflow: hidden;
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  height: auto;
+  overflow: hidden;
 }
 
 .image-fade-container::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 1;
-    mask-image: linear-gradient(to right, transparent 0%, black 20%, black 80%, transparent 100%);
-    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 20%, black 80%, transparent 100%);
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+
+  /* ✅ 핵심 마스크 효과 */
+  mask-image: linear-gradient(to right, transparent, black 20%, black 80%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 20%, black 80%, transparent);
+
+  background-color: transparent; /* ✅ 배경 투명 */
 }
 
 /* Input Area Overall Style */
@@ -1083,6 +1087,8 @@ tr:nth-child(even) {
     cursor: pointer;
     margin: 0;
     padding: 0;
+    position: relative;
+    z-index: 0;
 }
 
 /* Image Load Error Style */
