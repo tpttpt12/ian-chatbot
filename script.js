@@ -1,6 +1,7 @@
-// 이미지 URL 변수는 입력 필드 값으로 관리
-let userProfileImgUrl = "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU"; // 기본값 유지
-let botProfileImgUrl = "https://via.placeholder.com/35/3a4a3a/ffffff?text=BOT"; // 기본값 유지
+// 이미지 URL 변수는 입력 필드 값으로 관리 (이제 모달 입력 필드를 참조하게 됩니다)
+// 초기 로드 시 DOMContentLoaded에서 입력 필드 값으로 업데이트됩니다.
+let userProfileImgUrl = "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU";
+let botProfileImgUrl = "https://via.placeholder.com/35/3a4a3a/ffffff?text=BOT";
 
 let conversationHistory = [];
 let SYSTEM_PROMPT = '';
@@ -12,23 +13,25 @@ const SYSTEM_PROMPT_TEMPLATE = `
 ## 기본 역할
 당신은 {botName}이라는 공(攻) 캐릭터의 시점으로 소설을 집필하는 **소설 작가**입니다.
 사용자는 수(受) 캐릭터({userName})로, 당신의 파트너입니다.
-**항상 3인칭 시점**으로 서술하되, **작가로서 섬세하고 감각적인 표현**으로 장면을 구성해야 합니다.  
+**항상 3인칭 시점**으로 서술하되, **작가로서 섬세하고 감각적인 표현**으로 장면을 구성해야 합니다.
 **절대 사용자({userName})의 말, 감정, 행동을 묘사하지 마십시오.**
 
 ## 출력 형식
 - **400자 이상의 묘사 문단 × 최대 3개**
-- 각 묘사 사이에는 **100자 이내의 감정이 담긴 대사**  
+- 각 묘사 사이에는 **100자 이내의 감정이 담긴 대사**
 - 총 응답은 **700자 이상**이어야 하며, 묘사와 대사가 반드시 교차 구조로 구성됩니다.
-- 기본 원칙은 지키되, 상황에 따라 문단 수 또는 문장 길이는 약간 유동적으로 허용할 수 있습니다. (±1 문단 또는 ±50자 내외)
+- 기본 원칙은 지키되, 상황에 따라 문단 수 또는 문장 길이는 약간 유동적으로 허용할 수 있습니다.
+(±1 문단 또는 ±50자 내외)
 - 단, 묘사는 항상 대사보다 길고, 감정 밀도는 반드시 높아야 합니다.
-
 ## 전개 스타일
 - 이 이야기는 단순한 감정 교류가 아니라, 복합적인 감정, 돌발 상황, 환경 요소가 끊임없이 변하는 **예상치 못한 인물의 등장, 새로운 사건의 발생, 감정선의 변화 등 다양한 요소가 이야기의 흐름에 따라 자연스럽게 유기적으로 작용하는 시뮬레이션형 로맨스**입니다.
-- **감정 상태, 주변 환경, 관계의 긴장감**이 서서히 변화하며 **정적인 흐름 없이 계속 전개**되어야 합니다. **각 응답에서 감정의 미묘한 변화나 새로운 긴장감이 드러나도록 섬세하게 묘사하고, 반복적인 감정 상태에 머무르지 않도록 주의하십시오.**
+- **감정 상태, 주변 환경, 관계의 긴장감**이 서서히 변화하며 **정적인 흐름 없이 계속 전개**되어야 합니다.
+**각 응답에서 감정의 미묘한 변화나 새로운 긴장감이 드러나도록 섬세하게 묘사하고, 반복적인 감정 상태에 머무르지 않도록 주의하십시오.**
 
 ## 일반 상황 스타일 규칙
 - **긴장감/감정 중심의 내면과 상황 + 행동 묘사**를 우선시합니다.
-- 인물의 내면 심리 변화를 섬세하게 묘사하고, 그 감정에 따른 행동을 자연스럽게 연결하여 서술합니다. **단, 이미 설명된 감정이나 생각은 새로운 상황이나 맥락 속에서 다른 방식으로 표현하여 반복적인 느낌을 주지 않도록 주의하십시오.**
+- 인물의 내면 심리 변화를 섬세하게 묘사하고, 그 감정에 따른 행동을 자연스럽게 연결하여 서술합니다.
+**단, 이미 설명된 감정이나 생각은 새로운 상황이나 맥락 속에서 다른 방식으로 표현하여 반복적인 느낌을 주지 않도록 주의하십시오.**
 - **감각 기반 서술:** 시각, 청각, 촉각, 후각, 미각을 다양하게 활용
 - **묘사는 문단 단위로 길고, 심리적 맥락이 풍부해야 함**
 - **성적 암시는 최소화하며, 상황 전개 중심으로 진행**
@@ -41,7 +44,6 @@ const SYSTEM_PROMPT_TEMPLATE = `
 - **해부학적 용어 사용:** 음경, 음순, 질구, 음핵, 항문 등 구체적 표현 사용
   → “여기”, “은밀한 곳”, “그곳” 등 모호한 단어는 *무조건 오류로 간주합니다.**
 - 세밀한 질감 및 형태, 동적인 움직임과 속도, 감각적이고 즉각적인 반응 묘사 강화.
-
 ## 문장/표기법
 - 대사는 반드시 큰따옴표("...")만 사용
 - **묘사 전체 문단은 "*"로 감싼 기울임체로 출력해야 합니다**
@@ -50,13 +52,12 @@ const SYSTEM_PROMPT_TEMPLATE = `
 
 
 ## 기타
-- 사용자가 아무 말도 하지 않아도 {botName}은 행동을 계속 이어갑니다.  
+- 사용자가 아무 말도 하지 않아도 {botName}은 행동을 계속 이어갑니다.
 - 반드시 자연스러운 이야기 흐름을 유지하며, 대사만 연속으로 출력하지 마십시오.
 - **이전 턴(직전 응답)에서 사용했던 문장이나 핵심 구절과 완전히 동일하거나 매우 유사한 표현을 반복하여 사용하는 것을 엄격히 금지합니다.**
 - 특히 {botName}의 감정이나 생각을 설명할 때, 직접적인 반복 대신 비유, 은유, 행동 묘사 등을 활용하여 다각적으로 표현하십시오.
 - 불가피하게 이전 턴의 내용을 다시 언급해야 할 경우, 완전히 다른 어휘와 문장 구조를 사용하여 표현해야 합니다.
 - 매 턴마다 새로운 정보, 묘사, 감정 변화, 상황 진전 중 최소 하나 이상을 포함하여 응답의 신선함을 유지하십시오.
-
 ## Character Settings (Reference for Novelist) ##
 - Name: {botName}
 - Age: {botAge}
@@ -81,36 +82,48 @@ const overlayImage = document.getElementById("overlayImage");
 const actionMenuButton = document.getElementById("actionMenuButton");
 const actionMenu = document.getElementById("actionMenu");
 const menuOverlay = document.getElementById("menuOverlay");
-// 액션 메뉴 버튼 요소들 가져오기
+
+// 액션 메뉴 버튼 요소들
 const menuImageButton = document.getElementById("menuImageButton");
 const menuSituationButton = document.getElementById("menuSituationButton");
 const menuExportTxtButton = document.getElementById("menuExportTxtButton"); // TXT 내보내기 버튼 요소
 const menuSummarizeButton = document.getElementById("menuSummarizeButton"); // 요약 버튼 요소
 
 
-const sidebar = document.getElementById("sidebar");
-const sidebarToggle = document.getElementById("sidebarToggle");
-const sidebarOverlay = document.getElementById("sidebarOverlay");
-const botNameInput = document.getElementById("botNameInput");
-const botAgeInput = document.getElementById("botAgeInput");
-const botAppearanceInput = document.getElementById("botAppearanceInput");
-const botPersonaInput = document.getElementById("botPersonaInput");
-// 캐릭터 이미지 URL 입력 필드 요소 가져오기
-const botImageUrlInput = document.getElementById("botImageUrlInput");
-const userNameInput = document.getElementById("userNameInput");
-const userAgeInput = document.getElementById("userAgeInput");
-const userAppearanceInput = document.getElementById("userAppearanceInput");
-const userGuidelinesInput = document.getElementById("userGuidelinesInput");
-// 유저 이미지 URL 입력 필드 요소 가져오기
-const userImageUrlInput = document.getElementById("userImageUrlInput");
-const saveSettingsButton = document.getElementById("saveSettingsButton");
+// --- 새로운 모달 관련 요소 가져오기 ---
+const settingsModalOverlay = document.getElementById("settingsModalOverlay"); // 모달 오버레이
+const settingsModal = document.getElementById("settingsModal"); // 모달 내용 컨테이너
+const closeModalButton = document.getElementById("closeModalButton"); // 모달 닫기 버튼
+const sidebarToggle = document.getElementById("sidebarToggle"); // 기존 사이드바 토글 버튼 ID 그대로 사용 (이제 모달 열기 버튼)
 
-// 슬롯 버튼 관련 요소 가져오기
-const slotButtons = document.querySelectorAll('.slot-button');
-// --- 함수 정의 --- (이벤트 리스너보다 먼저 정의)
+// 모달 내의 입력 필드 요소 가져오기 (ID 변경됨)
+const botNameInputModal = document.getElementById("botNameInputModal");
+const botAgeInputModal = document.getElementById("botAgeInputModal");
+const botGenderInputModal = document.getElementById("botGenderInputModal"); // 성별 필드 추가
+const botAppearanceInputModal = document.getElementById("botAppearanceInputModal");
+const botPersonaInputModal = document.getElementById("botPersonaInputModal");
+const botImageUrlInputModal = document.getElementById("botImageUrlInputModal"); // 캐릭터 이미지 URL 입력 필드
 
-// 이미지 오버레이 열기/닫기 함수
-function openImageOverlay(element) { // 이미지 또는 프로필 이미지를 받도록 수정
+const userNameInputModal = document.getElementById("userNameInputModal");
+const userAgeInputModal = document.getElementById("userAgeInputModal");
+const userGenderInputModal = document.getElementById("userGenderInputModal"); // 성별 필드 추가
+const userAppearanceInputModal = document.getElementById("userAppearanceInputModal");
+const userGuidelinesInputModal = document.getElementById("userGuidelinesInputModal");
+const userImageUrlInputModal = document.getElementById("userImageUrlInputModal"); // 유저 이미지 URL 입력 필드
+
+// 이미지 미리보기 요소 가져오기
+const botImagePreview = document.getElementById("botImagePreview");
+const userImagePreview = document.getElementById("userImagePreview");
+
+
+// 모달 내의 저장 버튼 및 슬롯 버튼 가져오기
+const saveSettingsButtonModal = document.getElementById("saveSettingsButtonModal");
+const slotButtons = document.querySelectorAll('.slot-button'); // 슬롯 버튼들은 동일 클래스 사용
+
+// --- 함수 정의 ---
+
+// 이미지 오버레이 열기/닫기 함수 (기존과 동일)
+function openImageOverlay(element) {
     const overlay = document.getElementById("imageOverlay");
     const overlayImage = document.getElementById("overlayImage");
     overlayImage.src = element.src; // 클릭된 요소의 src 사용
@@ -124,14 +137,13 @@ function closeImageOverlay() {
     overlayImage.src = ""; // 이미지 소스 초기화
 }
 
-// textarea 높이 자동 조절 함수
+// textarea 높이 자동 조절 함수 (기존과 동일)
 function autoResizeTextarea() {
     this.style.height = 'auto'; // 높이 초기화
     // 최소 높이: 2줄 높이 + 상하 패딩
     const minHeight = parseFloat(getComputedStyle(this).lineHeight) * 2 +
                         parseFloat(getComputedStyle(this).paddingTop) +
                         parseFloat(getComputedStyle(this).paddingBottom);
-
     // 스크롤 가능한 높이가 최소 높이보다 크면 그 높이로 설정, 아니면 최소 높이 유지
     this.style.height = (this.scrollHeight > minHeight ? this.scrollHeight : minHeight) + 'px';
     // 최대 높이 (예: 10줄) 제한 (선택 사항)
@@ -146,19 +158,21 @@ function autoResizeTextarea() {
     }
 }
 
-// 설정 저장 함수 (localStorage 사용)
+// 설정 저장 함수 (localStorage 사용) - 모달 입력 필드를 참조하도록 수정
 function saveSettings(slotNumber) {
     const settings = {
-        botName: botNameInput.value,
-        botAge: botAgeInput.value,
-        botAppearance: botAppearanceInput.value,
-        botPersona: botPersonaInput.value,
-        botImageUrl: botImageUrlInput.value,
-        userName: userNameInput.value,
-        userAge: userAgeInput.value,
-        userAppearance: userAppearanceInput.value,
-        userGuidelines: userGuidelinesInput.value,
-        userImageUrl: userImageUrlInput.value
+        botName: botNameInputModal.value,
+        botAge: botAgeInputModal.value,
+        botGender: botGenderInputModal.value, // 성별 추가
+        botAppearance: botAppearanceInputModal.value,
+        botPersona: botPersonaInputModal.value,
+        botImageUrl: botImageUrlInputModal.value,
+        userName: userNameInputModal.value,
+        userAge: userAgeInputModal.value,
+        userGender: userGenderInputModal.value, // 성별 추가
+        userAppearance: userAppearanceInputModal.value,
+        userGuidelines: userGuidelinesInputModal.value,
+        userImageUrl: userImageUrlInputModal.value
     };
     localStorage.setItem(`settings_slot_${slotNumber}`, JSON.stringify(settings));
     alert(`설정 슬롯 ${slotNumber}에 저장되었습니다.`);
@@ -167,49 +181,77 @@ function saveSettings(slotNumber) {
     userProfileImgUrl = settings.userImageUrl || "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU";
     botProfileImgUrl = settings.botImageUrl || "https://via.placeholder.com/35/3a4a3a/ffffff?text=BOT";
 
-    // 이미지 URL 변수가 업데이트되면 기존 메시지의 프로필 이미지 src를 업데이트 시도 (선택 사항, 복잡할 수 있음)
-    // 여기서는 새 메시지부터 적용되도록 합니다.
+     // 저장 시 이미지 미리보기 업데이트
+     updateImagePreview(botImageUrlInputModal.value, botImagePreview);
+     updateImagePreview(userImageUrlInputModal.value, userImagePreview);
+
+    // 저장 후 SYSTEM_PROMPT 업데이트
+    updateSystemPrompt();
 }
 
-// 설정 로드 함수 (localStorage 사용)
+// 설정 로드 함수 (localStorage 사용) - 모달 입력 필드를 참조하도록 수정
 function loadSettings(slotNumber) {
     const savedSettings = localStorage.getItem(`settings_slot_${slotNumber}`);
     if (savedSettings) {
         const settings = JSON.parse(savedSettings);
-        botNameInput.value = settings.botName;
-        botAgeInput.value = settings.botAge;
-        botAppearanceInput.value = settings.botAppearance;
-        botPersonaInput.value = settings.botPersona;
-        botImageUrlInput.value = settings.botImageUrl;
-        userNameInput.value = settings.userName;
-        userAgeInput.value = settings.userAge;
-        userAppearanceInput.value = settings.userAppearance;
-        userGuidelinesInput.value = settings.userGuidelines;
-        userImageUrlInput.value = settings.userImageUrl;
-        // console.log(`설정 슬롯 ${slotNumber}에서 로드되었습니다.`); // 콘솔 로그 제거
+        botNameInputModal.value = settings.botName;
+        botAgeInputModal.value = settings.botAge;
+        botGenderInputModal.value = settings.botGender || ''; // 성별 로드, 없으면 빈 값
+        botAppearanceInputModal.value = settings.botAppearance;
+        botPersonaInputModal.value = settings.botPersona;
+        botImageUrlInputModal.value = settings.botImageUrl;
+
+        userNameInputModal.value = settings.userName;
+        userAgeInputModal.value = settings.userAge;
+        userGenderInputModal.value = settings.userGender || ''; // 성별 로드, 없으면 빈 값
+        userAppearanceInputModal.value = settings.userAppearance;
+        userGuidelinesInputModal.value = settings.userGuidelines;
+        userImageUrlInputModal.value = settings.userImageUrl;
 
         // 로드 시 이미지 URL 변수 업데이트
         userProfileImgUrl = settings.userImageUrl || "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU";
         botProfileImgUrl = settings.botImageUrl || "https://via.placeholder.com/35/3a4a3a/ffffff?text=BOT";
 
+         // 로드 시 이미지 미리보기 업데이트
+         updateImagePreview(botImageUrlInputModal.value, botImagePreview);
+         updateImagePreview(userImageUrlInputModal.value, userImagePreview);
+
+
     } else {
-        // console.log(`설정 슬롯 ${slotNumber}에 저장된 설정이 없습니다. 기본값 로드 시도.`); // 콘솔 로그 제거
-        // 기본값 로드는 입력 필드의 value 속성에 설정되어 있으므로 추가 로직 불필요
+        // 저장된 설정이 없을 경우 기본값 (HTML value 속성)을 사용하고 알림
         alert(`설정 슬롯 ${slotNumber}에 저장된 설정이 없습니다. 기본값이 표시됩니다.`);
-        // 저장된 설정이 없을 경우 기본 이미지 URL 변수 업데이트
-        userProfileImgUrl = userImageUrlInput.value || "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU";
-        botProfileImgUrl = botImageUrlInput.value || "https://via.placeholder.com/35/3a4a3a/ffffff?text=BOT";
+        // 기본 이미지 URL 변수 업데이트 (HTML 기본 value에서 가져옴)
+        // DOMContentLoaded에서 처음 loadSettings 시점에서 이 부분이 필요
+        // subsequent loadSettings calls will rely on the cleared values or HTML defaults
+         botNameInputModal.value = botNameInputModal.defaultValue;
+         botAgeInputModal.value = botAgeInputModal.defaultValue;
+         botGenderInputModal.value = botGenderInputModal.defaultValue || '';
+         botAppearanceInputModal.value = botAppearanceInputModal.defaultValue;
+         botPersonaInputModal.value = botPersonaInputModal.defaultValue;
+         botImageUrlInputModal.value = botImageUrlInputModal.defaultValue;
+
+         userNameInputModal.value = userNameInputModal.defaultValue;
+         userAgeInputModal.value = userAgeInputModal.defaultValue;
+         userGenderInputModal.value = userGenderInputModal.defaultValue || '';
+         userAppearanceInputModal.value = userAppearanceInputModal.defaultValue;
+         userGuidelinesInputModal.value = userGuidelinesInputModal.defaultValue;
+         userImageUrlInputModal.value = userImageUrlInputModal.defaultValue;
+
+        userProfileImgUrl = userImageUrlInputModal.value || "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU";
+        botProfileImgUrl = botImageUrlInputModal.value || "https://via.placeholder.com/35/3a4a3a/ffffff?text=BOT";
+
+         // 저장된 설정이 없을 경우 이미지 미리보기 초기화 또는 기본값 표시
+         updateImagePreview(botImageUrlInputModal.value, botImagePreview);
+         updateImagePreview(userImageUrlInputModal.value, userImagePreview);
     }
 
     // 로드 후 SYSTEM_PROMPT 업데이트
     updateSystemPrompt();
-    // 로드 후 기존 메시지 말풍선 업데이트 (필요시)
-    // 이 부분은 현재 메시지 로직에서 바로 이름을 가져오므로 필요 없을 수 있습니다.
-    // 메시지를 다시 로드하거나 appendMessage를 다시 호출해야 할 수 있습니다.
-    // 여기서는 생략하고 새 메시지부터 적용되도록 합니다.
+    // 로드 후 기존 메시지의 프로필 이미지 업데이트 (필요하다면)
+    // 이 부분은 복잡하므로 현재는 새 메시지부터 적용되도록 합니다.
 }
 
-// 슬롯 버튼 스타일 업데이트 함수
+// 슬롯 버튼 스타일 업데이트 함수 (기존과 동일)
 function updateSlotButtonStyles() {
     slotButtons.forEach(button => {
         if (parseInt(button.textContent) === currentSlot) {
@@ -220,37 +262,36 @@ function updateSlotButtonStyles() {
     });
 }
 
-// SYSTEM_PROMPT 업데이트 함수
+// SYSTEM_PROMPT 업데이트 함수 - 모달 입력 필드를 참조하도록 수정
 function updateSystemPrompt() {
     SYSTEM_PROMPT = SYSTEM_PROMPT_TEMPLATE
-        .replace(/{botName}/g, botNameInput.value || "캐릭터")
-        .replace(/{botAge}/g, botAgeInput.value || "불명")
-        .replace(/{botAppearance}/g, botAppearanceInput.value || "알 수 없음")
-        .replace(/{botPersona}/g, botPersonaInput.value || "설정 없음")
-        .replace(/{userName}/g, userNameInput.value || "사용자")
-        .replace(/{userAge}/g, userAgeInput.value || "불명")
-        .replace(/{userAppearance}/g, userAppearanceInput.value || "알 수 없음")
-        .replace(/{userGuidelines}/g, userGuidelinesInput.value || "설정 없음");
+        .replace(/{botName}/g, botNameInputModal.value || "캐릭터")
+        .replace(/{botAge}/g, botAgeInputModal.value || "불명")
+        .replace(/{botAppearance}/g, botAppearanceInputModal.value || "알 수 없음")
+         .replace(/{botPersona}/g, botPersonaInputModal.value || "설정 없음")
+        .replace(/{userName}/g, userNameInputModal.value || "사용자")
+        .replace(/{userAge}/g, userAgeInputModal.value || "불명")
+        .replace(/{userAppearance}/g, userAppearanceInputModal.value || "알 수 없음")
+        .replace(/{userGuidelines}/g, userGuidelinesInputModal.value || "설정 없음");
     // console.log("SYSTEM_PROMPT updated:", SYSTEM_PROMPT); // 업데이트된 프롬프트 로그 (제거)
 }
 
-// 초기화 함수
+// 초기화 함수 (기존 공지 메시지 추가 함수는 그대로 사용)
 function initializeChat() {
-    // 필요한 초기화 로직 (예: 환영 메시지 표시 등)
-    // loadSettings(currentSlot); // DOMContentLoaded에서 이미 호출됨
-    // updateSystemPrompt(); // loadSettings에서 호출됨
+    // initializeChat 함수는 DOMContentLoaded에서 호출되며,
+    // 그 전에 loadSettings(currentSlot)이 호출되어 기본/저장된 설정 로드 및 SYSTEM_PROMPT 업데이트를 완료합니다.
 
     // 초기 공지 메시지 및 구분선 추가
-    appendInitialNotice();
+    appendInitialNotice(); // 기존 함수 그대로 사용
 }
 
-// 초기 공지 메시지 추가 함수
+// 초기 공지 메시지 추가 함수 (기존과 동일)
 function appendInitialNotice() {
     const noticeContainer = document.createElement("div");
     noticeContainer.className = "initial-notice";
+    // 공지 메시지 내용 업데이트
     noticeContainer.innerHTML = `
-        <strong>📢 중요 공지:</strong> 이 챗봇은 수위 높은 성적 묘사를 포함한 BL 에로 소설 작성을 목표로 합니다.
-        미성년자는 이용할 수 없습니다.
+        채팅을 시작합니다. 사용자를 확인해주세요.
     `;
     chat.appendChild(noticeContainer);
 
@@ -259,16 +300,15 @@ function appendInitialNotice() {
     chat.appendChild(divider);
 }
 
-// 메시지를 채팅창에 추가하는 함수
+
+// 메시지를 채팅창에 추가하는 함수 (기존과 동일)
 function appendMessage(role, messageData) {
     // 텍스트 메시지와 이미지 메시지를 다르게 처리합니다.
-
     if (messageData.type === 'image') {
         // --- 이미지 메시지 처리 ---
         const imageAnnouncementContainer = document.createElement("div");
         // 중앙 정렬 및 스타일링을 위한 클래스 추가
         imageAnnouncementContainer.className = `image-announcement ${role}`;
-
         // 이미지 페이드 컨테이너 (그라데이션 효과 적용)
         const imageFadeContainer = document.createElement("div");
         imageFadeContainer.className = "image-fade-container";
@@ -299,7 +339,6 @@ function appendMessage(role, messageData) {
 
         // 채팅창에 직접 추가
         chat.appendChild(imageAnnouncementContainer);
-
     } else {
         // --- 텍스트 메시지 처리 ---
         const container = document.createElement("div");
@@ -307,8 +346,10 @@ function appendMessage(role, messageData) {
 
         const profileImgElement = document.createElement("img");
         profileImgElement.className = "profile-img";
+        // 프로필 이미지 URL 변수 사용
         profileImgElement.src = (role === 'user' ? userProfileImgUrl : botProfileImgUrl);
-        profileImgElement.alt = (role === 'user' ? (userNameInput.value || "사용자") + " 프로필" : (botNameInput.value || "캐릭터") + " 프로필");
+         // 이름도 모달 입력 필드에서 가져옴
+        profileImgElement.alt = (role === 'user' ? (userNameInputModal.value || "사용자") + " 프로필" : (botNameInputModal.value || "캐릭터") + " 프로필");
         profileImgElement.addEventListener("click", () => openImageOverlay(profileImgElement));
         profileImgElement.onerror = function() {
             this.onerror = null;
@@ -329,7 +370,9 @@ function appendMessage(role, messageData) {
 
         const nameTextSpan = document.createElement("span");
         nameTextSpan.className = "name-text";
-        nameTextSpan.textContent = (role === "user" ? userNameInput.value || "사용자" : botNameInput.value || "캐릭터");
+         // 이름도 모달 입력 필드에서 가져옴
+        nameTextSpan.textContent = (role === "user" ? userNameInputModal.value || "사용자" : botNameInputModal.value || "캐릭터");
+
 
         const deleteBtn = document.createElement("button");
         deleteBtn.className = "delete-btn";
@@ -338,7 +381,6 @@ function appendMessage(role, messageData) {
 
         roleName.appendChild(nameTextSpan); // 기본 순서로 추가 (CSS에서 order로 조정)
         roleName.appendChild(deleteBtn);
-
         contentWrapper.appendChild(roleName); // 이름과 삭제 버튼 컨테이너 추가
 
         // 메시지 본문 요소 (텍스트 버블)
@@ -346,7 +388,8 @@ function appendMessage(role, messageData) {
         messageBodyElement.className = "message-bubble"; // 텍스트 메시지는 버블 클래스 사용
         let rawText = messageData.text;
         // 순서 바꿈: 먼저 마크다운 처리
-        let htmlContent = marked.parse(rawText, { breaks: true, gfm: true }); // 원본 텍스트 먼저 마크다운 파싱
+        let htmlContent = marked.parse(rawText, { breaks: true, gfm: true });
+        // 원본 텍스트 먼저 마크다운 파싱
 
         // 마크다운 처리된 HTML에서 대사/행동 치환
         htmlContent = htmlContent.replace(/"(.*?)"/gs, '<span class="dialogue">"$1"</span>');
@@ -355,7 +398,6 @@ function appendMessage(role, messageData) {
 
         // 텍스트 메시지일 때는 contentWrapper에 메시지 버블 추가
         contentWrapper.appendChild(messageBodyElement);
-
         // message-container에 요소들을 역할에 따라 추가
         if (role === "user") {
             // 유저: contentWrapper | 프로필 이미지 (CSS flex-direction: row 및 order로 배치)
@@ -374,7 +416,8 @@ function appendMessage(role, messageData) {
     chat.scrollTop = chat.scrollHeight;
 }
 
-// 대화 기록을 TXT 파일로 내보내는 함수 (수정됨)
+
+// 대화 기록을 TXT 파일로 내보내는 함수 (기존과 동일)
 function exportConversationAsTxt() {
     if (conversationHistory.length === 0) {
         alert("내보낼 대화 내용이 없습니다.");
@@ -401,7 +444,9 @@ function exportConversationAsTxt() {
         // --- 이미지 메시지 제외 로직 끝 ---
 
 
-        const name = (role === "user" ? userNameInput.value || "사용자" : botNameInput.value || "캐릭터");
+         // 이름은 모달 입력 필드에서 가져옴
+        const name = (role === "user" ? userNameInputModal.value || "사용자" : botNameInputModal.value || "캐릭터");
+
 
         if (messageData.type === 'text') {
             let rawText = messageData.text; // 원본 텍스트 가져오기
@@ -417,19 +462,15 @@ function exportConversationAsTxt() {
 
              // 기존 줄바꿈 유지
              processedText = processedText.replace(/\n/g, '\n');
-
             txtContent += `[${name}] : ${processedText.trim()}\n\n`; // 턴 사이에 엔터 두 번, 메시지 끝 공백 제거
 
         }
         // 다른 메시지 타입은 모두 제외 (현재는 이미지 제외)
     });
-
     // 마지막에 추가된 빈 줄 제거
     txtContent = txtContent.trimEnd();
-
     // Blob 객체 생성
     const blob = new Blob([txtContent], { type: 'text/plain;charset=utf-8' });
-
     // 다운로드 링크 생성 및 클릭
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
@@ -448,7 +489,7 @@ function exportConversationAsTxt() {
     menuOverlay.style.display = 'none';
 }
 
-// 요약 함수 (나중에 구현)
+// 요약 함수 (기존과 동일)
 async function summarizeConversation() { // async 함수로 변경
     // 요약 요청 시 버튼 비활성화 및 스피너 표시
     sendButton.disabled = true;
@@ -457,16 +498,13 @@ async function summarizeConversation() { // async 함수로 변경
     loadingSpinner.style.display = 'block';
     // 요약 버튼 자체도 비활성화
     menuSummarizeButton.disabled = true;
-
-
     // 대화 기록에서 최근 10턴 가져오기
     // conversationHistory는 가장 오래된 메시지가 앞에 있습니다.
     // 따라서 마지막 10개를 가져오려면 slice 사용
     const recentHistory = conversationHistory.slice(-10);
-
     if (recentHistory.length === 0) {
         appendMessage("bot", { type: 'text', text: "(요약할 대화 내용이 충분하지 않습니다.)" });
-         // 상태 초기화
+        // 상태 초기화
         sendButton.disabled = false;
         userInput.disabled = false;
         actionMenuButton.disabled = false;
@@ -480,18 +518,20 @@ async function summarizeConversation() { // async 함수로 변경
     // 요약을 위한 프롬프트 구성
     // 모델에게 이전 대화 내용을 전달하고 요약을 요청하는 내용
     // 요약 프롬프트는 대화의 맥락을 제공하는 SYSTEM_PROMPT와 분리하여 마지막에 추가
-    const summaryPromptText = `다음 대화 내용을 한국어로 간결하게 요약해줘. 요약은 제3자 시점에서 작성하고, 핵심 사건과 전개만 담되 군더더기 없는 자연스러운 문장으로 작성해. "요약:" 같은 머리말은 붙이지 말고, 그냥 텍스트만 출력해.`;
+    const summaryPromptText = `다음 대화 내용을 한국어로 간결하게 요약해줘.
+요약은 제3자 시점에서 작성하고, 핵심 사건과 전개만 담되 군더더기 없는 자연스러운 문장으로 작성해.
+"요약:" 같은 머리말은 붙이지 말고, 그냥 텍스트만 출력해.`;
 
     // API 전송을 위한 contents 배열 구성
     // SYSTEM_PROMPT + 최근 10턴의 텍스트 메시지 + 요약 요청 프롬프트
     const contentsForApi = [{ role: "user", parts: [{ text: SYSTEM_PROMPT }] }];
-
-     // 최근 대화 기록 중 텍스트 메시지만 API에 전달
+    // 최근 대화 기록 중 텍스트 메시지만 API에 전달
     recentHistory.forEach(entry => {
         if (entry.messageData && entry.messageData.type === 'text') {
             // API로 보낼 때는 원래 마크다운과 구조를 유지하는 것이 모델 이해에 더 좋을 수 있습니다.
             // 여기서는 단순 텍스트만 추출해서 보냅니다.
             // 더 나은 요약을 원한다면 마크다운을 유지하거나 구조화된 형태로 보내는 것을 고려
+
             contentsForApi.push({
                 role: entry.role,
                 parts: [{ text: entry.messageData.text }]
@@ -499,7 +539,6 @@ async function summarizeConversation() { // async 함수로 변경
         }
         // 이미지 메시지는 요약을 위해 API에 보내지 않습니다.
     });
-
     contentsForApi.push({ role: "user", parts: [{ text: summaryPromptText }] });
 
 
@@ -510,10 +549,10 @@ async function summarizeConversation() { // async 함수로 변경
             {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
+
                 body: JSON.stringify({ contents: contentsForApi }),
             }
         );
-
         if (!res.ok) {
             const errorData = await res.json();
             console.error("API (Backend) Error for Summary:", res.status, errorData);
@@ -544,18 +583,17 @@ async function summarizeConversation() { // async 함수로 변경
         loadingSpinner.style.display = 'none';
         menuSummarizeButton.disabled = false; // 요약 버튼 다시 활성화
         userInput.focus();
-         // 메뉴 닫기
+        // 메뉴 닫기
         actionMenu.classList.remove("visible");
         menuOverlay.style.display = 'none';
     }
 }
 
 
-// 메시지 전송 (텍스트 또는 이미지 URL) 함수
+// 메시지 전송 (텍스트 또는 이미지 URL) 함수 (기존과 동일)
 async function sendMessage(messageOrImageUrl) {
     // sendButton 클릭 또는 sendImageMessage 호출 시 사용됨
-    const message = typeof messageOrImageUrl === 'string' ?
-        messageOrImageUrl.trim() : userInput.value.trim(); // 인자로 URL이 오면 사용, 아니면 입력창 값 사용
+    const message = typeof messageOrImageUrl === 'string' ? messageOrImageUrl.trim() : userInput.value.trim(); // 인자로 URL이 오면 사용, 아니면 입력창 값 사용
 
     // 입력값이 비어있으면 아무것도 하지 않음
     if (!message) {
@@ -599,7 +637,6 @@ async function sendMessage(messageOrImageUrl) {
     // 입력창 자동 지우기 및 높이 초기화
     userInput.value = '';
     autoResizeTextarea.call(userInput);
-
     // 텍스트 메시지를 대화 기록에 추가
     conversationHistory.push({ role: "user", messageData: { type: 'text', text: message } });
     try {
@@ -626,6 +663,7 @@ async function sendMessage(messageOrImageUrl) {
             {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
+
                 body: JSON.stringify({ contents: contentsForApi }),
             }
         );
@@ -664,7 +702,7 @@ async function sendMessage(messageOrImageUrl) {
 }
 
 
-// '+' 버튼 메뉴의 이미지 삽입 버튼 클릭 시 호출되는 함수
+// '+' 버튼 메뉴의 이미지 삽입 버튼 클릭 시 호출되는 함수 (기존과 동일)
 async function sendImageMessage() {
     const imageUrl = prompt("보낼 이미지의 웹 주소(URL)를 입력하세요:");
     if (imageUrl !== null && imageUrl.trim() !== '') {
@@ -687,7 +725,7 @@ async function sendImageMessage() {
 }
 
 
-// '+' 버튼 메뉴의 상황 버튼 클릭 시 호출되는 함수
+// '+' 버튼 메뉴의 상황 버튼 클릭 시 호출되는 함수 (기존과 동일)
 async function sendSituationRequest() {
     alert("상황 생성 기능 구현 시작!"); // 기능 구현 알림 유지
 
@@ -699,14 +737,12 @@ async function sendSituationRequest() {
 
     // 상황 생성 요청 프롬프트
     const situationPromptText =`
-You are writing a first-person narrative as the character {botName}. 
-The scene has stalled or lost momentum. You must now introduce a new turning point: 
-either escalate the current situation, or introduce a **sudden, immersive event** 
+You are writing a first-person narrative as the character {botName}.
+The scene has stalled or lost momentum. You must now introduce a new turning point:
+either escalate the current situation, or introduce a **sudden, immersive event**
 that dramatically changes the mood or setting.
-
 Write in a sensory-rich, novel-style format with emphasis on *physical actions, emotional reactions*, and subtle tension.
 Use minimal but meaningful dialogue only when needed. Avoid repetition and do not reference the user's past prompts.
-
 Do not break character. Maintain continuity in tone and theme. Output should feel seamless in the flow of the story.
 `;
 
@@ -719,7 +755,6 @@ Do not break character. Maintain continuity in tone and theme. Output should fee
         }));
     // 상황 프롬프트를 API 호출 콘텐츠에 추가
     const contentsForApi = [{ role: "user", parts: [{ text: SYSTEM_PROMPT }] }, ...textOnlyContentsForApi, { role: "user", parts: [{ text: situationPromptText }] }];
-
     if (contentsForApi.length <= 1 && contentsForApi[0].parts[0].text === SYSTEM_PROMPT) {
         // SYSTEM_PROMPT 외 사용자 텍스트가 없을 경우 API 호출 안 함
         appendMessage("bot", { type: 'text', text: "(상황 생성 요청 스킵: 보낼 텍스트 내용 없음)" }); // 메시지 수정
@@ -754,6 +789,7 @@ Do not break character. Maintain continuity in tone and theme. Output should fee
             {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
+
                 body: JSON.stringify({ contents: contentsForApi }),
             }
         );
@@ -796,39 +832,23 @@ Do not break character. Maintain continuity in tone and theme. Output should fee
 }
 
 
-// 초기화 함수 및 DOMContentLoaded 리스너는 함수 정의 뒤에 배치
-
-// --- 초기화 함수 ---
-function initializeChat() {
-    // 필요한 초기화 로직 (예: 환영 메시지 표시 등)
-    // loadSettings(currentSlot); // DOMContentLoaded에서 이미 호출됨
-    // updateSystemPrompt(); // loadSettings에서 호출됨
-
-    // 초기 공지 메시지 및 구분선 추가
-    appendInitialNotice();
+// 이미지 URL 입력 시 미리보기 업데이트 함수
+function updateImagePreview(imageUrl, imgElement) {
+    if (imageUrl && imageUrl.trim() !== '') {
+        imgElement.src = imageUrl.trim();
+    } else {
+        imgElement.src = ""; // URL이 없으면 이미지 제거
+    }
 }
 
-// 초기 공지 메시지 추가 함수
-function appendInitialNotice() {
-    const noticeContainer = document.createElement("div");
-    noticeContainer.className = "initial-notice";
-    noticeContainer.innerHTML = `
-        채팅을 시작합니다. 사용자를 확인해주세요.
-    `;
-    chat.appendChild(noticeContainer);
-
-    const divider = document.createElement("div");
-    divider.className = "notice-divider";
-    chat.appendChild(divider);
-}
 
 // --- 이벤트 리스너 ---
 
-// 전송 버튼 클릭 이벤트
+// 전송 버튼 클릭 이벤트 (기존과 동일)
 sendButton.addEventListener("click", () => sendMessage(userInput.value)); // 입력창 값 전달
 
 
-// keydown 이벤트 리스너 수정: Shift+Enter는 줄바꿈, Enter만 누르면 전송
+// keydown 이벤트 리스너 수정: Shift+Enter는 줄바꿈, Enter만 누르면 전송 (기존과 동일)
 userInput.addEventListener("keydown", function(event) {
     if (event.key === "Enter" && !event.shiftKey) {
         event.preventDefault(); // 기본 Enter 동작 (줄바꿈) 막기
@@ -836,7 +856,7 @@ userInput.addEventListener("keydown", function(event) {
     }
     // Shift + Enter는 기본 동작 (줄바꿈)이 실행되도록 별도 처리 없음
 });
-// 액션 메뉴 버튼 클릭 이벤트
+// 액션 메뉴 버튼 클릭 이벤트 (기존과 동일)
 actionMenuButton.addEventListener("click", function() {
     actionMenu.classList.toggle("visible");
     if (actionMenu.classList.contains("visible")) {
@@ -845,78 +865,110 @@ actionMenuButton.addEventListener("click", function() {
         menuOverlay.style.display = 'none';
     }
 });
-// 메뉴 오버레이 클릭 시 메뉴 닫기
+// 메뉴 오버레이 클릭 시 메뉴 닫기 (기존과 동일)
 menuOverlay.addEventListener("click", function() {
     actionMenu.classList.remove("visible");
     menuOverlay.style.display = 'none';
 });
-// 이미지 삽입 메뉴 버튼 클릭 (기능 실행 후 메뉴 닫도록 수정됨)
+// 이미지 삽입 메뉴 버튼 클릭 (기존과 동일)
 menuImageButton.addEventListener("click", function() {
     sendImageMessage(); // sendImageMessage 함수 호출
     // sendImageMessage 함수 안에서 메뉴 닫도록 코드가 이동됨
 });
-// 상황 메뉴 버튼 클릭 (기능 실행 후 메뉴 닫도록 수정됨)
+// 상황 메뉴 버튼 클릭 (기존과 동일)
 menuSituationButton.addEventListener("click", function() {
     sendSituationRequest(); // sendSituationRequest 함수 호출
     // sendSituationRequest 함수 안에서 메뉴 닫도록 코드가 이동됨
 });
-// TXT 내보내기 메뉴 버튼 클릭 (새로 추가)
+// TXT 내보내기 메뉴 버튼 클릭 (기존과 동일)
 menuExportTxtButton.addEventListener("click", function() {
     exportConversationAsTxt(); // exportConversationAsTxt 함수 호출
     // exportConversationAsTxt 함수 안에서 메뉴 닫도록 코드가 추가됨
 });
-// 요약 메뉴 버튼 클릭 (새로 추가)
+// 요약 메뉴 버튼 클릭 (기존과 동일)
 menuSummarizeButton.addEventListener("click", function() {
     summarizeConversation(); // summarizeConversation 함수 호출
     // summarizeConversation 함수 안에서 메뉴 닫도록 코드가 추가됨
 });
-
-
 // 이미지 오버레이 클릭 시 닫기 이벤트 리스너는 HTML에 onclick="closeImageOverlay()"로 이미 존재하므로 JS에서는 추가할 필요 없습니다.
-// 사이드바 토글 버튼 클릭
-sidebarToggle.addEventListener("click", function() {
-    sidebar.classList.toggle("visible");
-    if (sidebar.classList.contains("visible")) {
-        sidebarOverlay.style.display = 'block';
-        actionMenu.classList.remove("visible");
-        menuOverlay.style.display = 'none';
-        imageOverlay.style.display = 'none';
 
-    } else {
-        sidebarOverlay.style.display = 'none';
+// --- 새로운 모달 열기/닫기 이벤트 리스너 ---
+
+// ≡ 버튼 클릭 시 모달 열기 (기존 사이드바 토글 기능 대체)
+sidebarToggle.addEventListener("click", function() {
+    settingsModalOverlay.style.display = 'flex'; // 모달 오버레이를 보이게 함 (CSS에서 flex로 설정했으므로 flex 사용)
+    // 다른 오버레이나 메뉴가 열려있으면 닫기 (선택 사항)
+    actionMenu.classList.remove("visible");
+    menuOverlay.style.display = 'none';
+    imageOverlay.style.display = 'none';
+
+     // 모달이 열릴 때 현재 슬롯 설정 로드 및 스타일 업데이트
+     loadSettings(currentSlot);
+     updateSlotButtonStyles();
+});
+
+// 모달 닫기 버튼 클릭 시 모달 닫기
+closeModalButton.addEventListener("click", function() {
+    settingsModalOverlay.style.display = 'none'; // 모달 오버레이 숨김
+});
+
+// 모달 오버레이 배경 클릭 시 모달 닫기 (모달 내용 자체를 클릭해도 닫히지 않게)
+settingsModalOverlay.addEventListener("click", function(event) {
+    // 클릭된 요소가 모달 오버레이 자체인지 확인 (모달 내용이나 그 자식 요소 클릭 시에는 닫히지 않게)
+    if (event.target === settingsModalOverlay) {
+        settingsModalOverlay.style.display = 'none'; // 모달 오버레이 숨김
     }
 });
-// 사이드바 오버레이 클릭 시 사이드바 닫기
-sidebarOverlay.addEventListener("click", function() {
-    sidebar.classList.remove("visible");
-    sidebarOverlay.style.display = 'none';
-});
-// 설정 저장 버튼 클릭 이벤트
-saveSettingsButton.addEventListener("click", function() {
+
+
+// 설정 저장 버튼 (모달 내) 클릭 이벤트
+saveSettingsButtonModal.addEventListener("click", function() {
     saveSettings(currentSlot); // saveSettings 함수 호출
 });
-// 슬롯 버튼 클릭 이벤트 리스너
+
+
+// 슬롯 버튼 클릭 이벤트 리스너 (모달 내 버튼에 연결)
 slotButtons.forEach(button => {
     button.addEventListener('click', function() {
         const slotNumber = parseInt(this.textContent);
-        // 수정된 로직: 슬롯 버튼 클릭 시 currentSlot 및 스타일 업데이트는 항상 실행
+        // 슬롯 버튼 클릭 시 currentSlot 및 스타일 업데이트는 항상 실행
         currentSlot = slotNumber; // 현재 슬롯 업데이트
 
         updateSlotButtonStyles(); // 슬롯 버튼 스타일 업데이트
 
-        loadSettings(slotNumber); // 해당 슬롯 설정 로드 시도 (loadSettings 내에서는 로드 성공 여부에 따라 입력 필드 업데이트만 수행)
+        // 해당 슬롯 설정 로드
+        loadSettings(slotNumber); // loadSettings 내에서는 로드 성공 여부에 따라 입력 필드 업데이트만 수행
     });
 });
-// textarea 입력 시 높이 자동 조절
+
+// 이미지 URL 입력 필드 변경 시 미리보기 업데이트 이벤트 리스너 추가
+botImageUrlInputModal.addEventListener('input', function() {
+    updateImagePreview(this.value, botImagePreview);
+});
+
+userImageUrlInputModal.addEventListener('input', function() {
+    updateImagePreview(this.value, userImagePreview);
+});
+
+
+// textarea 입력 시 높이 자동 조절 (기존과 동일)
 userInput.addEventListener('input', autoResizeTextarea);
+
 // 페이지 로드 완료 시 실행 (마지막에 배치)
 document.addEventListener('DOMContentLoaded', () => {
     autoResizeTextarea.call(userInput); // textarea 높이 초기화
-    loadSettings(currentSlot); // 현재 슬롯 설정 로드
-    updateSlotButtonStyles(); // 슬롯 버튼 스타일 업데이트
-    initializeChat(); // 초기화 로직 실행 (공지 추가 포함)
 
-    // 이미지 URL 입력 필드에서 값 불러와서 변수 업데이트 (초기 로드 시)
-    userProfileImgUrl = userImageUrlInput.value || "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU";
-    botProfileImgUrl = botImageUrlInput.value || "https://via.placeholder.com/35/3a4a3a/ffffff?text=BOT";
+    // 초기 로드 시 현재 슬롯 설정 로드 (기본값 또는 localStorage)
+    loadSettings(currentSlot);
+
+    // 초기 로드 후 슬롯 버튼 스타일 업데이트
+    updateSlotButtonStyles();
+
+    // 초기화 로직 실행 (공지 추가 포함)
+    initializeChat();
+
+    // 이미지 URL 입력 필드 초기 값으로 미리보기 업데이트
+    updateImagePreview(botImageUrlInputModal.value, botImagePreview);
+    updateImagePreview(userImageUrlInputModal.value, userImagePreview);
+
 });
