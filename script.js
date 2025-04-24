@@ -600,7 +600,7 @@ async function sendMessage(messageOrImageUrl) {
                 role: entry.role,
                 parts: [{ text: entry.messageData.text }]
             }));
-        const contentsForApi = [{ role: "user", parts: [{ text: SYSTEM_PROMPT }] }, ...textOnlyContentsForApi];
+        const contentsForApi = [...textOnlyContentsForApi, { role: "user", parts: [{ text: SYSTEM_PROMPT }] }];
         if (contentsForApi.length === 1 && contentsForApi[0].parts[0].text === SYSTEM_PROMPT) {
             // SYSTEM_PROMPT 외 사용자 텍스트가 없을 경우 API 호출 안 함
             appendMessage("bot", { type: 'text', text: "(API 호출 스킵: 보낼 텍스트 내용 없음)" });
