@@ -1019,14 +1019,18 @@ document.addEventListener("DOMContentLoaded", function () {
     const imageOverlay = document.getElementById("imageOverlay");
     const saveSettingsButtonModal = document.getElementById("saveSettingsButtonModal");
 
-    sidebarToggle.addEventListener("click", function () {
-        settingsModalOverlay.style.display = 'flex';
-        actionMenu.classList.remove("visible");
-        menuOverlay.style.display = 'none';
-        imageOverlay.style.display = 'none';
-        loadSettings(currentSlot);
-        updateSlotButtonStyles();
-    });
+sidebarToggle.addEventListener("click", function () {
+    settingsModalOverlay.classList.remove("modal-fade-out");
+    settingsModalOverlay.style.display = "flex"; // 모달 보이기
+    settingsModalOverlay.classList.add("modal-fade-in");
+
+    actionMenu.classList.remove("visible");
+    menuOverlay.style.display = "none";
+    imageOverlay.style.display = "none";
+
+    loadSettings(currentSlot);
+    updateSlotButtonStyles();
+});
 
     closeModalButton.addEventListener("click", function () {
         settingsModalOverlay.style.display = 'none';
