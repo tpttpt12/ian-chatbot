@@ -505,7 +505,7 @@ tr:nth-child(even) {
     line-height: 1.4;
     box-sizing: border-box;
     /* Adjusted min-height for approximately 1 line + padding */
-    min-height: calc(1em * 1.4 * 1 + 0.75rem * 2);
+    min-height: calc(1em * 1.2 * 0.25rem * 2);
     height: auto;
     overflow-y: auto;
     padding-top: 0.75rem;

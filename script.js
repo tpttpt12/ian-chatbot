@@ -682,7 +682,17 @@ async function sendSituationRequest() {
     loadingSpinner.style.display = 'block';
 
     // 상황 생성 요청 프롬프트
-    const situationPromptText = `const situationPromptText = `You are writing a first-person narrative as the character {botName}. The scene has stalled or lost momentum. You must now introduce a new turning point: either escalate the current situation, or introduce a **sudden, immersive event** that dramatically changes the mood or setting. Write in a sensory-rich, novel-style format with emphasis on *physical actions, emotional reactions*, and subtle tension. Use minimal but meaningful dialogue only when needed. Avoid repetition and do not reference the user's past prompts. Do not break character. Maintain continuity in tone and theme. Output should feel seamless in the flow of the story.`;
+    const situationPromptText =`
+You are writing a first-person narrative as the character {botName}. 
+The scene has stalled or lost momentum. You must now introduce a new turning point: 
+either escalate the current situation, or introduce a **sudden, immersive event** 
+that dramatically changes the mood or setting.
+
+Write in a sensory-rich, novel-style format with emphasis on *physical actions, emotional reactions*, and subtle tension.
+Use minimal but meaningful dialogue only when needed. Avoid repetition and do not reference the user's past prompts.
+
+Do not break character. Maintain continuity in tone and theme. Output should feel seamless in the flow of the story.
+`;
 
     // API 전송 시에는 텍스트 메시지만 포함 (이미지 메시지는 API가 처리하지 않음)
     const textOnlyContentsForApi = conversationHistory
