@@ -1010,3 +1010,60 @@ updateSlotButtonStyles();
     updateImagePreview(userImageUrlInputModal.value, userImagePreview); // updateImagePreview 함수는 위에서 정의됨
 
 }); // DOMContentLoaded 끝
+
+// --- 슬롯 버튼 스타일 업데이트 함수 (오류 없는 구조) ---
+function updateSlotButtonStyles() {
+    const slotButtons = document.querySelectorAll('.slot-button');
+    slotButtons.forEach(button => {
+        if (parseInt(button.textContent) === currentSlot) {
+            button.classList.add('active');
+        } else {
+            button.classList.remove('active');
+        }
+    });
+}
+
+// --- DOMContentLoaded: 안전하게 실행 ---
+document.addEventListener("DOMContentLoaded", function () {
+    const menuOverlay = document.getElementById("menuOverlay");
+    const actionMenu = document.getElementById("actionMenu");
+    const sidebarToggle = document.getElementById("sidebarToggle");
+    const settingsModalOverlay = document.getElementById("settingsModalOverlay");
+    const closeModalButton = document.getElementById("closeModalButton");
+    const saveSettingsButtonModal = document.getElementById("saveSettingsButtonModal");
+
+    if (menuOverlay && actionMenu) {
+        menuOverlay.addEventListener("click", function () {
+            actionMenu.classList.remove("visible");
+            menuOverlay.style.display = 'none';
+        });
+    }
+
+    sidebarToggle.addEventListener("click", function () {
+        settingsModalOverlay.style.display = 'flex';
+        actionMenu.classList.remove("visible");
+        menuOverlay.style.display = 'none';
+        imageOverlay.style.display = 'none';
+        loadSettings(currentSlot);
+        updateSlotButtonStyles();
+    });
+
+    closeModalButton.addEventListener("click", function () {
+        settingsModalOverlay.style.display = 'none';
+    });
+
+    settingsModalOverlay.addEventListener("click", function (event) {
+        if (event.target === settingsModalOverlay) {
+            settingsModalOverlay.style.display = 'none';
+        }
+    });
+
+    saveSettingsButtonModal.addEventListener("click", function () {
+        saveSettings(currentSlot);
+    });
+
+    const slotButtons = document.querySelectorAll('.slot-button');
+    slotButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            const slotNumber = parseInt(this.text
+
