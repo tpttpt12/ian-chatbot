@@ -461,7 +461,7 @@ async function summarizeConversation() { // async 함수로 변경
     // 요약을 위한 프롬프트 구성
     // 모델에게 이전 대화 내용을 전달하고 요약을 요청하는 내용
     // 요약 프롬프트는 대화의 맥락을 제공하는 SYSTEM_PROMPT와 분리하여 마지막에 추가
-    const summaryPromptText = const summaryPromptText = `다음 대화 내용을 한국어로 간결하게 요약해줘. 요약은 제3자 시점에서 작성하고, 핵심 사건과 전개만 담되 군더더기 없는 자연스러운 문장으로 작성해. "요약:" 같은 머리말은 붙이지 말고, 그냥 텍스트만 출력해.`;
+    const summaryPromptText = `다음 대화 내용을 한국어로 간결하게 요약해줘. 요약은 제3자 시점에서 작성하고, 핵심 사건과 전개만 담되 군더더기 없는 자연스러운 문장으로 작성해. "요약:" 같은 머리말은 붙이지 말고, 그냥 텍스트만 출력해.`;
 
     // API 전송을 위한 contents 배열 구성
     // SYSTEM_PROMPT + 최근 10턴의 텍스트 메시지 + 요약 요청 프롬프트
