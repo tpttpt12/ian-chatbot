@@ -1135,6 +1135,10 @@ tr:nth-child(even) {
   width: 100%;
   box-sizing: border-box;
   transition: color 0.2s, background-color 0.2s;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 #situationOptions .option:hover {
