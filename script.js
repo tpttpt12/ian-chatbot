@@ -1031,6 +1031,23 @@ sidebarToggle.addEventListener("click", function () {
     updateSlotButtonStyles();
 });
 
+const situationButton = document.getElementById("menuSituationButton");
+const situationOptions = document.getElementById("situationOptions");
+const userInput = document.getElementById("userInput");
+const sendButton = document.getElementById("sendButton");
+
+situationButton.addEventListener("click", () => {
+  situationOptions.classList.toggle("hidden");
+});
+
+situationOptions.querySelectorAll(".option").forEach(option => {
+  option.addEventListener("click", () => {
+    userInput.value = `[상황: ${option.textContent}]`;
+    situationOptions.classList.add("hidden");
+    sendButton.click();
+  });
+});
+
     closeModalButton.addEventListener("click", function () {
         settingsModalOverlay.style.display = 'none';
         menuOverlay.style.display = 'none';
@@ -1058,17 +1075,4 @@ sidebarToggle.addEventListener("click", function () {
     });
 });
 
-const situationButton = document.getElementById("menuSituationButton");
-const situationOptions = document.getElementById("situationOptions");
 
-situationButton.addEventListener("click", () => {
-  situationOptions.classList.toggle("hidden");
-});
-
-// 옵션 클릭 시 입력창에 텍스트 넣기
-situationOptions.querySelectorAll(".option").forEach(option => {
-  option.addEventListener("click", () => {
-    userInput.value += `[상황: ${option.textContent}] `;
-    situationOptions.classList.add("hidden");
-  });
-});
