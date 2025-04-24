@@ -1118,3 +1118,17 @@ tr:nth-child(even) {
     font-style: italic !important;
     color: #a9a9a9 !important;
 }
+
+#settingsModalOverlay {
+    display: none; /* ✅ 시작할 땐 숨김 */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.7); /* 배경 어둡게 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
