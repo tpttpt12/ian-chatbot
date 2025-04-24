@@ -50,7 +50,7 @@ body {
     align-items: center;
 }
 
-/* Sidebar Toggle Button Style */
+/* Sidebar Toggle Button Style - Now opens the Modal */
 #sidebarToggle {
     position: absolute;
     top: 50%;
@@ -188,7 +188,7 @@ body {
 .message-container.bot .role-name {
     justify-content: flex-start;
 }
-s
+
 /* Name Text Style */
 .name-text {
     flex-shrink: 0;
@@ -359,7 +359,6 @@ tr:nth-child(even) {
 }
 /* 만약 *행동*도 이 위의 em, i 스타일을 따르게 하고 싶다면 .action-description 규칙을 삭제하세요. */
 /* 하지만 요청에 따라 *이거*는 회색으로 만든 것이므로, .action-description 규칙을 유지하는 것이 좋습니다. */
-만든 것이므로, .action-description 규칙을 유지하는 것이 좋습니다. */v
 
 /* Image Fade Container Style */
 .image-fade-container {
@@ -420,7 +419,7 @@ tr:nth-child(even) {
     align-items: stretch; /* Stretch children across the main axis (horizontally) */
     gap: 0.75rem; /* Gap between vertical items (textarea container and buttons row) */
 
-    padding: 0.5rem 0.5rem 0.5rem 0.5rem; 
+    padding: 0.5rem 0.5rem 0.5rem 0.5rem;
     background-color: #1E1E1E;
     box-shadow: 0 -10px 20px 0px rgba(30, 30, 30 / 77%);
     z-index: 510; /* Ensure inputArea and its children (menu, spinner, input row) are above the overlay (z-index 490) */
@@ -593,7 +592,7 @@ tr:nth-child(even) {
     margin: 0.5rem auto 1.5rem auto;
 }
 
-/* Image Overlay Style */
+/* Image Overlay Style (for chat images) */
 .overlay {
     position: fixed;
     top: 0;
@@ -605,7 +604,7 @@ tr:nth-child(even) {
     justify-content: center;
     align-items: center;
     z-index: 1000;
-    display: none;
+    display: none; /* Hidden by default */
     cursor: pointer;
 }
 
@@ -616,89 +615,91 @@ tr:nth-child(even) {
     border-radius: 8px;
 }
 
-/* Sidebar Style */
-#sidebar {
+/* --- New Modal Styles --- */
+
+/* Modal Overlay Style (Covers the entire screen) */
+.modal-overlay {
     position: fixed;
     top: 0;
-    right: -300px;
-    width: 300px;
+    left: 0;
+    width: 100%;
     height: 100%;
-    background-color: #1f1f1f;
-    color: #e0e0e0;
-    border-left: 1px solid #3a3a3a;
-    transition: right 0.3s ease-out;
-    z-index: 900;
-    padding: 1rem;
-    box-sizing: border-box;
-    overflow-y: auto;
+    background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent dark background */
+    display: flex; /* Use flexbox to center the modal content */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    z-index: 950; /* Above chat, below image overlay */
+    display: none; /* Hidden by default */
+    overflow-y: auto; /* Allow scrolling within the overlay if content is too tall */
+    padding: 1rem; /* Add some padding around the content */
+    box-sizing: border-box; /* Include padding in the element's total width and height */
+}
+
+/* Modal Content Style (The actual dialog box) */
+.modal-content {
+    background-color: #1f1f1f; /* Dark background */
+    color: #e0e0e0; /* Light text */
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    width: 95%; /* Responsive width */
+    max-width: 700px; /* Maximum width */
+    max-height: 95vh; /* Maximum height based on viewport height */
+    overflow-y: auto; /* Add scrollbar if content exceeds max height */
+    display: flex; /* Use flexbox for layout inside modal */
+    flex-direction: column; /* Stack header, body, footer vertically */
+    gap: 1rem; /* Space between sections */
+}
+
+/* Modal Header Style */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #3a3a3a; /* Separator line */
+    padding-bottom: 1rem;
+    margin-bottom: 0; /* Gap is handled by modal-content gap */
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 1.2rem;
+}
+
+/* Close Button Style */
+.close-button {
+    background: transparent;
+    border: none;
+    color: #b0b0b0;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.close-button:hover {
+    color: #ffffff;
+}
+
+/* Modal Body Style */
+.modal-body {
+    flex-grow: 1; /* Allow body to take up available space */
     display: flex;
     flex-direction: column;
-    gap: 1rem;
-    /* Hide scrollbar */
-    scrollbar-width: thin;
-    scrollbar-color: #5a5a5a #1f1f1f;
+    gap: 1.5rem; /* Space between sections in the body */
 }
 
-/* Hide scrollbar for Webkit browsers */
-#sidebar::-webkit-scrollbar {
-    width: 8px;
+/* Modal Footer Style */
+.modal-footer {
+    border-top: 1px solid #3a3a3a; /* Separator line */
+    padding-top: 1rem;
+    margin-top: 0; /* Gap is handled by modal-content gap */
+    display: flex;
+    justify-content: flex-end; /* Align button to the right */
 }
 
-#sidebar::-webkit-scrollbar-track {
-    background: #1f1f1f;
-}
-
-#sidebar::-webkit-scrollbar-thumb {
-    background-color: #5a5a5a;
-    border-radius: 4px;
-    border: 2px solid #1f1f1f;
-}
-
-#sidebar.visible {
-    right: 0;
-}
-
-/* Sidebar Header Style */
-.sidebar-header {
-    font-size: 1.1rem;
-    font-weight: bold;
-    margin-bottom: 1rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid #3a3a3a;
-}
-
-/* Sidebar Content Label Style */
-.sidebar-content label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: bold;
-    color: #b0b0b0;
-}
-
-/* Sidebar Input/Textarea Style */
-.sidebar-content input[type="text"],
-.sidebar-content textarea {
-    width: 100%;
-    padding: 0.75rem;
-    border: none;
-    border-radius: 8px;
-    background-color: #3a3a3a;
-    color: #e0e0e0;
-    font-size: 1rem;
-    margin-bottom: 1rem;
-    box-sizing: border-box;
-    resize: vertical;
-}
-
-.sidebar-content textarea {
-    min-height: 150px;
-}
-
-/* Sidebar Save Button Style */
-.sidebar-save-button {
-    display: block;
-    width: 100%;
-    padding: 0.75rem;
+/* Save Button Style (in modal footer) */
+.modal-footer .save-button {
+    padding: 0.75rem 1.5rem;
     border: none;
     border-radius: 4px;
     background-color: #5080ff;
@@ -707,53 +708,34 @@ tr:nth-child(even) {
     font-weight: bold;
     cursor: pointer;
     transition: background-color 0.2s ease;
-    text-align: center;
 }
 
-#sidebar-save-button:hover {
+.modal-footer .save-button:hover {
     background-color: #6699ff;
 }
 
-/* Sidebar Overlay Style */
-.sidebar-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 890;
-    display: none;
-}
-
-/* Sidebar Section Divider Style */
-.sidebar-section-divider {
-    height: 1px;
-    background-color: #3a3a3a;
-    margin: 1.5rem 0;
-}
-
-/* Setting Slots Container Style */
-.setting-slots {
-    margin-bottom: 1rem;
+/* Setting Slots Container Style (in modal) */
+.setting-slots-modal {
+    margin-bottom: 0; /* Gap is handled by modal-body gap */
     padding-bottom: 0.5rem;
     border-bottom: 1px solid #3a3a3a;
 }
 
-.setting-slots h3 {
+.setting-slots-modal h3 {
     margin-top: 0;
     margin-bottom: 0.5rem;
     font-size: 1rem;
     color: #b0b0b0;
 }
 
-.slot-buttons-container {
+/* Setting Slot Buttons Container Style (in modal) */
+.slot-buttons-container-modal {
     display: flex;
     gap: 0.5rem;
     flex-wrap: wrap;
 }
 
-/* Setting Slot Button Style */
+/* Setting Slot Button Style (in modal) - Same as before, just included here */
 .slot-button {
     width: 35px;
     height: 35px;
@@ -783,41 +765,168 @@ tr:nth-child(even) {
     background-color: #3366cc;
 }
 
-/* Message Delete Button Style */
-.delete-btn {
-    background: transparent;
+
+/* --- Resume Layout Styles --- */
+
+.resume-layout-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem; /* Space between Character and User sections */
+}
+
+.character-info-section,
+.user-info-section {
+    /* Individual section styling if needed */
+}
+
+.character-info-section h3,
+.user-info-section h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    color: #ffffff;
+    border-bottom: 1px dotted #3a3a3a;
+    padding-bottom: 0.5rem;
+}
+
+.info-grid {
+    display: grid;
+    /* Define columns: one for image/link, one for name/age/gender/appearance */
+    grid-template-columns: 120px 1fr; /* Adjust image column width as needed */
+    gap: 1.5rem; /* Gap between columns and rows */
+    margin-bottom: 1.5rem; /* Space below the grid before guidelines */
+
+    /* Responsive adjustment */
+    @media (max-width: 600px) {
+        grid-template-columns: 1fr; /* Stack columns on smaller screens */
+        gap: 1rem;
+    }
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem; /* Space between elements within an item */
+}
+
+/* Style for the larger info item (Name, Age, Appearance) */
+.info-item.full-width {
+    grid-column: span 1; /* By default, spans 1 column */
+    /* On larger screens, this item spans the second column */
+    @media (min-width: 601px) {
+        grid-column: span 1; /* Explicitly span the second column in the 2-column grid */
+    }
+}
+
+/* Style for the image/image link item */
+.info-grid .info-item:first-child {
+     /* On smaller screens, this item spans the full width */
+     @media (max-width: 600px) {
+         grid-column: span 1; /* Span the full width when stacked */
+     }
+}
+
+
+.half-width-row {
+    display: flex;
+    gap: 1rem; /* Space between age and gender inputs */
+}
+
+.half-width-item {
+    flex: 1; /* Each item takes up half the space */
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+
+/* Styles for labels, inputs, and textareas within the modal */
+.modal-body label {
+    display: block;
+    margin-bottom: 0.2rem;
+    font-weight: bold;
+    color: #b0b0b0;
+    font-size: 0.9rem;
+}
+
+.modal-body input[type="text"],
+.modal-body textarea {
+    width: 100%;
+    padding: 0.75rem;
     border: none;
-    color: #aaa;
+    border-radius: 8px;
+    background-color: #3a3a3a;
+    color: #e0e0e0;
     font-size: 1rem;
-    cursor: pointer;
-    padding: 0 0.2rem;
-    z-index: 1;
-    flex-shrink: 0;
+    margin-bottom: 0; /* Gap is handled by flex/grid gap */
+    box-sizing: border-box;
+    resize: vertical; /* Allow vertical resizing for textareas */
 }
 
-/* User Message Delete Button Style */
-.message-container.user .role-name .delete-btn {
-    margin-right: 10px;
-    margin-left: 0;
-    order: 0;
+.modal-body textarea {
+     min-height: 100px; /* Set a minimum height for textareas */
+     line-height: 1.4;
 }
 
-/* Bot Message Delete Button Style */
-.message-container.bot .role-name .delete-btn {
-    margin-left: 10px;
-    margin-right: 0;
-    order: 1;
+.modal-body input[type="text"]:focus,
+.modal-body textarea:focus {
+     outline: none;
+     box-shadow: 0 0 0 2px #5080ff; /* Highlight on focus */
 }
 
-/* User Message Name Text Order Adjustment */
-.message-container.user .role-name .name-text {
-    order: 1;
+/* Image Preview Area */
+.image-preview-area {
+    width: 100px; /* Fixed width for preview */
+    height: 100px; /* Fixed height for preview */
+    border: 1px dashed #5a5a5a;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; /* Hide overflowing parts of the image */
+    margin-top: 0.5rem; /* Space above the preview */
+    background-color: #2d2d2d; /* Dark background for empty state */
+    flex-shrink: 0; /* Prevent shrinking */
 }
 
-/* Message Container (position: relative added) */
-.message-container {
-    position: relative;
+.image-preview-area img {
+    display: block;
+    width: 100%; /* Image fills the preview area */
+    height: 100%; /* Image fills the preview area */
+    object-fit: cover; /* Cover the area, cropping if necessary */
+    border-radius: 0; /* No border radius on the image itself inside the rounded container */
+    opacity: 0.8; /* Slightly dim image */
 }
+
+/* Style for empty image preview */
+.image-preview-area img[src=""],
+.image-preview-area img:not([src]) {
+    display: none; /* Hide the img element if src is empty or not set */
+}
+
+/* Placeholder text for empty image preview */
+.image-preview-area::before {
+    content: "No Image"; /* Text to show when empty */
+    color: #b0b0b0;
+    font-size: 0.8rem;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+.image-preview-area img[src=""] + ::before,
+.image-preview-area img:not([src]) + ::before {
+    display: flex; /* Show placeholder text */
+}
+
+/* Hide placeholder text when image is loaded */
+.image-preview-area img[src]:not([src=""]) + ::before {
+    display: none;
+}
+
 
 /* Action Menu Overlay Style (Transparent) */
 #menuOverlay {
