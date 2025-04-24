@@ -999,10 +999,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
 document.addEventListener("DOMContentLoaded", function () {
     const menuOverlay = document.getElementById("menuOverlay");
-    ...
-    menuOverlay.addEventListener("click", function () {
-        actionMenu.classList.remove("visible");
-        menuOverlay.style.display = 'none';
-    });
+    const actionMenu = document.getElementById("actionMenu");
+
+    if (menuOverlay && actionMenu) {
+        menuOverlay.addEventListener("click", function () {
+            actionMenu.classList.remove("visible");
+            menuOverlay.style.display = 'none';
+        });
+    }
 });
 
