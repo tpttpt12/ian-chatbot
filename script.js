@@ -935,6 +935,7 @@ updateSlotButtonStyles();
         // 모달이 열릴 때 현재 슬롯 설정 로드 및 스타일 업데이트
         loadSettings(currentSlot); // loadSettings 함수는 위에서 정의됨
         updateSlotButtonStyles(); // updateSlotButtonStyles 함수는 위에서 정의됨
+        settingsModalOverlay.style.display = 'none';
     });
 
     // 모달 닫기 버튼 클릭 시 모달 닫기
