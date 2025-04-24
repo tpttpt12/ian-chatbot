@@ -25,7 +25,7 @@ body {
     border: none;
     position: relative;
     overflow: hidden; /* Prevent container content overflow */
-    padding-bottom: 20px; /* Adjust bottom padding as needed */
+    padding-bottom: 20px; /* 원하는 만큼 간격 조절 (예: 20px) */
 }
 
 /* Adjust width for wider screens */
@@ -246,7 +246,7 @@ body {
     line-height: 1.4;
     position: relative;
     font-size: 1rem;
-    white-space: normal; /* Ensure text wraps */
+    white-space: normalv;
     margin-bottom: 0;
 }
 
@@ -264,122 +264,147 @@ body {
     border-radius: 1rem 1rem 0.3rem 1rem;
 }
 
-/* --- Markdown Formatting Styles --- */
+/* --- 마크다운 형식 스타일 --- */
 
-/* Bold text */
+/* 마크다운 **굵게** 또는 __굵게__ 스타일 (strong, b 태그) */
+/* 참고: 현재 JS 코드는 **볼드**를 별도 처리하지 않아 이 규칙이 적용 안 될 수 있습니다. */
 strong, b {
     font-weight: bold;
-    color: inherit; /* Keep text color */
+    color: #f0f0f0; /* 굵은 텍스트 색상 (예시: 좀 더 밝은 흰색) */
 }
 
-/* Italic text */
+/* 마크다운 *기울임* 또는 _기울임_ 스타일 (em, i 태그) */
+/* 참고: *행동*은 .action-description 클래스로 별도 처리됩니다. 이 규칙은 그 외의 기울임에 적용됩니다. */
 em, i {
     font-style: italic;
-    color: #a9a9a9; /* Grey color for italics */
+    color: #a9a9a9 !important; /* ✅ 회색 이탤릭 적용 */
 }
 
-/* Blockquote style */
+/* 마크다운 > 인용구 스타일 (blockquote 태그) */
 blockquote {
-    border-left: 4px solid #5a5a5a;
-    padding-left: 1rem;
-    margin-left: 0.5rem;
-    color: #b0b0b0;
-    font-style: italic;
+    border-left: 4px solid #5a5a5a; /* 왼쪽에 회색 선 추가 */
+    padding-left: 1rem; /* 왼쪽 여백 */
+    margin-left: 0.5rem; /* 메시지 버블 내에서의 왼쪽 마진 */
+    color: #b0b0b0; /* 인용구 텍스트 색상 (예시: 연한 회색) */
+    font-style: italic; /* 인용구 기울임체 (선택 사항) */
 }
 
-/* Inline code style */
+/* 마크다운 `인라인 코드` 스타일 (code 태그) */
+/* 코드블럭 안의 code 태그는 아래 pre 규칙에 의해 영향받을 수 있습니다. */
 code {
-    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
-    background-color: #2d2d2d;
-    color: #e0e0e0;
-    padding: 0.2em 0.4em;
-    border-radius: 4px;
-    font-size: 0.9em;
+    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace; /* 등간격 글꼴 */
+    background-color: #2d2d2d; /* 배경색 (예시: 어두운 회색) */
+    color: #e0e0e0; /* 글자색 */
+    padding: 0.2em 0.4em; /* 상하좌우 패딩 */
+    border-radius: 4px; /* 모서리 둥글게 */
+    font-size: 0.9em; /* 글자 크기 (선택 사항) */
 }
 
-/* Code block style */
+/* 마크다운 ```코드블럭``` 스타일 (pre 태그) */
 pre {
-    background-color: #2d2d2d;
-    color: #e0e0e0;
-    padding: 1rem;
-    border-radius: 8px;
-    overflow-x: auto;
-    margin: 0.5rem 0;
-    font-size: 0.9em;
+    background-color: #2d2d2d; /* 배경색 (인라인 코드와 동일하게) */
+    color: #e0e0e0; /* 글자색 */
+    padding: 1rem; /* 내부 여백 */
+    border-radius: 8px; /* 모서리 둥글게 */
+    overflow-x: auto; /* 내용이 길면 가로 스크롤 */
+    margin: 0.5rem 0; /* 상하 마진 */
+    font-size: 0.9em; /* 글자 크기 (선택 사항) */
 }
 
+/* 코드블럭 안의 코드 스타일 (pre code 태그) */
+/* 인라인 코드와 유사하나 배경/패딩은 pre에서 이미 처리 */
 pre code {
-    background-color: transparent;
-    color: inherit;
-    padding: 0;
-    border-radius: 0;
-    font-size: inherit;
+    background-color: transparent; /* pre의 배경 사용 */
+    color: #e0e0e0; /* pre의 글자색 사용 */
+    padding: 0; /* pre의 패딩 사용 */
+    border-radius: 0; /* pre의 border-radius 사용 */
+    font-size: inherit; /* pre의 글자 크기 사용 */
 }
 
-/* Table styles */
+/* 마크다운 테이블 스타일 (table, th, td 태그) */
 table {
-    border-collapse: collapse;
-    margin: 1rem 0;
-    width: auto;
-    max-width: 100%;
-    overflow: hidden;
-    display: block;
-    word-break: normal;
+    border-collapse: collapse; /* 셀 경계 합치기 */
+    margin: 1rem 0; /* 상하 마진 */
+    width: auto; /* 테이블 너비 자동 */
+    max-width: 100%; /* 메시지 버블 너비 초과 방지 */
+    overflow: hidden; /* 넘치는 내용 숨김 */
+    display: block; /* 가로 스크롤을 위해 블록 요소로 만듦 */
+    word-break: normal; /* 단어 잘림 방지 */
 }
 
+/* 테이블 가로 스크롤 */
 th, td {
-    border: 1px solid #3a3a3a;
-    padding: 0.5rem;
-    text-align: left;
+    border: 1px solid #3a3a3a; /* 셀 경계선 (어두운 회색) */
+    padding: 0.5rem; /* 셀 내부 여백 */
+    text-align: left; /* 텍스트 왼쪽 정렬 (기본) */
 }
 
 th {
-    background-color: #282828;
-    font-weight: bold;
-    color: #f0f0f0;
+    background-color: #282828; /* 헤더 배경색 (예시: 좀 더 어두운 회색) */
+    font-weight: bold; /* 헤더 굵게 */
+    color: #f0f0f0; /* 헤더 글자색 */
 }
 
 tr:nth-child(even) {
-    background-color: #1f1f1f;
+    background-color: #1f1f1f; /* 짝수 행 배경색 (예시: 더 어두운 회색) */
 }
 
-/* Action Description Style (for *action*) */
+/* --- 마크다운 형식 스타일 끝 --- */
+
+/* 이전에 추가했던 .action-description 규칙은 그대로 두세요. */
 .action-description {
-    color: #a9a9a9;
-    font-style: italic;
+    color: #a9a9a9 !important;
+    font-style: italic !important;
 }
+/* 만약 *행동*도 이 위의 em, i 스타일을 따르게 하고 싶다면 .action-description 규칙을 삭제하세요. */
+/* 하지만 요청에 따라 *이거*는 회색으로 만든 것이므로, .action-description 규칙을 유지하는 것이 좋습니다. */
 
 /* Input Area Overall Style */
+/* #inputArea is a column flex container for its children (textarea container, buttons row) */
+/* Corrected flex-direction and z-index */
 #inputArea {
     display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.75rem;
+    flex-direction: column; /* Stack children vertically */
+    align-items: stretch; /* Stretch children across the main axis (horizontally) */
+    gap: 0.75rem; /* Gap between vertical items (textarea container and buttons row) */
 
-    padding: 0.5rem;
+    padding: 0.5rem 0.5rem 0.5rem 0.5rem;
     background-color: #1E1E1E;
     box-shadow: 0 -10px 20px 0px rgba(30, 30, 30 / 77%);
-    z-index: 510;
+    z-index: 510; /* Ensure inputArea and its children (menu, spinner, input row) are above the overlay (z-index 490) */
     border: 1px solid #2F2F2F;
     border-radius: 15px;
     flex-shrink: 0;
-    position: relative;
+    position: relative; /* Needed for absolute positioning of menu and spinner */
 }
 
+/* Removed unused .input-controls style */
+/* .input-controls { ... } */
+
+
+/* Container for just the textarea */
+/* This is the first child of #inputArea (column flex) */
 .input-textarea-container {
-    flex: 1;
-    display: flex;
+    flex: 1; /* Allow this container to take available space in the column (fills space above buttons) */
+    display: flex; /* Use flex to make textarea fill the container */
+    /* margin-bottom is handled by gap on #inputArea */
+    /* width: 100% handled by align-items: stretch on #inputArea */
 }
 
+/* Container for the buttons below the textarea */
+/* This is the second child of #inputArea (column flex) */
 .input-buttons-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
+    display: flex; /* Arrange children (+ button, send button) horizontally */
+    justify-content: space-between; /* Push button to left, send to right */
+    align-items: center; /* Vertically center items in the row */
+    width: 100%; /* Fill the width of #inputArea (minus padding) */
 }
+
 
 /* '+' Button Style */
+/* Adjusted for the new buttons row container */
 #actionMenuButton {
+    /* Keep existing visual styles */
     width: auto;
     height: auto;
     border-radius: 0;
@@ -394,9 +419,9 @@ tr:nth-child(even) {
     align-items: center;
     transition: color 0.2s ease;
     padding: 0.2rem 0.5rem;
-    align-self: auto;
+    align-self: auto; /* Default alignment within the row */
     z-index: 3;
-    order: auto;
+    order: auto; /* Default order (first in row) */
 }
 
 #actionMenuButton:hover {
@@ -404,7 +429,9 @@ tr:nth-child(even) {
     background-color: transparent;
 }
 
+
 /* Textarea Style */
+/* Adjusted for the textarea container */
 #userInput {
     width: 100%;
     flex: 1 1 auto;
@@ -419,7 +446,7 @@ tr:nth-child(even) {
     background-color: #1E1E1E;
     color: #e0e0e0;
     resize: none;
-    overflow-y: hidden; /* Controlled by JS for auto-resize, but hidden by default */
+    overflow-y: hidden;
     outline: none;
     box-sizing: border-box;
 }
@@ -430,7 +457,9 @@ tr:nth-child(even) {
 }
 
 /* Send Button Style */
+/* Adjusted for the new buttons row container */
 #sendButton {
+    /* Keep existing styles */
     width: 25px;
     height: 25px;
     border-radius: 50%;
@@ -445,9 +474,9 @@ tr:nth-child(even) {
     align-items: center;
     transition: background-color 0.2s ease;
     padding: 0;
-    align-self: auto;
+    align-self: auto; /* Default alignment within the row */
     z-index: 3;
-    order: auto;
+    order: auto; /* Default order (second in row) */
 }
 
 #sendButton:hover {
@@ -464,8 +493,10 @@ tr:nth-child(even) {
     cursor: not-allowed;
 }
 
-/* Loading Spinner Style */
+/* Loading Spinner Style (Position Adjusted) */
+/* Position relative to #inputArea */
 #loadingSpinner {
+    /* Keep existing styles */
     border: 4px solid rgba(255, 255, 255, 0.3);
     border-top: 4px solid #fff;
     border-radius: 50%;
@@ -473,10 +504,12 @@ tr:nth-child(even) {
     height: 20px;
     animation: spin 1s linear infinite;
     display: none;
+    /* Position relative to #inputArea */
     position: absolute;
-    bottom: 1.5rem; /* Adjusted based on input area padding */
-    right: 1.5rem; /* Adjusted based on input area padding */
-    z-index: 4;
+    /* Position near the send button in the bottom row */
+    bottom: calc(2rem + (40px / 2) - (20px / 2)); /* inputArea bottom padding (2rem) + button height / 2 - spinner height / 2 */
+    right: calc(1.5rem + (40px / 2) - (20px / 2)); /* inputArea right padding (1.5rem) + button width / 2 - spinner width / 2 */
+    z-index: 4; /* Ensure it's above input controls */
 }
 
 @keyframes spin {
@@ -492,7 +525,7 @@ tr:nth-child(even) {
 /* Initial Notice Style */
 .initial-notice {
     text-align: center;
-    margin: 0.1rem auto;
+    margin: 0.1rem auto 0.1rem auto;
     color: #515151;
     font-size: 0.9rem;
     padding: 1rem;
@@ -531,75 +564,74 @@ tr:nth-child(even) {
     border-radius: 8px;
 }
 
-/* --- Modal Styles --- */
+/* --- New Modal Styles --- */
 
-/* Modal Overlay Style */
-#settingsModalOverlay {
+/* Modal Overlay Style (Covers the entire screen) */
+.modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
     background-color: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    display: none; /* ✅ 새로고침 시 모달 튀어나오는 문제 수정 */
+    backdrop-filter: blur(4px); /* ✅ 흐림 효과 추가 */
+    -webkit-backdrop-filter: blur(4px); /* ✅ Safari 대응 */
+    display: flex;
     justify-content: center;
     align-items: center;
     padding: 2rem;
     overflow: hidden;
-    z-index: 999;
+    z-index: 950;
     box-sizing: border-box;
 }
 
-/* Modal Content Style */
+/* Modal Content Style (The actual dialog box) */
 .modal-content {
     position: relative;
     background-color: #1f1f1f;
     color: #e0e0e0;
-    padding: 1rem; /* 모달 전체 내부 패딩 축소 (요청 3) */
+    padding: 1.5rem; /* 모달 전체 내부 패딩 */
     border-radius: 12px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
     width: 100%;
-    max-width: 550px; /* 모달 최대 너비 축소 (요청 3) */
-    max-height: 70vh; /* 모달 최대 높이 축소 (요청 3) */
+    max-width: 550px; /* 모달 최대 너비 */
+    max-height: 70vh; /* 모달 최대 높이 */
     overflow-y: auto; /* 스크롤 가능 */
-     /* 스크롤바 숨김 (요청 4) */
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* IE and Edge */
+    -ms-overflow-style: none; /* IE and Edge 스크롤바 숨김 */
+    scrollbar-width: none; /* Firefox 스크롤바 숨김 */
 }
 
-/* Hide scrollbar for Webkit browsers */
+/* Chrome, Safari, Opera 스크롤바 숨김 */
 .modal-content::-webkit-scrollbar {
-    display: none; /* Chrome, Safari, Opera */
+    display: none;
 }
 
 
 /* Modal Header Style */
 .modal-header {
-    padding: 0.8rem 1rem; /* 헤더 패딩 축소 (요청 3) */
+    padding: 0.5rem 1rem; /* 헤더 패딩 줄임 */
     background-color: transparent;
     text-align: center;
-    font-size: 1rem; /* 헤더 글자 크기 축소 (요청 3) */
+    font-size: 1rem; /* 헤더 글자 크기 줄임 */
     font-weight: bold;
     color: #ffffff;
     border-bottom: 1px solid #3a3a3a;
-    margin-bottom: 0.8rem; /* 헤더 아래 마진 축소 (요청 3) */
+    margin-bottom: 1rem;
 }
 
 .modal-header h2 {
     margin: 0;
-    font-size: 1rem; /* h2 글자 크기 축소 (요청 3) */
+    font-size: 1rem; /* h2 글자 크기 줄임 */
 }
 
 /* Close Button Style */
 #closeModalButton {
     all: unset;
     position: absolute;
-    top: 0.6rem; /* 위치 조정 (요청 3) */
-    right: 0.6rem; /* 위치 조정 (요청 3) */
+    top: 0.8rem; /* 위치 조정 */
+    right: 0.8rem; /* 위치 조정 */
     cursor: pointer;
-    font-size: 1.3rem; /* 크기 축소 (요청 3) */
+    font-size: 1.3rem; /* 크기 줄임 */
     color: #aaa;
     background-color: transparent;
     transition: color 0.2s;
@@ -609,34 +641,35 @@ tr:nth-child(even) {
     color: #ffffff;
 }
 
+
 /* Modal Body Style */
 .modal-body {
-    flex-grow: 1;
+    flex-grow: 1; /* Allow body to take up available space */
     display: flex;
     flex-direction: column;
-    gap: 1rem; /* 바디 섹션 간 간격 축소 (요청 3) */
-    padding: 0 0.5rem; /* 좌우 패딩 축소 (요청 3) */
+    gap: 1.2rem; /* 바디 섹션 간 간격 줄임 */
+    padding: 0 0.5rem; /* 좌우 패딩 줄임 */
 }
 
 /* Modal Footer Style */
 .modal-footer {
-    border-top: 1px solid #3a3a3a;
-    padding-top: 0.8rem; /* 푸터 위쪽 패딩 축소 (요청 3) */
-    margin-top: 1rem; /* 바디와의 간격 축소 (요청 3) */
+    border-top: 1px solid #3a3a3a; /* Separator line */
+    padding-top: 0.8rem; /* 푸터 위쪽 패딩 줄임 */
+    margin-top: 1rem; /* 바디와의 간격 추가 */
     display: flex;
-    justify-content: flex-end;
-    padding-bottom: 0.5rem; /* 푸터 아래쪽 패딩 축소 (요청 3) */
-    padding-right: 0.5rem; /* 푸터 오른쪽 패딩 축소 (요청 3) */
+    justify-content: flex-end; /* Align button to the right */
+    padding-bottom: 0.5rem; /* 푸터 아래쪽 패딩 */
+    padding-right: 0.5rem; /* 푸터 오른쪽 패딩 */
 }
 
 /* Save Button Style (in modal footer) */
 .modal-footer .save-button {
-    padding: 0.4rem 0.8rem; /* 저장 버튼 패딩 축소 (크기 조절) (요청 6) */
+    padding: 0.5rem 1rem; /* 저장 버튼 패딩 줄임 (크기 조절) */
     border: none;
     border-radius: 4px;
     background-color: #5080ff;
     color: #ffffff;
-    font-size: 0.8rem; /* 저장 버튼 글자 크기 축소 (요청 6) */
+    font-size: 0.9rem; /* 저장 버튼 글자 크기 줄임 */
     font-weight: bold;
     cursor: pointer;
     transition: background-color 0.2s ease;
@@ -649,32 +682,32 @@ tr:nth-child(even) {
 /* Setting Slots Container Style (in modal) */
 .setting-slots-modal {
     margin-bottom: 0;
-    padding-bottom: 0.8rem; /* 아래 패딩 축소 (요청 3) */
+    padding-bottom: 0.8rem; /* 아래 패딩 줄임 */
     border-bottom: 1px solid #3a3a3a;
 }
 
 .setting-slots-modal h3 {
     /* Setting Slots 글자 삭제로 이 스타일은 더 이상 사용되지 않음 */
-    display: none;
+    display: none; /* 혹시 몰라 숨김 처리 */
 }
 
 /* Setting Slot Buttons Container Style (in modal) */
 .slot-buttons-container-modal {
     display: flex;
-    gap: 0.4rem; /* 슬롯 버튼 간격 축소 (요청 3) */
+    gap: 0.4rem; /* 슬롯 버튼 간격 줄임 */
     flex-wrap: wrap;
-    justify-content: center;
+    justify-content: center; /* 중앙 정렬 */
 }
 
-/* Setting Slot Button Style (in modal) */
+/* Setting Slot Button Style (in modal) - Same as before, just included here */
 .slot-button {
-    width: 30px; /* 슬롯 버튼 크기 축소 (요청 3) */
-    height: 30px; /* 슬롯 버튼 크기 축소 (요청 3) */
+    width: 30px; /* 슬롯 버튼 크기 줄임 */
+    height: 30px; /* 슬롯 버튼 크기 줄임 */
     border-radius: 50%;
     background-color: #5a5a5a;
     color: #ffffff;
     border: none;
-    font-size: 0.9rem; /* 슬롯 버튼 글자 크기 축소 (요청 3) */
+    font-size: 0.9rem; /* 슬롯 버튼 글자 크기 줄임 */
     cursor: pointer;
     display: flex;
     justify-content: center;
@@ -702,101 +735,103 @@ tr:nth-child(even) {
 .resume-layout-container {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem; /* 캐릭터/유저 섹션 간 간격 축소 (요청 3) */
+    gap: 1.5rem; /* 캐릭터/유저 섹션 간 간격 줄임 */
 }
 
 .character-info-section,
 .user-info-section {
-    /* Add specific styling if needed */
+    /* Individual section styling if needed */
 }
 
 .character-info-section h3,
 .user-info-section h3 {
     margin-top: 0;
-    margin-bottom: 0.8rem; /* 섹션 제목 아래 마진 축소 (요청 3) */
-    font-size: 1rem; /* 섹션 제목 글자 크기 축소 (요청 3) */
+    margin-bottom: 0.8rem; /* 섹션 제목 아래 마진 줄임 */
+    font-size: 1rem; /* 섹션 제목 글자 크기 줄임 */
     color: #ffffff;
     border-bottom: 1px dotted #3a3a3a;
-    padding-bottom: 0.4rem; /* 섹션 제목 아래 패딩 축소 (요청 3) */
+    padding-bottom: 0.4rem; /* 섹션 제목 아래 패딩 줄임 */
 }
 
 .info-grid {
     display: grid;
     /* 이미지 영역과 프로필 정보 영역 */
-    grid-template-columns: 120px 1fr; /* 이미지 영역 너비 조정 (요청 2) */
-    gap: 0.8rem; /* 그리드 간격 축소 (요청 3) */
-    margin-bottom: 1rem; /* 그리드 아래 마진 축소 (요청 3) */
+    grid-template-columns: 130px 1fr; /* 이미지 영역 너비 조정, 프로필 영역이 나머지 공간 차지 */
+    gap: 1rem; /* 그리드 간격 줄임 */
+    margin-bottom: 1rem; /* 그리드 아래 마진 줄임 (가이드라인과의 간격) */
 
     /* Responsive adjustment */
     @media (max-width: 600px) {
         grid-template-columns: 1fr; /* Stack columns on smaller screens */
-        gap: 0.6rem; /* 작은 화면 그리드 간격 축소 (요청 3) */
+        gap: 0.8rem; /* 작은 화면 그리드 간격 줄임 */
     }
 }
 
 .info-item {
     display: flex;
     flex-direction: column;
-    gap: 0.4rem; /* 아이템 내 요소 간 간격 축소 (요청 3) */
+    gap: 0.4rem; /* 아이템 내 요소 간 간격 줄임 */
 }
 
 /* Style for the larger info item (Name, Age, Appearance) */
 .info-item.full-width {
-    grid-column: span 1;
+    grid-column: span 1; /* By default, spans 1 column */
+    /* On larger screens, this item spans the second column */
     @media (min-width: 601px) {
-         grid-column: span 1;
+        grid-column: span 1; /* Explicitly span the second column in the 2-column grid */
     }
 }
 
 /* Style for the image/image link item */
 .info-grid .info-item:first-child {
+     /* On smaller screens, this item spans the full width */
      @media (max-width: 600px) {
-         grid-column: span 1;
+         grid-column: span 1; /* Span the full width when stacked */
      }
 }
 
 
 .half-width-row {
     display: flex;
-    gap: 0.6rem; /* 성별/나이 입력창 간 간격 축소 (요청 3) */
+    gap: 0.8rem; /* 성별/나이 입력창 간 간격 줄임 */
 }
 
 .half-width-item {
-    flex: 1;
+    flex: 1; /* Each item takes up half the space */
     display: flex;
     flex-direction: column;
-    gap: 0.4rem; /* 아이템 내 요소 간 간격 축소 (요청 3) */
+    gap: 0.4rem; /* 아이템 내 요소 간 간격 줄임 */
 }
 
 
 /* Styles for labels, inputs, and textareas within the modal */
 .modal-body label {
     display: block;
-    margin-bottom: 0.1rem; /* 레이블 아래 마진 축소 (요청 3) */
+    margin-bottom: 0.1rem; /* 레이블 아래 마진 줄임 */
     font-weight: bold;
     color: #b0b0b0;
-    font-size: 0.8rem; /* 레이블 글자 크기 축소 (요청 3) */
+    font-size: 0.85rem; /* 레이블 글자 크기 줄임 */
 }
 
 .modal-body input[type="text"],
 .modal-body textarea {
     width: 100%;
-    padding: 0.4rem 0.6rem; /* 입력 필드/textarea 패딩 축소 (요청 3) */
+    padding: 0.5rem 0.7rem; /* 입력 필드/textarea 패딩 줄임 */
     border: none;
-    border-radius: 4px; /* 테두리 둥글기 축소 (요청 3) */
+    border-radius: 6px; /* 테두리 둥글기 줄임 */
     background-color: #3a3a3a;
     color: #e0e0e0;
-    font-size: 0.9rem; /* 입력 필드/textarea 글자 크기 축소 (요청 3) */
-    margin-bottom: 0;
+    font-size: 0.9rem; /* 입력 필드/textarea 글자 크기 줄임 */
+    margin-bottom: 0; /* Gap is handled by flex/grid gap */
     box-sizing: border-box;
-    resize: vertical;
-    line-height: 1.4;
+    resize: vertical; /* Allow vertical resizing for textareas */
+    line-height: 1.4; /* 줄 높이 유지 */
 }
 
 .modal-body textarea {
-     min-height: 70px; /* textarea 최소 높이 축소 (요청 3) */
-     /* 스크롤바 숨김 (요청 4) */
-     overflow-y: auto;
+     min-height: 80px; /* textarea 최소 높이 줄임 */
+     /* 스크롤바 숨김 */
+     overflow-y: auto; /* 스크롤 기능 유지 */
      scrollbar-width: none; /* Firefox */
      -ms-overflow-style: none; /* IE and Edge */
 }
@@ -812,21 +847,22 @@ tr:nth-child(even) {
      box-shadow: 0 0 0 2px #5080ff; /* Highlight on focus */
 }
 
-/* Image Preview Area (요청 2) */
+/* Image Preview Area */
 .image-preview-area {
-    width: 160px; /* 이미지 영역 너비 조정 (요청 2) */
+    width: 130px; /* 이미지 영역 너비 */
     /* height는 프로필 정보 영역의 Name, Gender, Age, Appearance 입력 필드의 높이 합과 비슷하게 조정 */
-    /* 대략 input 높이 + textarea 최소 높이 + label 높이 + gap 등을 고려 */
-    height: 220px; /* 대략적인 높이 (요청 2) */
+    /* 대략 input 높이(0.9rem + 패딩) * 3 + textarea 최소 높이(80px) + gap + label height */
+    /* 여기서는 픽셀 값으로 명시하여 프로필 입력창 세트 높이와 맞춤 */
+    height: 180px; /* 대략적인 높이 (필요 시 추가 조정) */
     border: 1px dashed #5a5a5a;
-    border-radius: 8px; /* 테두리 둥글기 축소 (요청 3) */
+    border-radius: 10px;
     display: flex;
     justify-content: center;
     align-items: center;
     background-color: #2d2d2d;
     flex-shrink: 0;
     overflow: hidden;
-    cursor: pointer; /* Indicate clickable (for future JS) */
+    margin-top: 0; /* 상단 마진 제거 또는 줄임 */
 }
 
 .image-preview-area img {
@@ -840,12 +876,12 @@ tr:nth-child(even) {
 /* Style for empty image preview */
 .image-preview-area img[src=""],
 .image-preview-area img:not([src]) {
-    display: none;
+    display: none; /* Hide the img element if src is empty or not set */
 }
 
 /* Placeholder text for empty image preview */
 .image-preview-area::before {
-    content: "No Image";
+    content: "No Image"; /* Text to show when empty */
     color: #b0b0b0;
     font-size: 0.8rem;
     text-align: center;
@@ -854,6 +890,11 @@ tr:nth-child(even) {
     justify-content: center;
     width: 100%;
     height: 100%;
+}
+
+.image-preview-area img[src=""] + ::before,
+.image-preview-area img:not([src]) + ::before {
+    display: flex; /* Show placeholder text */
 }
 
 /* Hide placeholder text when image is loaded */
@@ -869,24 +910,32 @@ tr:nth-child(even) {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: transparent;
-    z-index: 490;
+    background-color: transparent; /* Background transparent */
+    z-index: 490; /* Below #inputArea (510) */
     display: none;
 }
 
-/* Action Menu Container Style (Positioned Above Button) */
+/* Action Menu Container Style (Positioned Above Button, Smaller Size) */
+/* #actionMenu is inside #inputArea (position: relative, z-index: 510) */
+/* Position above the '+' button in the bottom row */
 #actionMenu {
-    position: absolute;
-    bottom: calc(2rem + 40px + 10px); /* Adjust position relative to input area */
-    left: 1rem; /* Adjust left position */
-    transform: translateX(0); /* Reset transform */
-    width: 150px;
+    position: absolute; /* Relative to #inputArea */
+    /* Calculate bottom position relative to the bottom of #inputArea, considering its bottom padding and the height of the buttons row */
+    /* Approximate height of buttons row (40px) + inputArea bottom padding (2rem) + desired gap (10px) */
+    bottom: calc(2.3rem + 0px + 10px); /* inputArea bottom padding (2rem) + button height (40px) + gap (10px) */
+    left: 0.3rem; /* Align left edge with the left padding of inputArea */
+    right: auto;
+    transform: none;
+
+    width: 100px; /* Reduced width */
+    max-width: 150px; /* Reduced max-width */
+
     background-color: #1f1f1f;
     border: 1px solid #2F2F2F;
     border-radius: 15px;
-    padding: 0.5rem 0;
+    padding: 0.3rem 0; /* Reduced padding */
     box-sizing: border-box;
-    z-index: 500;
+    z-index: 500; /* Within #inputArea's stacking context (z=510), this is above other items (z=3, 4) */
 
     display: flex;
     flex-direction: column;
@@ -901,17 +950,22 @@ tr:nth-child(even) {
 #actionMenu.visible {
     opacity: 1;
     visibility: visible;
+    transform: none;
 }
 
 /* Action Menu Tail Style */
+/* Position the tail to point downwards from the menu's bottom-left towards the button */
 #actionMenu::after {
     content: "";
     position: absolute;
-    bottom: -10px;
-    left: 10px;
+    bottom: -10px; /* Position below the menu's bottom edge */
+    left: 10px; /* Position from the menu's left edge */
+    right: auto;
+    transform: none;
+
     width: 0;
     height: 0;
-    border-top: 10px solid #1f1f1f;
+    border-top: 10px solid #1f1f1f; /* Tail color, pointing down */
     border-left: 10px solid transparent;
     border-right: 10px solid transparent;
     z-index: 501;
@@ -921,11 +975,14 @@ tr:nth-child(even) {
 #actionMenu::before {
     content: "";
     position: absolute;
-    bottom: -12px;
-    left: 9px;
+    bottom: -12px; /* Position below the menu's bottom edge */
+    left: 9px; /* Position from the menu's left edge */
+    right: auto;
+    transform: none;
+
     width: 0;
     height: 0;
-    border-top: 12px solid #3a3a3a;
+    border-top: 12px solid #3a3a3a; /* Tail border color, pointing down */
     border-left: 12px solid transparent;
     border-right: 12px solid transparent;
     z-index: 500;
@@ -936,21 +993,22 @@ tr:nth-child(even) {
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;
-    gap: 0.2rem; /* Gap between buttons */
+    gap: 0; /* Keep no gap for text items */
     justify-content: flex-end;
     width: 100%;
+    padding-bottom: 0;
 }
 
-/* Action Menu Internal Button Style */
+/* Action Menu Internal Button Style (Text Link Look, Smaller Font) */
 #actionMenu button {
     flex-basis: auto;
     width: 100%;
-    padding: 0.7rem 1.5rem;
+    padding: 0.5rem 1rem; /* Reduced padding */
     border: none;
     border-radius: 0;
     background-color: transparent;
     color: #e0e0e0;
-    font-size: 0.9rem;
+    font-size: 0.9rem; /* Reduced font size */
     cursor: pointer;
     transition: background-color 0.2s ease, color 0.2s ease;
     text-align: left;
@@ -984,7 +1042,7 @@ tr:nth-child(even) {
     overflow: hidden;
 }
 
-/* Image Fade Effect ::before Pseudo-element */
+/* Image Fade Effect ::before Pseudo-element (수정됨) */
 .image-fade-container::before {
     content: "";
     position: absolute;
@@ -993,7 +1051,7 @@ tr:nth-child(even) {
     width: 100%;
     height: 100%;
     pointer-events: none;
-    z-index: 2;
+    z-index: 2; /* 이미지가 z-index 1에 있다면 마스크는 2로 설정 */
     mask-image: linear-gradient(to right, transparent, black 20%, black 80%, transparent);
     -webkit-mask-image: linear-gradient(to right, transparent, black 20%, black 80%, transparent);
 }
@@ -1026,7 +1084,24 @@ tr:nth-child(even) {
     margin-bottom: 0.5rem;
 }
 
-/* Modal Fade In/Out Animations */
+.message-bubble em {
+    font-style: italic !important;
+    color: #a9a9a9 !important;
+}
+
+#settingsModalOverlay {
+    display: none; /* ✅ 시작할 땐 숨김 */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.7); /* 배경 어둡게 */
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
 @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
@@ -1045,37 +1120,38 @@ tr:nth-child(even) {
     animation: fadeOut 0.3s ease-in forwards;
 }
 
-/* Ensure italic style for em in message bubble */
-.message-bubble em {
-    font-style: italic;
-    color: inherit; /* Use parent color by default */
-}
-
-/* 아코디언 컨테이너 스타일 (원래대로 복구) */
+/* 아코디언 컨테이너 스타일 (기존 margin-left 제거 또는 수정) */
 .accordion {
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
-  margin-left: 1.5rem;
+  /* margin-left: 1.5rem; */ /* <-- 이 줄을 주석 처리하거나 삭제하여 왼쪽 정렬 */
+  margin-left: 0; /* 또는 명시적으로 0으로 설정 */
   margin-top: 0.3rem;
 }
 
-/* 아코디언 내부 옵션 버튼 스타일 (원래대로 복구) */
+/* 아코디언 내부 옵션 버튼 스타일 */
 .accordion .option {
-  all: unset; /* 원래대로 */
-  font-size: 0.9rem; /* 원래대로 */
-  color: #e0e0e0; /* 원래대로 */
-  cursor: pointer;
-  transition: color 0.2s ease; /* 원래대로 */
+  /* all: unset; */ /* <-- all: unset 대신 필요한 속성만 명시적으로 설정 */
+  background-color: transparent; /* 기본 배경 투명 */
+  border: none; /* 테두리 없음 */
+  cursor: pointer; /* 마우스 커서 포인터 */
+  font-size: 0.8rem; /* 수정 3: 글자 크기 줄이기 (기존 0.9rem -> 0.8rem) */
+  color: #aaa; /* 기본 글자색 */
+  padding: 0.5rem 1rem; /* 수정 1: 다른 메뉴 버튼과 동일한 패딩 적용 (기존 0.25rem 0) */
+  text-align: left; /* 수정 1: 텍스트 왼쪽 정렬 */
+  width: 100%; /* 너비 100% 채우기 */
+  box-sizing: border-box; /* 패딩 포함하여 너비 계산 */
+  transition: color 0.2s, background-color 0.2s; /* 부드러운 색상 전환 효과 */
 }
 
-/* 아코디언 내부 옵션 버튼 마우스 오버 스타일 (원래대로 복구) */
+/* 아코디언 내부 옵션 버튼 마우스 오버 스타일 */
 .accordion .option:hover {
-  color: #ffffff; /* 원래대로 */
-  text-decoration: underline; /* 원래대로 */
+  color: #fff; /* 기존 글자색 변경 유지 */
+  background-color: #3a3a3a; /* 수정 2: 마우스 오버 시 배경색 진하게 변경 (다른 메뉴 버튼 hover와 동일하게) */
 }
 
-/* 아코디언 숨김 스타일 */
+/* 아코디언 숨김 스타일 (기존 유지) */
 .accordion.hidden {
   display: none;
 }
