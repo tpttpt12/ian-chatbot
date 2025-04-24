@@ -534,7 +534,7 @@ tr:nth-child(even) {
 /* --- Modal Styles --- */
 
 /* Modal Overlay Style */
-.modal-overlay {
+#settingsModalOverlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -543,12 +543,12 @@ tr:nth-child(even) {
     background-color: rgba(0, 0, 0, 0.7);
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
-    display: flex;
+    display: none; /* ✅ 새로고침 시 모달 튀어나오는 문제 수정 */
     justify-content: center;
     align-items: center;
     padding: 2rem;
     overflow: hidden;
-    z-index: 999; /* z-index set to 999 */
+    z-index: 999;
     box-sizing: border-box;
 }
 
@@ -557,14 +557,14 @@ tr:nth-child(even) {
     position: relative;
     background-color: #1f1f1f;
     color: #e0e0e0;
-    padding: 1.5rem; /* Padding around content */
+    padding: 1rem; /* 모달 전체 내부 패딩 축소 (요청 3) */
     border-radius: 12px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
     width: 100%;
-    max-width: 600px; /* Max width of the modal */
-    max-height: 80vh; /* Max height of the modal */
-    overflow-y: auto; /* Add vertical scroll if content exceeds max-height */
-     /* Hide scrollbar for modal content */
+    max-width: 550px; /* 모달 최대 너비 축소 (요청 3) */
+    max-height: 70vh; /* 모달 최대 높이 축소 (요청 3) */
+    overflow-y: auto; /* 스크롤 가능 */
+     /* 스크롤바 숨김 (요청 4) */
     scrollbar-width: none; /* Firefox */
     -ms-overflow-style: none; /* IE and Edge */
 }
@@ -577,29 +577,29 @@ tr:nth-child(even) {
 
 /* Modal Header Style */
 .modal-header {
-    padding: 1rem;
+    padding: 0.8rem 1rem; /* 헤더 패딩 축소 (요청 3) */
     background-color: transparent;
     text-align: center;
-    font-size: 1.2rem;
+    font-size: 1rem; /* 헤더 글자 크기 축소 (요청 3) */
     font-weight: bold;
     color: #ffffff;
     border-bottom: 1px solid #3a3a3a;
-    margin-bottom: 1rem;
+    margin-bottom: 0.8rem; /* 헤더 아래 마진 축소 (요청 3) */
 }
 
 .modal-header h2 {
     margin: 0;
-    font-size: 1.2rem;
+    font-size: 1rem; /* h2 글자 크기 축소 (요청 3) */
 }
 
 /* Close Button Style */
 #closeModalButton {
     all: unset;
     position: absolute;
-    top: 1rem;
-    right: 1rem;
+    top: 0.6rem; /* 위치 조정 (요청 3) */
+    right: 0.6rem; /* 위치 조정 (요청 3) */
     cursor: pointer;
-    font-size: 1.5rem;
+    font-size: 1.3rem; /* 크기 축소 (요청 3) */
     color: #aaa;
     background-color: transparent;
     transition: color 0.2s;
@@ -614,29 +614,29 @@ tr:nth-child(even) {
     flex-grow: 1;
     display: flex;
     flex-direction: column;
-    gap: 1.5rem; /* Gap between sections */
-    padding: 0 1rem; /* Horizontal padding */
+    gap: 1rem; /* 바디 섹션 간 간격 축소 (요청 3) */
+    padding: 0 0.5rem; /* 좌우 패딩 축소 (요청 3) */
 }
 
 /* Modal Footer Style */
 .modal-footer {
-    border-top: 1px solid #3a3a3a; /* Separator line */
-    padding-top: 1rem; /* Padding above footer */
-    margin-top: 1.5rem; /* Margin above footer */
+    border-top: 1px solid #3a3a3a;
+    padding-top: 0.8rem; /* 푸터 위쪽 패딩 축소 (요청 3) */
+    margin-top: 1rem; /* 바디와의 간격 축소 (요청 3) */
     display: flex;
-    justify-content: flex-end; /* Align button to the right */
-    padding-bottom: 0.5rem; /* Bottom padding */
-    padding-right: 1rem; /* Right padding */
+    justify-content: flex-end;
+    padding-bottom: 0.5rem; /* 푸터 아래쪽 패딩 축소 (요청 3) */
+    padding-right: 0.5rem; /* 푸터 오른쪽 패딩 축소 (요청 3) */
 }
 
 /* Save Button Style (in modal footer) */
 .modal-footer .save-button {
-    padding: 0.6rem 1.2rem; /* Reduced padding */
+    padding: 0.4rem 0.8rem; /* 저장 버튼 패딩 축소 (크기 조절) (요청 6) */
     border: none;
     border-radius: 4px;
     background-color: #5080ff;
     color: #ffffff;
-    font-size: 0.9rem; /* Reduced font size */
+    font-size: 0.8rem; /* 저장 버튼 글자 크기 축소 (요청 6) */
     font-weight: bold;
     cursor: pointer;
     transition: background-color 0.2s ease;
@@ -649,36 +649,32 @@ tr:nth-child(even) {
 /* Setting Slots Container Style (in modal) */
 .setting-slots-modal {
     margin-bottom: 0;
-    padding-bottom: 1rem; /* Padding below */
+    padding-bottom: 0.8rem; /* 아래 패딩 축소 (요청 3) */
     border-bottom: 1px solid #3a3a3a;
 }
 
 .setting-slots-modal h3 {
-    /* Setting Slots 글자 삭제 (요청 5) */
+    /* Setting Slots 글자 삭제로 이 스타일은 더 이상 사용되지 않음 */
     display: none;
-    margin-top: 0;
-    margin-bottom: 1rem;
-    font-size: 1rem;
-    color: #ffffff;
 }
 
 /* Setting Slot Buttons Container Style (in modal) */
 .slot-buttons-container-modal {
     display: flex;
-    gap: 0.5rem; /* Gap between buttons */
+    gap: 0.4rem; /* 슬롯 버튼 간격 축소 (요청 3) */
     flex-wrap: wrap;
-    justify-content: center; /* Center align */
+    justify-content: center;
 }
 
 /* Setting Slot Button Style (in modal) */
 .slot-button {
-    width: 35px; /* Reduced size */
-    height: 35px; /* Reduced size */
+    width: 30px; /* 슬롯 버튼 크기 축소 (요청 3) */
+    height: 30px; /* 슬롯 버튼 크기 축소 (요청 3) */
     border-radius: 50%;
     background-color: #5a5a5a;
     color: #ffffff;
     border: none;
-    font-size: 0.9rem; /* Reduced font size */
+    font-size: 0.9rem; /* 슬롯 버튼 글자 크기 축소 (요청 3) */
     cursor: pointer;
     display: flex;
     justify-content: center;
@@ -706,7 +702,7 @@ tr:nth-child(even) {
 .resume-layout-container {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 1.5rem; /* 캐릭터/유저 섹션 간 간격 축소 (요청 3) */
 }
 
 .character-info-section,
@@ -717,85 +713,89 @@ tr:nth-child(even) {
 .character-info-section h3,
 .user-info-section h3 {
     margin-top: 0;
-    margin-bottom: 1rem; /* Added margin below heading */
-    font-size: 1rem; /* Reduced font size */
+    margin-bottom: 0.8rem; /* 섹션 제목 아래 마진 축소 (요청 3) */
+    font-size: 1rem; /* 섹션 제목 글자 크기 축소 (요청 3) */
     color: #ffffff;
+    border-bottom: 1px dotted #3a3a3a;
+    padding-bottom: 0.4rem; /* 섹션 제목 아래 패딩 축소 (요청 3) */
 }
 
 .info-grid {
     display: grid;
-    /* Image area (fixed width) and info area (flexible) */
-    grid-template-columns: 150px 1fr; /* Adjusted image width */
-    gap: 1.5rem;
+    /* 이미지 영역과 프로필 정보 영역 */
+    grid-template-columns: 120px 1fr; /* 이미지 영역 너비 조정 (요청 2) */
+    gap: 0.8rem; /* 그리드 간격 축소 (요청 3) */
+    margin-bottom: 1rem; /* 그리드 아래 마진 축소 (요청 3) */
 
     /* Responsive adjustment */
-    @media (max-width: 768px) {
+    @media (max-width: 600px) {
         grid-template-columns: 1fr; /* Stack columns on smaller screens */
-        gap: 1rem;
+        gap: 0.6rem; /* 작은 화면 그리드 간격 축소 (요청 3) */
     }
 }
 
 .info-item {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem; /* Gap between items within an info-item */
+    gap: 0.4rem; /* 아이템 내 요소 간 간격 축소 (요청 3) */
 }
 
 /* Style for the larger info item (Name, Age, Appearance) */
 .info-item.full-width {
-    grid-column: span 1; /* By default, spans 1 column */
-     @media (min-width: 769px) {
-         grid-column: span 1; /* Explicitly span the second column */
-     }
+    grid-column: span 1;
+    @media (min-width: 601px) {
+         grid-column: span 1;
+    }
 }
 
 /* Style for the image/image link item */
 .info-grid .info-item:first-child {
-    @media (max-width: 768px) {
-        grid-column: span 1; /* Span the full width when stacked */
-    }
+     @media (max-width: 600px) {
+         grid-column: span 1;
+     }
 }
 
 
 .half-width-row {
     display: flex;
-    gap: 1rem; /* Gap between half-width items */
+    gap: 0.6rem; /* 성별/나이 입력창 간 간격 축소 (요청 3) */
 }
 
 .half-width-item {
-    flex: 1; /* Each item takes up half the space */
+    flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem; /* Gap within half-width item */
+    gap: 0.4rem; /* 아이템 내 요소 간 간격 축소 (요청 3) */
 }
+
 
 /* Styles for labels, inputs, and textareas within the modal */
 .modal-body label {
     display: block;
-    margin-bottom: 0.2rem; /* Reduced margin below label */
+    margin-bottom: 0.1rem; /* 레이블 아래 마진 축소 (요청 3) */
     font-weight: bold;
     color: #b0b0b0;
-    font-size: 0.85rem; /* Reduced font size */
+    font-size: 0.8rem; /* 레이블 글자 크기 축소 (요청 3) */
 }
 
 .modal-body input[type="text"],
 .modal-body textarea {
     width: 100%;
-    padding: 0.6rem 0.8rem; /* Reduced padding */
+    padding: 0.4rem 0.6rem; /* 입력 필드/textarea 패딩 축소 (요청 3) */
     border: none;
-    border-radius: 6px;
+    border-radius: 4px; /* 테두리 둥글기 축소 (요청 3) */
     background-color: #3a3a3a;
     color: #e0e0e0;
-    font-size: 0.9rem; /* Reduced font size */
-    margin-bottom: 0; /* Manage spacing with gap */
+    font-size: 0.9rem; /* 입력 필드/textarea 글자 크기 축소 (요청 3) */
+    margin-bottom: 0;
     box-sizing: border-box;
     resize: vertical;
     line-height: 1.4;
 }
 
 .modal-body textarea {
-     min-height: 80px; /* Reduced min height */
-     /* Hide scrollbar while keeping function (요청 4) */
+     min-height: 70px; /* textarea 최소 높이 축소 (요청 3) */
+     /* 스크롤바 숨김 (요청 4) */
      overflow-y: auto;
      scrollbar-width: none; /* Firefox */
      -ms-overflow-style: none; /* IE and Edge */
@@ -805,6 +805,7 @@ tr:nth-child(even) {
     display: none; /* Chrome, Safari, Opera */
 }
 
+
 .modal-body input[type="text"]:focus,
 .modal-body textarea:focus {
      outline: none;
@@ -813,13 +814,12 @@ tr:nth-child(even) {
 
 /* Image Preview Area (요청 2) */
 .image-preview-area {
-    width: 130px; /* Adjusted width for portrait */
-    /* Calculate height to match Name, Gender, Age, Appearance input fields */
-    /* Approx height = (label height + input/textarea padding + border + margin) * num_elements + gaps */
-    /* This is an estimate and may need fine-tuning */
-    height: 180px; /* Estimated height to match profile inputs */
+    width: 120px; /* 이미지 영역 너비 조정 (요청 2) */
+    /* height는 프로필 정보 영역의 Name, Gender, Age, Appearance 입력 필드의 높이 합과 비슷하게 조정 */
+    /* 대략 input 높이 + textarea 최소 높이 + label 높이 + gap 등을 고려 */
+    height: 160px; /* 대략적인 높이 (요청 2) */
     border: 1px dashed #5a5a5a;
-    border-radius: 10px;
+    border-radius: 8px; /* 테두리 둥글기 축소 (요청 3) */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -962,32 +962,28 @@ tr:nth-child(even) {
     color: #ffffff;
 }
 
-/* 아코디언 컨테이너 스타일 */
+/* 아코디언 컨테이너 스타일 (원래대로 복구) */
 .accordion {
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
-  margin-left: 1.5rem; /* Keep original margin-left */
+  margin-left: 1.5rem;
   margin-top: 0.3rem;
 }
 
-/* 아코디언 내부 옵션 버튼 스타일 */
-#situationOptions .option {
-  all: unset; /* Keep original all: unset */
-  background-color: transparent;
-  border: none;
+/* 아코디언 내부 옵션 버튼 스타일 (원래대로 복구) */
+.accordion .option {
+  all: unset; /* 원래대로 */
+  font-size: 0.9rem; /* 원래대로 */
+  color: #e0e0e0; /* 원래대로 */
   cursor: pointer;
-  font-size: 0.9rem; /* Keep original font size */
-  color: #e0e0e0; /* Keep original default color */
-  transition: color 0.2s ease; /* Keep original transition */
-  padding: 0; /* Keep original padding */
+  transition: color 0.2s ease; /* 원래대로 */
 }
 
-/* 아코디언 내부 옵션 버튼 마우스 오버 스타일 */
-#situationOptions .option:hover {
-  color: #ffffff; /* Keep original hover color */
-  text-decoration: underline; /* Keep original underline on hover */
-  background-color: transparent; /* Ensure no background change on hover */
+/* 아코디언 내부 옵션 버튼 마우스 오버 스타일 (원래대로 복구) */
+.accordion .option:hover {
+  color: #ffffff; /* 원래대로 */
+  text-decoration: underline; /* 원래대로 */
 }
 
 /* 아코디언 숨김 스타일 */
