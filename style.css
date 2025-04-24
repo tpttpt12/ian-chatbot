@@ -628,8 +628,8 @@ tr:nth-child(even) {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 2rem; /* More vertical padding */
-    overflow: hidden; /* 🔥 Hide internal scroll */
+    padding: 2rem;
+    overflow: hidden;
     z-index: 950;
     box-sizing: border-box;
 }
@@ -642,13 +642,15 @@ tr:nth-child(even) {
     border-radius: 12px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
     width: 100%;
-    max-width: 550px; /* 🔥 Reduce modal width */
+    max-width: 550px;
     max-height: 90vh;
-    overflow: hidden; /* 🔥 Remove inner scrollbar */
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    justify-content: center;
+    overflow-y: scroll; /* ✅ 스크롤은 가능하지만 숨김 처리 아래에서 */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.modal-content::-webkit-scrollbar {
+    display: none; /* ✅ 크롬용 스크롤 숨김 */
 }
 
 /* Modal Header Style */
@@ -881,17 +883,17 @@ tr:nth-child(even) {
 
 /* Image Preview Area */
 .image-preview-area {
-    width: 100px; /* Fixed width for preview */
-    height: 100px; /* Fixed height for preview */
+    width: 130px;  /* ✅ 이미지 영역 더 키움 */
+    height: 180px;
     border: 1px dashed #5a5a5a;
-    border-radius: 8px;
+    border-radius: 10px;
     display: flex;
     justify-content: center;
     align-items: center;
-    overflow: hidden; /* Hide overflowing parts of the image */
-    margin-top: 0.5rem; /* Space above the preview */
-    background-color: #2d2d2d; /* Dark background for empty state */
-    flex-shrink: 0; /* Prevent shrinking */
+    background-color: #2d2d2d;
+    flex-shrink: 0;
+    overflow: hidden;
+    margin-top: 0.5rem;
 }
 
 .image-preview-area img {
