@@ -31,6 +31,12 @@
                 <div class="menu-buttons">
                      <button id="menuImageButton"><i class="fa-solid fa-image"></i>　사진</button>
                      <button id="menuSituationButton"><i class="fa-solid fa-clapperboard"></i>　상황</button>
+			<!-- 🔽 아코디언 옵션 추가 -->
+			<div id="situationOptions" class="accordion hidden">
+			<button class="option">랜덤</button>
+			<button class="option">돌발</button>
+			<button class="option">성인</button>
+			</div>
                      <button id="menuSummarizeButton"><i class="fa-solid fa-list-check"></i>　요약</button>
                     <button id="menuExportTxtButton"><i class="fa-solid fa-download"></i>　저장</button>
                 </div>
@@ -147,8 +153,5 @@
     </div>
 
     <script src="script.js"></script>
-
-    <div id="menuOverlay" class="modal-overlay" style="display: none;"></div>
-
 </body>
 </html>

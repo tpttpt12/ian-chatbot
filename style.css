@@ -1112,3 +1112,28 @@ tr:nth-child(even) {
 .modal-fade-out {
     animation: fadeOut 0.3s ease-in forwards;
 }
+
+.accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  margin-left: 1.5rem;
+  margin-top: 0.3rem;
+}
+
+.accordion.hidden {
+  display: none;
+}
+
+.accordion .option {
+  all: unset;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #aaa;
+  padding: 0.25rem 0;
+  transition: color 0.2s;
+}
+
+.accordion .option:hover {
+  color: #fff;
+}
