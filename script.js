@@ -674,7 +674,7 @@ async function sendImageMessage() {
 
 // ★★★ 수정된 '상황' 요청 함수 ★★★
 // '+' 버튼 메뉴의 상황 버튼 (아코디언 내부 옵션) 클릭 시 호출되는 함수
-async function sendSituationRequest(type) { // type 인자 추가 ('랜덤', '돌발', '성인')
+async function sendSituationRequest(type) { // type 인자 추가 ('랜덤', '전환', '돌발', '성인')
     // DOMContentLoaded 내부에서 가져온 변수를 사용한다고 가정합니다.
     console.log(`상황 생성 요청 타입: ${type}`); // 타입 확인 로그
 
@@ -699,12 +699,24 @@ Maintain the established tone and character consistency. Focus on subtle shifts 
 Output should feel like a natural continuation of the story.
 `;
             break;
-        case '성인':
+        case '전환':
             situationPromptText = `
 You are writing a first-person narrative as the character ${botName}.
-The situation calls for an escalation towards mature themes or intimacy, following the established emotional context.
-Describe the character's internal feelings, desires, and physical actions with heightened sensuality and tension, adhering strictly to the persona guidelines regarding adult content.
-Use nuanced language and focus on the emotional and physical connection or conflict. Avoid abruptness and ensure it aligns with the story's progression. Do not break character or violate content boundaries.
+Craft a fresh, emotionally engaging situation that sparks curiosity or connection between the characters — something surprising, light-hearted, or meaningful, based on the unique traits of this character and their world.
+The event should not be overly dramatic or intense, but should still shift the emotional dynamic in a natural and immersive way.
+Avoid adult or mature content. Do not copy specific examples or past scenes — create a new moment inspired by the tone of gentle tension, humor, or affection.
+The characters may be human, non-human, or from entirely fantastical settings — ensure the situation makes sense within their universe.
+Let the story unfold with subtle emotional shifts and interaction that feels alive, reactive, and immersive.
+`;
+            break;
+        case '성인':
+            situationPromptText = `
+You are writing a first-person narrative as the character ${botName}.  
+The situation should escalate organically toward mature themes or intimacy, depending on the emotional and physical progression of the scene.  
+If sexual intercourse has not yet occurred, the character must act assertively according to the situation—initiating physical closeness, deepening tension, or shifting setting and posture to increase sensuality.  
+If the scene is already mid-intercourse, the character must introduce new positions, kinks, or climax dynamics to maintain narrative intensity.  
+Focus on the character’s inner desires, sensations, and actions with heightened sensual and emotional detail, in accordance with persona rules.  
+Use nuanced, vivid language and avoid abrupt pacing or out-of-character behavior. All development must feel inevitable and immersive.
 `;
             break;
         case '돌발': // 기존 프롬프트 사용
@@ -737,13 +749,6 @@ Do not break character. Maintain continuity in tone and theme. Output should fee
         { role: "user", parts: [{ text: situationPromptText }] } // 마지막에 상황 요청 프롬프트 추가
     ];
 
-
-    // 사용자 메시지가 하나도 없는 경우 (SYSTEM_PROMPT와 상황 프롬프트만 있는 경우) API 호출 안 함
-    if (textOnlyContentsForApi.length === 0) {
-        appendMessage("bot", { type: 'text', text: `(상황 생성 [${type}] 요청 스킵: 이전 대화 내용 없음)` });
-        // 상태 초기화 (finally 블록에서 처리되므로 return만)
-        return Promise.resolve();
-    }
 
     try {
         const res = await fetch(
