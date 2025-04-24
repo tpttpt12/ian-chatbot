@@ -369,7 +369,6 @@ tr:nth-child(even) {
     overflow: hidden;
 }
 
-/* Image Fade Effect ::before Pseudo-element */
 .image-fade-container::before {
     content: "";
     position: absolute;
@@ -379,35 +378,8 @@ tr:nth-child(even) {
     height: 100%;
     pointer-events: none;
     z-index: 1;
-    mask-image: linear-gradient(to right, transparent, black 20%, black 80%, transparent);
-    -webkit-mask-image: linear-gradient(to right, transparent, black 20%, black 80%, transparent);
-    background: black;
-}
-
-/* Chat Image Style */
-.chat-image {
-    display: block;
-    width: 100%;
-    height: auto;
-    border-radius: 8px;
-    object-fit: cover;
-    cursor: pointer;
-    margin: 0;
-    padding: 0;
-}
-
-/* Image Load Error Style */
-.chat-image.error-image {
-    display: none;
-}
-
-/* Image Error Text Style */
-.image-error-text {
-    text-align: center;
-    color: #b0b0b0;
-    font-size: 0.9rem;
-    margin-top: 0.5rem;
-    margin-bottom: 0.5rem;
+    mask-image: linear-gradient(to right, transparent 0%, black 20%, black 80%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 20%, black 80%, transparent 100%);
 }
 
 /* Input Area Overall Style */
