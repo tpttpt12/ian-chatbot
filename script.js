@@ -1,5 +1,4 @@
-// 이미지 URL 변수는 입력 필드 값으로 관리 (이제 모달 입력 필드를 참조하게 됩니다)
-// 초기 로드 시 DOMContentLoaded에서 입력 필드 값으로 업데이트됩니다.
+// 이미지 URL 변수는 초기 로드 시 DOMContentLoaded에서 설정값으로 업데이트됩니다.
 let userProfileImgUrl = "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU";
 let botProfileImgUrl = "https://via.placeholder.com/35/3a4a3a/ffffff?text=BOT";
 
@@ -73,54 +72,8 @@ const SYSTEM_PROMPT_TEMPLATE = `
 ## Scenario & Current State ##
 - (The ongoing conversation provides the current scenario context for the novel. Continue from the last turn.)
 `;
-const chat = document.getElementById("chat");
-const userInput = document.getElementById("userInput"); // textarea로 변경됨
-const sendButton = document.getElementById("sendButton");
-const loadingSpinner = document.getElementById("loadingSpinner");
-const imageOverlay = document.getElementById("imageOverlay");
-const overlayImage = document.getElementById("overlayImage");
-const actionMenuButton = document.getElementById("actionMenuButton");
-const actionMenu = document.getElementById("actionMenu");
-const menuOverlay = document.getElementById("menuOverlay");
 
-// 액션 메뉴 버튼 요소들
-const menuImageButton = document.getElementById("menuImageButton");
-const menuSituationButton = document.getElementById("menuSituationButton");
-const menuExportTxtButton = document.getElementById("menuExportTxtButton"); // TXT 내보내기 버튼 요소
-const menuSummarizeButton = document.getElementById("menuSummarizeButton"); // 요약 버튼 요소
-
-
-// --- 새로운 모달 관련 요소 가져오기 ---
-const settingsModalOverlay = document.getElementById("settingsModalOverlay"); // 모달 오버레이
-const settingsModal = document.getElementById("settingsModal"); // 모달 내용 컨테이너
-const closeModalButton = document.getElementById("closeModalButton"); // 모달 닫기 버튼
-const sidebarToggle = document.getElementById("sidebarToggle"); // 기존 사이드바 토글 버튼 ID 그대로 사용 (이제 모달 열기 버튼)
-
-// 모달 내의 입력 필드 요소 가져오기 (ID 변경됨)
-const botNameInputModal = document.getElementById("botNameInputModal");
-const botAgeInputModal = document.getElementById("botAgeInputModal");
-const botGenderInputModal = document.getElementById("botGenderInputModal"); // 성별 필드 추가
-const botAppearanceInputModal = document.getElementById("botAppearanceInputModal");
-const botPersonaInputModal = document.getElementById("botPersonaInputModal");
-const botImageUrlInputModal = document.getElementById("botImageUrlInputModal"); // 캐릭터 이미지 URL 입력 필드
-
-const userNameInputModal = document.getElementById("userNameInputModal");
-const userAgeInputModal = document.getElementById("userAgeInputModal");
-const userGenderInputModal = document.getElementById("userGenderInputModal"); // 성별 필드 추가
-const userAppearanceInputModal = document.getElementById("userAppearanceInputModal");
-const userGuidelinesInputModal = document.getElementById("userGuidelinesInputModal");
-const userImageUrlInputModal = document.getElementById("userImageUrlInputModal"); // 유저 이미지 URL 입력 필드
-
-// 이미지 미리보기 요소 가져오기
-const botImagePreview = document.getElementById("botImagePreview");
-const userImagePreview = document.getElementById("userImagePreview");
-
-
-// 모달 내의 저장 버튼 및 슬롯 버튼 가져오기
-const saveSettingsButtonModal = document.getElementById("saveSettingsButtonModal");
-const slotButtons = document.querySelectorAll('.slot-button'); // 슬롯 버튼들은 동일 클래스 사용
-
-// --- 함수 정의 ---
+// --- 함수 정의 --- (이벤트 리스너보다 먼저 정의)
 
 // 이미지 오버레이 열기/닫기 함수 (기존과 동일)
 function openImageOverlay(element) {
@@ -160,6 +113,8 @@ function autoResizeTextarea() {
 
 // 설정 저장 함수 (localStorage 사용) - 모달 입력 필드를 참조하도록 수정
 function saveSettings(slotNumber) {
+    // 함수 내부에서 요소들을 다시 가져오거나, DOMContentLoaded 내부에서 가져온 변수를 사용해야 합니다.
+    // 여기서는 DOMContentLoaded 내부에서 가져온 변수를 사용한다고 가정합니다.
     const settings = {
         botName: botNameInputModal.value,
         botAge: botAgeInputModal.value,
@@ -191,6 +146,8 @@ function saveSettings(slotNumber) {
 
 // 설정 로드 함수 (localStorage 사용) - 모달 입력 필드를 참조하도록 수정
 function loadSettings(slotNumber) {
+    // 함수 내부에서 요소들을 다시 가져오거나, DOMContentLoaded 내부에서 가져온 변수를 사용해야 합니다.
+     // 여기서는 DOMContentLoaded 내부에서 가져온 변수를 사용한다고 가정합니다.
     const savedSettings = localStorage.getItem(`settings_slot_${slotNumber}`);
     if (savedSettings) {
         const settings = JSON.parse(savedSettings);
@@ -252,6 +209,8 @@ function loadSettings(slotNumber) {
 }
 
 // 슬롯 버튼 스타일 업데이트 함수 (기존과 동일)
+// 함수 내부에서 요소들을 다시 가져오거나, DOMContentLoaded 내부에서 가져온 변수를 사용해야 합니다.
+ // 여기서는 DOMContentLoaded 내부에서 가져온 변수를 사용한다고 가정합니다.
 function updateSlotButtonStyles() {
     slotButtons.forEach(button => {
         if (parseInt(button.textContent) === currentSlot) {
@@ -263,6 +222,8 @@ function updateSlotButtonStyles() {
 }
 
 // SYSTEM_PROMPT 업데이트 함수 - 모달 입력 필드를 참조하도록 수정
+// 함수 내부에서 요소들을 다시 가져오거나, DOMContentLoaded 내부에서 가져온 변수를 사용해야 합니다.
+ // 여기서는 DOMContentLoaded 내부에서 가져온 변수를 사용한다고 가정합니다.
 function updateSystemPrompt() {
     SYSTEM_PROMPT = SYSTEM_PROMPT_TEMPLATE
         .replace(/{botName}/g, botNameInputModal.value || "캐릭터")
@@ -303,6 +264,8 @@ function appendInitialNotice() {
 
 // 메시지를 채팅창에 추가하는 함수 (기존과 동일)
 function appendMessage(role, messageData) {
+    // 함수 내부에서 요소들을 다시 가져오거나, DOMContentLoaded 내부에서 가져온 변수를 사용해야 합니다.
+     // 여기서는 DOMContentLoaded 내부에서 가져온 변수를 사용한다고 가정합니다.
     // 텍스트 메시지와 이미지 메시지를 다르게 처리합니다.
     if (messageData.type === 'image') {
         // --- 이미지 메시지 처리 ---
@@ -335,7 +298,9 @@ function appendMessage(role, messageData) {
 
         // 구조 조립: imageAnnouncementContainer -> imageFadeContainer -> imgElement
         imageFadeContainer.appendChild(imgElement);
-        imageAnnouncementContainer.appendChild(imageFadeContainer);
+        imageAnnouncementContainer.appendChild(imageAnnouncementContainer); // <-- 수정: imageAnnouncementContainer에 imageFadeContainer를 추가해야 함
+        imageAnnouncementContainer.appendChild(imageFadeContainer); // Corrected line
+
 
         // 채팅창에 직접 추가
         chat.appendChild(imageAnnouncementContainer);
@@ -418,6 +383,8 @@ function appendMessage(role, messageData) {
 
 
 // 대화 기록을 TXT 파일로 내보내는 함수 (기존과 동일)
+// 함수 내부에서 요소들을 다시 가져오거나, DOMContentLoaded 내부에서 가져온 변수를 사용해야 합니다.
+ // 여기서는 DOMContentLoaded 내부에서 가져온 변수를 사용한다고 가정합니다.
 function exportConversationAsTxt() {
     if (conversationHistory.length === 0) {
         alert("내보낼 대화 내용이 없습니다.");
@@ -490,6 +457,8 @@ function exportConversationAsTxt() {
 }
 
 // 요약 함수 (기존과 동일)
+// 함수 내부에서 요소들을 다시 가져오거나, DOMContentLoaded 내부에서 가져온 변수를 사용해야 합니다.
+ // 여기서는 DOMContentLoaded 내부에서 가져온 변수를 사용한다고 가정합니다.
 async function summarizeConversation() { // async 함수로 변경
     // 요약 요청 시 버튼 비활성화 및 스피너 표시
     sendButton.disabled = true;
@@ -576,7 +545,7 @@ async function summarizeConversation() { // async 함수로 변경
         console.error("Fetch Error for Summary:", error);
         appendMessage("bot", { type: 'text', text: "(요약 통신 오류 발생)" });
     } finally {
-        // API 호출 완료 시 상태 초기화
+        // API 호출이 완료되면 (성공 또는 실패) 버튼 활성화 및 스피너 숨김
         sendButton.disabled = false;
         userInput.disabled = false;
         actionMenuButton.disabled = false;
@@ -591,6 +560,8 @@ async function summarizeConversation() { // async 함수로 변경
 
 
 // 메시지 전송 (텍스트 또는 이미지 URL) 함수 (기존과 동일)
+// 함수 내부에서 요소들을 다시 가져오거나, DOMContentLoaded 내부에서 가져온 변수를 사용해야 합니다.
+ // 여기서는 DOMContentLoaded 내부에서 가져온 변수를 사용한다고 가정합니다.
 async function sendMessage(messageOrImageUrl) {
     // sendButton 클릭 또는 sendImageMessage 호출 시 사용됨
     const message = typeof messageOrImageUrl === 'string' ? messageOrImageUrl.trim() : userInput.value.trim(); // 인자로 URL이 오면 사용, 아니면 입력창 값 사용
@@ -726,6 +697,8 @@ async function sendImageMessage() {
 
 
 // '+' 버튼 메뉴의 상황 버튼 클릭 시 호출되는 함수 (기존과 동일)
+// 함수 내부에서 요소들을 다시 가져오거나, DOMContentLoaded 내부에서 가져온 변수를 사용해야 합니다.
+ // 여기서는 DOMContentLoaded 내부에서 가져온 변수를 사용한다고 가정합니다.
 async function sendSituationRequest() {
     alert("상황 생성 기능 구현 시작!"); // 기능 구현 알림 유지
 
@@ -833,6 +806,8 @@ Do not break character. Maintain continuity in tone and theme. Output should fee
 
 
 // 이미지 URL 입력 시 미리보기 업데이트 함수
+// 함수 내부에서 요소들을 다시 가져오거나, DOMContentLoaded 내부에서 가져온 변수를 사용해야 합니다.
+ // 여기서는 DOMContentLoaded 내부에서 가져온 변수를 사용한다고 가정합니다.
 function updateImagePreview(imageUrl, imgElement) {
     if (imageUrl && imageUrl.trim() !== '') {
         imgElement.src = imageUrl.trim();
@@ -842,133 +817,181 @@ function updateImagePreview(imageUrl, imgElement) {
 }
 
 
-// --- 이벤트 리스너 ---
-
-// 전송 버튼 클릭 이벤트 (기존과 동일)
-sendButton.addEventListener("click", () => sendMessage(userInput.value)); // 입력창 값 전달
-
-
-// keydown 이벤트 리스너 수정: Shift+Enter는 줄바꿈, Enter만 누르면 전송 (기존과 동일)
-userInput.addEventListener("keydown", function(event) {
-    if (event.key === "Enter" && !event.shiftKey) {
-        event.preventDefault(); // 기본 Enter 동작 (줄바꿈) 막기
-        sendMessage(userInput.value); // 입력창 값 전달
-    }
-    // Shift + Enter는 기본 동작 (줄바꿈)이 실행되도록 별도 처리 없음
-});
-// 액션 메뉴 버튼 클릭 이벤트 (기존과 동일)
-actionMenuButton.addEventListener("click", function() {
-    actionMenu.classList.toggle("visible");
-    if (actionMenu.classList.contains("visible")) {
-        menuOverlay.style.display = 'block';
-    } else {
-        menuOverlay.style.display = 'none';
-    }
-});
-// 메뉴 오버레이 클릭 시 메뉴 닫기 (기존과 동일)
-menuOverlay.addEventListener("click", function() {
-    actionMenu.classList.remove("visible");
-    menuOverlay.style.display = 'none';
-});
-// 이미지 삽입 메뉴 버튼 클릭 (기존과 동일)
-menuImageButton.addEventListener("click", function() {
-    sendImageMessage(); // sendImageMessage 함수 호출
-    // sendImageMessage 함수 안에서 메뉴 닫도록 코드가 이동됨
-});
-// 상황 메뉴 버튼 클릭 (기존과 동일)
-menuSituationButton.addEventListener("click", function() {
-    sendSituationRequest(); // sendSituationRequest 함수 호출
-    // sendSituationRequest 함수 안에서 메뉴 닫도록 코드가 이동됨
-});
-// TXT 내보내기 메뉴 버튼 클릭 (기존과 동일)
-menuExportTxtButton.addEventListener("click", function() {
-    exportConversationAsTxt(); // exportConversationAsTxt 함수 호출
-    // exportConversationAsTxt 함수 안에서 메뉴 닫도록 코드가 추가됨
-});
-// 요약 메뉴 버튼 클릭 (기존과 동일)
-menuSummarizeButton.addEventListener("click", function() {
-    summarizeConversation(); // summarizeConversation 함수 호출
-    // summarizeConversation 함수 안에서 메뉴 닫도록 코드가 추가됨
-});
-// 이미지 오버레이 클릭 시 닫기 이벤트 리스너는 HTML에 onclick="closeImageOverlay()"로 이미 존재하므로 JS에서는 추가할 필요 없습니다.
-
-// --- 새로운 모달 열기/닫기 이벤트 리스너 ---
-
-// ≡ 버튼 클릭 시 모달 열기 (기존 사이드바 토글 기능 대체)
-sidebarToggle.addEventListener("click", function() {
-    settingsModalOverlay.style.display = 'flex'; // 모달 오버레이를 보이게 함 (CSS에서 flex로 설정했으므로 flex 사용)
-    // 다른 오버레이나 메뉴가 열려있으면 닫기 (선택 사항)
-    actionMenu.classList.remove("visible");
-    menuOverlay.style.display = 'none';
-    imageOverlay.style.display = 'none';
-
-     // 모달이 열릴 때 현재 슬롯 설정 로드 및 스타일 업데이트
-     loadSettings(currentSlot);
-     updateSlotButtonStyles();
-});
-
-// 모달 닫기 버튼 클릭 시 모달 닫기
-closeModalButton.addEventListener("click", function() {
-    settingsModalOverlay.style.display = 'none'; // 모달 오버레이 숨김
-});
-
-// 모달 오버레이 배경 클릭 시 모달 닫기 (모달 내용 자체를 클릭해도 닫히지 않게)
-settingsModalOverlay.addEventListener("click", function(event) {
-    // 클릭된 요소가 모달 오버레이 자체인지 확인 (모달 내용이나 그 자식 요소 클릭 시에는 닫히지 않게)
-    if (event.target === settingsModalOverlay) {
-        settingsModalOverlay.style.display = 'none'; // 모달 오버레이 숨김
-    }
-});
-
-
-// 설정 저장 버튼 (모달 내) 클릭 이벤트
-saveSettingsButtonModal.addEventListener("click", function() {
-    saveSettings(currentSlot); // saveSettings 함수 호출
-});
-
-
-// 슬롯 버튼 클릭 이벤트 리스너 (모달 내 버튼에 연결)
-slotButtons.forEach(button => {
-    button.addEventListener('click', function() {
-        const slotNumber = parseInt(this.textContent);
-        // 슬롯 버튼 클릭 시 currentSlot 및 스타일 업데이트는 항상 실행
-        currentSlot = slotNumber; // 현재 슬롯 업데이트
-
-        updateSlotButtonStyles(); // 슬롯 버튼 스타일 업데이트
-
-        // 해당 슬롯 설정 로드
-        loadSettings(slotNumber); // loadSettings 내에서는 로드 성공 여부에 따라 입력 필드 업데이트만 수행
-    });
-});
-
-// 이미지 URL 입력 필드 변경 시 미리보기 업데이트 이벤트 리스너 추가
-botImageUrlInputModal.addEventListener('input', function() {
-    updateImagePreview(this.value, botImagePreview);
-});
-
-userImageUrlInputModal.addEventListener('input', function() {
-    updateImagePreview(this.value, userImagePreview);
-});
-
-
-// textarea 입력 시 높이 자동 조절 (기존과 동일)
-userInput.addEventListener('input', autoResizeTextarea);
-
-// 페이지 로드 완료 시 실행 (마지막에 배치)
+// --- DOMContentLoaded 이벤트 리스너 ---
+// 페이지의 DOM이 완전히 로딩되고 파싱된 후 실행됩니다.
 document.addEventListener('DOMContentLoaded', () => {
+    // 이 안에 모든 HTML 요소 가져오기 및 이벤트 리스너 연결 코드를 넣습니다.
+
+    // HTML 요소 가져오기
+    const chat = document.getElementById("chat");
+    const userInput = document.getElementById("userInput");
+    const sendButton = document.getElementById("sendButton");
+    const loadingSpinner = document.getElementById("loadingSpinner");
+    const imageOverlay = document.getElementById("imageOverlay"); // 기존 채팅 이미지 확대 오버레이
+    const overlayImage = document.getElementById("overlayImage"); // 기존 채팅 이미지 확대 이미지
+    const actionMenuButton = document.getElementById("actionMenuButton"); // '+' 버튼
+    const actionMenu = document.getElementById("actionMenu"); // 액션 메뉴 컨테이너
+    const menuOverlay = document.getElementById("menuOverlay"); // 액션 메뉴 오버레이
+
+    // 액션 메뉴 내부 버튼들
+    const menuImageButton = document.getElementById("menuImageButton");
+    const menuSituationButton = document.getElementById("menuSituationButton");
+    const menuExportTxtButton = document.getElementById("menuExportTxtButton");
+    const menuSummarizeButton = document.getElementById("menuSummarizeButton");
+
+    // 새로운 모달 관련 요소 가져오기
+    const settingsModalOverlay = document.getElementById("settingsModalOverlay");
+    const settingsModal = document.getElementById("settingsModal");
+    const closeModalButton = document.getElementById("closeModalButton");
+    const sidebarToggle = document.getElementById("sidebarToggle"); // ≡ 버튼 (이제 모달 열기 버튼)
+
+    // 모달 내의 입력 필드 요소 (ID 변경됨)
+    const botNameInputModal = document.getElementById("botNameInputModal");
+    const botAgeInputModal = document.getElementById("botAgeInputModal");
+    const botGenderInputModal = document.getElementById("botGenderInputModal"); // 성별 필드
+    const botAppearanceInputModal = document.getElementById("botAppearanceInputModal");
+    const botPersonaInputModal = document.getElementById("botPersonaInputModal");
+    const botImageUrlInputModal = document.getElementById("botImageUrlInputModal");
+
+    const userNameInputModal = document.getElementById("userNameInputModal");
+    const userAgeInputModal = document.getElementById("userAgeInputModal");
+    const userGenderInputModal = document.getElementById("userGenderInputModal"); // 성별 필드
+    const userAppearanceInputModal = document.getElementById("userAppearanceInputModal");
+    const userGuidelinesInputModal = document.getElementById("userGuidelinesInputModal");
+    const userImageUrlInputModal = document.getElementById("userImageUrlInputModal");
+
+    // 이미지 미리보기 요소
+    const botImagePreview = document.getElementById("botImagePreview");
+    const userImagePreview = document.getElementById("userImagePreview");
+
+    // 모달 내의 저장 버튼 및 슬롯 버튼
+    const saveSettingsButtonModal = document.getElementById("saveSettingsButtonModal");
+    const slotButtons = document.querySelectorAll('.slot-button');
+
+
+    // --- 이벤트 리스너 연결 ---
+
+    // 전송 버튼 클릭 이벤트
+    sendButton.addEventListener("click", () => sendMessage(userInput.value));
+
+    // keydown 이벤트 리스너: Shift+Enter는 줄바꿈, Enter만 누르면 전송
+    userInput.addEventListener("keydown", function(event) {
+        if (event.key === "Enter" && !event.shiftKey) {
+            event.preventDefault(); // 기본 Enter 동작 (줄바꿈) 막기
+            sendMessage(userInput.value); // 입력창 값 전달
+        }
+    });
+
+    // 액션 메뉴 버튼 클릭 이벤트
+    actionMenuButton.addEventListener("click", function() {
+        actionMenu.classList.toggle("visible");
+        if (actionMenu.classList.contains("visible")) {
+            menuOverlay.style.display = 'block';
+        } else {
+            menuOverlay.style.display = 'none';
+        }
+    });
+
+    // 메뉴 오버레이 클릭 시 메뉴 닫기
+    menuOverlay.addEventListener("click", function() {
+        actionMenu.classList.remove("visible");
+        menuOverlay.style.display = 'none';
+    });
+
+    // 이미지 삽입 메뉴 버튼 클릭
+    menuImageButton.addEventListener("click", function() {
+        sendImageMessage();
+    });
+
+    // 상황 메뉴 버튼 클릭
+    menuSituationButton.addEventListener("click", function() {
+        sendSituationRequest();
+    });
+
+    // TXT 내보내기 메뉴 버튼 클릭
+    menuExportTxtButton.addEventListener("click", function() {
+        exportConversationAsTxt();
+    });
+
+     // 요약 메뉴 버튼 클릭
+    menuSummarizeButton.addEventListener("click", function() {
+        summarizeConversation();
+    });
+
+    // 이미지 오버레이 클릭 시 닫기 이벤트는 HTML에 onclick="closeImageOverlay()"로 존재
+
+    // --- 새로운 모달 열기/닫기 이벤트 리스너 ---
+
+    // ≡ 버튼 클릭 시 모달 열기 (기존 사이드바 토글 기능 대체)
+    sidebarToggle.addEventListener("click", function() {
+        settingsModalOverlay.style.display = 'flex'; // 모달 오버레이를 보이게 함
+        // 다른 오버레이나 메뉴가 열려있으면 닫기 (선택 사항)
+        actionMenu.classList.remove("visible");
+        menuOverlay.style.display = 'none';
+        imageOverlay.style.display = 'none';
+
+        // 모달이 열릴 때 현재 슬롯 설정 로드 및 스타일 업데이트
+        loadSettings(currentSlot); // loadSettings 함수는 위에서 정의됨
+        updateSlotButtonStyles(); // updateSlotButtonStyles 함수는 위에서 정의됨
+    });
+
+    // 모달 닫기 버튼 클릭 시 모달 닫기
+    closeModalButton.addEventListener("click", function() {
+        settingsModalOverlay.style.display = 'none'; // 모달 오버레이 숨김
+    });
+
+    // 모달 오버레이 배경 클릭 시 모달 닫기
+    settingsModalOverlay.addEventListener("click", function(event) {
+        if (event.target === settingsModalOverlay) {
+            settingsModalOverlay.style.display = 'none'; // 모달 오버레이 숨김
+        }
+    });
+
+    // 설정 저장 버튼 (모달 내) 클릭 이벤트
+    saveSettingsButtonModal.addEventListener("click", function() {
+        saveSettings(currentSlot); // saveSettings 함수는 위에서 정의됨
+    });
+
+    // 슬롯 버튼 클릭 이벤트 리스너 (모달 내 버튼에 연결)
+    slotButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const slotNumber = parseInt(this.textContent);
+            currentSlot = slotNumber; // 현재 슬롯 업데이트
+
+            updateSlotButtonStyles(); // 슬롯 버튼 스타일 업데이트
+
+            // 해당 슬롯 설정 로드
+            loadSettings(slotNumber); // loadSettings 함수는 위에서 정의됨
+        });
+    });
+
+    // 이미지 URL 입력 필드 변경 시 미리보기 업데이트 이벤트 리스너 추가
+    botImageUrlInputModal.addEventListener('input', function() {
+        updateImagePreview(this.value, botImagePreview); // updateImagePreview 함수는 위에서 정의됨
+    });
+
+    userImageUrlInputModal.addEventListener('input', function() {
+        updateImagePreview(this.value, userImagePreview); // updateImagePreview 함수는 위에서 정의됨
+    });
+
+
+    // textarea 입력 시 높이 자동 조절
+    userInput.addEventListener('input', autoResizeTextarea); // autoResizeTextarea 함수는 위에서 정의됨
+
+    // --- 초기 로딩 시 실행될 코드 ---
     autoResizeTextarea.call(userInput); // textarea 높이 초기화
 
     // 초기 로드 시 현재 슬롯 설정 로드 (기본값 또는 localStorage)
-    loadSettings(currentSlot);
+    loadSettings(currentSlot); // loadSettings 함수는 위에서 정의됨
 
     // 초기 로드 후 슬롯 버튼 스타일 업데이트
-    updateSlotButtonStyles();
+    updateSlotButtonStyles(); // updateSlotButtonStyles 함수는 위에서 정의됨
 
     // 초기화 로직 실행 (공지 추가 포함)
-    initializeChat();
+    initializeChat(); // initializeChat 함수는 위에서 정의됨
 
     // 이미지 URL 입력 필드 초기 값으로 미리보기 업데이트
-    updateImagePreview(botImageUrlInputModal.value, botImagePreview);
-    updateImagePreview(userImageUrlInputModal.value, userImagePreview);
+    updateImagePreview(botImageUrlInputModal.value, botImagePreview); // updateImagePreview 함수는 위에서 정의됨
+    updateImagePreview(userImageUrlInputModal.value, userImagePreview); // updateImagePreview 함수는 위에서 정의됨
 
-});
+}); // DOMContentLoaded 끝
