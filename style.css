@@ -1038,7 +1038,7 @@ tr:nth-child(even) {
     overflow: hidden;
 }
 
-/* Image Fade Effect ::before Pseudo-element */
+.image-fade-container::before {
     content: "";
     position: absolute;
     top: 0; left: 0;
@@ -1047,7 +1047,6 @@ tr:nth-child(even) {
     pointer-events: none;
     z-index: 2;
 
-    /* ✅ 좌우 마스크 효과 */
     -webkit-mask-image: linear-gradient(to right, transparent 0%, black 20%, black 80%, transparent 100%);
     mask-image: linear-gradient(to right, transparent 0%, black 20%, black 80%, transparent 100%);
     -webkit-mask-size: 100% 100%;
