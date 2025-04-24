@@ -594,7 +594,7 @@ async function sendMessage(messageOrImageUrl) {
                 role: entry.role,
                 parts: [{ text: entry.messageData.text }]
             }));
-        const contentsForApi = [{ role: "user", parts: [{ text: SYSTEM_PROMPT }] }, ...textOnlyContentsForApi];
+        const contentsForApi = [{ role: "system", parts: [{ text: SYSTEM_PROMPT }] }, ...textOnlyContentsForApi];
         if (contentsForApi.length === 1 && contentsForApi[0].parts[0].text === SYSTEM_PROMPT) {
             // SYSTEM_PROMPT 외 사용자 텍스트가 없을 경우 API 호출 안 함
             appendMessage("bot", { type: 'text', text: "(API 호출 스킵: 보낼 텍스트 내용 없음)" });
@@ -682,7 +682,7 @@ async function sendSituationRequest() {
     loadingSpinner.style.display = 'block';
 
     // 상황 생성 요청 프롬프트
-    const situationPromptText = `Based on the ongoing conversation and current character settings, generate a vivid and engaging new situation or event written from the character's point of view in novel-style narration. The scene should naturally invite the user to respond and smoothly continue the dialogue flow. **Important: After presenting the situation, the character must immediately speak to the user in-character. Do not include explanations or any OOC (out-of-character) comments. All descriptions must be written using *asterisks*, and all dialogue must be enclosed in double quotes (\"). Maintain a balance of approximately 70% description and 30% dialogue. Use paragraphing and line breaks only for clarity—not for pacing or emotional emphasis.**`;
+    const situationPromptText = `const situationPromptText = `You are writing a first-person narrative as the character {botName}. The scene has stalled or lost momentum. You must now introduce a new turning point: either escalate the current situation, or introduce a **sudden, immersive event** that dramatically changes the mood or setting. Write in a sensory-rich, novel-style format with emphasis on *physical actions, emotional reactions*, and subtle tension. Use minimal but meaningful dialogue only when needed. Avoid repetition and do not reference the user's past prompts. Do not break character. Maintain continuity in tone and theme. Output should feel seamless in the flow of the story.`;
 
     // API 전송 시에는 텍스트 메시지만 포함 (이미지 메시지는 API가 처리하지 않음)
     const textOnlyContentsForApi = conversationHistory

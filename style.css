@@ -429,7 +429,7 @@ tr:nth-child(even) {
 
     padding: 0.5rem 0.5rem 0.5rem 0.5rem; 
     background-color: #1E1E1E;
-    box-shadow: 0 -20px 20px 0px rgba(30, 30, 30);
+    box-shadow: 0 -10px 20px 0px rgba(30, 30, 30 / 77%);
     z-index: 510; /* Ensure inputArea and its children (menu, spinner, input row) are above the overlay (z-index 490) */
     border: 1px solid #2F2F2F;
     border-radius: 15px;
