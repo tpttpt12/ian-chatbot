@@ -492,25 +492,20 @@ tr:nth-child(even) {
 /* Textarea Style */
 /* Adjusted for the textarea container */
 #userInput {
-    flex: 1; /* Allow textarea to grow and fill available horizontal space within its container */
-    padding: 0.75rem 1rem;
+    flex: 0 0 auto;
+    padding: 0.25rem 0.75rem;
     border-radius: 1.5rem;
     border: none;
     background-color: #1E1E1E;
     color: #e0e0e0;
     font-size: 1rem;
     outline: none;
-    transition: background-color 0.2s ease, box-shadow 0.2s ease;
     resize: none;
-    line-height: 1.4;
+    line-height: 1.2;
     box-sizing: border-box;
-    /* Adjusted min-height for approximately 1 line + padding */
-    min-height: calc(1em * 1.2 * 0.25rem * 2);
+    min-height: 1.5rem;
     height: auto;
-    overflow-y: auto;
-    padding-top: 0.75rem;
-    padding-bottom: 0.75rem;
-    /* order: auto; /* Default order */
+    overflow-y: hidden;
 }
 
 #userInput:focus {
