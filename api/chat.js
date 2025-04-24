@@ -1,8 +1,7 @@
 // api/chat.js 파일 내용
 
 // 환경 변수에서 API 키를 가져옵니다. Vercel 설정에서 추가해야 합니다.
-// const { GEMINI_API_KEY } = process.env;
-const GEMINI_API_KEY = "AIzaSyDAIlig95Mz1zdBf0Ey7vQFm56ktGN8U9I";
+const { GEMINI_API_KEY } = process.env;
 
 // 구글 Generative AI 라이브러리를 사용해도 좋지만,
 // 프론트엔드와 유사하게 fetch를 사용하는 방식으로 작성하여 이해를 돕습니다.
