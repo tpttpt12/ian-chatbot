@@ -1127,7 +1127,6 @@ tr:nth-child(even) {
     width: 100vw;
     height: 100vh;
     background-color: rgba(0, 0, 0, 0.7); /* 배경 어둡게 */
-    display: flex;
     justify-content: center;
     align-items: center;
     z-index: 999;
