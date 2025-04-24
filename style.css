@@ -492,22 +492,24 @@ tr:nth-child(even) {
 /* Textarea Style */
 /* Adjusted for the textarea container */
 #userInput {
-    flex: 1 1 auto; /* ← 가로로 늘어나고, 세로는 자동 */
-    padding: 0.5rem 0.75rem;
+    width: 100%;
+    flex: 1 1 auto;
+    height: 2rem;
+    min-height: 2rem;
+    max-height: 2rem;
+    padding: 0.25rem 0.75rem;
+    line-height: 1.4;
+    font-size: 1rem;
     border-radius: 1.5rem;
     border: none;
     background-color: #1E1E1E;
     color: #e0e0e0;
-    font-size: 1rem;
-    outline: none;
     resize: none;
-    line-height: 1.2;
-    box-sizing: border-box;
-    min-height: 1.5rem; /* 1줄 높이 */
-    height: auto;
     overflow-y: hidden;
-    width: 100%; /* ← 너비 강제 고정 */
+    outline: none;
+    box-sizing: border-box;
 }
+
 #userInput:focus {
     background-color: #4a4a4a;
     box-shadow: 0 0 0 0.15rem rgba(80, 150, 255, 0.3);
