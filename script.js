@@ -326,7 +326,7 @@ function appendMessage(role, messageData) {
         messageBodyElement.className = "message-bubble"; // 텍스트 메시지는 버블 클래스 사용
         let rawText = messageData.text;
         // 순서 바꿈: 먼저 마크다운 처리
-        let htmlContent = marked.parse(rawText); // 원본 텍스트 먼저 마크다운 파싱
+        let htmlContent = marked.parse(rawText, { breaks: true, gfm: true }); // 원본 텍스트 먼저 마크다운 파싱
         rawText = rawText.replace(/\n/g, "<br>");
 
         // 마크다운 처리된 HTML에서 대사/행동 치환
