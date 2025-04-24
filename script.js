@@ -866,7 +866,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 모달 내의 저장 버튼 및 슬롯 버튼
     const saveSettingsButtonModal = document.getElementById("saveSettingsButtonModal");
+
+// 그 다음에 이 함수를 정의
+function updateSlotButtonStyles() {
     const slotButtons = document.querySelectorAll('.slot-button');
+    slotButtons.forEach(button => {
+        if (parseInt(button.textContent) === currentSlot) {
+            button.classList.add('active');
+        } else {
+            button.classList.remove('active');
+        }
+    });
+}
+
+// 그 다음에 호출
+updateSlotButtonStyles();
 
 
     // --- 이벤트 리스너 연결 ---
