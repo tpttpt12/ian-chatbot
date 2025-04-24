@@ -955,7 +955,7 @@ updateSlotButtonStyles();
     });
 
     // 슬롯 버튼 클릭 이벤트 리스너 (모달 내 버튼에 연결)
-    slotButtons.forEach(button => {
+    document.querySelectorAll('.slot-button').forEach(button => {
         button.addEventListener('click', function() {
             const slotNumber = parseInt(this.textContent);
             currentSlot = slotNumber; // 현재 슬롯 업데이트
