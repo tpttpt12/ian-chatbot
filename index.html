@@ -1,114 +1,161 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>지침 없이 모델 테스트</title>
-    <style>
-        body { font-family: sans-serif; margin: 20px; line-height: 1.6; }
-        #responseArea {
-            border: 1px solid #ccc;
-            padding: 15px;
-            min-height: 150px; /* 응답 공간 확보 */
-            margin-bottom: 15px;
-            white-space: pre-wrap; /* 공백 및 줄바꿈 유지 */
-            word-wrap: break-word; /* 긴 단어 자동 줄바꿈 */
-            background-color: #f8f8f8;
-            color: #333;
-            overflow-y: auto; /* 내용 많아지면 스크롤 */
-            max-height: 400px; /* 최대 높이 설정 */
-        }
-        #inputArea { display: flex; gap: 10px; }
-        #userInput {
-            flex-grow: 1;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 1rem;
-        }
-        #sendButton {
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 1rem;
-        }
-        #sendButton:hover {
-            background-color: #0056b3;
-        }
-        #sendButton:disabled {
-            background-color: #cccccc;
-            cursor: not-allowed;
-        }
-    </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>character-chat</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bakbak+One&family=Libre+Barcode+39+Text&family=Nanum+Gothic&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+
 </head>
 <body>
-    <h1>Gemini API 직접 테스트</h1>
-    <p>아래 입력창에 메시지를 입력하고 '보내기' 버튼을 눌러보세요. 백엔드 API로 **시스템 지침이나 이전 대화 기록 없이 오직 현재 메시지만** 보냅니다.</p>
-    <div id="responseArea">여기에 API 응답이 표시됩니다...</div>
-    <div id="inputArea">
-        <input type="text" id="userInput" placeholder="테스트 메시지 입력...">
-        <button id="sendButton">보내기</button>
+    <div class="app-container">
+        <div class="chat-header">
+            character-chat
+            <button id="sidebarToggle" title="설정 열기">≡</button>
+        </div>
+
+        <div id="chat">
+        </div>
+
+        <div id="inputArea">
+            <div id="loadingSpinner" class="loading-spinner"></div>
+            <div id="actionMenu">
+                <div class="menu-buttons">
+                     <button id="menuImageButton"><i class="fa-solid fa-image"></i>　사진</button>
+                     <button id="menuSituationButton"><i class="fa-solid fa-clapperboard"></i>　상황</button>
+			<!-- 🔽 아코디언 옵션 추가 -->
+			<div id="situationOptions" class="accordion hidden">
+			<button class="option">랜덤</button>
+			<button class="option">전환</button>
+			<button class="option">돌발</button>
+			<button class="option">성인</button>
+			</div>
+                     <button id="menuSummarizeButton"><i class="fa-solid fa-list-check"></i>　요약</button>
+                    <button id="menuExportTxtButton"><i class="fa-solid fa-download"></i>　저장</button>
+                </div>
+            </div>
+
+            <div class="input-textarea-container">
+                <textarea id="userInput" placeholder="유저의 말..." autocomplete="off"></textarea>
+            </div>
+
+            <div class="input-buttons-row">
+                 <button id="actionMenuButton" title="액션 메뉴 열기">+</button>
+                 <button id="sendButton">
+                    ▶ </button>
+            </div>
+        </div>
+        </div>
+
+    <div id="settingsModalOverlay" class="modal-overlay">
+        <div id="settingsModal" class="modal-content">
+            <div class="modal-header">
+                <h2>Character / User Settings</h2>
+                 <button id="closeModalButton" class="close-button">✕</button>
+            </div>
+
+            <div class="modal-body">
+                <div class="setting-slots-modal">
+                     <h3>Setting Slots</h3>
+                     <div class="slot-buttons-container-modal">
+                       <button class="slot-button">1</button>
+                       <button class="slot-button">2</button>
+                       <button class="slot-button">3</button>
+                       <button class="slot-button">4</button>
+                       <button class="slot-button">5</button>
+                       <button class="slot-button">6</button>
+                     </div>
+                 </div>
+
+                <div class="resume-layout-container">
+                    <div class="character-info-section">
+                        <h3>Character</h3>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <label for="botImageUrlInputModal">Image URL:</label>
+                                <input type="text" id="botImageUrlInputModal">
+                                <div class="image-preview-area">
+                                     <img id="botImagePreview" src="" alt="캐릭터 이미지 미리보기">
+                                </div>
+                            </div>
+                            <div class="info-item full-width">
+                                <label for="botNameInputModal">Name:</label>
+                                <input type="text" id="botNameInputModal">
+
+                                <div class="half-width-row">
+                                     <div class="half-width-item">
+                                        <label for="botGenderInputModal">Gender:</label>
+                                        <input type="text" id="botGenderInputModal"> </div>
+                                     <div class="half-width-item">
+                                        <label for="botAgeInputModal">Age:</label>
+                                        <input type="text" id="botAgeInputModal">
+                                     </div>
+                                </div>
+
+                                <label for="botAppearanceInputModal">Appearance:</label>
+                                <textarea id="botAppearanceInputModal"></textarea>
+                            </div>
+                        </div>
+                        <label for="botPersonaInputModal">Guidelines:</label>
+                        <textarea id="botPersonaInputModal"></textarea>
+                    </div>
+
+                    <div class="user-info-section">
+                         <h3>User</h3>
+                         <div class="info-grid">
+                             <div class="info-item">
+                                 <label for="userImageUrlInputModal">Image URL:</label>
+                                 <input type="text" id="userImageUrlInputModal">
+                                  <div class="image-preview-area">
+                                     <img id="userImagePreview" src="" alt="사용자 이미지 미리보기">
+                                 </div>
+                             </div>
+                             <div class="info-item full-width">
+                                 <label for="userNameInputModal">Name:</label>
+                                 <input type="text" id="userNameInputModal">
+
+                                 <div class="half-width-row">
+                                     <div class="half-width-item">
+                                         <label for="userGenderInputModal">Gender:</label>
+                                         <input type="text" id="userGenderInputModal"> </div>
+                                      <div class="half-width-item">
+                                         <label for="userAgeInputModal">Age:</label>
+                                         <input type="text" id="userAgeInputModal">
+                                      </div>
+                                 </div>
+
+                                  <label for="userAppearanceInputModal">Appearance:</label>
+                                 <textarea id="userAppearanceInputModal"></textarea>
+                             </div>
+                         </div>
+                         <label for="userGuidelinesInputModal">Guidelines:</label>
+                         <textarea id="userGuidelinesInputModal"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                 <button id="saveSettingsButtonModal" class="save-button">Save Settings</button>
+            </div>
+        </div>
     </div>
 
-    <script>
-        const userInput = document.getElementById('userInput');
-        const sendButton = document.getElementById('sendButton');
-        const responseArea = document.getElementById('responseArea');
 
-        sendButton.addEventListener('click', sendMessage);
-        userInput.addEventListener('keypress', function(event) {
-            if (event.key === 'Enter') {
-                sendMessage();
-            }
-        });
+    <div id="imageOverlay" class="overlay" onclick="closeImageOverlay()">
+        <img id="overlayImage" src="" alt="확대 이미지">
+    </div>
 
-        async function sendMessage() {
-            const message = userInput.value.trim();
-            if (!message) {
-                responseArea.textContent = '메시지를 입력해주세요.';
-                return;
-            }
+    <script src="script.js"></script>
 
-            sendButton.disabled = true; // 버튼 비활성화
-            responseArea.textContent = 'API 요청 중...'; // 로딩 표시
+<div id="menuOverlay" class="modal-overlay" style="display: none;"></div>
 
-            try {
-                // --- 핵심: 시스템 지침 및 대화 기록 없이 오직 사용자의 현재 메시지만 포함 ---
-                const contentsForApi = [{
-                    role: "user",
-                    parts: [{ text: message }]
-                }];
-                // --------------------------------------------------------------------
-
-                const res = await fetch('/api/chat', {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ contents: contentsForApi }),
-                });
-
-                if (!res.ok) {
-                    // HTTP 상태 코드가 200번대가 아니면 오류 처리
-                    const errorText = await res.text(); // 응답 본문을 텍스트로 읽음
-                    console.error("API Error:", res.status, errorText);
-                    responseArea.textContent = `API 오류 발생: ${res.status} - ${errorText}`;
-                } else {
-                    // 응답이 성공적이라면 JSON으로 파싱 시도
-                    const data = await res.json();
-                    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "(응답 내용 없음)";
-                    responseArea.textContent = `응답: \n${reply}`; // 응답 표시
-                }
-
-            } catch (error) {
-                // 네트워크 오류 등 fetch 자체에서 발생한 오류 처리
-                console.error("Fetch Error:", error);
-                responseArea.textContent = `통신 중 오류 발생: ${error}`;
-            } finally {
-                sendButton.disabled = false; // 버튼 다시 활성화
-            }
-        }
-    </script>
 </body>
 </html>

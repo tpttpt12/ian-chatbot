@@ -1,0 +1,1162 @@
+/* This CSS code replaces the entire content of your style.css file */
+
+body {
+    font-family: "Nanum Gothic", sans-serif;
+    background-color: #1E1E1E;
+    color: #e0e0e0;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100vh; /* Ensure body takes full viewport height */
+    overflow: hidden; /* Prevent body scrolling */
+}
+
+/* App Container Style */
+.app-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Take full height of body */
+    width: 95%;
+    max-width: 900px;
+    margin: 0 auto;
+    background-color: #1e1e1f; /* Slightly darker background for app container */
+    box-shadow: none;
+    border: none;
+    position: relative;
+    overflow: hidden; /* Prevent container content overflow */
+    padding-bottom: 20px; /* 원하는 만큼 간격 조절 (예: 20px) */
+}
+
+/* Adjust width for wider screens */
+@media (min-width: 1200px) {
+    .app-container {
+        width: 60%;
+    }
+}
+
+/* Chat Header Style */
+.chat-header {
+    background-color: #1e1e1e; /* Keep consistent dark background */
+    color: #ffffff;
+    padding: 1rem;
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    flex-shrink: 0; /* Prevent shrinking */
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Sidebar Toggle Button Style - Now opens the Modal */
+#sidebarToggle {
+    position: absolute;
+    top: 50%;
+    right: 1rem;
+    transform: translateY(-50%);
+    width: 35px;
+    height: 35px;
+    background-color: #5a5a5a;
+    color: #ffffff;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.2s ease;
+    z-index: 10;
+}
+
+#sidebarToggle:hover {
+    background-color: #6a6a6a;
+}
+
+/* Chat Messages Area Style */
+#chat {
+    flex: 1; /* Takes remaining vertical space */
+    padding: 1rem;
+    overflow-y: auto; /* Allow vertical scrolling */
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    background-color: #1e1e1e;
+    /* Hide scrollbar */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+}
+
+/* Hide scrollbar for Webkit browsers */
+#chat::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+}
+
+/* Message Container Base Style */
+.message-container {
+    display: flex;
+    max-width: 85%;
+    gap: 0.5rem;
+}
+
+/* User Message Container Style (Right Aligned) */
+.message-container.user {
+    justify-content: flex-end;
+    margin-left: auto;
+    margin-right: 0;
+}
+
+/* Bot Message Container Style (Left Aligned) */
+.message-container.bot {
+    justify-content: flex-start;
+    margin-right: auto;
+    margin-left: 0;
+    flex-direction: row;
+}
+
+/* Image Message Block Style (Central Alignment) */
+.image-announcement {
+    display: block;
+    width: 100%;
+    max-width: 70%;
+    text-align: center;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+    flex-shrink: 0;
+}
+
+/* Profile Image Style */
+.profile-img {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid #5a5a5a;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+/* Profile Fallback Style */
+.profile-fallback {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background-color: #5a5a5a;
+    border: 1px solid #5a5a5a;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+/* Message Content Wrapper Style */
+.message-content-wrapper {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+}
+
+/* User Message Content Wrapper Style */
+.message-container.user .message-content-wrapper {
+    align-items: flex-end;
+}
+
+/* Bot Message Content Wrapper Style */
+.message-container.bot .message-content-wrapper {
+    align-items: flex-start;
+}
+
+/* Role Name Container Style */
+.role-name {
+    font-size: 0.8rem;
+    color: #b0b0b0;
+    margin-bottom: 0.2rem;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+/* User Role Name Style */
+.message-container.user .role-name {
+    justify-content: flex-start;
+}
+
+/* Bot Role Name Style */
+.message-container.bot .role-name {
+    justify-content: flex-start;
+}
+
+/* Name Text Style */
+.name-text {
+    flex-shrink: 0;
+    min-width: 0;
+}
+
+/* User Name Text Style */
+.message-container.user .name-text {
+    text-align: right;
+    order: 0;
+}
+
+/* Bot Name Text Style */
+.message-container.bot .name-text {
+    text-align: left;
+    order: 0;
+}
+
+/* Delete Button Style */
+.delete-btn {
+    background: transparent;
+    border: none;
+    color: #aaa;
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 0 0.2rem;
+    z-index: 1;
+    flex-shrink: 0;
+}
+
+/* User Delete Button Style */
+.message-container.user .role-name .delete-btn {
+    margin-right: 10px;
+    margin-left: 0;
+    order: 1;
+}
+
+/* Bot Delete Button Style */
+.message-container.bot .role-name .delete-btn {
+    margin-left: 10px;
+    margin-right: 0;
+    order: 1;
+}
+
+/* Message Container (position: relative added) */
+.message-container {
+    position: relative;
+}
+
+/* Text Message Bubble Style */
+.message-bubble {
+    padding: 0rem 1rem;
+    border-radius: 1rem;
+    max-width: 100%;
+    word-break: break-word;
+    line-height: 1.4;
+    position: relative;
+    font-size: 1rem;
+    white-space: normalv;
+    margin-bottom: 0;
+}
+
+/* Bot Bubble Style */
+.message-container.bot .message-bubble {
+    background-color: #3a4a4a;
+    color: #ffffff;
+    border-radius: 1rem 1rem 1rem 0.3rem;
+}
+
+/* User Bubble Style */
+.message-container.user .message-bubble {
+    background-color: #4a3a7a;
+    color: #ffffff;
+    border-radius: 1rem 1rem 0.3rem 1rem;
+}
+
+/* --- 마크다운 형식 스타일 --- */
+
+/* 마크다운 **굵게** 또는 __굵게__ 스타일 (strong, b 태그) */
+/* 참고: 현재 JS 코드는 **볼드**를 별도 처리하지 않아 이 규칙이 적용 안 될 수 있습니다. */
+strong, b {
+    font-weight: bold;
+    color: #f0f0f0; /* 굵은 텍스트 색상 (예시: 좀 더 밝은 흰색) */
+}
+
+/* 마크다운 *기울임* 또는 _기울임_ 스타일 (em, i 태그) */
+/* 참고: *행동*은 .action-description 클래스로 별도 처리됩니다. 이 규칙은 그 외의 기울임에 적용됩니다. */
+em, i {
+    font-style: italic;
+    color: #a9a9a9 !important; /* ✅ 회색 이탤릭 적용 */
+}
+
+/* 마크다운 > 인용구 스타일 (blockquote 태그) */
+blockquote {
+    border-left: 4px solid #5a5a5a; /* 왼쪽에 회색 선 추가 */
+    padding-left: 1rem; /* 왼쪽 여백 */
+    margin-left: 0.5rem; /* 메시지 버블 내에서의 왼쪽 마진 */
+    color: #b0b0b0; /* 인용구 텍스트 색상 (예시: 연한 회색) */
+    font-style: italic; /* 인용구 기울임체 (선택 사항) */
+}
+
+/* 마크다운 `인라인 코드` 스타일 (code 태그) */
+/* 코드블럭 안의 code 태그는 아래 pre 규칙에 의해 영향받을 수 있습니다. */
+code {
+    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace; /* 등간격 글꼴 */
+    background-color: #2d2d2d; /* 배경색 (예시: 어두운 회색) */
+    color: #e0e0e0; /* 글자색 */
+    padding: 0.2em 0.4em; /* 상하좌우 패딩 */
+    border-radius: 4px; /* 모서리 둥글게 */
+    font-size: 0.9em; /* 글자 크기 (선택 사항) */
+}
+
+/* 마크다운 ```코드블럭``` 스타일 (pre 태그) */
+pre {
+    background-color: #2d2d2d; /* 배경색 (인라인 코드와 동일하게) */
+    color: #e0e0e0; /* 글자색 */
+    padding: 1rem; /* 내부 여백 */
+    border-radius: 8px; /* 모서리 둥글게 */
+    overflow-x: auto; /* 내용이 길면 가로 스크롤 */
+    margin: 0.5rem 0; /* 상하 마진 */
+    font-size: 0.9em; /* 글자 크기 (선택 사항) */
+}
+
+/* 코드블럭 안의 코드 스타일 (pre code 태그) */
+/* 인라인 코드와 유사하나 배경/패딩은 pre에서 이미 처리 */
+pre code {
+    background-color: transparent; /* pre의 배경 사용 */
+    color: #e0e0e0; /* pre의 글자색 사용 */
+    padding: 0; /* pre의 패딩 사용 */
+    border-radius: 0; /* pre의 border-radius 사용 */
+    font-size: inherit; /* pre의 글자 크기 사용 */
+}
+
+/* 마크다운 테이블 스타일 (table, th, td 태그) */
+table {
+    border-collapse: collapse; /* 셀 경계 합치기 */
+    margin: 1rem 0; /* 상하 마진 */
+    width: auto; /* 테이블 너비 자동 */
+    max-width: 100%; /* 메시지 버블 너비 초과 방지 */
+    overflow: hidden; /* 넘치는 내용 숨김 */
+    display: block; /* 가로 스크롤을 위해 블록 요소로 만듦 */
+    word-break: normal; /* 단어 잘림 방지 */
+}
+
+/* 테이블 가로 스크롤 */
+th, td {
+    border: 1px solid #3a3a3a; /* 셀 경계선 (어두운 회색) */
+    padding: 0.5rem; /* 셀 내부 여백 */
+    text-align: left; /* 텍스트 왼쪽 정렬 (기본) */
+}
+
+th {
+    background-color: #282828; /* 헤더 배경색 (예시: 좀 더 어두운 회색) */
+    font-weight: bold; /* 헤더 굵게 */
+    color: #f0f0f0; /* 헤더 글자색 */
+}
+
+tr:nth-child(even) {
+    background-color: #1f1f1f; /* 짝수 행 배경색 (예시: 더 어두운 회색) */
+}
+
+/* --- 마크다운 형식 스타일 끝 --- */
+
+/* 이전에 추가했던 .action-description 규칙은 그대로 두세요. */
+.action-description {
+    color: #a9a9a9 !important;
+    font-style: italic !important;
+}
+/* 만약 *행동*도 이 위의 em, i 스타일을 따르게 하고 싶다면 .action-description 규칙을 삭제하세요. */
+/* 하지만 요청에 따라 *이거*는 회색으로 만든 것이므로, .action-description 규칙을 유지하는 것이 좋습니다. */
+
+/* Input Area Overall Style */
+/* #inputArea is a column flex container for its children (textarea container, buttons row) */
+/* Corrected flex-direction and z-index */
+#inputArea {
+    display: flex;
+    flex-direction: column; /* Stack children vertically */
+    align-items: stretch; /* Stretch children across the main axis (horizontally) */
+    gap: 0.75rem; /* Gap between vertical items (textarea container and buttons row) */
+
+    padding: 0.5rem 0.5rem 0.5rem 0.5rem;
+    background-color: #1E1E1E;
+    box-shadow: 0 -10px 20px 0px rgba(30, 30, 30 / 77%);
+    z-index: 510; /* Ensure inputArea and its children (menu, spinner, input row) are above the overlay (z-index 490) */
+    border: 1px solid #2F2F2F;
+    border-radius: 15px;
+    flex-shrink: 0;
+    position: relative; /* Needed for absolute positioning of menu and spinner */
+}
+
+/* Removed unused .input-controls style */
+/* .input-controls { ... } */
+
+
+/* Container for just the textarea */
+/* This is the first child of #inputArea (column flex) */
+.input-textarea-container {
+    flex: 1; /* Allow this container to take available space in the column (fills space above buttons) */
+    display: flex; /* Use flex to make textarea fill the container */
+    /* margin-bottom is handled by gap on #inputArea */
+    /* width: 100% handled by align-items: stretch on #inputArea */
+}
+
+/* Container for the buttons below the textarea */
+/* This is the second child of #inputArea (column flex) */
+.input-buttons-row {
+    display: flex; /* Arrange children (+ button, send button) horizontally */
+    justify-content: space-between; /* Push button to left, send to right */
+    align-items: center; /* Vertically center items in the row */
+    width: 100%; /* Fill the width of #inputArea (minus padding) */
+}
+
+
+/* '+' Button Style */
+/* Adjusted for the new buttons row container */
+#actionMenuButton {
+    /* Keep existing visual styles */
+    width: auto;
+    height: auto;
+    border-radius: 0;
+    background-color: transparent;
+    color: #e0e0e0;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: color 0.2s ease;
+    padding: 0.2rem 0.5rem;
+    align-self: auto; /* Default alignment within the row */
+    z-index: 3;
+    order: auto; /* Default order (first in row) */
+}
+
+#actionMenuButton:hover {
+    color: #ffffff;
+    background-color: transparent;
+}
+
+
+/* Textarea Style */
+/* Adjusted for the textarea container */
+#userInput {
+    width: 100%;
+    flex: 1 1 auto;
+    height: 2rem;
+    min-height: 2rem;
+    max-height: 2rem;
+    padding: 0.25rem 0.75rem;
+    line-height: 1.4;
+    font-size: 1rem;
+    border-radius: 1.5rem;
+    border: none;
+    background-color: #1E1E1E;
+    color: #e0e0e0;
+    resize: none;
+    overflow-y: hidden;
+    outline: none;
+    box-sizing: border-box;
+}
+
+#userInput:focus {
+    background-color: #4a4a4a;
+    box-shadow: 0 0 0 0.15rem rgba(80, 150, 255, 0.3);
+}
+
+/* Send Button Style */
+/* Adjusted for the new buttons row container */
+#sendButton {
+    /* Keep existing styles */
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background-color: #5080ff;
+    color: #ffffff;
+    font-size: 0.6rem;
+    flex-shrink: 0;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.2s ease;
+    padding: 0;
+    align-self: auto; /* Default alignment within the row */
+    z-index: 3;
+    order: auto; /* Default order (second in row) */
+}
+
+#sendButton:hover {
+    background-color: #6699ff;
+}
+
+#sendButton:active {
+    background-color: #3366cc;
+}
+
+#sendButton:disabled {
+    background-color: #4a4a4a;
+    color: #b0b0b0;
+    cursor: not-allowed;
+}
+
+/* Loading Spinner Style (Position Adjusted) */
+/* Position relative to #inputArea */
+#loadingSpinner {
+    /* Keep existing styles */
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top: 4px solid #fff;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    animation: spin 1s linear infinite;
+    display: none;
+    /* Position relative to #inputArea */
+    position: absolute;
+    /* Position near the send button in the bottom row */
+    bottom: calc(2rem + (40px / 2) - (20px / 2)); /* inputArea bottom padding (2rem) + button height / 2 - spinner height / 2 */
+    right: calc(1.5rem + (40px / 2) - (20px / 2)); /* inputArea right padding (1.5rem) + button width / 2 - spinner width / 2 */
+    z-index: 4; /* Ensure it's above input controls */
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Initial Notice Style */
+.initial-notice {
+    text-align: center;
+    margin: 0.1rem auto 0.1rem auto;
+    color: #515151;
+    font-size: 0.9rem;
+    padding: 1rem;
+    max-width: 80%;
+    word-break: break-word;
+}
+
+/* Notice Divider Style */
+.notice-divider {
+    width: 90%;
+    height: 1px;
+    background-color: #3a3a3a;
+    margin: 0.5rem auto 1.5rem auto;
+}
+
+/* Image Overlay Style (for chat images) */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    display: none; /* Hidden by default */
+    cursor: pointer;
+}
+
+.overlay img {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+/* --- New Modal Styles --- */
+
+/* Modal Overlay Style (Covers the entire screen) */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);          /* ✅ 흐림 효과 추가 */
+    -webkit-backdrop-filter: blur(4px);  /* ✅ Safari 대응 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    overflow: hidden;
+    z-index: 950;
+    box-sizing: border-box;
+}
+
+/* Modal Content Style (The actual dialog box) */
+.modal-content {
+    position: relative;
+    background-color: #1f1f1f;
+    color: #e0e0e0;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+    width: 100%;
+    max-width: 550px;
+    max-height: 70vh;
+    overflow-y: scroll; /* ✅ 스크롤은 가능하지만 숨김 처리 아래에서 */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.modal-content::-webkit-scrollbar {
+    display: none; /* ✅ 크롬용 스크롤 숨김 */
+}
+
+/* Modal Header Style */
+.modal-header {
+    padding: 1rem;
+    background-color: transparent;
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #ffffff;
+    border-bottom: 1px solid #3a3a3a;
+    margin-bottom: 1rem;
+}
+
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 1.2rem;
+}
+
+/* Close Button Style */
+.close-button {
+    background: transparent;
+    border: none;
+    color: #b0b0b0;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+#closeModalButton {
+    all: unset;
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    cursor: pointer;
+    font-size: 1.5rem;
+    color: #aaa;
+    background-color: transparent;
+    transition: color 0.2s;
+}
+
+.close-button:hover {
+    color: #ffffff;
+}
+
+/* Modal Body Style */
+.modal-body {
+    flex-grow: 1; /* Allow body to take up available space */
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem; /* Space between sections in the body */
+}
+
+/* Modal Footer Style */
+.modal-footer {
+    border-top: 1px solid #3a3a3a; /* Separator line */
+    padding-top: 1rem;
+    margin-top: 0; /* Gap is handled by modal-content gap */
+    display: flex;
+    justify-content: flex-end; /* Align button to the right */
+}
+
+/* Save Button Style (in modal footer) */
+.modal-footer .save-button {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    background-color: #5080ff;
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.modal-footer .save-button:hover {
+    background-color: #6699ff;
+}
+
+/* Setting Slots Container Style (in modal) */
+.setting-slots-modal {
+    margin-bottom: 0; /* Gap is handled by modal-body gap */
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #3a3a3a;
+}
+
+.setting-slots-modal h3 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+    color: #b0b0b0;
+}
+
+/* Setting Slot Buttons Container Style (in modal) */
+.slot-buttons-container-modal {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+/* Setting Slot Button Style (in modal) - Same as before, just included here */
+.slot-button {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background-color: #5a5a5a;
+    color: #ffffff;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    flex-shrink: 0;
+}
+
+.slot-button:hover {
+    background-color: #6a6a6a;
+}
+
+.slot-button.active {
+    background-color: #5080ff;
+    transform: scale(1.1);
+}
+
+.slot-button:active {
+    background-color: #3366cc;
+}
+
+
+/* --- Resume Layout Styles --- */
+
+.resume-layout-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem; /* Space between Character and User sections */
+}
+
+.character-info-section,
+.user-info-section {
+    /* Individual section styling if needed */
+}
+
+.character-info-section h3,
+.user-info-section h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    color: #ffffff;
+    border-bottom: 1px dotted #3a3a3a;
+    padding-bottom: 0.5rem;
+}
+
+.info-grid {
+    display: grid;
+    /* Define columns: one for image/link, one for name/age/gender/appearance */
+    grid-template-columns: 120px 1fr; /* Adjust image column width as needed */
+    gap: 1.5rem; /* Gap between columns and rows */
+    margin-bottom: 1.5rem; /* Space below the grid before guidelines */
+
+    /* Responsive adjustment */
+    @media (max-width: 600px) {
+        grid-template-columns: 1fr; /* Stack columns on smaller screens */
+        gap: 1rem;
+    }
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem; /* Space between elements within an item */
+}
+
+/* Style for the larger info item (Name, Age, Appearance) */
+.info-item.full-width {
+    grid-column: span 1; /* By default, spans 1 column */
+    /* On larger screens, this item spans the second column */
+    @media (min-width: 601px) {
+        grid-column: span 1; /* Explicitly span the second column in the 2-column grid */
+    }
+}
+
+/* Style for the image/image link item */
+.info-grid .info-item:first-child {
+     /* On smaller screens, this item spans the full width */
+     @media (max-width: 600px) {
+         grid-column: span 1; /* Span the full width when stacked */
+     }
+}
+
+
+.half-width-row {
+    display: flex;
+    gap: 1rem; /* Space between age and gender inputs */
+}
+
+.half-width-item {
+    flex: 1; /* Each item takes up half the space */
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+
+/* Styles for labels, inputs, and textareas within the modal */
+.modal-body label {
+    display: block;
+    margin-bottom: 0.2rem;
+    font-weight: bold;
+    color: #b0b0b0;
+    font-size: 0.9rem;
+}
+
+.modal-body input[type="text"],
+.modal-body textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: none;
+    border-radius: 8px;
+    background-color: #3a3a3a;
+    color: #e0e0e0;
+    font-size: 1rem;
+    margin-bottom: 0; /* Gap is handled by flex/grid gap */
+    box-sizing: border-box;
+    resize: vertical; /* Allow vertical resizing for textareas */
+}
+
+.modal-body textarea {
+     min-height: 100px; /* Set a minimum height for textareas */
+     line-height: 1.4;
+}
+
+.modal-body input[type="text"]:focus,
+.modal-body textarea:focus {
+     outline: none;
+     box-shadow: 0 0 0 2px #5080ff; /* Highlight on focus */
+}
+
+/* Image Preview Area */
+.image-preview-area {
+    width: 130px;  /* ✅ 이미지 영역 더 키움 */
+    height: 180px;
+    border: 1px dashed #5a5a5a;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #2d2d2d;
+    flex-shrink: 0;
+    overflow: hidden;
+    margin-top: 0.5rem;
+}
+
+.image-preview-area img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 0;
+    opacity: 0.9;
+}
+
+/* Style for empty image preview */
+.image-preview-area img[src=""],
+.image-preview-area img:not([src]) {
+    display: none; /* Hide the img element if src is empty or not set */
+}
+
+/* Placeholder text for empty image preview */
+.image-preview-area::before {
+    content: "No Image"; /* Text to show when empty */
+    color: #b0b0b0;
+    font-size: 0.8rem;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+.image-preview-area img[src=""] + ::before,
+.image-preview-area img:not([src]) + ::before {
+    display: flex; /* Show placeholder text */
+}
+
+/* Hide placeholder text when image is loaded */
+.image-preview-area img[src]:not([src=""]) + ::before {
+    display: none;
+}
+
+
+/* Action Menu Overlay Style (Transparent) */
+#menuOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: transparent; /* Background transparent */
+    z-index: 490; /* Below #inputArea (510) */
+    display: none;
+}
+
+/* Action Menu Container Style (Positioned Above Button, Smaller Size) */
+/* #actionMenu is inside #inputArea (position: relative, z-index: 510) */
+/* Position above the '+' button in the bottom row */
+#actionMenu {
+    position: absolute; /* Relative to #inputArea */
+    /* Calculate bottom position relative to the bottom of #inputArea, considering its bottom padding and the height of the buttons row */
+    /* Approximate height of buttons row (40px) + inputArea bottom padding (2rem) + desired gap (10px) */
+    bottom: calc(2.3rem + 0px + 10px); /* inputArea bottom padding (2rem) + button height (40px) + gap (10px) */
+    left: 0.3rem; /* Align left edge with the left padding of inputArea */
+    right: auto;
+    transform: none;
+
+    width: 100px; /* Reduced width */
+    max-width: 150px; /* Reduced max-width */
+
+    background-color: #1f1f1f;
+    border: 1px solid #2F2F2F;
+    border-radius: 15px;
+    padding: 0.3rem 0; /* Reduced padding */
+    box-sizing: border-box;
+    z-index: 500; /* Within #inputArea's stacking context (z=510), this is above other items (z=3, 4) */
+
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease-out, visibility 0.3s ease-out;
+}
+
+/* Action Menu Visible State */
+#actionMenu.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+}
+
+/* Action Menu Tail Style */
+/* Position the tail to point downwards from the menu's bottom-left towards the button */
+#actionMenu::after {
+    content: "";
+    position: absolute;
+    bottom: -10px; /* Position below the menu's bottom edge */
+    left: 10px; /* Position from the menu's left edge */
+    right: auto;
+    transform: none;
+
+    width: 0;
+    height: 0;
+    border-top: 10px solid #1f1f1f; /* Tail color, pointing down */
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    z-index: 501;
+}
+
+/* Action Menu Tail Border Style */
+#actionMenu::before {
+    content: "";
+    position: absolute;
+    bottom: -12px; /* Position below the menu's bottom edge */
+    left: 9px; /* Position from the menu's left edge */
+    right: auto;
+    transform: none;
+
+    width: 0;
+    height: 0;
+    border-top: 12px solid #3a3a3a; /* Tail border color, pointing down */
+    border-left: 12px solid transparent;
+    border-right: 12px solid transparent;
+    z-index: 500;
+}
+
+/* Action Menu Internal Button Container Style */
+.menu-buttons {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    gap: 0; /* Keep no gap for text items */
+    justify-content: flex-end;
+    width: 100%;
+    padding-bottom: 0;
+}
+
+/* Action Menu Internal Button Style (Text Link Look, Smaller Font) */
+#actionMenu button {
+    flex-basis: auto;
+    width: 100%;
+    padding: 0.5rem 1rem; /* Reduced padding */
+    border: none;
+    border-radius: 0;
+    background-color: transparent;
+    color: #e0e0e0;
+    font-size: 0.9rem; /* Reduced font size */
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    text-align: left;
+    z-index: 502;
+}
+
+#actionMenu button:hover {
+    background-color: #3a3a3a;
+    color: #ffffff;
+}
+
+/* Image Announcement Style */
+.image-announcement {
+    display: block;
+    margin: 0.5rem auto;
+    width: 100%;
+    max-width: 70%;
+    text-align: center;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+    flex-shrink: 0;
+}
+
+/* Image Fade Container Style */
+.image-fade-container {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    height: auto;
+    overflow: hidden;
+}
+
+/* Image Fade Effect ::before Pseudo-element (수정됨) */
+.image-fade-container::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 2; /* 이미지가 z-index 1에 있다면 마스크는 2로 설정 */
+    mask-image: linear-gradient(to right, transparent, black 20%, black 80%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 20%, black 80%, transparent);
+}
+
+/* Chat Image Style */
+.chat-image {
+    display: block;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    border-radius: 8px;
+    margin: 0;
+    padding: 0;
+    z-index: 1;
+    position: relative;
+    cursor: pointer;
+}
+
+/* Image Load Error Style */
+.chat-image.error-image {
+    display: none;
+}
+
+/* Image Error Text Style */
+.image-error-text {
+    text-align: center;
+    color: #b0b0b0;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.message-bubble em {
+    font-style: italic !important;
+    color: #a9a9a9 !important;
+}
+
+#settingsModalOverlay {
+    display: none; /* ✅ 시작할 땐 숨김 */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.7); /* 배경 어둡게 */
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+.modal-fade-in {
+    animation: fadeIn 0.3s ease-out forwards;
+}
+
+.modal-fade-out {
+    animation: fadeOut 0.3s ease-in forwards;
+}
+
+/* 아코디언 컨테이너 스타일 (기존 margin-left 제거 또는 수정) */
+.accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  /* margin-left: 1.5rem; */ /* <-- 이 줄을 주석 처리하거나 삭제하여 왼쪽 정렬 */
+  margin-left: 0; /* 또는 명시적으로 0으로 설정 */
+  margin-top: 0.3rem;
+}
+
+/* 아코디언 내부 옵션 버튼 스타일 */
+#situationOptions .option {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: #aaa;
+  padding: 0.5rem 1rem;
+  text-align: left;
+  width: 100%;
+  box-sizing: border-box;
+  transition: color 0.2s, background-color 0.2s;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#situationOptions .option:hover {
+  color: #fff;
+  background-color: #3a3a3a;
+}
+
+#situationOptions {
+  background-color: #2a2a2a;
+  border-radius: 10px;
+  padding: 0.25rem 0;
+  margin-top: 0.3rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  /* ✅ 부드러운 전환 효과 */
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* 아코디언 숨김 스타일 (기존 유지) */
+.accordion.hidden {
+  display: none;
+}
