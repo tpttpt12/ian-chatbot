@@ -450,31 +450,120 @@ function resetConversation() {
     if (confirm(`슬롯 ${currentSlot}의 대화 기록을 모두 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.`)) { console.log(`Resetting conversation for slot ${currentSlot}`); conversationHistory = []; saveConversationHistory(); loadConversationHistory(); appendInitialNotice(); alert(`슬롯 ${currentSlot}의 대화 기록이 초기화되었습니다.`); }
 }
 
-// --- 메뉴/모달 관리 함수 ---
+// --- 메뉴/모달 관리 함수 (단순화 및 디버깅 강화) ---
 function openSettingsModal() {
-    if (settingsModalOverlay && settingsModal) { settingsModalOverlay.style.display = 'flex'; settingsModalOverlay.classList.remove('modal-fade-out'); settingsModalOverlay.classList.add('modal-fade-in'); console.log("Settings modal opened."); }
-    else { console.error("Cannot open settings modal: Elements missing."); }
+    console.log("[DEBUG] openSettingsModal function called."); // 함수 호출 확인
+    if (!settingsModalOverlay || !settingsModal) {
+        console.error("[DEBUG] Cannot open settings modal: Overlay or Content Element is missing!");
+        // 페이지 로딩 시 요소를 제대로 못 찾았을 수 있으니 다시 찾아보기
+        settingsModalOverlay = getElement('settingsModalOverlay');
+        settingsModal = getElement('settingsModal');
+        if (!settingsModalOverlay) {
+             alert("오류: 설정 오버레이 요소를 찾을 수 없습니다 (ID: settingsModalOverlay). HTML을 확인해주세요.");
+             return;
+        }
+        if (!settingsModal) {
+            alert("오류: 설정 콘텐츠 요소를 찾을 수 없습니다 (ID: settingsModal). HTML을 확인해주세요.");
+            return;
+        }
+    }
+
+    try {
+        console.log("[DEBUG] Trying to display modal overlay...");
+        settingsModalOverlay.style.display = 'flex'; // 직접 스타일 설정
+        // 애니메이션 클래스는 일단 주석 처리 (단순화)
+        // settingsModalOverlay.classList.remove('modal-fade-out');
+        // settingsModalOverlay.classList.add('modal-fade-in');
+        console.log("[DEBUG] Settings modal overlay display set to 'flex'.");
+    } catch (e) {
+        console.error("[DEBUG] Error occurred while trying to display modal:", e);
+        alert("모달을 표시하는 중 자바스크립트 오류가 발생했습니다. 콘솔을 확인해주세요.");
+    }
 }
+
 function closeSettingsModal() {
-    if (settingsModalOverlay && settingsModal) { settingsModalOverlay.classList.remove('modal-fade-in'); settingsModalOverlay.classList.add('modal-fade-out'); setTimeout(() => { if (settingsModalOverlay.classList.contains('modal-fade-out')) { settingsModalOverlay.style.display = 'none'; settingsModalOverlay.classList.remove('modal-fade-out'); } }, 300); console.log("Settings modal closed."); }
-    else { console.error("Cannot close settings modal: Elements missing."); }
+    console.log("[DEBUG] closeSettingsModal function called."); // 함수 호출 확인
+    if (!settingsModalOverlay || !settingsModal) {
+        console.error("[DEBUG] Cannot close settings modal: Overlay or Content Element is missing!");
+        return; // 요소 없으면 중단
+    }
+
+    try {
+        // 애니메이션 클래스는 일단 주석 처리
+        // settingsModalOverlay.classList.remove('modal-fade-in');
+        // settingsModalOverlay.classList.add('modal-fade-out');
+        // setTimeout(() => {
+        //     if (settingsModalOverlay.classList.contains('modal-fade-out')) {
+                 settingsModalOverlay.style.display = 'none'; // 직접 스타일 설정
+        //         settingsModalOverlay.classList.remove('modal-fade-out');
+        //     }
+        // }, 300);
+        settingsModalOverlay.style.display = 'none'; // 즉시 숨김
+        console.log("[DEBUG] Settings modal overlay display set to 'none'.");
+    } catch (e) {
+        console.error("[DEBUG] Error occurred while trying to hide modal:", e);
+        alert("모달을 닫는 중 자바스크립트 오류가 발생했습니다. 콘솔을 확인해주세요.");
+    }
 }
-function toggleActionMenu() {
-    if (actionMenu && menuOverlay) { const isVisible = actionMenu.classList.contains('visible'); if (isVisible) { closeActionMenu(); } else { closeFeedbackOptions(); actionMenu.classList.add('visible'); menuOverlay.style.display = 'block'; console.log("Action menu opened."); } }
-    else { console.error("Cannot toggle action menu: Elements missing."); }
-}
-function closeActionMenu() {
-    if (actionMenu && menuOverlay && actionMenu.classList.contains('visible')) { actionMenu.classList.remove('visible'); menuOverlay.style.display = 'none'; if (situationOptions && !situationOptions.classList.contains('hidden')) { situationOptions.classList.add('hidden'); } console.log("Action menu closed."); }
-}
-function toggleSituationOptions(event) { event.stopPropagation(); if (situationOptions) { situationOptions.classList.toggle('hidden'); console.log("Situation options toggled."); } else { console.error("Cannot toggle situation options: Element missing."); } }
-function toggleFeedbackOptions(event) {
-    event.stopPropagation();
-    if (feedbackOptionsContainer && feedbackButton) { const isHidden = feedbackOptionsContainer.classList.contains('hidden'); if (isHidden) { closeActionMenu(); feedbackOptionsContainer.classList.remove('hidden'); feedbackButton.classList.add('active'); console.log("Feedback options shown."); } else { feedbackOptionsContainer.classList.add('hidden'); if (!currentFeedback) { feedbackButton.classList.remove('active'); } console.log("Feedback options hidden."); } }
-    else { console.error("Cannot toggle feedback options: Elements missing."); }
-}
-function closeFeedbackOptions() {
-     if (feedbackOptionsContainer && feedbackButton && !feedbackOptionsContainer.classList.contains('hidden')) { feedbackOptionsContainer.classList.add('hidden'); if (!currentFeedback) { feedbackButton.classList.remove('active'); } console.log("Feedback options closed."); }
-}
+
+// --- DOMContentLoaded 이벤트 리스너 --- 부분 안의 sidebarToggle 리스너 수정 ---
+document.addEventListener('DOMContentLoaded', () => {
+    // ... 다른 코드들 ...
+    try { // 전체 리스너 로직을 try-catch로 감싸기 (다른 오류 영향 확인)
+
+        // ... 다른 요소 할당 ...
+        sidebarToggle = getElement('sidebarToggle'); // 여기서 sidebarToggle 할당
+        settingsModalOverlay = getElement('settingsModalOverlay'); // 모달 요소도 여기서 할당
+        settingsModal = getElement('settingsModal');
+        closeModalButton = getElement('closeModalButton');
+
+        console.log("Essential DOM elements assigned. Attaching event listeners...");
+
+        // *** 모달 열기 버튼(sidebarToggle) 리스너 확인 ***
+        if (sidebarToggle) {
+             sidebarToggle.addEventListener("click", (event) => {
+                 console.log("[DEBUG] Sidebar toggle button clicked!"); // 클릭 로그 추가
+                 event.stopPropagation(); // 이벤트 전파 중단
+                 openSettingsModal(); // 모달 열기 함수 호출
+             });
+             console.log("[DEBUG] Event listener attached to sidebarToggle.");
+        } else {
+             console.error("[DEBUG] sidebarToggle button not found! Cannot attach listener.");
+             // 사용자에게 알림 (선택적)
+             // alert("오류: 설정 버튼(≡)을 찾을 수 없습니다. HTML 코드를 확인해주세요.");
+        }
+
+        // *** 모달 닫기 버튼 리스너 확인 ***
+        if (closeModalButton) {
+            closeModalButton.addEventListener("click", closeSettingsModal);
+            console.log("[DEBUG] Event listener attached to closeModalButton.");
+        } else {
+            console.warn("[DEBUG] closeModalButton not found.");
+        }
+
+        // *** 모달 오버레이 클릭 닫기 리스너 확인 ***
+        if (settingsModalOverlay) {
+            settingsModalOverlay.addEventListener("click", function(event) {
+                // 클릭된 요소가 오버레이 자체일 때만 닫기 (모달 내용 클릭 시 닫힘 방지)
+                if (event.target === settingsModalOverlay) {
+                    console.log("[DEBUG] Modal overlay clicked.");
+                    closeSettingsModal();
+                }
+            });
+            console.log("[DEBUG] Event listener attached to settingsModalOverlay.");
+        } else {
+            console.warn("[DEBUG] settingsModalOverlay not found for click listener.");
+        }
+
+        // ... 나머지 리스너 연결 ...
+
+    } catch (e) { // DOMContentLoaded 내의 모든 오류 잡기
+        console.error("############# CRITICAL ERROR during DOMContentLoaded setup #############");
+        console.error(e);
+        alert("페이지 초기화 중 심각한 오류가 발생했습니다. F12를 눌러 콘솔을 확인해주세요.");
+    }
+    // ... initializeChat() 호출 등 ...
+});
 
 // --- DOMContentLoaded 이벤트 리스너 ---
 document.addEventListener('DOMContentLoaded', () => {
