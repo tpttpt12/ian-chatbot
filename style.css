@@ -358,3 +358,9 @@ tr:nth-child(even) { background-color: #1f1f1f; }
     line-height: 1; flex-shrink: 0;
 }
 #generateRandomCharacter:hover, #generateRandomUser:hover { color: #fff; }
+
+/* --- 오버레이 강제 숨김 (디버깅용) --- */
+#menuOverlay, #settingsModalOverlay, #imageOverlay {
+    display: none !important; /* 기본적으로 확실하게 숨김 */
+    z-index: -1 !important; /* 다른 요소 뒤로 보내 클릭 방해 안 하도록 (임시) */
+}
