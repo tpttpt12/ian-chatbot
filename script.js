@@ -5,6 +5,7 @@ let conversationHistory = [];
 let SYSTEM_PROMPT = '';
 let currentSlot = 1;
 let currentFeedback = null;
+console.log("Global variables initialized."); // 로그 추가
 
 // --- SYSTEM_PROMPT 템플릿 (절대 수정 금지!) ---
 const SYSTEM_PROMPT_TEMPLATE = `
@@ -72,7 +73,6 @@ const SYSTEM_PROMPT_TEMPLATE = `
 `;
 
 // --- DOM 요소 가져오기 ---
-// (이전과 동일하게 DOMContentLoaded에서 할당)
 let chat, userInput, sendButton, loadingSpinner, imageOverlay, overlayImage,
     actionMenuButton, actionMenu, menuOverlay, menuImageButton, menuSituationButton,
     menuExportTxtButton, menuSummarizeButton, situationOptions,
@@ -85,427 +85,487 @@ let chat, userInput, sendButton, loadingSpinner, imageOverlay, overlayImage,
     feedbackButton, feedbackOptionsContainer;
 
 // --- 함수 정의 ---
+console.log("Defining functions..."); // 로그 추가
 
 // 이미지 오버레이
-function openImageOverlay(element) { if (!imageOverlay || !overlayImage) return; overlayImage.src = element.src; imageOverlay.style.display = "flex"; }
-function closeImageOverlay() { if (!imageOverlay || !overlayImage) return; overlayImage.src = ""; imageOverlay.style.display = "none"; }
+function openImageOverlay(element) { console.log("openImageOverlay called"); try { if (!imageOverlay || !overlayImage) return; overlayImage.src = element.src; imageOverlay.style.display = "flex"; } catch (e) { console.error("Error in openImageOverlay:", e); } }
+function closeImageOverlay() { console.log("closeImageOverlay called"); try { if (!imageOverlay || !overlayImage) return; overlayImage.src = ""; imageOverlay.style.display = "none"; } catch (e) { console.error("Error in closeImageOverlay:", e); } }
 
-// Textarea 높이 조절 (이전 버전 유지 - 기능 오류 수정이 우선)
+// Textarea 높이 조절
 function autoResizeTextarea() {
-    this.style.height = 'auto';
-    const computedStyle = getComputedStyle(this);
-    const lineHeight = parseFloat(computedStyle.lineHeight) || 18;
-    const paddingTop = parseFloat(computedStyle.paddingTop);
-    const paddingBottom = parseFloat(computedStyle.paddingBottom);
-    const borderTop = parseFloat(computedStyle.borderTopWidth);
-    const borderBottom = parseFloat(computedStyle.borderBottomWidth);
-    const oneLineHeight = lineHeight + paddingTop + paddingBottom + borderTop + borderBottom;
-    const twoLineHeight = (lineHeight * 2) + paddingTop + paddingBottom + borderTop + borderBottom;
-    const minHeight = oneLineHeight;
-    const contentHeight = this.scrollHeight;
-    if (contentHeight >= twoLineHeight) { this.style.height = twoLineHeight + 'px'; this.style.overflowY = 'auto'; }
-    else { this.style.height = Math.max(contentHeight, minHeight) + 'px'; this.style.overflowY = 'hidden'; }
+    // console.log("autoResizeTextarea called"); // 너무 자주 호출되므로 주석 처리
+    try {
+        this.style.height = 'auto'; const initialOverflow = this.style.overflowY; this.style.overflowY = 'hidden';
+        const computedStyle = getComputedStyle(this); const lineHeight = parseFloat(computedStyle.lineHeight) || 18;
+        const paddingTop = parseFloat(computedStyle.paddingTop); const paddingBottom = parseFloat(computedStyle.paddingBottom);
+        const borderTop = parseFloat(computedStyle.borderTopWidth); const borderBottom = parseFloat(computedStyle.borderBottomWidth);
+        const oneLineHeight = lineHeight + paddingTop + paddingBottom + borderTop + borderBottom;
+        const twoLineHeight = (lineHeight * 2) + paddingTop + paddingBottom + borderTop + borderBottom;
+        const minHeight = oneLineHeight; const contentHeight = this.scrollHeight;
+        if (contentHeight >= twoLineHeight) { this.style.height = twoLineHeight + 'px'; this.style.overflowY = 'auto'; }
+        else { this.style.height = Math.max(contentHeight, minHeight) + 'px'; this.style.overflowY = 'hidden'; }
+    } catch (e) { console.error("Error in autoResizeTextarea:", e); }
 }
 
-// 설정 저장/로드
-function saveSettings(slotNumber) { /* ... (이전 로직 유지) ... */ }
-function loadSettings(slotNumber) { /* ... (이전 로직 유지, 이미지 URL 처리 포함) ... */ }
+// 설정 저장
+function saveSettings(slotNumber) {
+    console.log(`saveSettings called for slot ${slotNumber}`);
+    try {
+        const settings = { /* ... */ };
+        localStorage.setItem(`settings_slot_${slotNumber}`, JSON.stringify(settings));
+        alert(`설정 슬롯 ${slotNumber}에 저장되었습니다.`);
+        userProfileImgUrl = settings.userImageUrl; botProfileImgUrl = settings.botImageUrl;
+        updateSystemPrompt();
+    } catch (e) { console.error("Error in saveSettings:", e); alert("설정 저장 중 오류가 발생했습니다."); }
+}
+
+// 설정 로드
+function loadSettings(slotNumber) {
+    console.log(`loadSettings called for slot ${slotNumber}`);
+    try {
+        const savedSettings = localStorage.getItem(`settings_slot_${slotNumber}`);
+        let settings = {};
+        if (savedSettings) { try { settings = JSON.parse(savedSettings); } catch (e) { console.error("Failed to parse settings:", e); localStorage.removeItem(`settings_slot_${slotNumber}`); } }
+        botNameInputModal.value = settings.botName || ''; /* ... */ updateImagePreview(settings.botImageUrl || '', botImagePreview);
+        userNameInputModal.value = settings.userName || ''; /* ... */ updateImagePreview(settings.userImageUrl || '', userImagePreview);
+        userProfileImgUrl = settings.userImageUrl || ""; botProfileImgUrl = settings.botImageUrl || "";
+        updateSystemPrompt();
+    } catch (e) { console.error("Error in loadSettings:", e); }
+}
 
 // SYSTEM_PROMPT 업데이트
-function updateSystemPrompt() { /* ... (이전 로직 유지) ... */ }
+function updateSystemPrompt() {
+    // console.log("updateSystemPrompt called"); // 로그 너무 많을 수 있어 주석 처리
+    try {
+        SYSTEM_PROMPT = SYSTEM_PROMPT_TEMPLATE.replace(/* ... */);
+    } catch (e) { console.error("Error in updateSystemPrompt:", e); }
+}
 
 // 초기화
-function initializeChat() { /* ... (이전 로직 유지) ... */ }
-function appendInitialNotice() { /* ... (이전 로직 유지) ... */ }
+function initializeChat() {
+    console.log("initializeChat called");
+    try {
+        loadSettings(currentSlot);
+        updateSlotButtonStyles();
+        loadConversationHistory();
+        if (conversationHistory.length === 0) { appendInitialNotice(); }
+        autoResizeTextarea.call(userInput);
+        chat.scrollTop = chat.scrollHeight;
+        console.log("Chat initialized successfully.");
+    } catch (e) { console.error("Error during initializeChat:", e); }
+}
 
-// 메시지 추가 - 수정: 이미지 Fallback 로직 확인
-// 메시지를 채팅창에 추가하는 함수 - 수정: deleteBtn 정의 오류 수정, 이미지 오류 처리 강화
-function appendMessage(role, messageData, index = -1) { // index 추가 (삭제 기능용)
-    // 이미지 메시지 처리
-    if (messageData.type === 'image') {
-        const imageAnnouncementContainer = document.createElement("div");
-        imageAnnouncementContainer.className = `image-announcement ${role}`;
+// 초기 공지 메시지
+function appendInitialNotice() { console.log("appendInitialNotice called"); /* ... */ }
 
-        const imageFadeContainer = document.createElement("div");
-        imageFadeContainer.className = "image-fade-container";
+// 메시지 추가
+function appendMessage(role, messageData, index = -1) {
+    // console.log(`appendMessage called for role: ${role}, type: ${messageData.type}`); // 로그 너무 많을 수 있어 주석 처리
+    try {
+        if (messageData.type === 'image') { /* ... */ }
+        else {
+            const container = document.createElement("div"); /* ... */
+            if (index !== -1) { container.dataset.index = index; }
+            const profileArea = document.createElement("div"); /* ... */
+            const profileImgContainer = document.createElement("div"); /* ... */
+            const currentImgUrl = (role === 'user' ? userProfileImgUrl : botProfileImgUrl);
+            const profileName = (role === 'user' ? (userNameInputModal?.value || "사용자") : (botNameInputModal?.value || "캐릭터")); // Optional chaining
 
-        const imgElement = document.createElement("img");
-        imgElement.className = "chat-image";
-        imgElement.src = messageData.url;
-        imgElement.alt = "이미지 메시지";
-        imgElement.onclick = () => openImageOverlay(imgElement);
-        imgElement.onerror = function() {
-            console.warn(`Failed to load image message from "${this.src}".`);
-            this.onerror = null;
-            const errorText = document.createElement('div');
-            errorText.textContent = "(이미지 로드 실패)";
-            errorText.className = 'image-error-text';
-            imageAnnouncementContainer.innerHTML = '';
-            imageAnnouncementContainer.appendChild(errorText);
+            if (currentImgUrl && currentImgUrl.startsWith('http')) {
+                const profileImgElement = document.createElement("img"); /* ... */
+                profileImgElement.src = currentImgUrl; /* ... */
+                profileImgElement.onerror = function() { /* ... Fallback으로 교체 ... */ };
+                profileImgContainer.appendChild(profileImgElement);
+            } else { const fallbackDiv = document.createElement("div"); /* ... */; profileImgContainer.appendChild(fallbackDiv); }
+
+            let emojiSpan = null; if (role === 'bot') { /* ... 이모지 생성 ...*/ }
+            const roleName = document.createElement("div"); /* ... */
+            const nameTextSpan = document.createElement("span"); nameTextSpan.textContent = profileName; /* ... */
+
+            // *** deleteBtn 정의 및 사용 ***
+            let deleteBtn = null;
+            try {
+                deleteBtn = document.createElement("button"); // 생성
+                deleteBtn.className = "delete-btn"; deleteBtn.textContent = "✕"; deleteBtn.title = "메시지 삭제";
+                deleteBtn.onclick = () => { /* ... 삭제 로직 ... */ };
+            } catch (e) { console.error("Error creating delete button:", e); }
+            // *** ***
+
+            roleName.appendChild(nameTextSpan);
+            if (deleteBtn) { roleName.appendChild(deleteBtn); } // null 체크 후 추가
+
+            if (role === 'user') { profileArea.appendChild(roleName); profileArea.appendChild(profileImgContainer); }
+            else { profileArea.appendChild(profileImgContainer); if (emojiSpan) profileImgContainer.appendChild(emojiSpan); profileArea.appendChild(roleName); }
+
+            const contentWrapper = document.createElement("div"); /* ... */
+            const messageBodyElement = document.createElement("div"); /* ... */
+            let rawText = messageData.text; let htmlContent = rawText;
+            if (typeof marked === 'function') { try { htmlContent = marked.parse(rawText, { breaks: true, gfm: true }); } catch(e){ console.error("Marked parsing error:", e); } }
+            else { console.warn("marked library not loaded."); }
+            messageBodyElement.innerHTML = htmlContent; contentWrapper.appendChild(messageBodyElement);
+
+            container.appendChild(profileArea); container.appendChild(contentWrapper); chat.appendChild(container);
         }
-
-        imageFadeContainer.appendChild(imgElement);
-        imageAnnouncementContainer.appendChild(imageFadeContainer);
-        chat.appendChild(imageAnnouncementContainer);
-
-    } else { // 텍스트 메시지 처리
-        const container = document.createElement("div");
-        container.className = `message-container ${role}`;
-        if (index !== -1) { container.dataset.index = index; }
-
-        // 1. 프로필 영역 (상단)
-        const profileArea = document.createElement("div");
-        profileArea.className = "profile-area";
-
-        // 1a. 프로필 이미지 또는 Fallback
-        const profileImgContainer = document.createElement("div");
-        profileImgContainer.style.position = 'relative';
-        const currentImgUrl = (role === 'user' ? userProfileImgUrl : botProfileImgUrl);
-        const profileName = (role === 'user' ? (userNameInputModal.value || "사용자") : (botNameInputModal.value || "캐릭터"));
-
-        if (currentImgUrl && currentImgUrl.startsWith('http')) {
-            const profileImgElement = document.createElement("img");
-            profileImgElement.className = "profile-img";
-            profileImgElement.src = currentImgUrl;
-            profileImgElement.alt = `${profileName} 프로필`;
-            profileImgElement.loading = 'lazy';
-            profileImgElement.addEventListener("click", () => openImageOverlay(profileImgElement));
-            profileImgElement.onerror = function() {
-                console.warn(`Image load failed for ${role}: ${this.src}`);
-                this.onerror = null; const fallbackDiv = document.createElement("div");
-                fallbackDiv.className = "profile-fallback"; fallbackDiv.title = `${profileName} (이미지 없음)`;
-                profileImgContainer.innerHTML = ''; profileImgContainer.appendChild(fallbackDiv);
-            };
-            profileImgContainer.appendChild(profileImgElement);
-        } else {
-            const fallbackDiv = document.createElement("div");
-            fallbackDiv.className = "profile-fallback"; fallbackDiv.title = `${profileName} (이미지 없음)`;
-            profileImgContainer.appendChild(fallbackDiv);
-        }
-
-        // 1b. 이모지 (봇 랜덤)
-        let emojiSpan = null;
-        if (role === 'bot') {
-             emojiSpan = document.createElement("span");
-             emojiSpan.className = "profile-emoji";
-             const emojis = ['😊', '🤔', '✨', '👀', '😉', '😅', '📝', '💬'];
-             emojiSpan.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-             emojiSpan.style.display = 'inline';
-             // 이모지는 이미지 컨테이너에 추가 (CSS에서 위치 조정)
-             profileImgContainer.appendChild(emojiSpan);
-        }
-
-        // 1c. 이름 & 삭제 버튼
-        const roleName = document.createElement("div");
-        roleName.className = "role-name";
-        const nameTextSpan = document.createElement("span");
-        nameTextSpan.className = "name-text";
-        nameTextSpan.textContent = profileName; // 위에서 정의한 변수 사용
-
-        // *** deleteBtn 정의 오류 수정 ***
-        let deleteBtn = null; // 먼저 null로 선언
-        deleteBtn = document.createElement("button"); // 버튼 요소 생성 및 할당
-        deleteBtn.className = "delete-btn";
-        deleteBtn.textContent = "✕";
-        deleteBtn.title = "메시지 삭제";
-        deleteBtn.onclick = () => {
-             const msgIndex = parseInt(container.dataset.index);
-             if (!isNaN(msgIndex) && msgIndex >= 0 && msgIndex < conversationHistory.length) {
-                 conversationHistory.splice(msgIndex, 1);
-                 saveConversationHistory();
-                 loadConversationHistory(); // UI 갱신
-             } else { container.remove(); }
-        };
-        // *** 수정 끝 ***
-
-        roleName.appendChild(nameTextSpan);
-        if (deleteBtn) { // deleteBtn이 정상적으로 생성되었을 때만 추가
-             roleName.appendChild(deleteBtn);
-        }
-
-        // 프로필 영역 조립
-        if (role === 'user') {
-             profileArea.appendChild(roleName);
-             profileArea.appendChild(profileImgContainer);
-        } else {
-             profileArea.appendChild(profileImgContainer);
-             profileArea.appendChild(roleName);
-        }
-
-        // 2. 메시지 버블 컨테이너
-        const contentWrapper = document.createElement("div");
-        contentWrapper.className = "message-content-wrapper";
-        const messageBodyElement = document.createElement("div");
-        messageBodyElement.className = "message-bubble";
-        let rawText = messageData.text;
-        // Marked 라이브러리가 로드되었는지 확인 후 사용 (선택적 안전장치)
-        let htmlContent = rawText; // 기본값은 원본 텍스트
-        if (typeof marked === 'function') {
-            htmlContent = marked.parse(rawText, { breaks: true, gfm: true });
-        } else {
-             console.warn("marked library not loaded. Displaying raw text.");
-             // <pre> 태그 등으로 감싸서 원본 형식 유지 시도 가능
-             // htmlContent = `<pre>${rawText.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</pre>`;
-        }
-        messageBodyElement.innerHTML = htmlContent;
-        contentWrapper.appendChild(messageBodyElement);
-
-        // 최종 조립
-        container.appendChild(profileArea);
-        container.appendChild(contentWrapper);
-        chat.appendChild(container);
-    }
-    // 스크롤은 별도 처리
+    } catch (e) { console.error("Error in appendMessage:", e); }
 }
 
 // TXT 내보내기
-function exportConversationAsTxt() { /* ... (이전 로직 유지) ... */ }
+function exportConversationAsTxt() {
+    console.log("exportConversationAsTxt called");
+    try {
+        /* ... (기존 로직) ... */
+    } catch (e) { console.error("Error in exportConversationAsTxt:", e); alert("TXT 내보내기 중 오류 발생"); }
+}
 
 // 요약
-async function summarizeConversation() { /* ... (이전 로직 유지) ... */ }
+async function summarizeConversation() {
+    console.log("summarizeConversation called");
+    // ... (기존 로직, try...catch 내부에 로그 추가 가능) ...
+}
 
-// 메시지 전송 - 수정: Enter 키 로직 확인 (리스너에서 처리)
+// 메시지 전송 - 수정: 로그 강화
 async function sendMessage(messageText) {
+    console.log("sendMessage called");
     let message = messageText.trim();
-    if (!message) { userInput.value = ''; autoResizeTextarea.call(userInput); return; }
-    // 자동 따옴표
-    message = message.replace(/(\*.*?\*)\s*([^"\n\r*].*)/g, (match, action, dialogue) => { if (/^\s*["*]/.test(dialogue)) { return match; } return `${action} "${dialogue.trim()}"`; });
-    let feedbackToSend = currentFeedback;
-    if (currentFeedback) { handleFeedbackSelection(null); }
-    // UI 추가 및 기록 저장
-    const userMessageEntry = { role: "user", messageData: { type: 'text', text: message } };
-    conversationHistory.push(userMessageEntry);
-    appendMessage("user", userMessageEntry.messageData, conversationHistory.length - 1);
-    saveConversationHistory();
-    // 입력창 초기화
-    userInput.value = ''; autoResizeTextarea.call(userInput);
-    // API 호출 상태 설정
-    sendButton.disabled = true; userInput.disabled = true; actionMenuButton.disabled = true; feedbackButton.disabled = true;
-    loadingSpinner.style.display = 'block';
+    if (!message) { console.log("sendMessage aborted: empty message"); userInput.value = ''; autoResizeTextarea.call(userInput); return; }
+    console.log("Original message:", message);
+
     try {
-        const textOnlyContentsForApi = conversationHistory.filter(/* ... */).map(/* ... */);
-        const contentsForApi = [{ role: "user", parts: [{ text: SYSTEM_PROMPT }] }, ...textOnlyContentsForApi];
-        if (feedbackToSend) { /* ... 피드백 정보 추가 로직 ... */ }
-        if (contentsForApi.length <= 1 && textOnlyContentsForApi.length === 0) { return Promise.resolve(); }
-        const res = await fetch(`/api/chat`, { /* ... */ });
+        // 자동 따옴표
+        message = message.replace(/(\*.*?\*)\s*([^"\n\r*].*)/g, (match, action, dialogue) => { if (/^\s*["*]/.test(dialogue)) { return match; } return `${action} "${dialogue.trim()}"`; });
+        console.log("Processed message (quotes):", message);
+
+        let feedbackToSend = currentFeedback;
+        if (currentFeedback) { handleFeedbackSelection(null); }
+
+        // UI 추가 및 기록 저장
+        console.log("Appending user message to UI");
+        const userMessageEntry = { role: "user", messageData: { type: 'text', text: message } };
+        conversationHistory.push(userMessageEntry);
+        appendMessage("user", userMessageEntry.messageData, conversationHistory.length - 1);
+        saveConversationHistory();
+
+        userInput.value = ''; autoResizeTextarea.call(userInput);
+        console.log("Input cleared and resized");
+
+        // API 호출 상태 설정
+        sendButton.disabled = true; userInput.disabled = true; actionMenuButton.disabled = true; feedbackButton.disabled = true;
+        loadingSpinner.style.display = 'block';
+        console.log("UI disabled for API call");
+
+        // API 전송용 contents 구성
+        let contentsForApi;
+        try {
+            const textOnlyContentsForApi = conversationHistory
+                .filter(entry => entry.messageData && entry.messageData.type === 'text')
+                .map(entry => ({ role: entry.role === 'model' ? 'model' : 'user', parts: [{ text: entry.messageData.text }] }));
+            contentsForApi = [{ role: "user", parts: [{ text: SYSTEM_PROMPT }] }, ...textOnlyContentsForApi];
+
+            if (feedbackToSend) {
+                 console.log(`Attaching feedback to API call: ${feedbackToSend}`);
+                 const lastUserMessageIndex = contentsForApi.length -1;
+                 if(contentsForApi[lastUserMessageIndex]?.role === 'user') { contentsForApi[lastUserMessageIndex].parts[0].text = `[사용자 피드백: ${feedbackToSend}] ${contentsForApi[lastUserMessageIndex].parts[0].text}`; }
+            }
+             console.log("API request contents prepared:", JSON.stringify(contentsForApi)); // 로그 추가 (내용 확인용, 길 수 있음)
+
+        } catch (e) {
+             console.error("Error preparing API contents:", e);
+             throw e; // 에러 다시 던져서 finally 실행 후 종료
+        }
+
+
+        if (contentsForApi.length <= 1 && textOnlyContentsForApi.length === 0) {
+             console.log("API call skipped: no text content");
+             // throw new Error("API call skipped intentionally"); // 에러 발생시켜 finally로 가도록 수정
+             // 그냥 여기서 finally 블록 내용 직접 실행하거나 return
+              sendButton.disabled = false; userInput.disabled = false; actionMenuButton.disabled = false; feedbackButton.disabled = false;
+              loadingSpinner.style.display = 'none';
+              return; // finally 없이 여기서 종료
+        }
+
+        // --- 실제 API 호출 ---
+        console.log("Sending API request...");
+        const res = await fetch(`/api/chat`, {
+             method: "POST",
+             headers: { "Content-Type": "application/json" },
+             body: JSON.stringify({ contents: contentsForApi }),
+        });
+        console.log("API response status:", res.status);
+
         let botReplyText = '';
-        if (!res.ok) { /* ... 오류 처리 ... */ } else { /* ... 성공 처리 ... */ }
+        if (!res.ok) {
+            let errorData = {};
+            try { errorData = await res.json(); } catch (e) { console.error("Failed to parse error response JSON", e); }
+            console.error("API (Backend) Error:", res.status, errorData);
+            const errorText = errorData?.error?.error?.message || errorData?.error || res.statusText || "Unknown API error";
+            botReplyText = `(오류 발생: ${res.status} - ${errorText})`;
+        } else {
+            const data = await res.json();
+            console.log("API response data:", data);
+            botReplyText = data.candidates?.[0]?.content?.parts?.[0]?.text || "(응답 없음)";
+        }
+
+        // 봇 응답 처리
+        console.log("Appending bot message to UI");
         const botMessageEntry = { role: "model", messageData: { type: 'text', text: botReplyText } };
         conversationHistory.push(botMessageEntry);
         appendMessage("bot", botMessageEntry.messageData, conversationHistory.length - 1);
-    } catch (error) { /* ... 통신 오류 처리 ... */ }
-    finally {
-        sendButton.disabled = false; userInput.disabled = false; actionMenuButton.disabled = false; feedbackButton.disabled = false;
-        loadingSpinner.style.display = 'none';
-        saveConversationHistory();
-        chat.scrollTop = chat.scrollHeight;
+
+    } catch (error) {
+        // sendMessage 함수 내 다른 예외 처리
+        console.error("Error in sendMessage function:", error);
+        // 사용자에게 표시할 오류 메시지 (선택적)
+        try {
+             const errorMessage = `(메시지 전송 중 오류 발생: ${error.message || '알 수 없는 오류'})`;
+             const botMessageEntry = { role: "model", messageData: { type: 'text', text: errorMessage } };
+             conversationHistory.push(botMessageEntry);
+             appendMessage("bot", botMessageEntry.messageData, conversationHistory.length - 1);
+        } catch (appendError) {
+             console.error("Error appending error message:", appendError);
+        }
+    } finally {
+        // 상태 복구 (반드시 실행되어야 함)
+        console.log("sendMessage finally block executing.");
+        try {
+             sendButton.disabled = false;
+             userInput.disabled = false;
+             actionMenuButton.disabled = false;
+             feedbackButton.disabled = false;
+             loadingSpinner.style.display = 'none';
+             saveConversationHistory(); // 최종 저장
+             chat.scrollTop = chat.scrollHeight; // 스크롤 이동
+             console.log("UI re-enabled.");
+        } catch (e) {
+             console.error("Error in finally block:", e);
+        }
     }
 }
 
 // '상황' 요청 함수 (절대 수정 금지!)
 async function sendSituationRequest(type) {
-    console.log(`상황 생성 요청 타입: ${type}`); // 호출 확인용 로그
-    // ... (기존 로직 그대로 유지) ...
+    console.log(`sendSituationRequest called with type: ${type}`); // 호출 로그 추가
+    // 기존 로직 + try...catch 강화
     sendButton.disabled = true; userInput.disabled = true; actionMenuButton.disabled = true;
     loadingSpinner.style.display = 'block';
-    let situationPromptText = ''; const botName = botNameInputModal.value || "캐릭터";
-    switch(type) { case '랜덤': situationPromptText = `...`; break; case '전환': situationPromptText = `...`; break; case '성인': situationPromptText = `...`; break; case '돌발': default: situationPromptText = `...`; break; }
-    const textOnlyContentsForApi = conversationHistory.filter(/* ... */).map(/* ... */);
-    const contentsForApi = [ { role: "user", parts: [{ text: SYSTEM_PROMPT }] }, ...textOnlyContentsForApi, { role: "user", parts: [{ text: situationPromptText }] } ];
-    try { const res = await fetch(`/api/chat`, { /* ... */ }); if (!res.ok) { /* ... */ } else { /* ... */ } } catch (error) { /* ... */ }
-    finally { sendButton.disabled = false; userInput.disabled = false; actionMenuButton.disabled = false; loadingSpinner.style.display = 'none'; userInput.focus(); actionMenu.classList.remove("visible"); menuOverlay.style.display = 'none'; saveConversationHistory(); }
+    try {
+        let situationPromptText = ''; const botName = botNameInputModal.value || "캐릭터";
+        switch(type) { /* ... */ }
+        const textOnlyContentsForApi = conversationHistory.filter(/* ... */).map(/* ... */);
+        const contentsForApi = [ { role: "user", parts: [{ text: SYSTEM_PROMPT }] }, ...textOnlyContentsForApi, { role: "user", parts: [{ text: situationPromptText }] } ];
+        console.log("Sending situation request to API...");
+        const res = await fetch(`/api/chat`, { /* ... */ });
+        console.log("Situation API response status:", res.status);
+        let botReplyText = '';
+        if (!res.ok) { /* ... 오류 처리 ... */ } else { /* ... 성공 처리 ... */ }
+        const botMessageEntry = { role: "model", messageData: { type: 'text', text: botReplyText } };
+        conversationHistory.push(botMessageEntry);
+        appendMessage("bot", botMessageEntry.messageData, conversationHistory.length - 1);
+    } catch (error) {
+        console.error("Error in sendSituationRequest:", error);
+        appendMessage("bot", { type: 'text', text: `(상황 생성 [${type}] 통신 오류 발생)` });
+        conversationHistory.push({ role: "model", messageData: { type: 'text', text: `(상황 생성 통신 오류)` } });
+    } finally {
+        sendButton.disabled = false; userInput.disabled = false; actionMenuButton.disabled = false;
+        loadingSpinner.style.display = 'none'; userInput.focus();
+        actionMenu.classList.remove("visible"); menuOverlay.style.display = 'none';
+        saveConversationHistory();
+    }
 }
 
 
 // 이미지 URL 미리보기 업데이트
-function updateImagePreview(imageUrl, imgElement) { /* ... (이전 로직 유지) ... */ }
+function updateImagePreview(imageUrl, imgElement) {
+    console.log(`updateImagePreview called. URL: ${imageUrl}`);
+    try {
+        if (imageUrl && imageUrl.trim() !== '' && imageUrl.trim().startsWith('http')) {
+            imgElement.src = imageUrl.trim();
+        } else {
+            imgElement.src = ""; // 유효하지 않으면 src 제거 (CSS에서 Placeholder 처리)
+        }
+    } catch (e) { console.error("Error in updateImagePreview:", e); }
+}
 
 // 슬롯 버튼 스타일 업데이트
-function updateSlotButtonStyles() { /* ... (이전 로직 유지) ... */ }
+function updateSlotButtonStyles() { /* ... */ }
 
 // 랜덤 생성 함수 (Placeholder)
-async function generateRandomCharacter() { /* ... (이전 로직 유지) ... */ }
-async function generateRandomUser() { /* ... (이전 로직 유지) ... */ }
+async function generateRandomCharacter() { console.log("generateRandomCharacter called"); /* ... */ }
+async function generateRandomUser() { console.log("generateRandomUser called"); /* ... */ }
 
-// 이미지 미리보기 클릭 시 URL 입력 - 수정: 함수 실행 확인
+// 이미지 미리보기 클릭 시 URL 입력
 function promptForImageUrl(targetPreviewElement, isBot) {
-    console.log("promptForImageUrl called for:", isBot ? "Bot" : "User"); // 함수 호출 확인 로그
-    const currentUrl = targetPreviewElement.src.startsWith('http') ? targetPreviewElement.src : '';
-    setTimeout(() => {
-        const newImageUrl = prompt("이미지 웹 주소(URL)를 입력하세요:", currentUrl);
-        console.log("Prompt closed, URL:", newImageUrl); // Prompt 결과 확인 로그
-        if (newImageUrl !== null) {
-            const trimmedUrl = newImageUrl.trim();
-            if (trimmedUrl === '' || trimmedUrl.startsWith('http://') || trimmedUrl.startsWith('https://')) {
-                updateImagePreview(trimmedUrl, targetPreviewElement);
-                if (isBot) { botProfileImgUrl = trimmedUrl; } else { userProfileImgUrl = trimmedUrl; }
-            } else { alert("유효한 웹 주소 형식(...)이 아닙니다."); }
-        }
-    }, 0);
+    console.log("promptForImageUrl called for:", isBot ? "Bot" : "User");
+    try {
+        const currentUrl = targetPreviewElement.src.startsWith('http') ? targetPreviewElement.src : '';
+        setTimeout(() => {
+            try {
+                const newImageUrl = prompt("이미지 웹 주소(URL)를 입력하세요:", currentUrl);
+                console.log("Image URL prompt returned:", newImageUrl);
+                if (newImageUrl !== null) {
+                    const trimmedUrl = newImageUrl.trim();
+                    if (trimmedUrl === '' || trimmedUrl.startsWith('http://') || trimmedUrl.startsWith('https://')) {
+                        updateImagePreview(trimmedUrl, targetPreviewElement);
+                        if (isBot) { botProfileImgUrl = trimmedUrl; } else { userProfileImgUrl = trimmedUrl; }
+                    } else { alert("유효한 웹 주소 형식(...)이 아닙니다."); }
+                }
+            } catch (e) { console.error("Error inside promptForImageUrl timeout:", e); }
+        }, 0);
+    } catch (e) { console.error("Error in promptForImageUrl:", e); }
 }
 
 // 피드백 선택 처리
-function handleFeedbackSelection(feedbackType) { /* ... (이전 로직 유지) ... */ }
+function handleFeedbackSelection(feedbackType) {
+    console.log(`handleFeedbackSelection called with type: ${feedbackType}`);
+    try {
+        /* ... (기존 로직) ... */
+        feedbackOptionsContainer.classList.add('hidden');
+        menuOverlay.style.display = 'none';
+    } catch (e) { console.error("Error in handleFeedbackSelection:", e); }
+}
 
-// 대화 기록 저장/로드/리셋
-function saveConversationHistory() { /* ... (이전 로직 유지) ... */ }
-function loadConversationHistory() { /* ... (이전 로직 유지, 초기 공지 호출 포함) ... */ }
-function resetConversation() { /* ... (이전 로직 유지) ... */ }
+// 대화 기록 저장
+function saveConversationHistory() { /* ... (기존 로직 + try/catch) ... */ }
+// 대화 기록 로드
+function loadConversationHistory() {
+    console.log("loadConversationHistory called");
+    try {
+        const savedHistory = localStorage.getItem(`conversation_history_${currentSlot}`);
+        chat.innerHTML = ''; conversationHistory = [];
+        if (savedHistory) {
+             try {
+                 conversationHistory = JSON.parse(savedHistory);
+                 console.log(`Loaded ${conversationHistory.length} messages from slot ${currentSlot}`);
+                 conversationHistory.forEach((entry, index) => {
+                     if (!(entry.role === 'user' && entry.messageData?.type === 'text' && entry.messageData?.text === SYSTEM_PROMPT)) {
+                         appendMessage(entry.role === 'model' ? 'bot' : 'user', entry.messageData, index);
+                     }
+                 });
+             } catch (e) { console.error("Failed to parse history:", e); localStorage.removeItem(`conversation_history_${currentSlot}`); }
+        } else { console.log(`No history found for slot ${currentSlot}`); }
+
+        if (conversationHistory.length === 0 && !chat.querySelector('.initial-notice')) { // 기록 없고, 공지 없을 때만 추가
+            appendInitialNotice();
+        }
+        requestAnimationFrame(() => { if(chat) chat.scrollTop = chat.scrollHeight; }); // 스크롤 이동
+    } catch (e) { console.error("Error in loadConversationHistory:", e); }
+}
+// 대화 기록 리셋
+function resetConversation() { console.log("resetConversation called"); /* ... */ }
 
 
 // --- DOMContentLoaded 이벤트 리스너 ---
 document.addEventListener('DOMContentLoaded', () => {
-    // DOM 요소 할당
-    chat = document.getElementById("chat");
-    userInput = document.getElementById("userInput");
-    sendButton = document.getElementById("sendButton");
-    loadingSpinner = document.getElementById("loadingSpinner");
-    imageOverlay = document.getElementById("imageOverlay");
-    overlayImage = document.getElementById("overlayImage");
-    actionMenuButton = document.getElementById("actionMenuButton");
-    actionMenu = document.getElementById("actionMenu");
-    menuOverlay = document.getElementById("menuOverlay");
-    menuImageButton = document.getElementById("menuImageButton");
-    menuSituationButton = document.getElementById("menuSituationButton");
-    menuExportTxtButton = document.getElementById("menuExportTxtButton");
-    menuSummarizeButton = document.getElementById("menuSummarizeButton");
-    situationOptions = document.getElementById("situationOptions");
-    settingsModalOverlay = document.getElementById("settingsModalOverlay");
-    settingsModal = document.getElementById("settingsModal");
-    closeModalButton = document.getElementById("closeModalButton");
-    sidebarToggle = document.getElementById("sidebarToggle");
-    botNameInputModal = document.getElementById("botNameInputModal");
-    /* ... (나머지 모달 요소 할당) ... */
-    botImagePreview = document.getElementById("botImagePreview");
-    userNameInputModal = document.getElementById("userNameInputModal");
-    /* ... (나머지 유저 요소 할당) ... */
-    userImagePreview = document.getElementById("userImagePreview");
-    saveSettingsButtonModal = document.getElementById("saveSettingsButtonModal");
-    generateRandomCharacterButton = document.getElementById("generateRandomCharacter");
-    generateRandomUserButton = document.getElementById("generateRandomUser");
-    feedbackButton = document.getElementById("feedbackButton");
-    feedbackOptionsContainer = document.getElementById("feedbackOptionsContainer");
+    console.log("DOMContentLoaded event fired.");
+    try {
+        // DOM 요소 할당
+        console.log("Assigning DOM elements...");
+        chat = document.getElementById("chat");
+        userInput = document.getElementById("userInput");
+        sendButton = document.getElementById("sendButton");
+        // ... (다른 모든 요소 할당) ...
+        feedbackOptionsContainer = document.getElementById("feedbackOptionsContainer");
+        console.log("DOM elements assigned.");
 
-    // --- 이벤트 리스너 연결 ---
-
-    // 전송 버튼/Enter 키 - 수정: 로직 확인
-    if (sendButton) sendButton.addEventListener("click", () => sendMessage(userInput.value));
-    if (userInput) userInput.addEventListener("keydown", function(event) {
-        if (event.key === "Enter" && !event.shiftKey && !event.isComposing) {
-            event.preventDefault();
-            sendMessage(userInput.value);
+        // 필수 요소 확인
+        if (!chat || !userInput || !sendButton || !settingsModalOverlay /* ... 등등 */) {
+            console.error("Essential DOM elements are missing! Aborting setup.");
+            return; // 필수 요소 없으면 리스너 설정 중단
         }
-    });
 
-    // 액션 메뉴(+) 버튼 - 수정: 리스너 확인
-    if (actionMenuButton) actionMenuButton.addEventListener("click", function(event) {
-        event.stopPropagation();
-        feedbackOptionsContainer.classList.add('hidden');
-        situationOptions.classList.add("hidden");
-        actionMenu.classList.toggle("visible");
-        menuOverlay.style.display = actionMenu.classList.contains("visible") ? 'block' : 'none';
-    });
+        // --- 이벤트 리스너 연결 ---
+        console.log("Attaching event listeners...");
 
-    // 메뉴 오버레이 클릭 - 수정: 리스너 확인
-    if (menuOverlay) menuOverlay.addEventListener("click", function() {
-        actionMenu.classList.remove("visible");
-        situationOptions.classList.add("hidden");
-        feedbackOptionsContainer.classList.add('hidden');
-        menuOverlay.style.display = 'none';
-    });
-
-    // (+) 메뉴 내부 버튼들 - 수정: 리스너 복구 및 확인
-    if (menuImageButton) menuImageButton.addEventListener("click", function() {
-        alert("이미지 추가 방식이 변경되었습니다. 모달의 이미지 영역을 클릭하여 URL을 입력해주세요.");
-        actionMenu.classList.remove("visible"); menuOverlay.style.display = 'none';
-    });
-    if (menuSituationButton) menuSituationButton.addEventListener("click", function(event) {
-        event.stopPropagation();
-        feedbackOptionsContainer.classList.add('hidden');
-        situationOptions.classList.toggle("hidden");
-        // 상황 아코디언 토글 시 오버레이 관리는 일단 제거 (클릭 문제 방지)
-    });
-    if (situationOptions) situationOptions.querySelectorAll(".option").forEach(option => {
-        option.addEventListener("click", (event) => {
-            event.stopPropagation();
-            const situationType = option.textContent;
-            // sendSituationRequest 함수가 정의되어 있는지 확인 후 호출
-            if (typeof sendSituationRequest === 'function') {
-                sendSituationRequest(situationType);
-            } else { console.error("sendSituationRequest function is not defined!"); }
-            situationOptions.classList.add("hidden");
-            actionMenu.classList.remove("visible");
-            menuOverlay.style.display = 'none';
-        });
-    });
-    if (menuExportTxtButton) menuExportTxtButton.addEventListener("click", function() {
-         if (typeof exportConversationAsTxt === 'function') {
-             exportConversationAsTxt();
-         } else { console.error("exportConversationAsTxt function is not defined!"); }
-    });
-    if (menuSummarizeButton) menuSummarizeButton.addEventListener("click", function() {
-        if (typeof summarizeConversation === 'function') {
-            summarizeConversation();
-        } else { console.error("summarizeConversation function is not defined!"); }
-    });
-
-    // 모달 열기/닫기 리스너 - 수정: 리스너 확인
-    if (sidebarToggle) sidebarToggle.addEventListener("click", function() {
-        actionMenu.classList.remove("visible"); situationOptions.classList.add("hidden"); feedbackOptionsContainer.classList.add('hidden'); menuOverlay.style.display = 'none'; imageOverlay.style.display = 'none';
-        loadSettings(currentSlot); updateSlotButtonStyles(); settingsModalOverlay.style.display = 'flex';
-    });
-    if (closeModalButton) closeModalButton.addEventListener("click", () => settingsModalOverlay.style.display = 'none');
-    if (settingsModalOverlay) settingsModalOverlay.addEventListener("click", function(event) { if (event.target === settingsModalOverlay) { settingsModalOverlay.style.display = 'none'; } });
-
-    // 설정 저장 버튼 - 수정: 리스너 확인
-    if (saveSettingsButtonModal) saveSettingsButtonModal.addEventListener("click", () => saveSettings(currentSlot));
-
-    // 슬롯 버튼 클릭 - 수정: 리스너 확인
-    document.querySelectorAll('.slot-button').forEach(button => {
-        button.addEventListener('click', function() {
-            const previousSlot = currentSlot; const slotNumber = parseInt(this.textContent);
-            if (previousSlot !== slotNumber) {
-                currentSlot = slotNumber; updateSlotButtonStyles(); loadSettings(slotNumber); loadConversationHistory();
+        // 전송 버튼/Enter 키
+        sendButton.addEventListener("click", () => { console.log("Send button clicked."); sendMessage(userInput.value); });
+        userInput.addEventListener("keydown", function(event) {
+            // console.log(`Keydown event: key=${event.key}, shift=${event.shiftKey}, composing=${event.isComposing}`); // 디버깅 시 사용
+            if (event.key === "Enter" && !event.shiftKey && !event.isComposing) {
+                console.log("Enter key pressed for sending message.");
+                event.preventDefault();
+                sendMessage(userInput.value);
             }
         });
-    });
 
-    // 랜덤 생성 버튼 - 수정: 리스너 확인
-    if (generateRandomCharacterButton) generateRandomCharacterButton.addEventListener('click', generateRandomCharacter);
-    if (generateRandomUserButton) generateRandomUserButton.addEventListener('click', generateRandomUser);
-
-    // 이미지 미리보기 클릭 리스너 - 수정: 리스너 확인 및 null 체크
-    if (botImagePreview) botImagePreview.addEventListener('click', () => promptForImageUrl(botImagePreview, true));
-    if (userImagePreview) userImagePreview.addEventListener('click', () => promptForImageUrl(userImagePreview, false));
-
-    // 피드백(O) 버튼 클릭 (가로 메뉴 토글) - 수정: 리스너 확인
-    if (feedbackButton) feedbackButton.addEventListener('click', function(event) {
-        event.stopPropagation();
-        actionMenu.classList.remove("visible");
-        situationOptions.classList.add("hidden");
-        feedbackOptionsContainer.classList.toggle('hidden');
-        // 오버레이는 피드백 메뉴가 열릴 때만 표시 (클릭으로 닫기 위해)
-        menuOverlay.style.display = feedbackOptionsContainer.classList.contains('hidden') ? 'none' : 'block';
-    });
-
-    // 피드백 옵션 버튼 클릭 (가로 메뉴 내) - 수정: 리스너 확인
-    if (feedbackOptionsContainer) feedbackOptionsContainer.querySelectorAll('.feedback-option').forEach(button => {
-        button.addEventListener('click', function(event) {
+        // 액션 메뉴(+) 버튼
+        actionMenuButton.addEventListener("click", function(event) {
+            console.log("Action menu button clicked.");
             event.stopPropagation();
-            const feedbackType = this.dataset.feedback;
-            handleFeedbackSelection(feedbackType);
+            feedbackOptionsContainer.classList.add('hidden'); situationOptions.classList.add("hidden");
+            actionMenu.classList.toggle("visible");
+            menuOverlay.style.display = actionMenu.classList.contains("visible") ? 'block' : 'none';
         });
-    });
 
-    // textarea 입력 시 높이 자동 조절 - 수정: 리스너 확인
-    if (userInput) userInput.addEventListener('input', autoResizeTextarea);
+        // 메뉴 오버레이 클릭
+        menuOverlay.addEventListener("click", function() {
+            console.log("Menu overlay clicked.");
+            actionMenu.classList.remove("visible"); situationOptions.classList.add("hidden"); feedbackOptionsContainer.classList.add('hidden');
+            menuOverlay.style.display = 'none';
+        });
 
-    // --- 초기 로딩 ---
-    // DOM 요소들이 모두 할당된 후에 초기화 함수 호출
-    if (chat && userInput && settingsModalOverlay) { // 필수 요소 확인
+        // (+) 메뉴 내부 버튼들
+        menuImageButton.addEventListener("click", function() { console.log("Image button clicked."); /* ... */ });
+        menuSituationButton.addEventListener("click", function(event) { console.log("Situation button clicked."); event.stopPropagation(); /* ... */ situationOptions.classList.toggle("hidden"); });
+        if (situationOptions) situationOptions.querySelectorAll(".option").forEach(option => {
+            option.addEventListener("click", (event) => {
+                console.log(`Situation option clicked: ${option.textContent}`);
+                event.stopPropagation(); const situationType = option.textContent;
+                if (typeof sendSituationRequest === 'function') { sendSituationRequest(situationType); } else { console.error("sendSituationRequest function not defined!"); }
+                situationOptions.classList.add("hidden"); actionMenu.classList.remove("visible"); menuOverlay.style.display = 'none';
+            });
+        });
+        menuExportTxtButton.addEventListener("click", function() { console.log("Export button clicked."); if(typeof exportConversationAsTxt === 'function') exportConversationAsTxt(); else console.error("export function not defined"); });
+        menuSummarizeButton.addEventListener("click", function() { console.log("Summarize button clicked."); if(typeof summarizeConversation === 'function') summarizeConversation(); else console.error("summarize function not defined");});
+
+        // 모달 열기/닫기
+        sidebarToggle.addEventListener("click", function() { console.log("Sidebar toggle clicked."); /* ... */ settingsModalOverlay.style.display = 'flex'; });
+        closeModalButton.addEventListener("click", () => { console.log("Close modal button clicked."); settingsModalOverlay.style.display = 'none'; });
+        settingsModalOverlay.addEventListener("click", function(event) { if (event.target === settingsModalOverlay) { console.log("Modal overlay clicked."); settingsModalOverlay.style.display = 'none'; } });
+
+        // 설정 저장 버튼
+        saveSettingsButtonModal.addEventListener("click", () => { console.log("Save settings button clicked."); saveSettings(currentSlot); });
+
+        // 슬롯 버튼 클릭
+        document.querySelectorAll('.slot-button').forEach(button => {
+            button.addEventListener('click', function() { /* ... */ console.log(`Slot button ${this.textContent} clicked.`); /* ... */ loadConversationHistory(); });
+        });
+
+        // 랜덤 생성 버튼
+        generateRandomCharacterButton.addEventListener('click', generateRandomCharacter);
+        generateRandomUserButton.addEventListener('click', generateRandomUser);
+
+        // 이미지 미리보기 클릭 리스너
+        if (botImagePreview) botImagePreview.addEventListener('click', () => promptForImageUrl(botImagePreview, true));
+        if (userImagePreview) userImagePreview.addEventListener('click', () => promptForImageUrl(userImagePreview, false));
+
+        // 피드백(O) 버튼 클릭
+        feedbackButton.addEventListener('click', function(event) {
+            console.log("Feedback button clicked."); event.stopPropagation(); actionMenu.classList.remove("visible"); situationOptions.classList.add("hidden");
+            feedbackOptionsContainer.classList.toggle('hidden');
+            menuOverlay.style.display = feedbackOptionsContainer.classList.contains('hidden') ? 'none' : 'block';
+        });
+
+        // 피드백 옵션 버튼 클릭
+        if (feedbackOptionsContainer) feedbackOptionsContainer.querySelectorAll('.feedback-option').forEach(button => {
+            button.addEventListener('click', function(event) {
+                console.log(`Feedback option clicked: ${this.dataset.feedback}`); event.stopPropagation(); const feedbackType = this.dataset.feedback;
+                handleFeedbackSelection(feedbackType);
+            });
+        });
+
+        // textarea 입력 시 높이 자동 조절
+        userInput.addEventListener('input', autoResizeTextarea);
+
+        // --- 초기 로딩 ---
+        console.log("Running initial setup...");
         initializeChat();
-    } else {
-        console.error("Essential DOM elements not found!");
+        console.log("Initialization complete.");
+
+    } catch (e) {
+        console.error("Error during DOMContentLoaded setup:", e);
+        // 사용자에게 치명적 오류 알림 (선택적)
+        alert("페이지 초기화 중 심각한 오류가 발생했습니다. 콘솔 로그를 확인해주세요.");
     }
 
 }); // DOMContentLoaded 끝
+
+console.log("Script loaded and parsed."); // 스크립트 로드 완료 로그
