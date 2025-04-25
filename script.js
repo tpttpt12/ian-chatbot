@@ -87,18 +87,15 @@ let chat, userInput, sendButton, loadingSpinner, imageOverlay, overlayImage,
 // --- 유틸리티 함수 ---
 function getElement(id, required = true) {
     const element = document.getElementById(id);
-    if (required && !element) {
-        console.error(`[Fatal] Required element with ID '${id}' not found in the DOM.`);
-    } else if (!element && !required) {
-        console.warn(`[Optional] Element with ID '${id}' not found.`);
-    }
+    if (required && !element) { console.error(`[Fatal] Required element with ID '${id}' not found in the DOM.`); }
+    else if (!element && !required) { console.warn(`[Optional] Element with ID '${id}' not found.`); }
     return element;
 }
-function getRandomElement(arr) {
+function getRandomElement(arr) { // 이 함수는 이제 랜덤 생성에서는 사용되지 않지만, emoji 등에서 사용될 수 있으므로 남겨둡니다.
     if (!arr || arr.length === 0) return '';
     return arr[Math.floor(Math.random() * arr.length)];
 }
-function getRandomInt(min, max) {
+function getRandomInt(min, max) { // 이 함수는 이제 랜덤 생성에서는 사용되지 않지만, 필요할 수 있으므로 남겨둡니다.
     min = Math.ceil(min); max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
@@ -203,29 +200,19 @@ function initializeChat() {
     } catch (e) { console.error("Error during initializeChat:", e); }
 }
 
-// 초기 공지 메시지 (축약 해제)
+// 초기 공지 메시지
 function appendInitialNotice() {
     console.log("appendInitialNotice called");
     try {
         if (chat && !chat.querySelector('.initial-notice')) {
-             const noticeDiv = document.createElement('div');
-             noticeDiv.className = 'initial-notice';
-             noticeDiv.innerHTML = `
-                대화를 시작하세요! 설정(≡)에서 캐릭터와 사용자 정보를 변경할 수 있습니다.<br>
-                <div class="notice-divider"></div>
-             `;
-             if (chat.firstChild) {
-                 chat.insertBefore(noticeDiv, chat.firstChild);
-             } else {
-                 chat.appendChild(noticeDiv);
-             }
+             const noticeDiv = document.createElement('div'); noticeDiv.className = 'initial-notice';
+             noticeDiv.innerHTML = `대화를 시작하세요! 설정(≡)에서 캐릭터와 사용자 정보를 변경할 수 있습니다.<br><div class="notice-divider"></div>`;
+             if (chat.firstChild) { chat.insertBefore(noticeDiv, chat.firstChild); } else { chat.appendChild(noticeDiv); }
         }
-    } catch(e) {
-        console.error("Error appending initial notice:", e);
-    }
+    } catch(e) { console.error("Error appending initial notice:", e); }
 }
 
-// 메시지를 채팅창에 추가
+// 메시지를 채팅창에 추가 (삭제 로직 포함)
 function appendMessage(role, messageData, index = -1) {
     try {
         if (!chat) { console.error("Chat element not found in appendMessage"); return; }
@@ -237,11 +224,8 @@ function appendMessage(role, messageData, index = -1) {
             const imgElement = document.createElement("img"); imgElement.className = "chat-image"; imgElement.src = messageData.url; imgElement.alt = "채팅 이미지"; imgElement.loading = 'lazy'; imgElement.onclick = () => openImageOverlay(imgElement);
             imgElement.onerror = function() { console.warn(`Failed to load chat image: ${this.src}`); this.onerror = null; const errorText = document.createElement('div'); errorText.textContent = "(이미지 로드 실패)"; errorText.className = 'image-error-text'; imageAnnouncementContainer.innerHTML = ''; imageAnnouncementContainer.appendChild(errorText); };
             const deleteBtn = document.createElement("button"); deleteBtn.className = "delete-btn chat-image-delete-btn"; deleteBtn.textContent = "✕"; deleteBtn.title = "이미지 삭제";
-            // 삭제 로직 (축약 해제)
             deleteBtn.onclick = () => {
-                 if (!isValidIndex) {
-                     imageAnnouncementContainer.remove(); console.warn("Deleted temporary image message (not in history)."); return;
-                 }
+                 if (!isValidIndex) { imageAnnouncementContainer.remove(); console.warn("Deleted temporary image message (not in history)."); return; }
                  const msgIndex = parseInt(imageAnnouncementContainer.dataset.index);
                  if (!isNaN(msgIndex) && msgIndex >= 0 && msgIndex < conversationHistory.length && conversationHistory[msgIndex] && conversationHistory[msgIndex].messageData.url === messageData.url) {
                      if (confirm("이 이미지를 삭제하시겠습니까?")) { conversationHistory.splice(msgIndex, 1); saveConversationHistory(); loadConversationHistory(); }
@@ -262,11 +246,8 @@ function appendMessage(role, messageData, index = -1) {
             if (role === 'bot') { const emojiSpan = document.createElement("span"); emojiSpan.className = "profile-emoji"; const emojis = ['😊', '🤔', '✨', '👀', '😉', '😅', '📝', '💬', '🧐', '🤖']; emojiSpan.textContent = getRandomElement(emojis); emojiSpan.style.display = 'inline'; profileImgContainer.appendChild(emojiSpan); }
             const roleName = document.createElement("div"); roleName.className = "role-name"; const nameTextSpan = document.createElement("span"); nameTextSpan.className = "name-text"; nameTextSpan.textContent = profileName;
             let deleteBtn = document.createElement("button"); deleteBtn.className = "delete-btn"; deleteBtn.textContent = "✕"; deleteBtn.title = "메시지 삭제";
-            // 삭제 로직 (축약 해제)
             deleteBtn.onclick = () => {
-                 if (!isValidIndex) {
-                     container.remove(); console.warn("Deleted temporary text message (not in history)."); return;
-                 }
+                 if (!isValidIndex) { container.remove(); console.warn("Deleted temporary text message (not in history)."); return; }
                  const msgIndex = parseInt(container.dataset.index);
                  if (!isNaN(msgIndex) && msgIndex >= 0 && msgIndex < conversationHistory.length && conversationHistory[msgIndex] && conversationHistory[msgIndex].messageData.text === messageData.text) {
                      if (confirm("이 메시지를 삭제하시겠습니까?")) { conversationHistory.splice(msgIndex, 1); saveConversationHistory(); loadConversationHistory(); }
@@ -283,55 +264,35 @@ function appendMessage(role, messageData, index = -1) {
 }
 
 
-// TXT 내보내기 (축약 해제)
+// TXT 내보내기
 function exportConversationAsTxt() {
     console.log("exportConversationAsTxt called");
     try {
-        if (!conversationHistory || conversationHistory.length === 0) {
-            alert("내보낼 대화 내용이 없습니다."); return;
-        }
-        let txtContent = "";
-        const currentBotName = botNameInputModal?.value || "캐릭터";
-        const currentUserName = userNameInputModal?.value || "사용자";
-
+        if (!conversationHistory || conversationHistory.length === 0) { alert("내보낼 대화 내용이 없습니다."); return; }
+        let txtContent = ""; const currentBotName = botNameInputModal?.value || "캐릭터"; const currentUserName = userNameInputModal?.value || "사용자";
         conversationHistory.forEach(entry => {
             if (entry.role === 'user' && entry.messageData?.type === 'text' && entry.messageData?.text === SYSTEM_PROMPT) return;
             if (entry.messageData?.type === 'image') return;
-            if (entry.messageData?.type === 'text') {
-                const name = (entry.role === "user" ? currentUserName : currentBotName);
-                let rawText = entry.messageData?.text || "";
-                let processedText = rawText.replace(/^\*|\*$/g, '').replace(/\*([^*]+)\*/gs, '$1').trim();
-                if (processedText) { txtContent += `[${name}] : ${processedText}\n\n`; }
-            }
+            if (entry.messageData?.type === 'text') { const name = (entry.role === "user" ? currentUserName : currentBotName); let rawText = entry.messageData?.text || ""; let processedText = rawText.replace(/^\*|\*$/g, '').replace(/\*([^*]+)\*/gs, '$1').trim(); if (processedText) { txtContent += `[${name}] : ${processedText}\n\n`; } }
         });
-        txtContent = txtContent.trimEnd();
-        if (!txtContent) { alert("내보낼 텍스트 내용이 없습니다. (이미지 제외)"); return; }
-
-        const blob = new Blob([txtContent], { type: 'text/plain;charset=utf-8' });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        const timestamp = new Date().toISOString().slice(0, 10).replace(/-/g, '');
-        link.download = `chat_history_${currentBotName}_${currentUserName}_${timestamp}.txt`;
-        document.body.appendChild(link); link.click(); document.body.removeChild(link); URL.revokeObjectURL(link.href);
-        closeActionMenu();
+        txtContent = txtContent.trimEnd(); if (!txtContent) { alert("내보낼 텍스트 내용이 없습니다. (이미지 제외)"); return; }
+        const blob = new Blob([txtContent], { type: 'text/plain;charset=utf-8' }); const link = document.createElement('a'); link.href = URL.createObjectURL(blob); const timestamp = new Date().toISOString().slice(0, 10).replace(/-/g, ''); link.download = `chat_history_${currentBotName}_${currentUserName}_${timestamp}.txt`;
+        document.body.appendChild(link); link.click(); document.body.removeChild(link); URL.revokeObjectURL(link.href); closeActionMenu();
     } catch (e) { console.error("Error in exportConversationAsTxt:", e); alert("TXT 내보내기 중 오류 발생"); }
 }
 
-// 요약 (API 호출 복원)
+// 요약 (API 호출 복원됨)
 async function summarizeConversation() {
     console.log("summarizeConversation called");
     if (!sendButton || !userInput || !actionMenuButton || !loadingSpinner || !menuSummarizeButton || !chat) { console.error("Summarize dependencies missing"); alert("요약 기능을 실행하는 데 필요한 요소가 없습니다."); return; }
     sendButton.disabled = true; userInput.disabled = true; actionMenuButton.disabled = true; loadingSpinner.style.display = 'block'; menuSummarizeButton.disabled = true; if (feedbackButton) feedbackButton.disabled = true;
     closeActionMenu();
-
     try {
         const recentHistory = conversationHistory.filter(entry => !(entry.role === 'user' && entry.messageData?.text === SYSTEM_PROMPT) && entry.messageData?.type === 'text').slice(-10);
         if (recentHistory.length === 0) { alert("요약할 대화 내용이 없습니다."); return; }
-
         const summaryPromptText = `다음 대화 내용을 한국어로 간결하게 요약해줘. 요약은 제3자 시점에서 작성하고, 핵심 사건과 전개만 담되 군더더기 없는 자연스러운 문장으로 작성해. "요약:" 같은 머리말은 붙이지 말고, 그냥 텍스트만 출력해. (최근 ${recentHistory.length} 턴 기준)`;
         const contentsForApi = [ { role: "user", parts: [{ text: SYSTEM_PROMPT }] }, ...recentHistory.map(entry => ({ role: entry.role === 'model' ? 'model' : 'user', parts: [{ text: entry.messageData.text }] })), { role: "user", parts: [{ text: summaryPromptText }] } ];
         console.log(`Sending summary request for last ${recentHistory.length} turns...`);
-
         let summaryText = '';
         try {
             const res = await fetch(`/api/chat`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ contents: contentsForApi }) });
@@ -339,7 +300,6 @@ async function summarizeConversation() {
             if (!res.ok) { const errorBody = await res.text(); console.error(`Summary API Error (${res.status}): ${errorBody}`); summaryText = `(요약 실패: 서버 오류 ${res.status})`; }
             else { const data = await res.json(); summaryText = data?.candidates?.[0]?.content?.parts?.[0]?.text || "(요약 응답 처리 실패)"; console.log("Summary received:", summaryText); }
         } catch (fetchError) { console.error("Fetch Error sending summary:", fetchError); summaryText = "(요약 통신 오류 발생)"; }
-
         appendMessage("bot", { type: 'text', text: `--- 최근 ${recentHistory.length}턴 대화 요약 ---\n${summaryText}\n---` });
     } catch (error) { console.error("Error during Summary process:", error); appendMessage("bot", { type: 'text', text: "(요약 중 오류 발생)" }); }
     finally {
@@ -349,70 +309,37 @@ async function summarizeConversation() {
     }
 }
 
-// 메시지 전송 (API 호출 복원)
+// 메시지 전송 (API 호출 복원됨)
 async function sendMessage(messageText) {
     console.log("sendMessage called");
     if (!userInput || !sendButton || !actionMenuButton || !feedbackButton || !loadingSpinner || !chat) { console.error("sendMessage dependencies missing"); alert("메시지 전송에 필요한 요소가 없습니다."); return; }
-    let message = messageText.trim();
-    if (!message) { userInput.value = ''; autoResizeTextarea.call(userInput); return; }
-    console.log("Input message:", message);
-
+    let message = messageText.trim(); if (!message) { userInput.value = ''; autoResizeTextarea.call(userInput); return; } console.log("Input message:", message);
     const imageUrlPattern = /^(https|http):\/\/[^\s"]+\.(gif|jpe?g|png|webp|bmp)(\?.*)?$/i;
-    // 이미지 처리 (축약 해제)
     if (imageUrlPattern.test(message)) {
-        console.log("Image URL detected, sending as image message.");
-        const imageMessageEntry = { role: "user", messageData: { type: 'image', url: message } };
-        conversationHistory.push(imageMessageEntry);
-        appendMessage("user", imageMessageEntry.messageData, conversationHistory.length - 1);
-        saveConversationHistory();
-        userInput.value = ''; autoResizeTextarea.call(userInput);
-        // chat.scrollTop = chat.scrollHeight; // appendMessage 내부에서 처리
-        return;
+        console.log("Image URL detected, sending as image message."); const imageMessageEntry = { role: "user", messageData: { type: 'image', url: message } }; conversationHistory.push(imageMessageEntry); appendMessage("user", imageMessageEntry.messageData, conversationHistory.length - 1); saveConversationHistory(); userInput.value = ''; autoResizeTextarea.call(userInput); return;
     }
-
     console.log("Treating message as text.");
     try {
         let feedbackToSend = currentFeedback; if (currentFeedback) { handleFeedbackSelection(null); }
-        const userMessageEntry = { role: "user", messageData: { type: 'text', text: message } }; conversationHistory.push(userMessageEntry); appendMessage("user", userMessageEntry.messageData, conversationHistory.length - 1); saveConversationHistory();
-        userInput.value = ''; autoResizeTextarea.call(userInput);
+        const userMessageEntry = { role: "user", messageData: { type: 'text', text: message } }; conversationHistory.push(userMessageEntry); appendMessage("user", userMessageEntry.messageData, conversationHistory.length - 1); saveConversationHistory(); userInput.value = ''; autoResizeTextarea.call(userInput);
         sendButton.disabled = true; userInput.disabled = true; actionMenuButton.disabled = true; feedbackButton.disabled = true; loadingSpinner.style.display = 'block';
-
         let contentsForApi;
-        try {
-            const textOnlyHistory = conversationHistory.filter(entry => entry.messageData?.type === 'text');
-            contentsForApi = [ { role: "user", parts: [{ text: SYSTEM_PROMPT }] }, ...textOnlyHistory.map(entry => ({ role: entry.role === 'model' ? 'model' : 'user', parts: [{ text: entry.messageData.text }] })) ];
-            if (feedbackToSend) { console.log(`Sending with feedback: ${feedbackToSend}`); contentsForApi.push({ role: "user", parts: [{ text: `(피드백: ${feedbackToSend})` }] }); }
-        } catch (e) { console.error("Error preparing API contents:", e); throw new Error("API 요청 데이터 준비 중 오류 발생"); }
-
-        console.log("Sending API request...");
-        let botReplyText = '';
-
-        try {
-            const res = await fetch(`/api/chat`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ contents: contentsForApi }) });
-            console.log("API response status:", res.status);
-            if (!res.ok) { const errorBody = await res.text(); console.error(`API Error (${res.status}): ${errorBody}`); botReplyText = `(오류 ${res.status}: 응답을 받을 수 없습니다.)`; }
-            else { const data = await res.json(); botReplyText = data?.candidates?.[0]?.content?.parts?.[0]?.text || "(빈 응답)"; console.log("API Response:", botReplyText); }
-        } catch (fetchError) { console.error("Fetch Error sending message:", fetchError); botReplyText = "(통신 오류 발생)"; }
-
+        try { const textOnlyHistory = conversationHistory.filter(entry => entry.messageData?.type === 'text'); contentsForApi = [ { role: "user", parts: [{ text: SYSTEM_PROMPT }] }, ...textOnlyHistory.map(entry => ({ role: entry.role === 'model' ? 'model' : 'user', parts: [{ text: entry.messageData.text }] })) ]; if (feedbackToSend) { console.log(`Sending with feedback: ${feedbackToSend}`); contentsForApi.push({ role: "user", parts: [{ text: `(피드백: ${feedbackToSend})` }] }); } } catch (e) { console.error("Error preparing API contents:", e); throw new Error("API 요청 데이터 준비 중 오류 발생"); }
+        console.log("Sending API request..."); let botReplyText = '';
+        try { const res = await fetch(`/api/chat`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ contents: contentsForApi }) }); console.log("API response status:", res.status); if (!res.ok) { const errorBody = await res.text(); console.error(`API Error (${res.status}): ${errorBody}`); botReplyText = `(오류 ${res.status}: 응답을 받을 수 없습니다.)`; } else { const data = await res.json(); botReplyText = data?.candidates?.[0]?.content?.parts?.[0]?.text || "(빈 응답)"; console.log("API Response:", botReplyText); } } catch (fetchError) { console.error("Fetch Error sending message:", fetchError); botReplyText = "(통신 오류 발생)"; }
         const botMessageEntry = { role: "model", messageData: { type: 'text', text: botReplyText } }; conversationHistory.push(botMessageEntry); appendMessage("bot", botMessageEntry.messageData, conversationHistory.length - 1); saveConversationHistory();
     } catch (error) { console.error("Error in sendMessage process:", error); appendMessage("bot", { type: 'text', text: `(메시지 처리 중 오류 발생: ${error.message})` }); }
-    finally {
-        console.log("Finishing message send.");
-        if(sendButton) sendButton.disabled = false; if(userInput) userInput.disabled = false; if(actionMenuButton) actionMenuButton.disabled = false; if(feedbackButton) feedbackButton.disabled = false; if(loadingSpinner) loadingSpinner.style.display = 'none';
-        if(userInput) userInput.focus();
-    }
+    finally { console.log("Finishing message send."); if(sendButton) sendButton.disabled = false; if(userInput) userInput.disabled = false; if(actionMenuButton) actionMenuButton.disabled = false; if(feedbackButton) feedbackButton.disabled = false; if(loadingSpinner) loadingSpinner.style.display = 'none'; if(userInput) userInput.focus(); }
 }
 
-// '상황' 요청 함수 (API 호출 복원)
+// '상황' 요청 함수 (API 호출 복원됨)
 async function sendSituationRequest(type) {
     console.log(`sendSituationRequest called with type: ${type}`);
     if (!sendButton || !userInput || !actionMenuButton || !loadingSpinner || !botNameInputModal || !chat) { console.error("sendSituationRequest dependencies missing"); alert("상황 요청 기능을 실행하는 데 필요한 요소가 없습니다."); return; }
     sendButton.disabled = true; userInput.disabled = true; actionMenuButton.disabled = true; loadingSpinner.style.display = 'block'; if(feedbackButton) feedbackButton.disabled = true;
     closeActionMenu();
-
     try {
         let situationPromptText = ''; const botName = botNameInputModal.value || "캐릭터";
-        // 상황별 프롬프트 (축약 해제)
         switch(type) {
              case '랜덤': situationPromptText = `\nYou are writing a first-person narrative as the character ${botName}.\nThe current situation needs a fresh development or a change of pace.\nIntroduce a new element, interaction, or internal thought that moves the story forward in an interesting, but not necessarily drastic, way.\nMaintain the established tone and character consistency. Focus on subtle shifts and sensory details. Avoid repetition.\nOutput should feel like a natural continuation of the story.\n`; break;
              case '전환': situationPromptText = `\nYou are writing a first-person narrative as the character ${botName}.\nCraft a fresh, emotionally engaging situation that sparks curiosity or connection between the characters — something surprising, light-hearted, or meaningful, based on the unique traits of this character and their world.\nThe event should not be overly dramatic or intense, but should still shift the emotional dynamic in a natural and immersive way.\nAvoid adult or mature content. Do not copy specific examples or past scenes — create a new moment inspired by the tone of gentle tension, humor, or affection.\nThe characters may be human, non-human, or from entirely fantastical settings — ensure the situation makes sense within their universe.\nLet the story unfold with subtle emotional shifts and interaction that feels alive, reactive, and immersive.\n`; break;
@@ -421,165 +348,85 @@ async function sendSituationRequest(type) {
          }
         const textOnlyHistory = conversationHistory.filter(entry => entry.messageData?.type === 'text');
         const contentsForApi = [ { role: "user", parts: [{ text: SYSTEM_PROMPT }] }, ...textOnlyHistory.map(entry => ({ role: entry.role === 'model' ? 'model' : 'user', parts: [{ text: entry.messageData.text }] })), { role: "user", parts: [{ text: situationPromptText }] } ];
-        console.log(`Sending situation request ('${type}') to API...`);
-        let botReplyText = '';
-
-        try {
-            const res = await fetch(`/api/chat`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ contents: contentsForApi }) });
-            console.log("Situation API response status:", res.status);
-            if (!res.ok) { const errorBody = await res.text(); console.error(`Situation API Error (${res.status}): ${errorBody}`); botReplyText = `(상황 요청 실패: 서버 오류 ${res.status})`; }
-            else { const data = await res.json(); botReplyText = data?.candidates?.[0]?.content?.parts?.[0]?.text || "(빈 응답)"; console.log("Situation Response:", botReplyText); }
-        } catch (fetchError) { console.error("Fetch Error sending situation request:", fetchError); botReplyText = "(상황 요청 통신 오류 발생)"; }
-
+        console.log(`Sending situation request ('${type}') to API...`); let botReplyText = '';
+        try { const res = await fetch(`/api/chat`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ contents: contentsForApi }) }); console.log("Situation API response status:", res.status); if (!res.ok) { const errorBody = await res.text(); console.error(`Situation API Error (${res.status}): ${errorBody}`); botReplyText = `(상황 요청 실패: 서버 오류 ${res.status})`; } else { const data = await res.json(); botReplyText = data?.candidates?.[0]?.content?.parts?.[0]?.text || "(빈 응답)"; console.log("Situation Response:", botReplyText); } } catch (fetchError) { console.error("Fetch Error sending situation request:", fetchError); botReplyText = "(상황 요청 통신 오류 발생)"; }
         const botMessageEntry = { role: "model", messageData: { type: 'text', text: botReplyText } }; conversationHistory.push(botMessageEntry); appendMessage("bot", botMessageEntry.messageData, conversationHistory.length - 1); saveConversationHistory();
     } catch (error) { console.error("Error in sendSituationRequest process:", error); appendMessage("bot", { type: 'text', text: `(상황 요청 처리 중 오류 발생: ${error.message})` }); }
-    finally {
-        console.log("Finishing situation request.");
-        if(sendButton) sendButton.disabled = false; if(userInput) userInput.disabled = false; if(actionMenuButton) actionMenuButton.disabled = false; if(loadingSpinner) loadingSpinner.style.display = 'none'; if(feedbackButton) feedbackButton.disabled = false;
-        if(userInput) userInput.focus();
-    }
+    finally { console.log("Finishing situation request."); if(sendButton) sendButton.disabled = false; if(userInput) userInput.disabled = false; if(actionMenuButton) actionMenuButton.disabled = false; if(loadingSpinner) loadingSpinner.style.display = 'none'; if(feedbackButton) feedbackButton.disabled = false; if(userInput) userInput.focus(); }
 }
 
-// 이미지 URL 미리보기 업데이트 (축약 해제)
+// 이미지 URL 미리보기 업데이트
 function updateImagePreview(imageUrl, imgElement) {
-    const previewArea = imgElement?.closest('.image-preview-area');
-    if (!imgElement || !previewArea) {
-         console.warn("Cannot update image preview: imgElement or previewArea not found.");
-         return;
-    }
-    if (imageUrl && imageUrl.startsWith('http')) {
-        imgElement.src = imageUrl;
-        imgElement.style.display = 'block'; // 이미지 표시
-        previewArea.classList.add('has-image'); // 이미지 있음 클래스 추가 (CSS에서 Placeholder 숨기기용)
-        imgElement.onerror = function() { // 로드 실패 시 처리
-             console.warn(`Failed to load preview image: ${imageUrl}`);
-             this.onerror = null; // 반복 방지
-             imgElement.style.display = 'none'; // 실패 시 이미지 숨김
-             previewArea.classList.remove('has-image'); // 이미지 없음 클래스 제거
-             imgElement.src = ''; // src 제거
-        };
-    } else {
-        imgElement.src = ''; // 유효하지 않거나 빈 URL이면 src 제거
-        imgElement.style.display = 'none'; // 이미지 숨김
-        previewArea.classList.remove('has-image'); // 이미지 없음 클래스 제거
-    }
+    const previewArea = imgElement?.closest('.image-preview-area'); if (!imgElement || !previewArea) { console.warn("Cannot update image preview: imgElement or previewArea not found."); return; }
+    if (imageUrl && imageUrl.startsWith('http')) { imgElement.src = imageUrl; imgElement.style.display = 'block'; previewArea.classList.add('has-image'); imgElement.onerror = function() { console.warn(`Failed to load preview image: ${imageUrl}`); this.onerror = null; imgElement.style.display = 'none'; previewArea.classList.remove('has-image'); imgElement.src = ''; }; }
+    else { imgElement.src = ''; imgElement.style.display = 'none'; previewArea.classList.remove('has-image'); }
 }
 
-// 슬롯 버튼 스타일 업데이트 (축약 해제)
+// 슬롯 버튼 스타일 업데이트
 function updateSlotButtonStyles() {
-    try {
-        const slotButtons = document.querySelectorAll('.slot-button');
-        if (!slotButtons || slotButtons.length === 0) return;
-
-        slotButtons.forEach(button => {
-            button.classList.toggle('active', parseInt(button.textContent) === currentSlot);
-        });
-    } catch (e) { console.error("Error updating slot button styles:", e); }
+    try { const slotButtons = document.querySelectorAll('.slot-button'); if (!slotButtons || slotButtons.length === 0) return; slotButtons.forEach(button => { button.classList.toggle('active', parseInt(button.textContent) === currentSlot); }); }
+    catch (e) { console.error("Error updating slot button styles:", e); }
 }
 
-// --- 랜덤 생성 함수 ---
-// 랜덤 데이터 (축약 해제)
-const randomData = {
-    botNames: ["이안", "카일", "시우", "노아", "리암", "에단", "유진", "강혁", "지후", "세현"],
-    userNames: ["하루", "제이", "엘리", "루나", "아리아", "민준", "서연", "다온", "하윤", "이서"],
-    genders: ["남성", "여성"],
-    appearances: [
-        "날카로운 검은 눈매와 밤하늘 같은 흑발. 다부진 체격.",
-        "부드러운 갈색 눈동자와 햇살 같은 금발. 호리호리한 몸매.",
-        "신비로운 회색 눈과 달빛 같은 은발. 차분하고 지적인 분위기.",
-        "장난기 가득한 녹색 눈과 붉은 머리카락. 활동적인 인상.",
-        "깊고 푸른 눈과 어두운 갈색 머리. 과묵하고 비밀스러운 느낌.",
-        "짙은 눈썹 아래 서늘한 눈빛, 깔끔하게 넘긴 흑갈색 머리. 모델 같은 비율.",
-        "순해 보이는 처진 눈매와 부드러운 인상, 다크 블론드 헤어.",
-        "날카롭지만 매력적인 삼백안, 은은한 회색빛이 도는 머리칼. 어딘가 위태로운 분위기."
-    ],
-    personas: [
-        "겉으로는 차갑고 무심해 보이지만, 사실 속정이 깊고 헌신적이다. 자신의 감정을 잘 드러내지 않지만, 결정적인 순간에는 상대를 지키기 위해 무엇이든 한다.",
-        "다정하고 사교적이며, 누구에게나 친절하다. 긍정적인 에너지를 가지고 있지만, 때로는 중요한 문제 앞에서 우유부단한 모습을 보이기도 한다.",
-        "지적이고 분석적이며, 감정보다는 논리를 중요시한다. 상황을 객관적으로 파악하려 노력하며, 감정 표현에 서툴다.",
-        "자유분방하고 예측 불가능하며, 틀에 얽매이는 것을 싫어한다. 장난기가 많고 충동적이지만, 의외로 순수한 면모를 가지고 있다.",
-        "과묵하고 신중하며, 좀처럼 자신의 속내를 드러내지 않는다. 책임감이 강하고 맡은 일은 끝까지 해내지만, 타인과 거리를 두려는 경향이 있다.",
-        "능글맞고 여유로운 태도를 보이지만, 예리한 통찰력으로 상대의 속마음을 꿰뚫어 본다. 집착과 소유욕이 강하다.",
-        "상냥하고 배려심 깊지만, 때로는 단호하게 자신의 의견을 관철시킨다. 부드러운 카리스마를 지녔다.",
-        "까칠하고 반항적인 태도 뒤에 외로움을 숨기고 있다. 먼저 다가와 주는 사람에게 약한 모습을 보인다."
-    ],
-    userGuidelines: [
-        "호기심 많고 적극적으로 다가간다. 상대방의 반응을 살피며 관계를 진전시키려 노력한다.",
-        "수줍음이 많지만, 진심이 느껴지면 마음을 연다. 상대방의 다정한 면모에 끌린다.",
-        "이성적이고 침착하게 상황을 판단하려 하지만, 예상치 못한 상대의 행동에 흔들린다.",
-        "솔직하고 직설적이며, 자신의 감정을 숨기지 않는다. 상대방의 진심을 중요하게 생각한다.",
-        "경계심이 많고 쉽게 마음을 열지 않지만, 한번 믿음을 주면 깊은 관계를 원한다.",
-        "자존심이 강하고 쉽게 굽히지 않지만, 좋아하는 상대에게는 헌신적이다.",
-        "밝고 긍정적이며, 어려운 상황에서도 유머를 잃지 않는다. 상대방에게 활력을 준다.",
-        "상처받는 것을 두려워하지만, 진정한 사랑을 갈망한다. 상대방의 진심을 시험하려 한다."
-    ]
-};
-// 랜덤 캐릭터 생성 (축약 해제)
-function generateRandomCharacter() {
-    console.log("🎲 Generating Random Character...");
-    if (!botNameInputModal || !botGenderInputModal || !botAgeInputModal || !botAppearanceInputModal || !botPersonaInputModal) { console.error("Character input elements missing."); return; }
+// --- 랜덤 생성 함수 (API 호출 방식으로 수정됨) ---
+/**
+ * API를 호출하여 랜덤 캐릭터(공) 정보를 생성하고 모달 필드를 업데이트합니다.
+ */
+async function generateRandomCharacter() {
+    console.log("🎲 Requesting Random Character from API...");
+    if (!generateRandomCharacterButton || !botNameInputModal || !botGenderInputModal || !botAgeInputModal || !botAppearanceInputModal || !botPersonaInputModal) { console.error("Required elements for generating character are missing."); alert("캐릭터 생성에 필요한 요소를 찾을 수 없습니다."); return; }
+    generateRandomCharacterButton.disabled = true; generateRandomCharacterButton.textContent = "⏳";
     try {
-        botNameInputModal.value = getRandomElement(randomData.botNames);
-        botGenderInputModal.value = getRandomElement(randomData.genders);
-        botAgeInputModal.value = getRandomInt(23, 38).toString();
-        botAppearanceInputModal.value = getRandomElement(randomData.appearances);
-        botPersonaInputModal.value = getRandomElement(randomData.personas);
-        updateSystemPrompt();
-        console.log("Character generated:", botNameInputModal.value);
-    } catch (e) { console.error("Error generating random character:", e); }
+        const prompt = `매력적인 공(攻) 타입 캐릭터의 이름, 성별(남성/여성 중 하나), 나이(25세~38세 사이의 숫자), 상세한 외형 묘사(최소 30자 이상), 그리고 성격 및 행동 가이드라인(최소 50자 이상)을 랜덤으로 생성해줘. 반드시 다음 JSON 형식으로만 응답해야 해:\n\n{\n  "name": "생성된 이름",\n  "gender": "생성된 성별",\n  "age": "생성된 나이(숫자만)",\n  "appearance": "생성된 외형 묘사",\n  "persona": "생성된 성격/가이드라인 묘사"\n}`;
+        const contentsForApi = [{ role: "user", parts: [{ text: prompt }] }];
+        const res = await fetch(`/api/chat`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ contents: contentsForApi }) });
+        console.log("Random Character API response status:", res.status);
+        if (!res.ok) { const errorBody = await res.text(); console.error(`Random Character API Error (${res.status}): ${errorBody}`); throw new Error(`서버 오류 (${res.status})`); }
+        const data = await res.json(); const jsonString = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (!jsonString) { console.error("Empty or invalid response text from API:", data); throw new Error("API로부터 유효한 응답을 받지 못했습니다."); }
+        console.log("Raw API response for character:", jsonString);
+        try { const jsonMatch = jsonString.match(/{[\s\S]*}/); if (!jsonMatch) { throw new Error("응답에서 유효한 JSON 형식을 찾을 수 없습니다."); } const validJsonString = jsonMatch[0]; const charInfo = JSON.parse(validJsonString);
+            botNameInputModal.value = charInfo.name || ''; botGenderInputModal.value = charInfo.gender || ''; botAgeInputModal.value = charInfo.age || ''; botAppearanceInputModal.value = charInfo.appearance || ''; botPersonaInputModal.value = charInfo.persona || '';
+            updateSystemPrompt(); alert("랜덤 캐릭터 정보가 생성되었습니다!");
+        } catch (parseError) { console.error("Failed to parse API response JSON:", parseError, "\nRaw response:", jsonString); alert(`캐릭터 정보 생성 응답을 처리하는 중 오류가 발생했습니다.\nAPI 응답:\n${jsonString}`); }
+    } catch (error) { console.error("Error generating random character:", error); alert(`랜덤 캐릭터 생성 중 오류 발생: ${error.message}`); }
+    finally { generateRandomCharacterButton.disabled = false; generateRandomCharacterButton.textContent = "🎲"; }
 }
-// 랜덤 사용자 생성 (축약 해제)
-function generateRandomUser() {
-    console.log("🎲 Generating Random User...");
-    if (!userNameInputModal || !userGenderInputModal || !userAgeInputModal || !userAppearanceInputModal || !userGuidelinesInputModal) { console.error("User input elements missing."); return; }
+/**
+ * API를 호출하여 랜덤 사용자(수) 정보를 생성하고 모달 필드를 업데이트합니다.
+ */
+async function generateRandomUser() {
+    console.log("🎲 Requesting Random User from API...");
+    if (!generateRandomUserButton || !userNameInputModal || !userGenderInputModal || !userAgeInputModal || !userAppearanceInputModal || !userGuidelinesInputModal) { console.error("Required elements for generating user are missing."); alert("사용자 생성에 필요한 요소를 찾을 수 없습니다."); return; }
+    generateRandomUserButton.disabled = true; generateRandomUserButton.textContent = "⏳";
     try {
-        userNameInputModal.value = getRandomElement(randomData.userNames);
-        userGenderInputModal.value = getRandomElement(randomData.genders);
-        userAgeInputModal.value = getRandomInt(20, 35).toString();
-        userAppearanceInputModal.value = getRandomElement(randomData.appearances);
-        userGuidelinesInputModal.value = getRandomElement(randomData.userGuidelines);
-        updateSystemPrompt();
-        console.log("User generated:", userNameInputModal.value);
-    } catch (e) { console.error("Error generating random user:", e); }
+        const prompt = `매력적인 수(受) 타입 캐릭터의 이름, 성별(남성/여성 중 하나), 나이(20세~35세 사이의 숫자), 상세한 외형 묘사(최소 30자 이상), 그리고 사용자 가이드라인(최소 50자 이상, 캐릭터의 성격이 아닌 사용자의 플레이 스타일 가이드)을 랜덤으로 생성해줘. 반드시 다음 JSON 형식으로만 응답해야 해:\n\n{\n  "name\": "생성된 이름",\n  "gender\": "생성된 성별",\n  "age\": "생성된 나이(숫자만)",\n  "appearance\": "생성된 외형 묘사",\n  "guidelines\": "생성된 사용자 가이드라인"\n}`;
+        const contentsForApi = [{ role: "user", parts: [{ text: prompt }] }];
+        const res = await fetch(`/api/chat`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ contents: contentsForApi }) });
+        console.log("Random User API response status:", res.status);
+        if (!res.ok) { const errorBody = await res.text(); console.error(`Random User API Error (${res.status}): ${errorBody}`); throw new Error(`서버 오류 (${res.status})`); }
+        const data = await res.json(); const jsonString = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (!jsonString) { console.error("Empty or invalid response text from API:", data); throw new Error("API로부터 유효한 응답을 받지 못했습니다."); }
+        console.log("Raw API response for user:", jsonString);
+        try { const jsonMatch = jsonString.match(/{[\s\S]*}/); if (!jsonMatch) { throw new Error("응답에서 유효한 JSON 형식을 찾을 수 없습니다."); } const validJsonString = jsonMatch[0]; const userInfo = JSON.parse(validJsonString);
+            userNameInputModal.value = userInfo.name || ''; userGenderInputModal.value = userInfo.gender || ''; userAgeInputModal.value = userInfo.age || ''; userAppearanceInputModal.value = userInfo.appearance || ''; userGuidelinesInputModal.value = userInfo.guidelines || '';
+            updateSystemPrompt(); alert("랜덤 사용자 정보가 생성되었습니다!");
+        } catch (parseError) { console.error("Failed to parse API response JSON:", parseError, "\nRaw response:", jsonString); alert(`사용자 정보 생성 응답을 처리하는 중 오류가 발생했습니다.\nAPI 응답:\n${jsonString}`); }
+    } catch (error) { console.error("Error generating random user:", error); alert(`랜덤 사용자 생성 중 오류 발생: ${error.message}`); }
+    finally { generateRandomUserButton.disabled = false; generateRandomUserButton.textContent = "🎲"; }
 }
 
-// 이미지 미리보기 클릭 시 URL 입력 (축약 해제)
+// 이미지 미리보기 클릭 시 URL 입력
 function promptForImageUrl(targetPreviewElement, isBot) {
-    const currentUrl = targetPreviewElement.src && targetPreviewElement.src.startsWith('http') ? targetPreviewElement.src : '';
-    const newUrl = prompt(isBot ? "캐릭터 이미지 URL을 입력하세요:" : "사용자 이미지 URL을 입력하세요:", currentUrl);
-
-    if (newUrl !== null) {
-        if (newUrl === "") {
-             updateImagePreview('', targetPreviewElement);
-             if (isBot) botProfileImgUrl = ''; else userProfileImgUrl = '';
-        } else if (/^(https?:\/\/).*\.(jpe?g|png|gif|webp|bmp)(\?.*)?$/i.test(newUrl)) {
-            updateImagePreview(newUrl, targetPreviewElement);
-            if (isBot) botProfileImgUrl = newUrl; else userProfileImgUrl = newUrl;
-        } else {
-            alert("유효한 이미지 URL 형식이 아닙니다. (http(s)://로 시작하고 이미지 확장자로 끝나야 합니다)");
-        }
-    }
+    const currentUrl = targetPreviewElement.src && targetPreviewElement.src.startsWith('http') ? targetPreviewElement.src : ''; const newUrl = prompt(isBot ? "캐릭터 이미지 URL을 입력하세요:" : "사용자 이미지 URL을 입력하세요:", currentUrl);
+    if (newUrl !== null) { if (newUrl === "") { updateImagePreview('', targetPreviewElement); if (isBot) botProfileImgUrl = ''; else userProfileImgUrl = ''; } else if (/^(https?:\/\/).*\.(jpe?g|png|gif|webp|bmp)(\?.*)?$/i.test(newUrl)) { updateImagePreview(newUrl, targetPreviewElement); if (isBot) botProfileImgUrl = newUrl; else userProfileImgUrl = newUrl; } else { alert("유효한 이미지 URL 형식이 아닙니다. (http(s)://로 시작하고 이미지 확장자로 끝나야 합니다)"); } }
 }
 
-// 채팅 이미지 삽입 함수 (URL 입력 방식) (축약 해제)
+// 채팅 이미지 삽입 함수 (URL 입력 방식)
 function sendImageChatMessage() {
-    closeActionMenu();
-    const imageUrl = prompt("채팅에 삽입할 이미지 URL을 입력하세요:");
-    if (imageUrl && /^(https?:\/\/).*\.(jpe?g|png|gif|webp|bmp)(\?.*)?$/i.test(imageUrl)) {
-         if (userInput) {
-             userInput.value = imageUrl;
-             sendMessage(imageUrl);
-         } else {
-             console.warn("userInput element not found, appending image directly.");
-             const imageMessageEntry = { role: "user", messageData: { type: 'image', url: imageUrl } };
-             conversationHistory.push(imageMessageEntry);
-             appendMessage("user", imageMessageEntry.messageData, conversationHistory.length - 1);
-             saveConversationHistory();
-             if(chat) chat.scrollTop = chat.scrollHeight;
-         }
-    } else if (imageUrl !== null) {
-        alert("유효한 이미지 URL 형식이 아닙니다.");
-    }
+    closeActionMenu(); const imageUrl = prompt("채팅에 삽입할 이미지 URL을 입력하세요:");
+    if (imageUrl && /^(https?:\/\/).*\.(jpe?g|png|gif|webp|bmp)(\?.*)?$/i.test(imageUrl)) { if (userInput) { userInput.value = imageUrl; sendMessage(imageUrl); } else { console.warn("userInput element not found, appending image directly."); const imageMessageEntry = { role: "user", messageData: { type: 'image', url: imageUrl } }; conversationHistory.push(imageMessageEntry); appendMessage("user", imageMessageEntry.messageData, conversationHistory.length - 1); saveConversationHistory(); if(chat) chat.scrollTop = chat.scrollHeight; } }
+    else if (imageUrl !== null) { alert("유효한 이미지 URL 형식이 아닙니다."); }
 }
 
 // 피드백 선택 처리
@@ -588,42 +435,19 @@ function handleFeedbackSelection(feedbackType) {
     if (!feedbackOptionsContainer) return;
     feedbackOptionsContainer.querySelectorAll('.feedback-option').forEach(btn => { btn.classList.remove('active'); });
     if (feedbackType) { const selectedButton = feedbackOptionsContainer.querySelector(`.feedback-option[data-feedback="${feedbackType}"]`); if (selectedButton) { selectedButton.classList.add('active'); } currentFeedback = feedbackType; }
-    else { currentFeedback = null; closeFeedbackOptions(); }
+    else { currentFeedback = null; closeFeedbackOptions(); } // 해제 시 옵션창 닫기
     console.log("Current feedback set to:", currentFeedback);
 }
 
 // --- 대화 기록 관리 ---
-// 대화 기록 저장 (축약 해제)
 function saveConversationHistory() {
-    try {
-        if (conversationHistory && conversationHistory.length > 0) {
-            localStorage.setItem(`conversation_slot_${currentSlot}`, JSON.stringify(conversationHistory));
-        } else {
-            localStorage.removeItem(`conversation_slot_${currentSlot}`);
-        }
-    } catch (e) { console.error("Error saving conversation history:", e); }
+    try { if (conversationHistory && conversationHistory.length > 0) { localStorage.setItem(`conversation_slot_${currentSlot}`, JSON.stringify(conversationHistory)); } else { localStorage.removeItem(`conversation_slot_${currentSlot}`); } } catch (e) { console.error("Error saving conversation history:", e); }
 }
-// 대화 기록 로드 (축약 해제)
 function loadConversationHistory() {
-    try {
-        const savedHistory = localStorage.getItem(`conversation_slot_${currentSlot}`);
-        conversationHistory = [];
-        if (savedHistory) { try { const parsed = JSON.parse(savedHistory); if (Array.isArray(parsed)) { conversationHistory = parsed; } else { localStorage.removeItem(`conversation_slot_${currentSlot}`); } } catch (e) { console.error("Error parsing conversation history:", e); localStorage.removeItem(`conversation_slot_${currentSlot}`); } }
-        console.log(`Conversation loaded for slot ${currentSlot}. Length: ${conversationHistory.length}`);
-        if (chat) {
-            chat.innerHTML = '';
-            conversationHistory.forEach((entry, index) => { if (!(entry.role === 'user' && entry.messageData?.text === SYSTEM_PROMPT)) { appendMessage(entry.role === 'model' ? 'bot' : 'user', entry.messageData, index); } });
-            setTimeout(() => { chat.scrollTop = chat.scrollHeight; }, 0);
-        } else { console.error("Cannot load conversation to screen: chat element not found."); }
-    } catch (e) { console.error("Error loading conversation history:", e); conversationHistory = []; }
+    try { const savedHistory = localStorage.getItem(`conversation_slot_${currentSlot}`); conversationHistory = []; if (savedHistory) { try { const parsed = JSON.parse(savedHistory); if (Array.isArray(parsed)) { conversationHistory = parsed; } else { localStorage.removeItem(`conversation_slot_${currentSlot}`); } } catch (e) { console.error("Error parsing conversation history:", e); localStorage.removeItem(`conversation_slot_${currentSlot}`); } } console.log(`Conversation loaded for slot ${currentSlot}. Length: ${conversationHistory.length}`); if (chat) { chat.innerHTML = ''; conversationHistory.forEach((entry, index) => { if (!(entry.role === 'user' && entry.messageData?.text === SYSTEM_PROMPT)) { appendMessage(entry.role === 'model' ? 'bot' : 'user', entry.messageData, index); } }); setTimeout(() => { chat.scrollTop = chat.scrollHeight; }, 0); } else { console.error("Cannot load conversation to screen: chat element not found."); } } catch (e) { console.error("Error loading conversation history:", e); conversationHistory = []; }
 }
-// 대화 기록 리셋 (축약 해제)
 function resetConversation() {
-    if (confirm(`슬롯 ${currentSlot}의 대화 기록을 모두 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.`)) {
-        console.log(`Resetting conversation for slot ${currentSlot}`);
-        conversationHistory = []; saveConversationHistory(); loadConversationHistory(); appendInitialNotice();
-        alert(`슬롯 ${currentSlot}의 대화 기록이 초기화되었습니다.`);
-    }
+    if (confirm(`슬롯 ${currentSlot}의 대화 기록을 모두 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.`)) { console.log(`Resetting conversation for slot ${currentSlot}`); conversationHistory = []; saveConversationHistory(); loadConversationHistory(); appendInitialNotice(); alert(`슬롯 ${currentSlot}의 대화 기록이 초기화되었습니다.`); }
 }
 
 // --- 메뉴/모달 관리 함수 ---
@@ -657,9 +481,11 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log("DOMContentLoaded event fired.");
     try {
         console.log("Assigning DOM elements...");
+        // --- 요소 할당 ---
         chat = getElement('chat'); userInput = getElement('userInput'); sendButton = getElement('sendButton'); loadingSpinner = getElement('loadingSpinner'); actionMenuButton = getElement('actionMenuButton'); actionMenu = getElement('actionMenu'); menuOverlay = getElement('menuOverlay'); sidebarToggle = getElement('sidebarToggle'); settingsModalOverlay = getElement('settingsModalOverlay'); settingsModal = getElement('settingsModal'); closeModalButton = getElement('closeModalButton'); saveSettingsButtonModal = getElement('saveSettingsButtonModal'); feedbackButton = getElement('feedbackButton'); feedbackOptionsContainer = getElement('feedbackOptionsContainer'); botNameInputModal = getElement('botNameInputModal'); botAgeInputModal = getElement('botAgeInputModal'); botGenderInputModal = getElement('botGenderInputModal'); botAppearanceInputModal = getElement('botAppearanceInputModal'); botPersonaInputModal = getElement('botPersonaInputModal'); botImagePreview = getElement('botImagePreview'); userNameInputModal = getElement('userNameInputModal'); userAgeInputModal = getElement('userAgeInputModal'); userGenderInputModal = getElement('userGenderInputModal'); userAppearanceInputModal = getElement('userAppearanceInputModal'); userGuidelinesInputModal = getElement('userGuidelinesInputModal'); userImagePreview = getElement('userImagePreview'); generateRandomCharacterButton = getElement('generateRandomCharacter', false); generateRandomUserButton = getElement('generateRandomUser', false); menuImageButton = getElement('menuImageButton', false); menuSituationButton = getElement('menuSituationButton', false); menuExportTxtButton = getElement('menuExportTxtButton', false); menuSummarizeButton = getElement('menuSummarizeButton', false); situationOptions = getElement('situationOptions', false); imageOverlay = getElement('imageOverlay', false); overlayImage = getElement('overlayImage', false);
         console.log("Essential DOM elements assigned. Attaching event listeners...");
 
+        // --- 이벤트 리스너 연결 ---
         if (sendButton) sendButton.addEventListener("click", () => { if(userInput) sendMessage(userInput.value); });
         if (userInput) userInput.addEventListener("keydown", function(event) { if (event.key === "Enter" && !event.shiftKey && !event.isComposing) { event.preventDefault(); sendMessage(userInput.value); } });
         if (userInput) userInput.addEventListener('input', autoResizeTextarea);
@@ -670,13 +496,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (situationOptions) { situationOptions.querySelectorAll(".option").forEach(option => { option.addEventListener("click", (event) => { event.stopPropagation(); const type = option.textContent.trim(); if (type) { sendSituationRequest(type); } closeActionMenu(); }); }); }
         if (menuExportTxtButton) menuExportTxtButton.addEventListener("click", exportConversationAsTxt);
         if (menuSummarizeButton) menuSummarizeButton.addEventListener("click", summarizeConversation);
-        if (sidebarToggle) sidebarToggle.addEventListener("click", openSettingsModal);
+        if (sidebarToggle) { sidebarToggle.addEventListener("click", (event) => { console.log("Sidebar toggle clicked!"); event.stopPropagation(); openSettingsModal(); }); } else { console.error("sidebarToggle button not found!"); }
         if (closeModalButton) closeModalButton.addEventListener("click", closeSettingsModal);
         if (settingsModalOverlay) settingsModalOverlay.addEventListener("click", function(event) { if (event.target === settingsModalOverlay) { closeSettingsModal(); } });
         if (saveSettingsButtonModal) saveSettingsButtonModal.addEventListener("click", () => saveSettings(currentSlot));
         document.querySelectorAll('.slot-button').forEach(button => { button.addEventListener('click', function() { const slotNum = parseInt(this.textContent); if (!isNaN(slotNum) && slotNum !== currentSlot) { currentSlot = slotNum; console.log(`Switched to slot ${currentSlot}`); loadSettings(currentSlot); loadConversationHistory(); appendInitialNotice(); } }); });
-        if (generateRandomCharacterButton) generateRandomCharacterButton.addEventListener('click', generateRandomCharacter);
-        if (generateRandomUserButton) generateRandomUserButton.addEventListener('click', generateRandomUser);
+        if (generateRandomCharacterButton) generateRandomCharacterButton.addEventListener('click', generateRandomCharacter); // API 호출 함수 연결
+        if (generateRandomUserButton) generateRandomUserButton.addEventListener('click', generateRandomUser);       // API 호출 함수 연결
         if (botImagePreview) botImagePreview.closest('.image-preview-area')?.addEventListener('click', () => promptForImageUrl(botImagePreview, true));
         if (userImagePreview) userImagePreview.closest('.image-preview-area')?.addEventListener('click', () => promptForImageUrl(userImagePreview, false));
         if (feedbackButton) feedbackButton.addEventListener("click", toggleFeedbackOptions);
