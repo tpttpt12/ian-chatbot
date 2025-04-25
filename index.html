@@ -86,28 +86,32 @@
                                      <img id="botImagePreview" src="" alt="캐릭터 이미지 미리보기">
                                 </div>
                             </div>
-                            <div class="info-item full-width">
-                                <label for="botNameInputModal">Name:</label>
-                                <input type="text" id="botNameInputModal">
 
-                                <div class="half-width-row">
-                                     <div class="half-width-item">
-                                        <label for="botGenderInputModal">Gender:</label>
-                                        <input type="text" id="botGenderInputModal"> </div>
-                                     <div class="half-width-item">
-                                        <label for="botAgeInputModal">Age:</label>
-                                        <input type="text" id="botAgeInputModal">
-                                     </div>
-                                </div>
+			<div class="info-item full-width" style="font-size: 0.85rem;">
+			  <label for="botNameInputModal">Name:</label>
+			  <div style="display: flex; align-items: center; gap: 0.5rem;">
+			    <input type="text" id="botNameInputModal" style="font-size: 0.9rem; padding: 0.4rem;">
+				    <button id="generateRandomCharacter" title="랜덤 캐릭터 생성" style="font-size: 1rem;">🎲</button>
+				  </div>
 
-                                <label for="botAppearanceInputModal">Appearance:</label>
-                                <textarea id="botAppearanceInputModal"></textarea>
-                            </div>
-                        </div>
-                        <label for="botPersonaInputModal">Guidelines:</label>
-                        <textarea id="botPersonaInputModal"></textarea>
-                    </div>
+  <div class="half-width-row">
+    <div class="half-width-item">
+      <label for="botGenderInputModal">Gender:</label>
+      <input type="text" id="botGenderInputModal" style="font-size: 0.85rem; padding: 0.4rem;"> 
+    </div>
+    <div class="half-width-item">
+      <label for="botAgeInputModal">Age:</label>
+      <input type="text" id="botAgeInputModal" style="font-size: 0.85rem; padding: 0.4rem;">
+    </div>
+  </div>
 
+  <label for="botAppearanceInputModal">Appearance:</label>
+  <textarea id="botAppearanceInputModal" style="font-size: 0.85rem; padding: 0.4rem;"></textarea>
+</div>
+<div class="info-item full-width" style="font-size: 0.85rem;">
+  <label for="botPersonaInputModal">Guidelines:</label>
+  <textarea id="botPersonaInputModal" style="font-size: 0.85rem; padding: 0.4rem;"></textarea>
+</div>
                     <div class="user-info-section">
                          <h3>User</h3>
                          <div class="info-grid">
