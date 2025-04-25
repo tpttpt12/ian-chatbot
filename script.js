@@ -671,6 +671,20 @@ async function sendImageMessage() {
     menuOverlay.style.display = 'none';
 }
 
+document.addEventListener('DOMContentLoaded', () => {
+  const previewClickable = document.getElementById('botImagePreviewClickable');
+  const botPreviewImg = document.getElementById('botImagePreview');
+
+  if (previewClickable && botPreviewImg) {
+    previewClickable.addEventListener('click', () => {
+      const url = prompt('이미지 주소(URL)를 입력하세요:');
+      if (url && url.trim() !== '') {
+        botPreviewImg.src = url.trim();
+        localStorage.setItem('botImageUrl', url.trim());
+      }
+    });
+  }
+});
 
 // ★★★ 수정된 '상황' 요청 함수 ★★★
 // '+' 버튼 메뉴의 상황 버튼 (아코디언 내부 옵션) 클릭 시 호출되는 함수
