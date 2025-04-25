@@ -55,7 +55,7 @@ module.exports = async (req, res) => {
             // 중요: 여기에서 프론트엔드로부터 받은 모델 이름(requestedModelName)이
             // 실제로 사용 가능한 모델 이름 목록에 있는지 검증하는 로직을 추가하는 것이 좋습니다.
             // 예를 들어, ["gemini-pro", "gemini-1.5-flash", "gemini-2.5-pro-exp-03-25"] 등
-            const validModels = ["gemini-pro", "gemini-1.5-flash", "gemini-2.5-pro-exp-03-25"]; // <-- 사용 가능한 모델 목록 정의
+            const validModels = ["gemini-2.0-flash"]; // <-- 사용 가능한 모델 목록 정의
             if (validModels.includes(requestedModelName)) {
                  modelToUse = requestedModelName; // 유효하면 해당 모델 사용
             } else {
