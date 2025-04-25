@@ -160,7 +160,6 @@ function loadSettings(slotNumber) {
     userAppearanceInputModal.value = settings.userAppearance;
     userGuidelinesInputModal.value = settings.userGuidelines;
 
-    // ✅ 이미지 태그에 직접 적용
     if (settings.botImageUrl && botImagePreview) {
       botImagePreview.src = settings.botImageUrl;
     }
@@ -168,11 +167,10 @@ function loadSettings(slotNumber) {
       userImagePreview.src = settings.userImageUrl;
     }
 
-    // ✅ 프로필 이미지 URL 저장
-    userProfileImgUrl = settings.userImageUrl || "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU";
     botProfileImgUrl = settings.botImageUrl || "https://via.placeholder.com/35/3a4a3a/ffffff?text=BOT";
+    userProfileImgUrl = settings.userImageUrl || "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU";
+
   } else {
-    // ⚠ 저장된 설정 없을 때
     alert(`설정 슬롯 ${slotNumber}에 저장된 설정이 없습니다. 기본값이 표시됩니다.`);
 
     botNameInputModal.value = botNameInputModal.defaultValue;
@@ -187,7 +185,6 @@ function loadSettings(slotNumber) {
     userAppearanceInputModal.value = userAppearanceInputModal.defaultValue;
     userGuidelinesInputModal.value = userGuidelinesInputModal.defaultValue;
 
-    // ❌ input에서 value 못 읽으니까 직접 기본 이미지로 설정
     if (botImagePreview) {
       botImagePreview.src = "https://via.placeholder.com/160x220/3a4a4a/ffffff?text=BOT";
     }
@@ -195,12 +192,10 @@ function loadSettings(slotNumber) {
       userImagePreview.src = "https://via.placeholder.com/160x220/4a3a7a/ffffff?text=YOU";
     }
 
-    // 기본 이미지도 프로필에 반영
-    userProfileImgUrl = "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU";
     botProfileImgUrl = "https://via.placeholder.com/35/3a4a3a/ffffff?text=BOT";
+    userProfileImgUrl = "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU";
   }
 }
-
     // 로드 후 SYSTEM_PROMPT 업데이트
     updateSystemPrompt();
     // 로드 후 기존 메시지의 프로필 이미지 업데이트 (필요하다면)
