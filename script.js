@@ -560,6 +560,33 @@ function promptForImageUrl(targetPreviewElement, isBot) {
     } catch (e) { console.error("Error in promptForImageUrl:", e); alert("URL 입력 중 오류 발생"); }
 }
 
+// *** 채팅 이미지 삽입 함수 (신규 또는 복구) ***
+function sendImageChatMessage() {
+    console.log("sendImageChatMessage called"); // 작동 확인용 로그
+    try {
+        const imageUrl = prompt("채팅에 삽입할 이미지의 웹 주소(URL)를 입력하세요:");
+        if (imageUrl !== null) { // 취소 누르지 않았을 경우
+            const trimmedUrl = imageUrl.trim();
+            const imageUrlPattern = /\.(gif|jpe?g|png|webp|bmp)(\?.*)?$/i; // 쿼리 스트링 고려
+
+            // URL 유효성 검사 (http로 시작하고 이미지 확장자로 끝나는지)
+            if (trimmedUrl && trimmedUrl.startsWith('http') && imageUrlPattern.test(trimmedUrl)) {
+                // sendMessage 함수를 호출하여 이미지 URL 처리 위임
+                sendMessage(trimmedUrl); // <<< 중요: sendMessage 함수에 URL 전달
+            } else if (trimmedUrl !== '') { // 입력값이 있지만 유효하지 않은 경우
+                alert("유효한 이미지 주소(http... 로 시작하고 .jpg, .png 등으로 끝나는 주소)를 입력해주세요.");
+            }
+        }
+    } catch (e) {
+        console.error("Error in sendImageChatMessage:", e);
+        alert("이미지 URL 입력 중 오류 발생");
+    } finally {
+        // 메뉴 닫기 (선택적)
+        if(actionMenu) actionMenu.classList.remove("visible");
+        if(menuOverlay) menuOverlay.style.display = 'none';
+    }
+}
+
 // 피드백 선택 처리 - 최종 수정
 function handleFeedbackSelection(feedbackType) {
     console.log(`handleFeedbackSelection called with type: ${feedbackType}`);
@@ -662,7 +689,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (userInput) userInput.addEventListener("keydown", function(event) { if (event.key === "Enter" && !event.shiftKey && !event.isComposing) { event.preventDefault(); sendMessage(userInput.value); } });
         if (actionMenuButton) actionMenuButton.addEventListener("click", function(event) { event.stopPropagation(); if(feedbackOptionsContainer) feedbackOptionsContainer.classList.add('hidden'); if(situationOptions) situationOptions.classList.add("hidden"); if(actionMenu) actionMenu.classList.toggle("visible"); if(menuOverlay) menuOverlay.style.display = actionMenu?.classList.contains("visible") ? 'block' : 'none'; });
         if (menuOverlay) menuOverlay.addEventListener("click", function() { if(actionMenu) actionMenu.classList.remove("visible"); if(situationOptions) situationOptions.classList.add("hidden"); if(feedbackOptionsContainer) feedbackOptionsContainer.classList.add('hidden'); menuOverlay.style.display = 'none'; });
-        if (menuImageButton) menuImageButton.addEventListener("click", function() { alert("이미지 추가는 모달의 이미지 영역 클릭으로 변경되었습니다."); if(actionMenu) actionMenu.classList.remove("visible"); if(menuOverlay) menuOverlay.style.display = 'none'; });
+        if (menuImageButton) menuImageButton.addEventListener("click", sendImageChatMessage);
         if (menuSituationButton) menuSituationButton.addEventListener("click", function(event) { event.stopPropagation(); if(feedbackOptionsContainer) feedbackOptionsContainer.classList.add('hidden'); if(situationOptions) situationOptions.classList.toggle("hidden"); });
         if (situationOptions) situationOptions.querySelectorAll(".option").forEach(option => { option.addEventListener("click", (event) => { event.stopPropagation(); const situationType = option.textContent; if (typeof sendSituationRequest === 'function') { sendSituationRequest(situationType); } else { console.error("sendSituationRequest function not defined!"); } if(situationOptions) situationOptions.classList.add("hidden"); if(actionMenu) actionMenu.classList.remove("visible"); if(menuOverlay) menuOverlay.style.display = 'none'; }); });
         if (menuExportTxtButton) menuExportTxtButton.addEventListener("click", exportConversationAsTxt);
