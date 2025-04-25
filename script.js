@@ -672,15 +672,30 @@ async function sendImageMessage() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  const previewClickable = document.getElementById('botImagePreviewClickable');
-  const botPreviewImg = document.getElementById('botImagePreview');
+  // 캐릭터 이미지 클릭 시 URL 입력
+  const botPreviewArea = document.getElementById('botImagePreviewClickable');
+  const botImage = document.getElementById('botImagePreview');
 
-  if (previewClickable && botPreviewImg) {
-    previewClickable.addEventListener('click', () => {
-      const url = prompt('이미지 주소(URL)를 입력하세요:');
+  if (botPreviewArea && botImage) {
+    botPreviewArea.addEventListener('click', () => {
+      const url = prompt('캐릭터 이미지 주소(URL)를 입력하세요:');
       if (url && url.trim() !== '') {
-        botPreviewImg.src = url.trim();
-        localStorage.setItem('botImageUrl', url.trim());
+        botImage.src = url.trim();
+        localStorage.setItem('botImageUrl', url.trim()); // 원하면 저장
+      }
+    });
+  }
+
+  // 사용자 이미지 클릭 시 URL 입력
+  const userPreviewArea = document.getElementById('userImagePreviewClickable');
+  const userImage = document.getElementById('userImagePreview');
+
+  if (userPreviewArea && userImage) {
+    userPreviewArea.addEventListener('click', () => {
+      const url = prompt('사용자 이미지 주소(URL)를 입력하세요:');
+      if (url && url.trim() !== '') {
+        userImage.src = url.trim();
+        localStorage.setItem('userImageUrl', url.trim()); // 원하면 저장
       }
     });
   }
