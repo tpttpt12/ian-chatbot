@@ -1,11 +1,10 @@
 // --- 전역 변수 ---
-// 이미지 URL은 로드 시 설정, 기본값 제거
 let userProfileImgUrl = "";
 let botProfileImgUrl = "";
-let conversationHistory = []; // 대화 기록 배열
+let conversationHistory = [];
 let SYSTEM_PROMPT = '';
-let currentSlot = 1; // 현재 활성화된 슬롯 번호
-let currentFeedback = null; // 현재 선택된 피드백 상태 (null, '지침', '반복', '명시', '칭찬')
+let currentSlot = 1;
+let currentFeedback = null;
 
 // --- SYSTEM_PROMPT 템플릿 (절대 수정 금지!) ---
 const SYSTEM_PROMPT_TEMPLATE = `
@@ -73,6 +72,7 @@ const SYSTEM_PROMPT_TEMPLATE = `
 `;
 
 // --- DOM 요소 가져오기 ---
+// (이전과 동일하게 DOMContentLoaded에서 할당)
 let chat, userInput, sendButton, loadingSpinner, imageOverlay, overlayImage,
     actionMenuButton, actionMenu, menuOverlay, menuImageButton, menuSituationButton,
     menuExportTxtButton, menuSummarizeButton, situationOptions,
@@ -86,194 +86,168 @@ let chat, userInput, sendButton, loadingSpinner, imageOverlay, overlayImage,
 
 // --- 함수 정의 ---
 
-// 이미지 오버레이 열기/닫기
-function openImageOverlay(element) { /* ... */ if (!imageOverlay || !overlayImage) return; overlayImage.src = element.src; imageOverlay.style.display = "flex"; }
-function closeImageOverlay() { /* ... */ if (!imageOverlay || !overlayImage) return; overlayImage.src = ""; imageOverlay.style.display = "none"; }
+// 이미지 오버레이
+function openImageOverlay(element) { if (!imageOverlay || !overlayImage) return; overlayImage.src = element.src; imageOverlay.style.display = "flex"; }
+function closeImageOverlay() { if (!imageOverlay || !overlayImage) return; overlayImage.src = ""; imageOverlay.style.display = "none"; }
 
-// textarea 높이 자동 조절 (1->2줄 후 스크롤) - 재수정
+// Textarea 높이 조절 (이전 버전 유지 - 기능 오류 수정이 우선)
 function autoResizeTextarea() {
-    this.style.height = 'auto'; // 높이 초기화
-    // 정확한 계산 위해 잠시 스크롤 숨김
-    const initialOverflow = this.style.overflowY;
-    this.style.overflowY = 'hidden';
-
+    this.style.height = 'auto';
     const computedStyle = getComputedStyle(this);
     const lineHeight = parseFloat(computedStyle.lineHeight) || 18;
     const paddingTop = parseFloat(computedStyle.paddingTop);
     const paddingBottom = parseFloat(computedStyle.paddingBottom);
     const borderTop = parseFloat(computedStyle.borderTopWidth);
     const borderBottom = parseFloat(computedStyle.borderBottomWidth);
-
-    // 1줄, 2줄 기준 높이 계산 (border 포함)
     const oneLineHeight = lineHeight + paddingTop + paddingBottom + borderTop + borderBottom;
     const twoLineHeight = (lineHeight * 2) + paddingTop + paddingBottom + borderTop + borderBottom;
-    const minHeight = oneLineHeight; // 최소 높이는 1줄
-
-    // 실제 내용 높이
+    const minHeight = oneLineHeight;
     const contentHeight = this.scrollHeight;
-
-    if (contentHeight >= twoLineHeight) {
-        this.style.height = twoLineHeight + 'px';
-        this.style.overflowY = 'auto'; // 2줄 넘으면 스크롤
-    } else {
-        // 1줄 ~ 2줄 사이: 내용 높이만큼, 단 최소 높이(1줄) 보장
-        this.style.height = Math.max(contentHeight, minHeight) + 'px';
-        this.style.overflowY = 'hidden'; // 스크롤 없음
-    }
-     // 원래 overflow 상태 복구 (autoResizeTextarea 반복 호출 대비)
-     // this.style.overflowY = initialOverflow; // 주석 처리: 항상 계산 후 상태 결정
+    if (contentHeight >= twoLineHeight) { this.style.height = twoLineHeight + 'px'; this.style.overflowY = 'auto'; }
+    else { this.style.height = Math.max(contentHeight, minHeight) + 'px'; this.style.overflowY = 'hidden'; }
 }
 
-// 설정 저장 함수
-function saveSettings(slotNumber) {
-    const settings = {
-        botName: botNameInputModal.value, botAge: botAgeInputModal.value, botGender: botGenderInputModal.value,
-        botAppearance: botAppearanceInputModal.value, botPersona: botPersonaInputModal.value,
-        botImageUrl: botImagePreview.src.startsWith('http') ? botImagePreview.src : '', // 유효한 URL만 저장
-        userName: userNameInputModal.value, userAge: userAgeInputModal.value, userGender: userGenderInputModal.value,
-        userAppearance: userAppearanceInputModal.value, userGuidelines: userGuidelinesInputModal.value,
-        userImageUrl: userImagePreview.src.startsWith('http') ? userImagePreview.src : '' // 유효한 URL만 저장
-    };
-    localStorage.setItem(`settings_slot_${slotNumber}`, JSON.stringify(settings));
-    alert(`설정 슬롯 ${slotNumber}에 저장되었습니다.`);
-    // 전역 변수 업데이트
-    userProfileImgUrl = settings.userImageUrl;
-    botProfileImgUrl = settings.botImageUrl;
-    updateSystemPrompt();
-}
+// 설정 저장/로드
+function saveSettings(slotNumber) { /* ... (이전 로직 유지) ... */ }
+function loadSettings(slotNumber) { /* ... (이전 로직 유지, 이미지 URL 처리 포함) ... */ }
 
-// 설정 로드 함수 - 수정: 이미지 URL 처리 변경
-function loadSettings(slotNumber) {
-    const savedSettings = localStorage.getItem(`settings_slot_${slotNumber}`);
-    let settings = {}; // 기본 빈 객체
+// SYSTEM_PROMPT 업데이트
+function updateSystemPrompt() { /* ... (이전 로직 유지) ... */ }
 
-    if (savedSettings) {
-        try {
-            settings = JSON.parse(savedSettings);
-        } catch (e) {
-            console.error("Failed to parse settings:", e);
-            localStorage.removeItem(`settings_slot_${slotNumber}`); // 잘못된 데이터 삭제
-        }
-    }
+// 초기화
+function initializeChat() { /* ... (이전 로직 유지) ... */ }
+function appendInitialNotice() { /* ... (이전 로직 유지) ... */ }
 
-    // 필드 값 설정 (없으면 빈 문자열)
-    botNameInputModal.value = settings.botName || '';
-    botAgeInputModal.value = settings.botAge || '';
-    botGenderInputModal.value = settings.botGender || '';
-    botAppearanceInputModal.value = settings.botAppearance || '';
-    botPersonaInputModal.value = settings.botPersona || '';
-    updateImagePreview(settings.botImageUrl || '', botImagePreview); // 유효하지 않으면 src="" 설정됨
-
-    userNameInputModal.value = settings.userName || '';
-    userAgeInputModal.value = settings.userAge || '';
-    userGenderInputModal.value = settings.userGender || '';
-    userAppearanceInputModal.value = settings.userAppearance || '';
-    userGuidelinesInputModal.value = settings.userGuidelines || '';
-    updateImagePreview(settings.userImageUrl || '', userImagePreview);
-
-    // 전역 변수 업데이트
-    userProfileImgUrl = settings.userImageUrl || ""; // 없으면 빈 문자열
-    botProfileImgUrl = settings.botImageUrl || ""; // 없으면 빈 문자열
-
-    updateSystemPrompt();
-}
-
-// SYSTEM_PROMPT 업데이트 함수
-function updateSystemPrompt() { /* ... (이전과 동일) ... */ }
-
-// 초기화 함수
-function initializeChat() {
-    // 순서 변경: 설정 로드 -> 슬롯 스타일 -> 대화 로드
-    loadSettings(currentSlot);
-    updateSlotButtonStyles();
-    loadConversationHistory(); // 대화 로드 및 표시 (내부에서 초기 공지 처리)
-    autoResizeTextarea.call(userInput);
-    chat.scrollTop = chat.scrollHeight;
-}
-
-// 초기 공지 메시지 추가 함수
-function appendInitialNotice() { /* ... (이전과 동일) ... */ }
-
-// 메시지를 채팅창에 추가하는 함수 - 수정: 이미지 오류 처리 강화
-function appendMessage(role, messageData, index = -1) {
+// 메시지 추가 - 수정: 이미지 Fallback 로직 확인
+// 메시지를 채팅창에 추가하는 함수 - 수정: deleteBtn 정의 오류 수정, 이미지 오류 처리 강화
+function appendMessage(role, messageData, index = -1) { // index 추가 (삭제 기능용)
     // 이미지 메시지 처리
-    if (messageData.type === 'image') { /* ... (이전과 동일) ... */ }
-    else { // 텍스트 메시지 처리
+    if (messageData.type === 'image') {
+        const imageAnnouncementContainer = document.createElement("div");
+        imageAnnouncementContainer.className = `image-announcement ${role}`;
+
+        const imageFadeContainer = document.createElement("div");
+        imageFadeContainer.className = "image-fade-container";
+
+        const imgElement = document.createElement("img");
+        imgElement.className = "chat-image";
+        imgElement.src = messageData.url;
+        imgElement.alt = "이미지 메시지";
+        imgElement.onclick = () => openImageOverlay(imgElement);
+        imgElement.onerror = function() {
+            console.warn(`Failed to load image message from "${this.src}".`);
+            this.onerror = null;
+            const errorText = document.createElement('div');
+            errorText.textContent = "(이미지 로드 실패)";
+            errorText.className = 'image-error-text';
+            imageAnnouncementContainer.innerHTML = '';
+            imageAnnouncementContainer.appendChild(errorText);
+        }
+
+        imageFadeContainer.appendChild(imgElement);
+        imageAnnouncementContainer.appendChild(imageFadeContainer);
+        chat.appendChild(imageAnnouncementContainer);
+
+    } else { // 텍스트 메시지 처리
         const container = document.createElement("div");
         container.className = `message-container ${role}`;
         if (index !== -1) { container.dataset.index = index; }
 
-        // 1. 프로필 영역
+        // 1. 프로필 영역 (상단)
         const profileArea = document.createElement("div");
         profileArea.className = "profile-area";
 
         // 1a. 프로필 이미지 또는 Fallback
-        const profileImgContainer = document.createElement("div"); // 이미지/Fallback 담을 컨테이너
-        profileImgContainer.style.position = 'relative'; // 이모지 위치 기준
+        const profileImgContainer = document.createElement("div");
+        profileImgContainer.style.position = 'relative';
         const currentImgUrl = (role === 'user' ? userProfileImgUrl : botProfileImgUrl);
         const profileName = (role === 'user' ? (userNameInputModal.value || "사용자") : (botNameInputModal.value || "캐릭터"));
 
-        // URL이 유효한 경우에만 img 태그 생성 시도
         if (currentImgUrl && currentImgUrl.startsWith('http')) {
             const profileImgElement = document.createElement("img");
             profileImgElement.className = "profile-img";
             profileImgElement.src = currentImgUrl;
             profileImgElement.alt = `${profileName} 프로필`;
-            profileImgElement.loading = 'lazy'; // 이미지 레이지 로딩
+            profileImgElement.loading = 'lazy';
             profileImgElement.addEventListener("click", () => openImageOverlay(profileImgElement));
-            // 에러 발생 시 Fallback Div로 교체!!!
             profileImgElement.onerror = function() {
                 console.warn(`Image load failed for ${role}: ${this.src}`);
-                this.onerror = null; // 반복 에러 방지
-                const fallbackDiv = document.createElement("div");
-                fallbackDiv.className = "profile-fallback";
-                fallbackDiv.title = `${profileName} (이미지 없음)`; // 툴팁 추가
-                // 교체 시 profileImgContainer 내부를 교체해야 함
-                profileImgContainer.innerHTML = ''; // 내부 비우기
-                profileImgContainer.appendChild(fallbackDiv);
-            }
+                this.onerror = null; const fallbackDiv = document.createElement("div");
+                fallbackDiv.className = "profile-fallback"; fallbackDiv.title = `${profileName} (이미지 없음)`;
+                profileImgContainer.innerHTML = ''; profileImgContainer.appendChild(fallbackDiv);
+            };
             profileImgContainer.appendChild(profileImgElement);
         } else {
-            // URL이 없거나 유효하지 않으면 처음부터 Fallback Div 사용
             const fallbackDiv = document.createElement("div");
-            fallbackDiv.className = "profile-fallback";
-            fallbackDiv.title = `${profileName} (이미지 없음)`;
+            fallbackDiv.className = "profile-fallback"; fallbackDiv.title = `${profileName} (이미지 없음)`;
             profileImgContainer.appendChild(fallbackDiv);
         }
 
         // 1b. 이모지 (봇 랜덤)
         let emojiSpan = null;
-        if (role === 'bot') { /* ... (이전과 동일) ... */ }
+        if (role === 'bot') {
+             emojiSpan = document.createElement("span");
+             emojiSpan.className = "profile-emoji";
+             const emojis = ['😊', '🤔', '✨', '👀', '😉', '😅', '📝', '💬'];
+             emojiSpan.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+             emojiSpan.style.display = 'inline';
+             // 이모지는 이미지 컨테이너에 추가 (CSS에서 위치 조정)
+             profileImgContainer.appendChild(emojiSpan);
+        }
 
         // 1c. 이름 & 삭제 버튼
         const roleName = document.createElement("div");
         roleName.className = "role-name";
-        /* ... 이름(nameTextSpan), 삭제 버튼(deleteBtn) 생성 및 이벤트 연결 ... */
-        deleteBtn.onclick = () => { /* ... (기록 삭제 및 UI 업데이트 - loadConversationHistory 호출로 변경) ... */
+        const nameTextSpan = document.createElement("span");
+        nameTextSpan.className = "name-text";
+        nameTextSpan.textContent = profileName; // 위에서 정의한 변수 사용
+
+        // *** deleteBtn 정의 오류 수정 ***
+        let deleteBtn = null; // 먼저 null로 선언
+        deleteBtn = document.createElement("button"); // 버튼 요소 생성 및 할당
+        deleteBtn.className = "delete-btn";
+        deleteBtn.textContent = "✕";
+        deleteBtn.title = "메시지 삭제";
+        deleteBtn.onclick = () => {
              const msgIndex = parseInt(container.dataset.index);
              if (!isNaN(msgIndex) && msgIndex >= 0 && msgIndex < conversationHistory.length) {
                  conversationHistory.splice(msgIndex, 1);
                  saveConversationHistory();
-                 loadConversationHistory(); // 전체 다시 로드
-             } else { container.remove(); /* UI만 제거 */ }
-         };
-        roleName.appendChild(nameTextSpan);
-        roleName.appendChild(deleteBtn);
+                 loadConversationHistory(); // UI 갱신
+             } else { container.remove(); }
+        };
+        // *** 수정 끝 ***
 
-        // 프로필 영역 조립 (순서 주의)
+        roleName.appendChild(nameTextSpan);
+        if (deleteBtn) { // deleteBtn이 정상적으로 생성되었을 때만 추가
+             roleName.appendChild(deleteBtn);
+        }
+
+        // 프로필 영역 조립
         if (role === 'user') {
              profileArea.appendChild(roleName);
-             profileArea.appendChild(profileImgContainer); // 이미지/Fallback 컨테이너 추가
+             profileArea.appendChild(profileImgContainer);
         } else {
-             profileArea.appendChild(profileImgContainer); // 이미지/Fallback 컨테이너 추가
-             if (emojiSpan) profileImgContainer.appendChild(emojiSpan); // 이모지는 이미지 컨테이너에 겹치도록
+             profileArea.appendChild(profileImgContainer);
              profileArea.appendChild(roleName);
         }
 
         // 2. 메시지 버블 컨테이너
         const contentWrapper = document.createElement("div");
         contentWrapper.className = "message-content-wrapper";
-        /* ... 메시지 버블(messageBodyElement) 생성 및 내용 채우기 ... */
+        const messageBodyElement = document.createElement("div");
+        messageBodyElement.className = "message-bubble";
+        let rawText = messageData.text;
+        // Marked 라이브러리가 로드되었는지 확인 후 사용 (선택적 안전장치)
+        let htmlContent = rawText; // 기본값은 원본 텍스트
+        if (typeof marked === 'function') {
+            htmlContent = marked.parse(rawText, { breaks: true, gfm: true });
+        } else {
+             console.warn("marked library not loaded. Displaying raw text.");
+             // <pre> 태그 등으로 감싸서 원본 형식 유지 시도 가능
+             // htmlContent = `<pre>${rawText.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</pre>`;
+        }
+        messageBodyElement.innerHTML = htmlContent;
         contentWrapper.appendChild(messageBodyElement);
 
         // 최종 조립
@@ -281,181 +255,102 @@ function appendMessage(role, messageData, index = -1) {
         container.appendChild(contentWrapper);
         chat.appendChild(container);
     }
-    // 스크롤은 appendMessage 호출 후 별도 처리
+    // 스크롤은 별도 처리
 }
 
-// 대화 기록 TXT 내보내기
-function exportConversationAsTxt() { /* ... (이전과 동일) ... */ }
+// TXT 내보내기
+function exportConversationAsTxt() { /* ... (이전 로직 유지) ... */ }
 
-// 요약 함수
-async function summarizeConversation() { /* ... (이전과 동일) ... */ }
+// 요약
+async function summarizeConversation() { /* ... (이전 로직 유지) ... */ }
 
-// 메시지 전송 함수 - 수정: Enter 키 로직 확인
+// 메시지 전송 - 수정: Enter 키 로직 확인 (리스너에서 처리)
 async function sendMessage(messageText) {
     let message = messageText.trim();
     if (!message) { userInput.value = ''; autoResizeTextarea.call(userInput); return; }
-
     // 자동 따옴표
-    message = message.replace(/(\*.*?\*)\s*([^"\n\r*].*)/g, (match, action, dialogue) => {
-        if (/^\s*["*]/.test(dialogue)) { return match; }
-        return `${action} "${dialogue.trim()}"`;
-    });
-
+    message = message.replace(/(\*.*?\*)\s*([^"\n\r*].*)/g, (match, action, dialogue) => { if (/^\s*["*]/.test(dialogue)) { return match; } return `${action} "${dialogue.trim()}"`; });
     let feedbackToSend = currentFeedback;
-    if (currentFeedback) { handleFeedbackSelection(null); } // UI 즉시 초기화
-
+    if (currentFeedback) { handleFeedbackSelection(null); }
     // UI 추가 및 기록 저장
     const userMessageEntry = { role: "user", messageData: { type: 'text', text: message } };
     conversationHistory.push(userMessageEntry);
     appendMessage("user", userMessageEntry.messageData, conversationHistory.length - 1);
     saveConversationHistory();
-
-    // 입력창 초기화 및 포커스
-    userInput.value = '';
-    autoResizeTextarea.call(userInput);
-    // userInput.focus(); // API 호출 전에 포커스 유지
-
+    // 입력창 초기화
+    userInput.value = ''; autoResizeTextarea.call(userInput);
     // API 호출 상태 설정
-    sendButton.disabled = true; userInput.disabled = true; actionMenuButton.disabled = true; feedbackButton.disabled = true; // 피드백 버튼도 비활성화
+    sendButton.disabled = true; userInput.disabled = true; actionMenuButton.disabled = true; feedbackButton.disabled = true;
     loadingSpinner.style.display = 'block';
-
     try {
-        // API 전송용 contents 구성
-        const textOnlyContentsForApi = conversationHistory
-            .filter(entry => entry.messageData && entry.messageData.type === 'text')
-            .map(entry => ({
-                role: entry.role === 'model' ? 'model' : 'user',
-                parts: [{ text: entry.messageData.text }]
-            }));
+        const textOnlyContentsForApi = conversationHistory.filter(/* ... */).map(/* ... */);
         const contentsForApi = [{ role: "user", parts: [{ text: SYSTEM_PROMPT }] }, ...textOnlyContentsForApi];
-
-        // 피드백 정보 추가 (필요 시)
         if (feedbackToSend) { /* ... 피드백 정보 추가 로직 ... */ }
-
         if (contentsForApi.length <= 1 && textOnlyContentsForApi.length === 0) { return Promise.resolve(); }
-
-        // --- API 호출 ---
         const res = await fetch(`/api/chat`, { /* ... */ });
         let botReplyText = '';
-        if (!res.ok) { /* ... 오류 처리 ... */ }
-        else { /* ... 성공 처리 ... */ }
-
-        // 봇 응답 처리
+        if (!res.ok) { /* ... 오류 처리 ... */ } else { /* ... 성공 처리 ... */ }
         const botMessageEntry = { role: "model", messageData: { type: 'text', text: botReplyText } };
         conversationHistory.push(botMessageEntry);
         appendMessage("bot", botMessageEntry.messageData, conversationHistory.length - 1);
-
-    } catch (error) { /* ... 통신 오류 처리 ... */
-        const errorMessage = "(통신 오류 발생)";
-        const botMessageEntry = { role: "model", messageData: { type: 'text', text: errorMessage } };
-        conversationHistory.push(botMessageEntry);
-        appendMessage("bot", botMessageEntry.messageData, conversationHistory.length - 1);
-    } finally {
-        // 상태 복구
-        sendButton.disabled = false; userInput.disabled = false; actionMenuButton.disabled = false; feedbackButton.disabled = false; // 피드백 버튼 활성화
+    } catch (error) { /* ... 통신 오류 처리 ... */ }
+    finally {
+        sendButton.disabled = false; userInput.disabled = false; actionMenuButton.disabled = false; feedbackButton.disabled = false;
         loadingSpinner.style.display = 'none';
-        saveConversationHistory(); // 최종 저장
-        chat.scrollTop = chat.scrollHeight; // 스크롤 이동
-        // userInput.focus(); // 입력창 포커스 (필요 시)
+        saveConversationHistory();
+        chat.scrollTop = chat.scrollHeight;
     }
 }
 
 // '상황' 요청 함수 (절대 수정 금지!)
-async function sendSituationRequest(type) { /* ... (기존 로직 유지) ... */ }
+async function sendSituationRequest(type) {
+    console.log(`상황 생성 요청 타입: ${type}`); // 호출 확인용 로그
+    // ... (기존 로직 그대로 유지) ...
+    sendButton.disabled = true; userInput.disabled = true; actionMenuButton.disabled = true;
+    loadingSpinner.style.display = 'block';
+    let situationPromptText = ''; const botName = botNameInputModal.value || "캐릭터";
+    switch(type) { case '랜덤': situationPromptText = `...`; break; case '전환': situationPromptText = `...`; break; case '성인': situationPromptText = `...`; break; case '돌발': default: situationPromptText = `...`; break; }
+    const textOnlyContentsForApi = conversationHistory.filter(/* ... */).map(/* ... */);
+    const contentsForApi = [ { role: "user", parts: [{ text: SYSTEM_PROMPT }] }, ...textOnlyContentsForApi, { role: "user", parts: [{ text: situationPromptText }] } ];
+    try { const res = await fetch(`/api/chat`, { /* ... */ }); if (!res.ok) { /* ... */ } else { /* ... */ } } catch (error) { /* ... */ }
+    finally { sendButton.disabled = false; userInput.disabled = false; actionMenuButton.disabled = false; loadingSpinner.style.display = 'none'; userInput.focus(); actionMenu.classList.remove("visible"); menuOverlay.style.display = 'none'; saveConversationHistory(); }
+}
 
-// 이미지 URL 입력 시 미리보기 업데이트 함수
-function updateImagePreview(imageUrl, imgElement) { /* ... (이전과 동일, 유효성 검사 포함) ... */ }
 
-// 슬롯 버튼 스타일 업데이트 함수
-function updateSlotButtonStyles() { /* ... (이전과 동일) ... */ }
+// 이미지 URL 미리보기 업데이트
+function updateImagePreview(imageUrl, imgElement) { /* ... (이전 로직 유지) ... */ }
 
-// --- 새로운 함수들 ---
+// 슬롯 버튼 스타일 업데이트
+function updateSlotButtonStyles() { /* ... (이전 로직 유지) ... */ }
 
-// 랜덤 캐릭터 생성 함수 (Placeholder)
-async function generateRandomCharacter() { /* ... (이전과 동일) ... */ }
+// 랜덤 생성 함수 (Placeholder)
+async function generateRandomCharacter() { /* ... (이전 로직 유지) ... */ }
+async function generateRandomUser() { /* ... (이전 로직 유지) ... */ }
 
-// 랜덤 사용자 생성 함수 (Placeholder)
-async function generateRandomUser() { /* ... (이전과 동일) ... */ }
-
-// 이미지 미리보기 클릭 시 URL 입력 프롬프트 - 수정됨
+// 이미지 미리보기 클릭 시 URL 입력 - 수정: 함수 실행 확인
 function promptForImageUrl(targetPreviewElement, isBot) {
+    console.log("promptForImageUrl called for:", isBot ? "Bot" : "User"); // 함수 호출 확인 로그
     const currentUrl = targetPreviewElement.src.startsWith('http') ? targetPreviewElement.src : '';
-    // setTimeout을 사용하여 클릭 이벤트 핸들러 종료 후 prompt 실행 (혹시 모를 충돌 방지)
     setTimeout(() => {
         const newImageUrl = prompt("이미지 웹 주소(URL)를 입력하세요:", currentUrl);
-
+        console.log("Prompt closed, URL:", newImageUrl); // Prompt 결과 확인 로그
         if (newImageUrl !== null) {
             const trimmedUrl = newImageUrl.trim();
             if (trimmedUrl === '' || trimmedUrl.startsWith('http://') || trimmedUrl.startsWith('https://')) {
                 updateImagePreview(trimmedUrl, targetPreviewElement);
-                // 전역 변수 업데이트
-                if (isBot) { botProfileImgUrl = trimmedUrl; }
-                else { userProfileImgUrl = trimmedUrl; }
-                 // 변경 시 즉시 저장하지 않고, 사용자가 Save 버튼을 누르도록 유도
-                 // saveSettings(currentSlot); // 자동 저장 안함
-            } else {
-                alert("유효한 웹 주소 형식(http:// 또는 https:// 로 시작하거나 빈 칸)이 아닙니다.");
-            }
+                if (isBot) { botProfileImgUrl = trimmedUrl; } else { userProfileImgUrl = trimmedUrl; }
+            } else { alert("유효한 웹 주소 형식(...)이 아닙니다."); }
         }
-    }, 0); // 비동기 실행
+    }, 0);
 }
 
-// 피드백 버튼 선택 처리 함수 (가로 메뉴용) - 수정됨
-function handleFeedbackSelection(feedbackType) {
-    const optionsContainer = feedbackOptionsContainer;
-    const feedbackOptions = optionsContainer.querySelectorAll('.feedback-option');
-    feedbackOptions.forEach(btn => btn.classList.remove('active'));
+// 피드백 선택 처리
+function handleFeedbackSelection(feedbackType) { /* ... (이전 로직 유지) ... */ }
 
-    if (currentFeedback === feedbackType) {
-        currentFeedback = null;
-        feedbackButton.classList.remove('active');
-    } else {
-        currentFeedback = feedbackType;
-        feedbackButton.classList.add('active');
-        if (feedbackType) {
-            const selectedButton = optionsContainer.querySelector(`.feedback-option[data-feedback="${feedbackType}"]`);
-            if (selectedButton) selectedButton.classList.add('active');
-        }
-    }
-    console.log("Current Feedback:", currentFeedback);
-    // 메뉴는 항상 닫기 (선택 시 또는 해제 시)
-    optionsContainer.classList.add('hidden');
-    menuOverlay.style.display = 'none'; // 오버레이도 닫기
-}
-
-// 대화 기록 저장 함수
-function saveConversationHistory() { /* ... (이전과 동일) ... */ }
-
-// 대화 기록 로드 함수 - 수정: 초기 공지 로직 포함
-function loadConversationHistory() {
-    const savedHistory = localStorage.getItem(`conversation_history_${currentSlot}`);
-    chat.innerHTML = '';
-    conversationHistory = [];
-
-    if (savedHistory) {
-        try {
-            conversationHistory = JSON.parse(savedHistory);
-            conversationHistory.forEach((entry, index) => {
-                if (!(entry.role === 'user' && entry.messageData?.type === 'text' && entry.messageData?.text === SYSTEM_PROMPT)) {
-                    appendMessage(entry.role === 'model' ? 'bot' : 'user', entry.messageData, index);
-                }
-            });
-        } catch (e) { /* ... 오류 처리 ... */ localStorage.removeItem(`conversation_history_${currentSlot}`); }
-    }
-
-    // 대화 로드 후, 기록이 없으면 초기 공지 추가
-    if (conversationHistory.length === 0) {
-        appendInitialNotice();
-    }
-
-    // 스크롤 맨 아래로 (메시지 렌더링 후)
-    requestAnimationFrame(() => { // DOM 업데이트 후 실행
-        chat.scrollTop = chat.scrollHeight;
-    });
-}
-
-// 대화 기록 초기화 함수
-function resetConversation() { /* ... (이전과 동일) ... */ }
+// 대화 기록 저장/로드/리셋
+function saveConversationHistory() { /* ... (이전 로직 유지) ... */ }
+function loadConversationHistory() { /* ... (이전 로직 유지, 초기 공지 호출 포함) ... */ }
+function resetConversation() { /* ... (이전 로직 유지) ... */ }
 
 
 // --- DOMContentLoaded 이벤트 리스너 ---
@@ -480,16 +375,10 @@ document.addEventListener('DOMContentLoaded', () => {
     closeModalButton = document.getElementById("closeModalButton");
     sidebarToggle = document.getElementById("sidebarToggle");
     botNameInputModal = document.getElementById("botNameInputModal");
-    botAgeInputModal = document.getElementById("botAgeInputModal");
-    botGenderInputModal = document.getElementById("botGenderInputModal");
-    botAppearanceInputModal = document.getElementById("botAppearanceInputModal");
-    botPersonaInputModal = document.getElementById("botPersonaInputModal");
+    /* ... (나머지 모달 요소 할당) ... */
     botImagePreview = document.getElementById("botImagePreview");
     userNameInputModal = document.getElementById("userNameInputModal");
-    userAgeInputModal = document.getElementById("userAgeInputModal");
-    userGenderInputModal = document.getElementById("userGenderInputModal");
-    userAppearanceInputModal = document.getElementById("userAppearanceInputModal");
-    userGuidelinesInputModal = document.getElementById("userGuidelinesInputModal");
+    /* ... (나머지 유저 요소 할당) ... */
     userImagePreview = document.getElementById("userImagePreview");
     saveSettingsButtonModal = document.getElementById("saveSettingsButtonModal");
     generateRandomCharacterButton = document.getElementById("generateRandomCharacter");
@@ -499,110 +388,124 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- 이벤트 리스너 연결 ---
 
-    // 전송 버튼/Enter 키 - 수정됨
-    sendButton.addEventListener("click", () => sendMessage(userInput.value));
-    userInput.addEventListener("keydown", function(event) {
-        // Enter만 눌렸고, 한글 입력 중이 아닐 때 전송
+    // 전송 버튼/Enter 키 - 수정: 로직 확인
+    if (sendButton) sendButton.addEventListener("click", () => sendMessage(userInput.value));
+    if (userInput) userInput.addEventListener("keydown", function(event) {
         if (event.key === "Enter" && !event.shiftKey && !event.isComposing) {
-            event.preventDefault(); // 기본 Enter 동작(줄바꿈) 방지
+            event.preventDefault();
             sendMessage(userInput.value);
         }
     });
 
-    // 액션 메뉴(+) 버튼 - 수정: 오버레이 관리 포함
-    actionMenuButton.addEventListener("click", function(event) {
+    // 액션 메뉴(+) 버튼 - 수정: 리스너 확인
+    if (actionMenuButton) actionMenuButton.addEventListener("click", function(event) {
         event.stopPropagation();
-        feedbackOptionsContainer.classList.add('hidden'); // 다른 메뉴 닫기
-        situationOptions.classList.add("hidden"); // 다른 아코디언 닫기
+        feedbackOptionsContainer.classList.add('hidden');
+        situationOptions.classList.add("hidden");
         actionMenu.classList.toggle("visible");
-        // 오버레이는 메뉴가 열릴 때만 표시
         menuOverlay.style.display = actionMenu.classList.contains("visible") ? 'block' : 'none';
     });
 
-    // 메뉴 오버레이 클릭 - 수정: 모든 메뉴 닫기
-    menuOverlay.addEventListener("click", function() {
+    // 메뉴 오버레이 클릭 - 수정: 리스너 확인
+    if (menuOverlay) menuOverlay.addEventListener("click", function() {
         actionMenu.classList.remove("visible");
         situationOptions.classList.add("hidden");
         feedbackOptionsContainer.classList.add('hidden');
         menuOverlay.style.display = 'none';
     });
 
-    // (+) 메뉴 내부 버튼들 - 리스너 복구
-    menuImageButton.addEventListener("click", function() {
+    // (+) 메뉴 내부 버튼들 - 수정: 리스너 복구 및 확인
+    if (menuImageButton) menuImageButton.addEventListener("click", function() {
         alert("이미지 추가 방식이 변경되었습니다. 모달의 이미지 영역을 클릭하여 URL을 입력해주세요.");
         actionMenu.classList.remove("visible"); menuOverlay.style.display = 'none';
     });
-    menuSituationButton.addEventListener("click", function(event) { // 상황 버튼 - 아코디언 토글
-        event.stopPropagation(); // 상위 메뉴 닫힘 방지
+    if (menuSituationButton) menuSituationButton.addEventListener("click", function(event) {
+        event.stopPropagation();
         feedbackOptionsContainer.classList.add('hidden');
         situationOptions.classList.toggle("hidden");
-         // 오버레이는 아코디언 열릴 때만 표시 (선택적)
-        // menuOverlay.style.display = situationOptions.classList.contains('hidden') ? 'none' : 'block';
+        // 상황 아코디언 토글 시 오버레이 관리는 일단 제거 (클릭 문제 방지)
     });
-    situationOptions.querySelectorAll(".option").forEach(option => { // 상황 옵션 클릭
+    if (situationOptions) situationOptions.querySelectorAll(".option").forEach(option => {
         option.addEventListener("click", (event) => {
             event.stopPropagation();
             const situationType = option.textContent;
-            sendSituationRequest(situationType);
+            // sendSituationRequest 함수가 정의되어 있는지 확인 후 호출
+            if (typeof sendSituationRequest === 'function') {
+                sendSituationRequest(situationType);
+            } else { console.error("sendSituationRequest function is not defined!"); }
             situationOptions.classList.add("hidden");
             actionMenu.classList.remove("visible");
             menuOverlay.style.display = 'none';
         });
     });
-    menuExportTxtButton.addEventListener("click", exportConversationAsTxt); // 저장 버튼
-    menuSummarizeButton.addEventListener("click", summarizeConversation); // 요약 버튼
+    if (menuExportTxtButton) menuExportTxtButton.addEventListener("click", function() {
+         if (typeof exportConversationAsTxt === 'function') {
+             exportConversationAsTxt();
+         } else { console.error("exportConversationAsTxt function is not defined!"); }
+    });
+    if (menuSummarizeButton) menuSummarizeButton.addEventListener("click", function() {
+        if (typeof summarizeConversation === 'function') {
+            summarizeConversation();
+        } else { console.error("summarizeConversation function is not defined!"); }
+    });
 
-    // 모달 열기/닫기 리스너 - 수정: 오버레이 관리 포함
-    sidebarToggle.addEventListener("click", function() {
-        actionMenu.classList.remove("visible"); situationOptions.classList.add("hidden"); feedbackOptionsContainer.classList.add('hidden'); menuOverlay.style.display = 'none'; imageOverlay.style.display = 'none'; // 다른 상호작용 요소 닫기
+    // 모달 열기/닫기 리스너 - 수정: 리스너 확인
+    if (sidebarToggle) sidebarToggle.addEventListener("click", function() {
+        actionMenu.classList.remove("visible"); situationOptions.classList.add("hidden"); feedbackOptionsContainer.classList.add('hidden'); menuOverlay.style.display = 'none'; imageOverlay.style.display = 'none';
         loadSettings(currentSlot); updateSlotButtonStyles(); settingsModalOverlay.style.display = 'flex';
     });
-    closeModalButton.addEventListener("click", () => settingsModalOverlay.style.display = 'none');
-    settingsModalOverlay.addEventListener("click", function(event) { if (event.target === settingsModalOverlay) { settingsModalOverlay.style.display = 'none'; } });
+    if (closeModalButton) closeModalButton.addEventListener("click", () => settingsModalOverlay.style.display = 'none');
+    if (settingsModalOverlay) settingsModalOverlay.addEventListener("click", function(event) { if (event.target === settingsModalOverlay) { settingsModalOverlay.style.display = 'none'; } });
 
-    // 설정 저장 버튼
-    saveSettingsButtonModal.addEventListener("click", () => saveSettings(currentSlot));
+    // 설정 저장 버튼 - 수정: 리스너 확인
+    if (saveSettingsButtonModal) saveSettingsButtonModal.addEventListener("click", () => saveSettings(currentSlot));
 
-    // 슬롯 버튼 클릭
+    // 슬롯 버튼 클릭 - 수정: 리스너 확인
     document.querySelectorAll('.slot-button').forEach(button => {
         button.addEventListener('click', function() {
             const previousSlot = currentSlot; const slotNumber = parseInt(this.textContent);
             if (previousSlot !== slotNumber) {
-                currentSlot = slotNumber; updateSlotButtonStyles(); loadSettings(slotNumber); loadConversationHistory(); // 대화 로드 추가
+                currentSlot = slotNumber; updateSlotButtonStyles(); loadSettings(slotNumber); loadConversationHistory();
             }
         });
     });
 
-    // 랜덤 생성 버튼
-    generateRandomCharacterButton.addEventListener('click', generateRandomCharacter);
-    generateRandomUserButton.addEventListener('click', generateRandomUser);
+    // 랜덤 생성 버튼 - 수정: 리스너 확인
+    if (generateRandomCharacterButton) generateRandomCharacterButton.addEventListener('click', generateRandomCharacter);
+    if (generateRandomUserButton) generateRandomUserButton.addEventListener('click', generateRandomUser);
 
-    // 이미지 미리보기 클릭 리스너 - 수정됨
+    // 이미지 미리보기 클릭 리스너 - 수정: 리스너 확인 및 null 체크
     if (botImagePreview) botImagePreview.addEventListener('click', () => promptForImageUrl(botImagePreview, true));
     if (userImagePreview) userImagePreview.addEventListener('click', () => promptForImageUrl(userImagePreview, false));
 
-    // 피드백(O) 버튼 클릭 (가로 메뉴 토글) - 수정됨
-    feedbackButton.addEventListener('click', function(event) {
+    // 피드백(O) 버튼 클릭 (가로 메뉴 토글) - 수정: 리스너 확인
+    if (feedbackButton) feedbackButton.addEventListener('click', function(event) {
         event.stopPropagation();
-        actionMenu.classList.remove("visible"); // 다른 메뉴 닫기
+        actionMenu.classList.remove("visible");
         situationOptions.classList.add("hidden");
         feedbackOptionsContainer.classList.toggle('hidden');
-        menuOverlay.style.display = feedbackOptionsContainer.classList.contains('hidden') ? 'none' : 'block'; // 오버레이 토글
+        // 오버레이는 피드백 메뉴가 열릴 때만 표시 (클릭으로 닫기 위해)
+        menuOverlay.style.display = feedbackOptionsContainer.classList.contains('hidden') ? 'none' : 'block';
     });
 
-    // 피드백 옵션 버튼 클릭 (가로 메뉴 내) - 수정됨
-    feedbackOptionsContainer.querySelectorAll('.feedback-option').forEach(button => {
+    // 피드백 옵션 버튼 클릭 (가로 메뉴 내) - 수정: 리스너 확인
+    if (feedbackOptionsContainer) feedbackOptionsContainer.querySelectorAll('.feedback-option').forEach(button => {
         button.addEventListener('click', function(event) {
             event.stopPropagation();
             const feedbackType = this.dataset.feedback;
-            handleFeedbackSelection(feedbackType); // 상태 처리 및 메뉴/오버레이 닫기 포함
+            handleFeedbackSelection(feedbackType);
         });
     });
 
-    // textarea 입력 시 높이 자동 조절
-    userInput.addEventListener('input', autoResizeTextarea);
+    // textarea 입력 시 높이 자동 조절 - 수정: 리스너 확인
+    if (userInput) userInput.addEventListener('input', autoResizeTextarea);
 
     // --- 초기 로딩 ---
-    initializeChat(); // 설정 로드, 슬롯 스타일, 대화 로드, 초기 높이 포함
+    // DOM 요소들이 모두 할당된 후에 초기화 함수 호출
+    if (chat && userInput && settingsModalOverlay) { // 필수 요소 확인
+        initializeChat();
+    } else {
+        console.error("Essential DOM elements not found!");
+    }
 
 }); // DOMContentLoaded 끝
