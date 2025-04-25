@@ -31,13 +31,12 @@
                 <div class="menu-buttons">
                      <button id="menuImageButton"><i class="fa-solid fa-image"></i>　사진</button>
                      <button id="menuSituationButton"><i class="fa-solid fa-clapperboard"></i>　상황</button>
-			<!-- 🔽 아코디언 옵션 추가 -->
-			<div id="situationOptions" class="accordion hidden">
-			<button class="option">랜덤</button>
-			<button class="option">전환</button>
-			<button class="option">돌발</button>
-			<button class="option">성인</button>
-			</div>
+            <div id="situationOptions" class="accordion hidden">
+            <button class="option">랜덤</button>
+            <button class="option">전환</button>
+            <button class="option">돌발</button>
+            <button class="option">성인</button>
+            </div>
                      <button id="menuSummarizeButton"><i class="fa-solid fa-list-check"></i>　요약</button>
                     <button id="menuExportTxtButton"><i class="fa-solid fa-download"></i>　저장</button>
                 </div>
@@ -49,6 +48,12 @@
 
             <div class="input-buttons-row">
                  <button id="actionMenuButton" title="액션 메뉴 열기">+</button>
+                 <button id="feedbackButton" title="피드백 메뉴 열기">o</button> <div id="feedbackMenu" class="accordion hidden" style="position: absolute; bottom: 50px; left: 60px; /* 스타일은 추후 CSS에서 조정 */">
+                     <button class="feedback-option" data-feedback="지침">지침</button>
+                     <button class="feedback-option" data-feedback="반복">반복</button>
+                     <button class="feedback-option" data-feedback="명시">명시</button>
+                     <button class="feedback-option" data-feedback="칭찬">♡</button>
+                 </div>
                  <button id="sendButton">
                     ▶ </button>
             </div>
@@ -58,13 +63,12 @@
     <div id="settingsModalOverlay" class="modal-overlay">
         <div id="settingsModal" class="modal-content">
             <div class="modal-header">
-                <h2>Character / User Settings</h2>
+                 <h2>Character / User Settings</h2>
                  <button id="closeModalButton" class="close-button">✕</button>
             </div>
 
             <div class="modal-body">
                 <div class="setting-slots-modal">
-                     <h3>Setting Slots</h3>
                      <div class="slot-buttons-container-modal">
                        <button class="slot-button">1</button>
                        <button class="slot-button">2</button>
@@ -75,61 +79,56 @@
                      </div>
                  </div>
 
-                <div class="resume-layout-container">
+                 <div class="resume-layout-container">
                     <div class="character-info-section">
                         <h3>Character</h3>
                         <div class="info-grid">
-<div class="info-item" style="font-size: 0.85rem;">
-  <label>Preview:</label>
-  <div class="image-preview-area" id="botImagePreviewClickable" style="width: 160px; height: 220px; cursor: pointer;">
-    <img id="botImagePreview" src="" alt="캐릭터 이미지 미리보기">
-  </div>
-</div>
+                            <div class="info-item">
+                                <div class="image-preview-area"> <img id="botImagePreview" src="" alt="캐릭터 이미지 미리보기">
+                                </div>
+                            </div>
 
-<div class="info-item full-width" style="font-size: 0.85rem;">
-  <label for="botNameInputModal">Name:</label>
-  <div style="display: flex; align-items: center; gap: 0.5rem;">
-    <input type="text" id="botNameInputModal" style="font-size: 0.9rem; padding: 0.4rem;">
-    <button id="generateRandomCharacter" title="랜덤 캐릭터 생성" style="font-size: 1rem; background: none; border: none; padding: 0; margin: 0; cursor: pointer;">🎲</button>
-  </div>
+                            <div class="info-item full-width"> <label for="botNameInputModal">Name:</label>
+                              <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <input type="text" id="botNameInputModal"> <button id="generateRandomCharacter" title="랜덤 캐릭터" style="font-size: 1rem; background: none; border: none; padding: 0; margin: 0; cursor: pointer;">🎲</button>
+                              </div>
 
-  <div class="half-width-row">
-    <div class="half-width-item">
-      <label for="botGenderInputModal">Gender:</label>
-      <input type="text" id="botGenderInputModal" style="font-size: 0.85rem; padding: 0.4rem;"> 
-    </div>
-    <div class="half-width-item">
-      <label for="botAgeInputModal">Age:</label>
-      <input type="text" id="botAgeInputModal" style="font-size: 0.85rem; padding: 0.4rem;">
-    </div>
-  </div>
+                              <div class="half-width-row">
+                                <div class="half-width-item">
+                                  <label for="botGenderInputModal">Gender:</label>
+                                  <input type="text" id="botGenderInputModal"> </div>
+                                <div class="half-width-item">
+                                  <label for="botAgeInputModal">Age:</label>
+                                  <input type="text" id="botAgeInputModal"> </div>
+                              </div>
 
-  <label for="botAppearanceInputModal">Appearance:</label>
-  <textarea id="botAppearanceInputModal" style="font-size: 0.85rem; padding: 0.4rem;"></textarea>
-</div>
-<div class="info-item full-width" style="font-size: 0.85rem;">
-  <label for="botPersonaInputModal">Guidelines:</label>
-  <textarea id="botPersonaInputModal" style="font-size: 0.85rem; padding: 0.4rem;"></textarea>
-</div>
+                              <label for="botAppearanceInputModal">Appearance:</label>
+                              <textarea id="botAppearanceInputModal"></textarea> </div>
+                            <div class="info-item full-width"> <label for="botPersonaInputModal">Guidelines:</label>
+                              <textarea id="botPersonaInputModal"></textarea> </div>
+                        </div>
+                    </div>
+
                     <div class="user-info-section">
                          <h3>User</h3>
                          <div class="info-grid">
                              <div class="info-item">
-                                 <label for="userImageUrlInputModal">Image URL:</label>
-                                 <input type="text" id="userImageUrlInputModal">
-                                  <div class="image-preview-area">
-                                     <img id="userImagePreview" src="" alt="사용자 이미지 미리보기">
+                                 <div class="image-preview-area"> <img id="userImagePreview" src="" alt="사용자 이미지 미리보기">
                                  </div>
                              </div>
                              <div class="info-item full-width">
                                  <label for="userNameInputModal">Name:</label>
-                                 <input type="text" id="userNameInputModal">
+                                 <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                     <input type="text" id="userNameInputModal">
+                                     <button id="generateRandomUser" title="랜덤 사용자" style="font-size: 1rem; background: none; border: none; padding: 0; margin: 0; cursor: pointer;">🎲</button>
+                                 </div>
 
                                  <div class="half-width-row">
                                      <div class="half-width-item">
                                          <label for="userGenderInputModal">Gender:</label>
-                                         <input type="text" id="userGenderInputModal"> </div>
-                                      <div class="half-width-item">
+                                         <input type="text" id="userGenderInputModal">
+                                     </div>
+                                     <div class="half-width-item">
                                          <label for="userAgeInputModal">Age:</label>
                                          <input type="text" id="userAgeInputModal">
                                       </div>
@@ -142,12 +141,11 @@
                          <label for="userGuidelinesInputModal">Guidelines:</label>
                          <textarea id="userGuidelinesInputModal"></textarea>
                     </div>
-                </div>
+                 </div>
             </div>
 
             <div class="modal-footer">
-                 <button id="saveSettingsButtonModal" class="save-button">Save Settings</button>
-            </div>
+                 <button id="saveSettingsButtonModal" class="save-button">Save Settings</button> </div>
         </div>
     </div>
 
