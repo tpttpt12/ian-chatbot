@@ -174,7 +174,7 @@ function loadSettings(slotNumber) {
     }
 }
 
-    } else {
+     else {
         // 저장된 설정이 없을 경우 기본값 (HTML value 속성)을 사용하고 알림
         alert(`설정 슬롯 ${slotNumber}에 저장된 설정이 없습니다. 기본값이 표시됩니다.`);
         // 기본 이미지 URL 변수 업데이트 (HTML 기본 value에서 가져옴)
