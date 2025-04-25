@@ -1,4 +1,4 @@
-/* style.css 전체 내용 */
+/* style.css 전체 내용 - 피드백 반영 */
 
 body {
     font-family: "Nanum Gothic", sans-serif;
@@ -19,20 +19,20 @@ body {
     flex-direction: column;
     height: 100%;
     width: 95%;
-    max-width: 880px; /* 최대 너비 약간 줄임 (20px) */
+    max-width: 880px; /* 최대 너비 약간 줄임 */
     margin: 0 auto;
     background-color: #1e1e1f;
     box-shadow: none;
     border: none;
     position: relative;
     overflow: hidden;
-    padding-bottom: 15px; /* 하단 간격 약간 줄임 */
+    padding-bottom: 15px;
 }
 
 /* Adjust width for wider screens */
 @media (min-width: 1200px) {
     .app-container {
-        width: 58%; /* 너비 약간 줄임 */
+        width: 58%;
     }
 }
 
@@ -40,9 +40,9 @@ body {
 .chat-header {
     background-color: #1e1e1e;
     color: #ffffff;
-    padding: 0.8rem; /* 패딩 약간 줄임 */
+    padding: 0.8rem;
     text-align: center;
-    font-size: 1.1rem; /* 폰트 크기 약간 줄임 */
+    font-size: 1.1rem;
     font-weight: bold;
     flex-shrink: 0;
     position: relative;
@@ -51,27 +51,26 @@ body {
     align-items: center;
 }
 
-/* Sidebar Toggle Button Style - Now opens the Modal */
+/* Sidebar Toggle Button Style */
 #sidebarToggle {
     position: absolute;
     top: 50%;
     right: 1rem;
     transform: translateY(-50%);
-    width: 30px; /* 크기 약간 줄임 */
-    height: 30px; /* 크기 약간 줄임 */
+    width: 30px;
+    height: 30px;
     background-color: #5a5a5a;
     color: #ffffff;
     border: none;
     border-radius: 50%;
     cursor: pointer;
-    font-size: 1rem; /* 폰트 크기 약간 줄임 */
+    font-size: 1rem;
     display: flex;
     justify-content: center;
     align-items: center;
     transition: background-color 0.2s ease;
     z-index: 10;
 }
-
 #sidebarToggle:hover {
     background-color: #6a6a6a;
 }
@@ -79,89 +78,80 @@ body {
 /* Chat Messages Area Style */
 #chat {
     flex: 1;
-    padding: 0.8rem; /* 패딩 약간 줄임 */
+    padding: 0.8rem;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    gap: 0.4rem; /* 간격 약간 줄임 */
+    gap: 0.4rem;
     background-color: #1e1e1e;
     /* Hide scrollbar */
     scrollbar-width: none; /* Firefox */
     -ms-overflow-style: none; /* IE and Edge */
 }
-
-/* Hide scrollbar for Webkit browsers */
 #chat::-webkit-scrollbar {
     display: none; /* Chrome, Safari, Opera */
 }
 
-/* Message Container Base Style */
+/* Message Container Base Style - Preparing for Layout Change */
 .message-container {
     display: flex;
+    flex-direction: column; /* 기본 레이아웃 변경: 세로 정렬 */
     max-width: 85%;
-    gap: 0.4rem; /* 간격 약간 줄임 */
-    /* Layout changes for Chat UI (2) will be applied here later */
-    /* Example: flex-direction: column; align-items: flex-start/flex-end */
+    gap: 0.2rem; /* 내부 요소 간격 조정 */
 }
-
-/* User Message Container Style (Right Aligned) */
 .message-container.user {
-    justify-content: flex-end;
+    align-items: flex-end; /* 유저 메시지 오른쪽 정렬 */
     margin-left: auto;
-    margin-right: 0;
-    /* align-items: flex-end; */ /* Uncomment if changing to column layout */
 }
-
-/* Bot Message Container Style (Left Aligned) */
 .message-container.bot {
-    justify-content: flex-start;
+    align-items: flex-start; /* 봇 메시지 왼쪽 정렬 */
     margin-right: auto;
-    margin-left: 0;
-    flex-direction: row; /* Default row */
-    /* align-items: flex-start; */ /* Uncomment if changing to column layout */
 }
 
-/* Profile Area Container (for Chat UI 2 layout change) - Placeholder */
+/* Profile Area Container (Top part of message) */
 .profile-area {
     display: flex;
     align-items: center;
-    gap: 0.4rem;
-    /* order: 1; */ /* Example for layout change */
-    /* margin-bottom: 0.2rem; */ /* Example for layout change */
+    gap: 0.5rem; /* 프로필 이미지와 이름 간격 */
+    order: 1; /* 상단 배치 */
+    /* width: 100%; */ /* 너비는 내용에 맞게 */
 }
-
+.message-container.user .profile-area {
+    flex-direction: row-reverse; /* 유저: 이름 오른쪽, 이미지 왼쪽 */
+}
 
 /* Profile Image Style */
 .profile-img {
-    width: 30px; /* 크기 약간 줄임 */
-    height: 30px; /* 크기 약간 줄임 */
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
     object-fit: cover;
     border: 1px solid #5a5a5a;
     flex-shrink: 0;
     cursor: pointer;
-    position: relative; /* For emoji positioning later */
-    /* order: 1; */ /* Example for layout change */
+    position: relative; /* For emoji positioning */
+}
+.message-container.user .profile-img {
+     /* 유저 이미지 스타일 조정 불필요 */
 }
 
-/* Emoji Placeholder Style (Chat UI 1) - Basic structure */
+/* Emoji Placeholder Style */
 .profile-emoji {
     position: absolute;
     bottom: -5px;
     right: -5px;
-    font-size: 0.7rem; /* 이모지 크기 */
-    background-color: rgba(30, 30, 30, 0.7); /* Optional background */
+    font-size: 0.7rem;
+    background-color: rgba(30, 30, 30, 0.7);
     border-radius: 50%;
     padding: 1px;
     line-height: 1;
-    display: none; /* Initially hidden, shown via JS */
+    display: none; /* JS로 제어 */
 }
-
 
 /* Profile Fallback Style */
 .profile-fallback {
-    width: 30px; /* 크기 약간 줄임 */
-    height: 30px; /* 크기 약간 줄임 */
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
     background-color: #5a5a5a;
     border: 1px solid #5a5a5a;
@@ -169,64 +159,40 @@ body {
     cursor: pointer;
 }
 
-/* Message Content Wrapper Style */
+/* Message Content Wrapper (Bottom part of message - contains bubble) */
 .message-content-wrapper {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    min-width: 0;
-    /* order: 2; */ /* Example for layout change */
+    display: flex; /* 내부 버블 정렬 위해 */
+    width: 100%;
+    order: 2; /* 하단 배치 */
 }
-
-
-/* User Message Content Wrapper Style */
 .message-container.user .message-content-wrapper {
-    align-items: flex-end;
+    justify-content: flex-end; /* 유저 버블 오른쪽 */
+    padding-left: 35px; /* 유저 프로필 너비만큼 왼쪽 여백 */
 }
-
-/* Bot Message Content Wrapper Style */
 .message-container.bot .message-content-wrapper {
-    align-items: flex-start;
+    justify-content: flex-start; /* 봇 버블 왼쪽 */
+    padding-right: 35px; /* 봇 프로필 너비만큼 오른쪽 여백 */
 }
 
-/* Role Name Container Style */
+
+/* Role Name Container Style (Inside profile-area) */
 .role-name {
-    font-size: 0.75rem; /* 폰트 크기 약간 줄임 */
+    font-size: 0.75rem;
     color: #b0b0b0;
-    /* margin-bottom: 0.2rem; */ /* Removed for potential column layout */
     display: flex;
     align-items: center;
     flex-shrink: 0;
-    /* order: 2; */ /* Example for layout change */
+    gap: 0.3rem; /* 이름과 삭제 버튼 간격 */
 }
-
-
 /* User Role Name Style */
 .message-container.user .role-name {
-    justify-content: flex-end; /* Keep for row layout */
-}
-
-/* Bot Role Name Style */
-.message-container.bot .role-name {
-    justify-content: flex-start; /* Keep for row layout */
+    /* flex-direction: row-reverse; */ /* 이름이 먼저 나오도록 */
 }
 
 /* Name Text Style */
 .name-text {
-    flex-shrink: 0;
     min-width: 0;
-}
-
-/* User Name Text Style */
-.message-container.user .name-text {
-    text-align: right;
-    order: 0;
-}
-
-/* Bot Name Text Style */
-.message-container.bot .name-text {
-    text-align: left;
-    order: 0;
+    /* order: 1; */ /* If flex-direction reversed */
 }
 
 /* Delete Button Style */
@@ -234,123 +200,51 @@ body {
     background: transparent;
     border: none;
     color: #aaa;
-    font-size: 0.9rem; /* 폰트 크기 약간 줄임 */
+    font-size: 0.9rem;
     cursor: pointer;
-    padding: 0 0.2rem;
+    padding: 0 0.1rem;
     z-index: 1;
     flex-shrink: 0;
-    /* order: 3; */ /* Example for layout change */
+    /* order: 0; */ /* If flex-direction reversed */
+    line-height: 1; /* 줄 높이 영향 최소화 */
 }
 
-/* User Delete Button Style */
-.message-container.user .role-name .delete-btn {
-    margin-left: 5px; /* 간격 조정 */
-    margin-right: 0;
-    order: 1;
-}
-
-/* Bot Delete Button Style */
-.message-container.bot .role-name .delete-btn {
-    margin-left: 5px; /* 간격 조정 */
-    margin-right: 0;
-    order: 1;
-}
-
-/* Text Message Bubble Style */
+/* Text Message Bubble Style (Inside message-content-wrapper) */
 .message-bubble {
-    padding: 0.5rem 0.8rem; /* 패딩 약간 줄임 */
-    border-radius: 0.8rem; /* 반경 약간 줄임 */
-    max-width: 100%;
+    padding: 0.5rem 0.8rem;
+    border-radius: 0.8rem;
+    max-width: fit-content; /* 내용에 맞게 너비 조절 */
     word-break: break-word;
     line-height: 1.4;
     position: relative;
-    font-size: 0.9rem; /* 폰트 크기 약간 줄임 */
-    white-space: pre-wrap; /* 줄바꿈 유지 */
-    margin-bottom: 0;
-    margin-top: 0.2rem; /* Add margin if using column layout */
-    /* order: 3; */ /* Example for layout change */
+    font-size: 0.9rem;
+    white-space: pre-wrap;
 }
-
 /* Bot Bubble Style */
 .message-container.bot .message-bubble {
     background-color: #3a4a4a;
     color: #ffffff;
-    border-radius: 0.8rem 0.8rem 0.8rem 0.3rem; /* 반경 약간 줄임 */
+    border-radius: 0.3rem 0.8rem 0.8rem 0.8rem; /* 왼쪽 위 모서리 평평하게 */
 }
-
 /* User Bubble Style */
 .message-container.user .message-bubble {
     background-color: #4a3a7a;
     color: #ffffff;
-    border-radius: 0.8rem 0.8rem 0.3rem 0.8rem; /* 반경 약간 줄임 */
+    border-radius: 0.8rem 0.3rem 0.8rem 0.8rem; /* 오른쪽 위 모서리 평평하게 */
 }
 
-/* --- 마크다운 형식 스타일 (기존 유지, 폰트 크기는 body 영향 받음) --- */
-strong, b {
-    font-weight: bold;
-    color: #f0f0f0;
-}
-em, i {
-    font-style: italic;
-    color: #a9a9a9 !important;
-}
-blockquote {
-    border-left: 3px solid #5a5a5a; /* 두께 약간 줄임 */
-    padding-left: 0.8rem; /* 패딩 약간 줄임 */
-    margin-left: 0.4rem; /* 마진 약간 줄임 */
-    color: #b0b0b0;
-    font-style: italic;
-}
-code {
-    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
-    background-color: #2d2d2d;
-    color: #e0e0e0;
-    padding: 0.15em 0.3em; /* 패딩 약간 줄임 */
-    border-radius: 3px; /* 반경 약간 줄임 */
-    font-size: 0.85em; /* 폰트 크기 약간 줄임 */
-}
-pre {
-    background-color: #2d2d2d;
-    color: #e0e0e0;
-    padding: 0.8rem; /* 패딩 약간 줄임 */
-    border-radius: 6px; /* 반경 약간 줄임 */
-    overflow-x: auto;
-    margin: 0.4rem 0; /* 마진 약간 줄임 */
-    font-size: 0.85em; /* 폰트 크기 약간 줄임 */
-}
-pre code {
-    background-color: transparent;
-    color: #e0e0e0;
-    padding: 0;
-    border-radius: 0;
-    font-size: inherit;
-}
-table {
-    border-collapse: collapse;
-    margin: 0.8rem 0; /* 마진 약간 줄임 */
-    width: auto;
-    max-width: 100%;
-    overflow: hidden;
-    display: block;
-    word-break: normal;
-}
-th, td {
-    border: 1px solid #3a3a3a;
-    padding: 0.4rem; /* 패딩 약간 줄임 */
-    text-align: left;
-}
-th {
-    background-color: #282828;
-    font-weight: bold;
-    color: #f0f0f0;
-}
-tr:nth-child(even) {
-    background-color: #1f1f1f;
-}
-.action-description { /* 이탤릭 처리 */
-    color: #a9a9a9 !important;
-    font-style: italic !important;
-}
+/* --- 마크다운 형식 스타일 (기존과 거의 동일, 상속된 크기 반영) --- */
+strong, b { font-weight: bold; color: #f0f0f0; }
+em, i { font-style: italic; color: #a9a9a9 !important; }
+blockquote { border-left: 3px solid #5a5a5a; padding-left: 0.8rem; margin-left: 0.4rem; color: #b0b0b0; font-style: italic; }
+code { font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace; background-color: #2d2d2d; color: #e0e0e0; padding: 0.15em 0.3em; border-radius: 3px; font-size: 0.85em; }
+pre { background-color: #2d2d2d; color: #e0e0e0; padding: 0.8rem; border-radius: 6px; overflow-x: auto; margin: 0.4rem 0; font-size: 0.85em; }
+pre code { background-color: transparent; color: #e0e0e0; padding: 0; border-radius: 0; font-size: inherit; }
+table { border-collapse: collapse; margin: 0.8rem 0; width: auto; max-width: 100%; overflow: hidden; display: block; word-break: normal; }
+th, td { border: 1px solid #3a3a3a; padding: 0.4rem; text-align: left; }
+th { background-color: #282828; font-weight: bold; color: #f0f0f0; }
+tr:nth-child(even) { background-color: #1f1f1f; }
+.action-description { color: #a9a9a9 !important; font-style: italic !important; }
 /* --- 마크다운 형식 스타일 끝 --- */
 
 
@@ -359,17 +253,16 @@ tr:nth-child(even) {
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    gap: 0.5rem; /* 간격 약간 줄임 */
-    padding: 0.4rem 0.5rem 0.4rem 0.5rem; /* 패딩 약간 줄임 */
+    gap: 0.5rem;
+    padding: 0.4rem 0.5rem 0.4rem 0.5rem;
     background-color: #1E1E1E;
-    box-shadow: 0 -8px 15px 0px rgba(30, 30, 30 / 77%); /* 그림자 약간 조정 */
+    box-shadow: 0 -8px 15px 0px rgba(30, 30, 30 / 77%);
     z-index: 510;
     border: 1px solid #2F2F2F;
-    border-radius: 12px; /* 반경 약간 줄임 */
+    border-radius: 12px;
     flex-shrink: 0;
     position: relative;
 }
-
 
 /* Container for just the textarea */
 .input-textarea-container {
@@ -380,757 +273,279 @@ tr:nth-child(even) {
 /* Container for the buttons below the textarea */
 .input-buttons-row {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    /* justify-content: space-between; */ /* 수정: 왼쪽 정렬 기반 */
+    align-items: center; /* 세로 중앙 정렬 */
     width: 100%;
-    gap: 0.5rem; /* 버튼 사이 간격 추가 */
+    gap: 0.3rem; /* 버튼 사이 기본 간격 */
 }
-
 
 /* '+' Button Style */
 #actionMenuButton {
-    width: auto;
-    height: auto;
-    border-radius: 0;
-    background-color: transparent;
-    color: #b0b0b0; /* 약간 어둡게 */
-    border: none;
-    font-size: 1.4rem; /* 크기 약간 줄임 */
-    cursor: pointer;
-    flex-shrink: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: color 0.2s ease;
-    padding: 0.2rem 0.4rem; /* 패딩 약간 줄임 */
-    align-self: center;
+    /* 기존 스타일 유지하되, flex order 조정 */
+    order: 1; /* 첫번째 */
+    width: auto; height: auto; border-radius: 0; background-color: transparent;
+    color: #b0b0b0; border: none; font-size: 1.4rem; cursor: pointer;
+    flex-shrink: 0; display: flex; justify-content: center; align-items: center;
+    transition: color 0.2s ease; padding: 0.2rem 0.4rem; align-self: center;
     z-index: 3;
 }
-#actionMenuButton:hover {
-    color: #ffffff;
-    background-color: transparent;
-}
+#actionMenuButton:hover { color: #ffffff; background-color: transparent; }
 
-/* Feedback 'o' Button Style */
+/* Feedback 'O' Button Style - Revised */
 #feedbackButton {
-    width: auto;
-    height: auto;
-    border-radius: 50%; /* 원형 */
-    background-color: transparent;
+    order: 2; /* 두번째 */
+    background: none;
+    border: none;
     color: #b0b0b0;
-    border: 1px solid #444; /* 테두리 추가 */
-    font-size: 0.8rem; /* 폰트 크기 */
+    font-size: 1rem; /* 크기 조정 */
+    font-weight: bold; /* 굵게 */
     cursor: pointer;
+    padding: 0.2rem 0.4rem; /* 패딩 조정 */
+    margin: 0; /* 불필요한 마진 제거 */
+    line-height: 1;
     flex-shrink: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
-    padding: 0.2rem 0.5rem; /* 패딩 조정 */
-    align-self: center;
-    z-index: 3;
-    margin: 0 0.3rem; /* 좌우 마진 */
+    transition: color 0.2s ease;
+    align-self: center; /* 세로 중앙 정렬 */
 }
 #feedbackButton:hover {
     color: #ffffff;
-    border-color: #666;
 }
-#feedbackButton.active { /* 눌렸을 때 (JS에서 클래스 추가) */
-    background-color: #4a4a4a;
-    color: #ffffff;
-    border-color: #888;
+#feedbackButton.active { /* JS로 active 클래스 추가 시 */
+    color: #5080ff; /* 활성 색상 */
 }
 
 
-/* Textarea Style */
-#userInput {
-    width: 100%;
-    flex: 1 1 auto;
-    /* height: auto; */ /* autoResizeTextarea에서 관리 */
-    min-height: 1.4rem; /* 1줄 높이 기준 최소 높이 */
-    padding: 0.4rem 0.8rem; /* 패딩 약간 줄임 */
-    line-height: 1.4;
-    font-size: 0.9rem; /* 폰트 크기 약간 줄임 */
-    border-radius: 1rem; /* 반경 약간 줄임 */
-    border: none;
-    background-color: #2a2a2a; /* 배경색 약간 변경 */
-    color: #e0e0e0;
-    resize: none;
-    overflow-y: hidden; /* autoResizeTextarea에서 관리 */
-    outline: none;
-    box-sizing: border-box;
-    transition: background-color 0.2s;
-}
-
-#userInput:focus {
-    background-color: #3a3a3a; /* 포커스 시 배경색 변경 완화 */
-    box-shadow: none; /* 파란색 테두리 제거 */
-}
-
-/* Send Button Style */
-#sendButton {
-    width: 28px; /* 크기 약간 키움 */
-    height: 28px; /* 크기 약간 키움 */
-    border-radius: 50%;
-    background-color: #5080ff;
-    color: #ffffff;
-    font-size: 0.7rem; /* 아이콘 크기 */
-    flex-shrink: 0;
-    border: none;
-    cursor: pointer;
+/* Horizontal Feedback Options Container - Revised */
+.feedback-options-container {
+    order: 3; /* 세번째 */
     display: flex;
-    justify-content: center;
     align-items: center;
-    transition: background-color 0.2s ease;
-    padding: 0;
-    align-self: center;
-    z-index: 3;
-}
-#sendButton:hover {
-    background-color: #6699ff;
-}
-#sendButton:active {
-    background-color: #3366cc;
-}
-#sendButton:disabled {
-    background-color: #4a4a4a;
-    color: #888; /* 비활성화 시 색상 변경 */
-    cursor: not-allowed;
-}
-
-/* Loading Spinner Style (Position Adjusted near Send Button) */
-#loadingSpinner {
-    border: 3px solid rgba(255, 255, 255, 0.3); /* 두께 약간 줄임 */
-    border-top: 3px solid #fff;
-    border-radius: 50%;
-    width: 16px; /* 크기 약간 줄임 */
-    height: 16px; /* 크기 약간 줄임 */
-    animation: spin 1s linear infinite;
-    display: none;
-    position: absolute;
-    /* Send 버튼 오른쪽 상단 근처로 위치 조정 */
-    bottom: 0.7rem; /* inputArea 하단 패딩 고려 */
-    right: 3.5rem; /* Send 버튼 왼쪽에 위치하도록 조정 */
-    z-index: 4;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-/* Initial Notice Style */
-.initial-notice {
-    text-align: center;
-    margin: 0.1rem auto 0.1rem auto;
-    color: #666; /* 색상 약간 변경 */
-    font-size: 0.85rem; /* 폰트 크기 약간 줄임 */
-    padding: 0.8rem; /* 패딩 약간 줄임 */
-    max-width: 80%;
-    word-break: break-word;
-}
-
-/* Notice Divider Style */
-.notice-divider {
-    width: 90%;
-    height: 1px;
-    background-color: #3a3a3a;
-    margin: 0.4rem auto 1.2rem auto; /* 마진 약간 조정 */
-}
-
-/* Image Overlay Style (for chat images) */
-.overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.85); /* 약간 더 어둡게 */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-    display: none;
-    cursor: pointer;
-}
-.overlay img {
-    max-width: 90%;
-    max-height: 90%;
-    object-fit: contain;
-    border-radius: 6px; /* 반경 약간 줄임 */
-}
-
-/* --- New Modal Styles --- */
-
-/* Modal Overlay Style */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: rgba(0, 0, 0, 0.75); /* 배경 어둡게 조정 */
-    backdrop-filter: blur(3px); /* 블러 약간 줄임 */
-    -webkit-backdrop-filter: blur(3px);
-    display: flex; /* flex 유지, JS에서 none/flex 토글 */
-    justify-content: center;
-    align-items: center;
-    padding: 1.5rem; /* 패딩 약간 줄임 */
+    gap: 0.4rem; /* 옵션 버튼 간격 */
     overflow: hidden;
-    z-index: 950;
-    box-sizing: border-box;
+    transition: width 0.3s ease-out, opacity 0.3s ease-out; /* 스르륵 효과 */
+    width: 0; /* 초기 숨김 */
+    opacity: 0; /* 초기 숨김 */
+    visibility: hidden; /* 초기 숨김 */
+    flex-shrink: 0; /* 너비 변경 시 밀리지 않도록 */
 }
-
-/* Modal Content Style */
-.modal-content {
-    position: relative;
-    background-color: #242424; /* 배경색 약간 변경 */
-    color: #e0e0e0;
-    padding: 1.2rem; /* 패딩 약간 줄임 */
-    border-radius: 10px; /* 반경 약간 줄임 */
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6); /* 그림자 조정 */
-    width: 100%;
-    max-width: 520px; /* 최대 너비 약간 줄임 */
-    max-height: 75vh; /* 최대 높이 약간 늘림 */
-    overflow-y: auto; /* 스크롤 유지 */
-    /* 스크롤바 숨김 */
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-}
-.modal-content::-webkit-scrollbar {
-    display: none;
-}
-
-/* Modal Header Style */
-.modal-header {
-    padding: 0 0 0.8rem 0; /* 하단 패딩만 */
-    background-color: transparent;
-    text-align: center;
-    font-size: 1.1rem; /* 폰트 크기 약간 줄임 */
-    font-weight: bold;
-    color: #ffffff;
-    border-bottom: 1px solid #444; /* 선 색상 변경 */
-    margin-bottom: 1rem; /* 간격 */
-    position: relative; /* For close button */
-}
-.modal-header h2 {
-    margin: 0;
-    font-size: 1.1rem;
-}
-
-/* Close Button Style */
-#closeModalButton {
-    all: unset;
-    position: absolute;
-    top: -0.2rem; /* 위치 조정 */
-    right: 0rem; /* 위치 조정 */
-    cursor: pointer;
-    font-size: 1.4rem; /* 크기 약간 줄임 */
-    color: #aaa;
-    background-color: transparent;
-    transition: color 0.2s;
-    padding: 0.2rem; /* 클릭 영역 확보 */
-    line-height: 1;
-}
-#closeModalButton:hover {
-    color: #ffffff;
-}
-
-/* Modal Body Style */
-.modal-body {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 1.2rem; /* 간격 약간 줄임 */
-}
-
-/* Modal Footer Style */
-.modal-footer {
-    border-top: 1px solid #444; /* 선 색상 변경 */
-    padding-top: 1rem; /* 패딩 */
-    margin-top: 1rem; /* 상단 마진 추가 */
-    display: flex;
-    justify-content: flex-end;
-}
-
-/* Save Button Style (in modal footer) */
-.modal-footer .save-button {
-    padding: 0.5rem 1rem; /* 패딩 줄임 (작게) */
-    border: none;
-    border-radius: 4px;
-    background-color: #5080ff;
-    color: #ffffff;
-    font-size: 0.9rem; /* 폰트 크기 줄임 (작게) */
-    font-weight: normal; /* 볼드 제거 */
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-.modal-footer .save-button:hover {
-    background-color: #6699ff;
-}
-
-/* Setting Slots Container Style (in modal) */
-.setting-slots-modal {
-    padding-bottom: 0.8rem; /* 패딩 */
-    border-bottom: 1px solid #444; /* 선 색상 변경 */
-}
-
-/* Setting Slot Buttons Container Style (in modal) */
-.slot-buttons-container-modal {
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-    justify-content: center; /* 중앙 정렬 */
-}
-
-/* Setting Slot Button Style (in modal) */
-.slot-button {
-    width: 32px; /* 크기 약간 줄임 */
-    height: 32px; /* 크기 약간 줄임 */
-    border-radius: 50%;
-    background-color: #5a5a5a;
-    color: #ffffff;
-    border: none;
-    font-size: 0.9rem; /* 폰트 크기 약간 줄임 */
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: background-color 0.2s ease, transform 0.1s ease;
-    flex-shrink: 0;
-}
-.slot-button:hover {
-    background-color: #6a6a6a;
-}
-.slot-button.active {
-    background-color: #5080ff;
-    transform: scale(1.05); /* 효과 약간 줄임 */
-}
-.slot-button:active {
-    background-color: #3366cc;
-}
-
-
-/* --- Resume Layout Styles --- */
-
-.resume-layout-container {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem; /* 간격 약간 줄임 */
-}
-
-.character-info-section h3,
-.user-info-section h3 {
-    margin-top: 0;
-    margin-bottom: 0.8rem; /* 간격 약간 줄임 */
-    font-size: 1rem; /* 폰트 크기 약간 줄임 */
-    color: #ffffff;
-    border-bottom: 1px dotted #444; /* 선 색상 변경 */
-    padding-bottom: 0.4rem; /* 패딩 약간 줄임 */
-}
-
-.info-grid {
-    display: grid;
-    /* Image Preview 크기(160px) + Gap */
-    grid-template-columns: 160px 1fr; /* 이미지 컬럼 너비 조정 */
-    gap: 1rem 1.2rem; /* 행/열 간격 조정 */
-    margin-bottom: 1rem; /* 간격 약간 줄임 */
-
-    /* Responsive adjustment */
-    @media (max-width: 600px) {
-        grid-template-columns: 1fr; /* Stack columns on smaller screens */
-        gap: 0.8rem; /* 간격 줄임 */
-    }
-}
-
-.info-item {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem; /* 간격 약간 줄임 */
-}
-
-.info-item.full-width {
-    grid-column: span 1;
-    @media (min-width: 601px) {
-        grid-column: span 1;
-    }
-}
-
-.info-grid .info-item:first-child {
-     @media (max-width: 600px) {
-         grid-column: span 1;
-         align-items: center; /* 이미지 가운데 정렬 (모바일 뷰) */
-     }
-}
-
-
-.half-width-row {
-    display: flex;
-    gap: 0.8rem; /* 간격 약간 줄임 */
-}
-
-.half-width-item {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem; /* 간격 약간 줄임 */
-}
-
-
-/* Styles for labels, inputs, and textareas within the modal */
-.modal-body label {
-    display: block;
-    margin-bottom: 0.1rem; /* 간격 약간 줄임 */
-    font-weight: normal; /* 볼드 제거 */
-    color: #b0b0b0;
-    font-size: 0.85rem; /* 폰트 크기 약간 줄임 */
-}
-
-.modal-body input[type="text"],
-.modal-body textarea {
-    width: 100%;
-    padding: 0.5rem; /* 패딩 줄임 */
-    border: none;
-    border-radius: 6px; /* 반경 약간 줄임 */
-    background-color: #3a3a3a;
-    color: #e0e0e0;
-    font-size: 0.9rem; /* 폰트 크기 약간 줄임 */
-    margin-bottom: 0;
-    box-sizing: border-box;
-    resize: vertical;
-    /* 스크롤바 숨김 (추가 확인) */
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* IE and Edge */
-}
-.modal-body input[type="text"]::-webkit-scrollbar,
-.modal-body textarea::-webkit-scrollbar {
-    display: none; /* Chrome, Safari, Opera */
-}
-
-
-.modal-body textarea {
-     min-height: 80px; /* 최소 높이 약간 줄임 */
-     line-height: 1.4;
-}
-
-.modal-body input[type="text"]:focus,
-.modal-body textarea:focus {
-     outline: none;
-     background-color: #4a4a4a; /* 포커스 시 배경색 변경 완화 */
-     box-shadow: none; /* 파란색 테두리 제거 */
-}
-
-/* Image Preview Area */
-.image-preview-area {
-    width: 160px; /* 요청 사이즈 */
-    height: 220px; /* 요청 사이즈 */
-    border: 1px dashed #5a5a5a;
-    border-radius: 8px; /* 반경 약간 줄임 */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #2d2d2d;
-    flex-shrink: 0;
-    overflow: hidden;
-    margin-top: 0.3rem; /* 간격 약간 줄임 */
-    cursor: pointer; /* 클릭 가능 표시 (JS 추가 후) */
-    transition: border-color 0.2s;
-}
-.image-preview-area:hover {
-    border-color: #777; /* 호버 시 테두리 색 변경 (선택적) */
-}
-
-.image-preview-area img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 0;
-    opacity: 0.95; /* 약간 더 선명하게 */
-}
-
-/* Style for empty image preview */
-.image-preview-area img[src=""],
-.image-preview-area img:not([src]) {
-    display: none;
-}
-
-/* Placeholder text for empty image preview */
-.image-preview-area::before {
-    content: "Click to add"; /* 텍스트 변경 */
-    color: #888; /* 색상 변경 */
-    font-size: 0.8rem;
-    text-align: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-}
-/* Show placeholder when needed */
-.image-preview-area:has(img[src=""])::before,
-.image-preview-area:not(:has(img[src]))::before {
-    display: flex;
-}
-/* Hide placeholder when image exists */
-.image-preview-area:has(img[src]:not([src=""]))::before {
-    display: none;
-}
-
-
-/* Action Menu Overlay Style (Transparent) */
-#menuOverlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: transparent;
-    z-index: 490;
-    display: none;
-}
-
-/* Action Menu Container Style */
-#actionMenu {
-    position: absolute;
-    bottom: calc(0.4rem + 30px + 5px); /* inputArea 패딩 + 버튼 높이 추정치 + 갭 */
-    left: 0.5rem; /* inputArea 패딩과 맞춤 */
-    right: auto;
-    transform: none;
-    width: 120px; /* 너비 조정 */
-    max-width: 150px;
-    background-color: #2a2a2a; /* 배경색 변경 */
-    border: 1px solid #444; /* 테두리 변경 */
-    border-radius: 10px; /* 반경 조정 */
-    padding: 0.3rem 0;
-    box-sizing: border-box;
-    z-index: 500;
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.2s ease-out, visibility 0.2s ease-out; /* 전환 속도 약간 빠르게 */
-    box-shadow: 0 4px 10px rgba(0,0,0,0.4); /* 그림자 추가 */
-}
-#actionMenu.visible {
+.feedback-options-container:not(.hidden) {
+    width: auto; /* 내용에 맞게 너비 확장 */
     opacity: 1;
     visibility: visible;
+    /* 필요한 경우 max-width 설정 */
+    max-width: 200px; /* 예시 */
 }
 
-/* Action Menu Tail Style */
-#actionMenu::after { /* Tail */
-    content: "";
-    position: absolute;
-    bottom: -8px; /* 위치 조정 */
-    left: 12px; /* 위치 조정 */
-    width: 0;
-    height: 0;
-    border-top: 8px solid #2a2a2a; /* 색상 변경 */
-    border-left: 8px solid transparent;
-    border-right: 8px solid transparent;
-    z-index: 501;
-}
-#actionMenu::before { /* Tail Border */
-    content: "";
-    position: absolute;
-    bottom: -10px; /* 위치 조정 */
-    left: 10px; /* 위치 조정 */
-    width: 0;
-    height: 0;
-    border-top: 10px solid #444; /* 색상 변경 */
-    border-left: 10px solid transparent;
-    border-right: 10px solid transparent;
-    z-index: 500;
-}
-
-/* Action Menu Internal Button Container Style */
-.menu-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-    width: 100%;
-}
-
-/* Action Menu Internal Button Style */
-#actionMenu button {
-    width: 100%;
-    padding: 0.5rem 0.8rem; /* 패딩 조정 */
-    border: none;
-    border-radius: 0;
-    background-color: transparent;
-    color: #ccc; /* 기본 색상 변경 */
-    font-size: 0.85rem; /* 폰트 크기 조정 */
-    cursor: pointer;
-    transition: background-color 0.2s ease, color 0.2s ease;
-    text-align: left;
-    z-index: 502;
-    display: flex; /* 아이콘 정렬 위해 */
-    align-items: center; /* 아이콘 정렬 위해 */
-    gap: 0.5rem; /* 아이콘과 텍스트 간격 */
-}
-#actionMenu button i { /* FontAwesome 아이콘 스타일 */
-    width: 1em; /* 아이콘 너비 고정 */
-    text-align: center;
-    color: #999; /* 아이콘 색상 */
-}
-#actionMenu button:hover {
+/* Feedback Option Button Style (inside horizontal container) */
+.feedback-options-container .feedback-option {
     background-color: #3a3a3a;
-    color: #ffffff;
-}
-#actionMenu button:hover i {
-    color: #ccc; /* 호버 시 아이콘 색상 */
-}
-
-
-/* Image Announcement Style */
-.image-announcement {
-    display: block;
-    margin: 0.5rem auto;
-    width: 100%;
-    max-width: 70%;
-    text-align: center;
-    border-radius: 6px; /* 반경 약간 줄임 */
-    overflow: hidden;
-    position: relative;
-    flex-shrink: 0;
-}
-/* Image Fade Container Style */
-.image-fade-container {
-    position: relative;
-    display: inline-block;
-    width: 100%;
-    height: auto;
-    overflow: hidden;
-}
-/* Image Fade Effect */
-.image-fade-container::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 2;
-    mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent); /* 범위 조정 */
-    -webkit-mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
-}
-
-/* Chat Image Style */
-.chat-image {
-    display: block;
-    width: 100%;
-    height: auto;
-    object-fit: cover;
-    border-radius: 6px; /* 반경 약간 줄임 */
-    margin: 0;
-    padding: 0;
-    z-index: 1;
-    position: relative;
+    border: none;
+    color: #ccc;
+    font-size: 0.8rem;
     cursor: pointer;
+    border-radius: 15px; /* 둥글게 */
+    padding: 0.3rem 0.7rem; /* 패딩 */
+    white-space: nowrap; /* 줄바꿈 방지 */
+    transition: background-color 0.2s, color 0.2s;
 }
-/* Image Load Error Style */
-.chat-image.error-image { display: none; }
-.image-error-text {
-    text-align: center;
-    color: #999; /* 색상 변경 */
-    font-size: 0.85rem; /* 폰트 크기 조정 */
-    margin: 0.5rem 0;
+.feedback-options-container .feedback-option:hover {
+    background-color: #4a4a4a;
+    color: #fff;
 }
-
-/* --- Modal Animations --- */
-#settingsModalOverlay {
-    display: none; /* 시작 시 숨김 */
-}
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-@keyframes fadeOut {
-    from { opacity: 1; }
-    to { opacity: 0; }
-}
-.modal-fade-in { animation: fadeIn 0.2s ease-out forwards; }
-.modal-fade-out { animation: fadeOut 0.2s ease-in forwards; }
-
-/* --- Accordion Styles (Situation & Feedback) --- */
-.accordion {
-  display: flex;
-  flex-direction: column;
-  gap: 0.1rem; /* 간격 약간 줄임 */
-  margin-left: 0;
-  margin-top: 0.2rem; /* 간격 약간 줄임 */
-  background-color: #2a2a2a; /* 배경색 통일 */
-  border: 1px solid #444; /* 테두리 통일 */
-  border-radius: 8px; /* 반경 조정 */
-  padding: 0.2rem 0; /* 패딩 조정 */
-  box-shadow: 0 2px 5px rgba(0,0,0,0.3); /* 그림자 조정 */
-  transition: opacity 0.2s ease-out, visibility 0.2s ease-out;
-}
-.accordion.hidden {
-  display: none; /* Use display none for complete removal from layout */
-  /* opacity: 0; */
-  /* visibility: hidden; */
-}
-
-/* Accordion Option Button General Style */
-.accordion button.option,
-.accordion button.feedback-option {
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
-  font-size: 0.8rem; /* 폰트 크기 통일 */
-  color: #bbb; /* 색상 통일 */
-  padding: 0.4rem 0.8rem; /* 패딩 통일 */
-  text-align: center; /* 중앙 정렬 */
-  width: 100%;
-  box-sizing: border-box;
-  transition: color 0.2s, background-color 0.2s;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.accordion button.option:hover,
-.accordion button.feedback-option:hover {
-  color: #fff;
-  background-color: #3a3a3a;
-}
-
-/* Specific Accordion Positioning / Styling */
-#situationOptions {
-    /* Inherits general .accordion styles */
-}
-#feedbackMenu {
-    position: absolute; /* Positioning requires JS or more specific parent context */
-    width: 100px; /* 너비 설정 */
-    /* bottom, left values might need adjustment based on final layout */
-    bottom: 40px; /* 예시: 입력 버튼 높이 위 */
-    left: 45px;  /* 예시: 'o' 버튼 오른쪽 */
-    z-index: 500; /* 다른 메뉴들과 비슷하게 */
-}
-#feedbackMenu button.feedback-option {
-    border-radius: 15px; /* 둥근 버튼 */
-    margin: 0.1rem 0.3rem; /* 버튼 간격 및 내부 여백 */
-    padding: 0.3rem 0.6rem; /* 패딩 조정 */
-}
-#feedbackMenu button.feedback-option.active { /* JS로 활성 상태 관리 */
+.feedback-options-container .feedback-option.active {
     background-color: #5080ff;
     color: white;
 }
 
 
+/* Textarea Style */
+#userInput {
+    order: 4; /* 네번째, 버튼들 뒤 */
+    flex-grow: 1; /* 남은 공간 차지 */
+    /* 기존 스타일 유지 */
+    width: 100%; flex: 1 1 auto; min-height: 1.4rem; padding: 0.4rem 0.8rem;
+    line-height: 1.4; font-size: 0.9rem; border-radius: 1rem; border: none;
+    background-color: #2a2a2a; color: #e0e0e0; resize: none;
+    overflow-y: hidden; outline: none; box-sizing: border-box;
+    transition: background-color 0.2s;
+}
+#userInput:focus {
+    background-color: #3a3a3a;
+    box-shadow: none; /* 포커스 테두리 제거 */
+}
+
+/* Send Button Style */
+#sendButton {
+    order: 5; /* 마지막 */
+    /* 기존 스타일 유지 */
+    width: 28px; height: 28px; border-radius: 50%; background-color: #5080ff;
+    color: #ffffff; font-size: 0.7rem; flex-shrink: 0; border: none;
+    cursor: pointer; display: flex; justify-content: center; align-items: center;
+    transition: background-color 0.2s ease; padding: 0; align-self: center;
+    z-index: 3;
+}
+#sendButton:hover { background-color: #6699ff; }
+#sendButton:active { background-color: #3366cc; }
+#sendButton:disabled { background-color: #4a4a4a; color: #888; cursor: not-allowed; }
+
+/* Loading Spinner Style */
+#loadingSpinner {
+    /* 위치 조정 필요 (Send 버튼 위치 변경 고려) */
+    position: absolute;
+    bottom: 0.7rem;
+    right: 1rem; /* Send 버튼 오른쪽 근처로 */
+    /* 나머지 스타일 유지 */
+    border: 3px solid rgba(255, 255, 255, 0.3); border-top: 3px solid #fff;
+    border-radius: 50%; width: 16px; height: 16px;
+    animation: spin 1s linear infinite; display: none; z-index: 4;
+}
+
+/* Initial Notice Style */
+.initial-notice { text-align: center; margin: 0.1rem auto 0.1rem auto; color: #666; font-size: 0.85rem; padding: 0.8rem; max-width: 80%; word-break: break-word; }
+/* Notice Divider Style */
+.notice-divider { width: 90%; height: 1px; background-color: #3a3a3a; margin: 0.4rem auto 1.2rem auto; }
+/* Image Overlay Style */
+.overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.85); display: flex; justify-content: center; align-items: center; z-index: 1000; display: none; cursor: pointer; }
+.overlay img { max-width: 90%; max-height: 90%; object-fit: contain; border-radius: 6px; }
+
+/* --- Modal Styles --- */
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0, 0, 0, 0.75); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); display: none; /* JS로 flex 처리 */ justify-content: center; align-items: center; padding: 1.5rem; overflow: hidden; z-index: 950; box-sizing: border-box; }
+.modal-content { position: relative; background-color: #242424; color: #e0e0e0; padding: 1.2rem; border-radius: 10px; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6); width: 100%; max-width: 520px; max-height: 75vh; overflow-y: auto; -ms-overflow-style: none; scrollbar-width: none; }
+.modal-content::-webkit-scrollbar { display: none; }
+.modal-header { padding: 0 0 0.8rem 0; background-color: transparent; text-align: center; font-size: 1.1rem; font-weight: bold; color: #ffffff; border-bottom: 1px solid #444; margin-bottom: 1rem; position: relative; }
+.modal-header h2 { margin: 0; font-size: 1.1rem; }
+#closeModalButton { all: unset; position: absolute; top: -0.2rem; right: 0rem; cursor: pointer; font-size: 1.4rem; color: #aaa; background-color: transparent; transition: color 0.2s; padding: 0.2rem; line-height: 1; }
+#closeModalButton:hover { color: #ffffff; }
+.modal-body { flex-grow: 1; display: flex; flex-direction: column; gap: 1.2rem; }
+.modal-footer { border-top: 1px solid #444; padding-top: 1rem; margin-top: 1rem; display: flex; justify-content: flex-end; }
+.modal-footer .save-button { padding: 0.5rem 1rem; border: none; border-radius: 4px; background-color: #5080ff; color: #ffffff; font-size: 0.9rem; font-weight: normal; cursor: pointer; transition: background-color 0.2s ease; }
+.modal-footer .save-button:hover { background-color: #6699ff; }
+.setting-slots-modal { padding-bottom: 0.8rem; border-bottom: 1px solid #444; }
+.slot-buttons-container-modal { display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; }
+.slot-button { width: 32px; height: 32px; border-radius: 50%; background-color: #5a5a5a; color: #ffffff; border: none; font-size: 0.9rem; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: background-color 0.2s ease, transform 0.1s ease; flex-shrink: 0; }
+.slot-button:hover { background-color: #6a6a6a; }
+.slot-button.active { background-color: #5080ff; transform: scale(1.05); }
+.slot-button:active { background-color: #3366cc; }
+
+/* --- Resume Layout Styles --- */
+.resume-layout-container { display: flex; flex-direction: column; gap: 1.5rem; }
+.character-info-section h3, .user-info-section h3 { margin-top: 0; margin-bottom: 0.8rem; font-size: 1rem; color: #ffffff; border-bottom: 1px dotted #444; padding-bottom: 0.4rem; }
+.info-grid { display: grid; grid-template-columns: 160px 1fr; gap: 1rem 1.2rem; margin-bottom: 1rem; }
+@media (max-width: 600px) { .info-grid { grid-template-columns: 1fr; gap: 0.8rem; } }
+.info-item { display: flex; flex-direction: column; gap: 0.4rem; }
+.info-item.full-width { grid-column: span 1; }
+@media (min-width: 601px) { .info-item.full-width { grid-column: span 1; } }
+.info-grid .info-item:first-child { /* Image Item */ }
+@media (max-width: 600px) { .info-grid .info-item:first-child { grid-column: span 1; align-items: center; } }
+.half-width-row { display: flex; gap: 0.8rem; }
+.half-width-item { flex: 1; display: flex; flex-direction: column; gap: 0.4rem; }
+
+/* Modal Labels, Inputs, Textareas */
+.modal-body label { display: block; margin-bottom: 0.1rem; font-weight: normal; color: #b0b0b0; font-size: 0.85rem; }
+.modal-body input[type="text"], .modal-body textarea { width: 100%; padding: 0.5rem; border: none; border-radius: 6px; background-color: #3a3a3a; color: #e0e0e0; font-size: 0.9rem; margin-bottom: 0; box-sizing: border-box; resize: vertical; scrollbar-width: none; -ms-overflow-style: none; }
+.modal-body input[type="text"]::-webkit-scrollbar, .modal-body textarea::-webkit-scrollbar { display: none; }
+.modal-body textarea {
+    line-height: 1.4;
+    min-height: 100px; /* 일관된 최소 높이 */
+}
+/* Guidelines 높이 일관성 확보 */
+#botPersonaInputModal, #userGuidelinesInputModal {
+    min-height: 120px; /* 명시적으로 동일 높이 지정 */
+}
+.modal-body input[type="text"]:focus, .modal-body textarea:focus { outline: none; background-color: #4a4a4a; box-shadow: none; }
+
+/* Image Preview Area */
+.image-preview-area { width: 160px; height: 220px; border: 1px dashed #5a5a5a; border-radius: 8px; display: flex; justify-content: center; align-items: center; background-color: #2d2d2d; flex-shrink: 0; overflow: hidden; margin-top: 0.3rem; cursor: pointer; transition: border-color 0.2s; }
+.image-preview-area:hover { border-color: #777; }
+.image-preview-area img { width: 100%; height: 100%; object-fit: cover; border-radius: 0; opacity: 0.95; }
+.image-preview-area img[src=""], .image-preview-area img:not([src]) { display: none; }
+.image-preview-area::before { content: "Click to add"; color: #888; font-size: 0.8rem; text-align: center; display: none; /* JS :has support check needed, default hide */ align-items: center; justify-content: center; width: 100%; height: 100%; }
+/* Use JS or :has() selector if supported to show placeholder */
+.image-preview-area:not(:has(img[src]:not([src=""]))) > img + ::before { display: flex; } /* Simplified logic */
+
+/* Action Menu Overlay Style */
+#menuOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: transparent; z-index: 490; display: none; }
+
+/* Action Menu Container Style */
+#actionMenu { position: absolute; bottom: calc(0.4rem + 30px + 5px); left: 0.5rem; right: auto; transform: none; width: 120px; max-width: 150px; background-color: #2a2a2a; border: 1px solid #444; border-radius: 10px; padding: 0.3rem 0; box-sizing: border-box; z-index: 500; display: flex; flex-direction: column; align-items: stretch; opacity: 0; visibility: hidden; transition: opacity 0.2s ease-out, visibility 0.2s ease-out; box-shadow: 0 4px 10px rgba(0,0,0,0.4); }
+#actionMenu.visible { opacity: 1; visibility: visible; }
+#actionMenu::after { content: ""; position: absolute; bottom: -8px; left: 12px; width: 0; height: 0; border-top: 8px solid #2a2a2a; border-left: 8px solid transparent; border-right: 8px solid transparent; z-index: 501; }
+#actionMenu::before { content: ""; position: absolute; bottom: -10px; left: 10px; width: 0; height: 0; border-top: 10px solid #444; border-left: 10px solid transparent; border-right: 10px solid transparent; z-index: 500; }
+.menu-buttons { display: flex; flex-direction: column; gap: 0; width: 100%; }
+#actionMenu button { width: 100%; padding: 0.5rem 0.8rem; border: none; border-radius: 0; background-color: transparent; color: #ccc; font-size: 0.85rem; cursor: pointer; transition: background-color 0.2s ease, color 0.2s ease; text-align: left; z-index: 502; display: flex; align-items: center; gap: 0.5rem; }
+#actionMenu button i { width: 1em; text-align: center; color: #999; }
+#actionMenu button:hover { background-color: #3a3a3a; color: #ffffff; }
+#actionMenu button:hover i { color: #ccc; }
+
+/* --- Accordion Styles --- */
+/* General Accordion Style (used by Situation Options) */
+.accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  margin-left: 0;
+  margin-top: 0.2rem;
+  background-color: #2a2a2a; /* Default dark background */
+  border: 1px solid #444;
+  border-radius: 8px;
+  padding: 0.2rem 0;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+  transition: opacity 0.2s ease-out, visibility 0.2s ease-out;
+  /* Position relative for potential absolute children */
+  position: relative;
+  z-index: 501; /* Ensure above input but below active menus */
+}
+.accordion.hidden { display: none; }
+
+/* Situation Options Accordion Specific Style */
+#situationOptions {
+  /* Override general accordion background if needed */
+   background-color: #333333; /* 더 밝은 회색 */
+   border-color: #555; /* 테두리도 약간 밝게 */
+   /* Positioning relative to #menuSituationButton might be needed */
+   position: absolute; /* Example positioning */
+   bottom: 100%; /* Example positioning */
+   left: 0; /* Example positioning */
+   margin-bottom: 5px; /* Example positioning */
+   width: 100%; /* Example width */
+}
+#actionMenu .menu-buttons { position: relative; } /* Parent needs position context */
+
+
+/* Accordion Option Button General Style */
+.accordion button.option,
+.accordion button.feedback-option { /* Note: feedback-option style moved below */
+  background-color: transparent; border: none; cursor: pointer; font-size: 0.8rem;
+  color: #bbb; padding: 0.4rem 0.8rem; text-align: center; width: 100%;
+  box-sizing: border-box; transition: color 0.2s, background-color 0.2s;
+  display: flex; justify-content: center; align-items: center;
+}
+.accordion button.option:hover { color: #fff; background-color: #4a4a4a; /* 약간 밝은 호버 */ }
+
+
+/* --- Modal Animations --- */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+.modal-fade-in { animation: fadeIn 0.2s ease-out forwards; }
+.modal-fade-out { animation: fadeOut 0.2s ease-in forwards; }
+
 /* Random Character/User Button Style */
 #generateRandomCharacter, #generateRandomUser {
-    font-size: 1rem;
-    background: none;
-    border: none;
-    padding: 0 0.2rem; /* 약간의 좌우 패딩 */
-    margin: 0;
-    cursor: pointer;
-    color: #bbb;
-    transition: color 0.2s;
-    line-height: 1; /* Ensure it doesn't affect line height */
+    font-size: 1rem; background: none; border: none; padding: 0 0.3rem; /* 여백 추가 */
+    margin: 0; cursor: pointer; color: #bbb; transition: color 0.2s;
+    line-height: 1; flex-shrink: 0; /* 크기 고정 */
 }
-#generateRandomCharacter:hover, #generateRandomUser:hover {
-    color: #fff;
+#generateRandomCharacter:hover, #generateRandomUser:hover { color: #fff; }
+
+/* Ensure correct layout for horizontal feedback */
+.input-buttons-row {
+    position: relative; /* Ensure positioning context for feedback menu */
+}
+
+/* Ensure correct z-index layering */
+#actionMenu, #situationOptions, #feedbackOptionsContainer {
+    z-index: 520; /* Make sure menus are above input area content */
+}
+#menuOverlay {
+    z-index: 515; /* Below menus but above input area */
 }
