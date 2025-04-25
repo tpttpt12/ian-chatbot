@@ -79,20 +79,19 @@
                     <div class="character-info-section">
                         <h3>Character</h3>
                         <div class="info-grid">
-                            <div class="info-item">
-                                <label for="botImageUrlInputModal">Image URL:</label>
-                                <input type="text" id="botImageUrlInputModal">
-                                <div class="image-preview-area">
-                                     <img id="botImagePreview" src="" alt="캐릭터 이미지 미리보기">
-                                </div>
-                            </div>
+<div class="info-item" style="font-size: 0.85rem;">
+  <label>Preview:</label>
+  <div class="image-preview-area" id="botImagePreviewClickable" style="width: 160px; height: 220px; cursor: pointer;">
+    <img id="botImagePreview" src="" alt="캐릭터 이미지 미리보기">
+  </div>
+</div>
 
-			<div class="info-item full-width" style="font-size: 0.85rem;">
-			  <label for="botNameInputModal">Name:</label>
-			  <div style="display: flex; align-items: center; gap: 0.5rem;">
-			    <input type="text" id="botNameInputModal" style="font-size: 0.9rem; padding: 0.4rem;">
-				    <button id="generateRandomCharacter" title="랜덤 캐릭터 생성" style="font-size: 1rem;">🎲</button>
-				  </div>
+<div class="info-item full-width" style="font-size: 0.85rem;">
+  <label for="botNameInputModal">Name:</label>
+  <div style="display: flex; align-items: center; gap: 0.5rem;">
+    <input type="text" id="botNameInputModal" style="font-size: 0.9rem; padding: 0.4rem;">
+    <button id="generateRandomCharacter" title="랜덤 캐릭터 생성" style="font-size: 1rem; background: none; border: none; padding: 0; margin: 0; cursor: pointer;">🎲</button>
+  </div>
 
   <div class="half-width-row">
     <div class="half-width-item">
