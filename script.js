@@ -144,33 +144,35 @@ function saveSettings(slotNumber) {
     updateSystemPrompt();
 }
 
-// 설정 로드 함수 (localStorage 사용) - 모달 입력 필드를 참조하도록 수정
 function loadSettings(slotNumber) {
-    // DOMContentLoaded 내부에서 가져온 변수를 사용한다고 가정합니다.
     const savedSettings = localStorage.getItem(`settings_slot_${slotNumber}`);
     if (savedSettings) {
         const settings = JSON.parse(savedSettings);
         botNameInputModal.value = settings.botName;
         botAgeInputModal.value = settings.botAge;
-        botGenderInputModal.value = settings.botGender || ''; // 성별 로드, 없으면 빈 값
+        botGenderInputModal.value = settings.botGender || '';
         botAppearanceInputModal.value = settings.botAppearance;
         botPersonaInputModal.value = settings.botPersona;
-        botImageUrlInputModal.value = settings.botImageUrl;
 
         userNameInputModal.value = settings.userName;
         userAgeInputModal.value = settings.userAge;
-        userGenderInputModal.value = settings.userGender || ''; // 성별 로드, 없으면 빈 값
+        userGenderInputModal.value = settings.userGender || '';
         userAppearanceInputModal.value = settings.userAppearance;
         userGuidelinesInputModal.value = settings.userGuidelines;
-        userImageUrlInputModal.value = settings.userImageUrl;
 
-        // 로드 시 이미지 URL 변수 업데이트
+        // 이미지 URL → 직접 이미지 태그에 반영
+        if (settings.botImageUrl && botImagePreview) {
+            botImagePreview.src = settings.botImageUrl;
+        }
+        if (settings.userImageUrl && userImagePreview) {
+            userImagePreview.src = settings.userImageUrl;
+        }
+
+        // 변수로도 저장 (채팅에서 쓸 수 있게)
         userProfileImgUrl = settings.userImageUrl || "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU";
         botProfileImgUrl = settings.botImageUrl || "https://via.placeholder.com/35/3a4a3a/ffffff?text=BOT";
-
-         // 로드 시 이미지 미리보기 업데이트
-         updateImagePreview(botImageUrlInputModal.value, botImagePreview);
-         updateImagePreview(userImageUrlInputModal.value, userImagePreview);
+    }
+}
 
     } else {
         // 저장된 설정이 없을 경우 기본값 (HTML value 속성)을 사용하고 알림
