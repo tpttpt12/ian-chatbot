@@ -1,4 +1,4 @@
-/* style.css 전체 내용 - 피드백 재반영 */
+/* style.css 전체 내용 - 피드백 재반영 및 수정 */
 
 body {
     font-family: "Nanum Gothic", sans-serif;
@@ -58,14 +58,14 @@ body {
 /* Chat Messages Area Style */
 #chat {
     flex: 1; padding: 0.8rem; overflow-y: auto; display: flex;
-    flex-direction: column; gap: 0.4rem; background-color: #1e1e1e;
+    flex-direction: column; gap: 0.8rem; /* 메시지 간 간격 약간 늘림 */ background-color: #1e1e1e;
     scrollbar-width: none; -ms-overflow-style: none;
 }
 #chat::-webkit-scrollbar { display: none; }
 
 /* Message Container Base Style */
 .message-container {
-    display: flex; flex-direction: column; max-width: 85%; gap: 0.2rem;
+    display: flex; flex-direction: column; max-width: 85%; gap: 0.3rem; /* 프로필과 버블 간격 */
 }
 .message-container.user { align-items: flex-end; margin-left: auto; }
 .message-container.bot { align-items: flex-start; margin-right: auto; }
@@ -73,7 +73,7 @@ body {
 /* Profile Area Container (Top part of message) */
 .profile-area {
     display: flex; align-items: center;
-    gap: 0.6rem; /* 이름과 프로필 간격 늘림 */
+    gap: 0.6rem; /* 이름과 프로필 간격 */
     order: 1;
 }
 .message-container.user .profile-area { flex-direction: row-reverse; }
@@ -91,45 +91,34 @@ body {
     line-height: 1; display: none; /* JS로 제어 */
 }
 
-/* Profile Fallback Style */
+/* Profile Fallback Style - 수정: 회색 배경 명확화 */
 .profile-fallback {
-    width: 30px; height: 30px; border-radius: 50%; background-color: #5a5a5a;
-    border: 1px solid #5a5a5a; flex-shrink: 0; cursor: pointer;
+    width: 30px; height: 30px; border-radius: 50%;
+    background-color: #4a4a4a; /* 회색 배경 */
+    border: 1px solid #5a5a5a;
+    flex-shrink: 0;
+    /* cursor: pointer; */ /* 클릭 비활성화 */
+    display: inline-block; /* 혹은 flex 등, img 대체 */
 }
 
 /* Message Content Wrapper (Bottom part of message) */
 .message-content-wrapper {
     display: flex; width: 100%; order: 2;
 }
-.message-container.user .message-content-wrapper { justify-content: flex-end; padding-left: 36px; /* 프로필 너비 + gap */ }
-.message-container.bot .message-content-wrapper { justify-content: flex-start; padding-right: 36px; /* 프로필 너비 + gap */ }
-
+.message-container.user .message-content-wrapper { justify-content: flex-end; padding-left: 36px; }
+.message-container.bot .message-content-wrapper { justify-content: flex-start; padding-right: 36px; }
 
 /* Role Name Container Style */
-.role-name {
-    font-size: 0.75rem; color: #b0b0b0; display: flex; align-items: center;
-    flex-shrink: 0; gap: 0.3rem;
-}
-
-/* Name Text Style */
+.role-name { font-size: 0.75rem; color: #b0b0b0; display: flex; align-items: center; flex-shrink: 0; gap: 0.3rem; }
 .name-text { min-width: 0; }
-
-/* Delete Button Style */
-.delete-btn {
-    background: transparent; border: none; color: #aaa; font-size: 0.9rem;
-    cursor: pointer; padding: 0 0.1rem; z-index: 1; flex-shrink: 0; line-height: 1;
-}
+.delete-btn { background: transparent; border: none; color: #aaa; font-size: 0.9rem; cursor: pointer; padding: 0 0.1rem; z-index: 1; flex-shrink: 0; line-height: 1; }
 
 /* Text Message Bubble Style */
-.message-bubble {
-    padding: 0.5rem 0.8rem; border-radius: 0.8rem; max-width: fit-content;
-    word-break: break-word; line-height: 1.4; position: relative;
-    font-size: 0.9rem; white-space: pre-wrap;
-}
+.message-bubble { padding: 0.5rem 0.8rem; border-radius: 0.8rem; max-width: fit-content; word-break: break-word; line-height: 1.4; position: relative; font-size: 0.9rem; white-space: pre-wrap; }
 .message-container.bot .message-bubble { background-color: #3a4a4a; color: #ffffff; border-radius: 0.3rem 0.8rem 0.8rem 0.8rem; }
 .message-container.user .message-bubble { background-color: #4a3a7a; color: #ffffff; border-radius: 0.8rem 0.3rem 0.8rem 0.8rem; }
 
-/* --- 마크다운 형식 스타일 (기존 유지) --- */
+/* --- 마크다운 형식 스타일 --- */
 strong, b { font-weight: bold; color: #f0f0f0; }
 em, i { font-style: italic; color: #a9a9a9 !important; }
 blockquote { border-left: 3px solid #5a5a5a; padding-left: 0.8rem; margin-left: 0.4rem; color: #b0b0b0; font-style: italic; }
@@ -143,100 +132,54 @@ tr:nth-child(even) { background-color: #1f1f1f; }
 .action-description { color: #a9a9a9 !important; font-style: italic !important; }
 /* --- 마크다운 형식 스타일 끝 --- */
 
-
-/* Input Area Overall Style */
+/* Input Area Overall Style - 그림자 복구 */
 #inputArea {
     display: flex; flex-direction: column; align-items: stretch; gap: 0.5rem;
     padding: 0.4rem 0.5rem 0.4rem 0.5rem; background-color: #1E1E1E;
-    box-shadow: 0 -8px 15px 0px rgba(30, 30, 30 / 77%); z-index: 510;
-    border: 1px solid #2F2F2F; border-radius: 12px; flex-shrink: 0; position: relative;
+    box-shadow: 0 -8px 15px 0px rgba(30, 30, 30, 0.77); /* 그림자 복구 */
+    z-index: 510; border: 1px solid #2F2F2F; border-radius: 12px; flex-shrink: 0; position: relative;
 }
 
 /* Textarea Container */
 .input-textarea-container { flex: 1; display: flex; }
 
 /* Buttons Row Container */
-.input-buttons-row {
-    display: flex; align-items: center; width: 100%; gap: 0.3rem; position: relative;
-}
+.input-buttons-row { display: flex; align-items: center; width: 100%; gap: 0.3rem; position: relative; }
 
 /* '+' Button Style */
-#actionMenuButton {
-    order: 1; /* 첫번째 */
-    padding: 0.2rem 0.4rem; /* 기존 패딩 유지 */
-    /* 나머지 스타일 유지 */
-    width: auto; height: auto; border-radius: 0; background-color: transparent; color: #b0b0b0;
-    border: none; font-size: 1.4rem; cursor: pointer; flex-shrink: 0; display: flex;
-    justify-content: center; align-items: center; transition: color 0.2s ease;
-    align-self: center; z-index: 3; margin-right: 0.2rem; /* O 버튼과의 간격 */
-}
+#actionMenuButton { order: 1; padding: 0.2rem 0.4rem; width: auto; height: auto; border-radius: 0; background-color: transparent; color: #b0b0b0; border: none; font-size: 1.4rem; cursor: pointer; flex-shrink: 0; display: flex; justify-content: center; align-items: center; transition: color 0.2s ease; align-self: center; z-index: 3; margin-right: 0.2rem; }
 #actionMenuButton:hover { color: #ffffff; background-color: transparent; }
 
-/* Feedback 'O' Button Style - Revised */
-#feedbackButton {
-    order: 2; /* 두번째 */
-    background: none; border: none; color: #b0b0b0; font-size: 1rem;
-    font-weight: bold; cursor: pointer; padding: 0.2rem 0.4rem; margin: 0;
-    line-height: 1; flex-shrink: 0; transition: color 0.2s ease; align-self: center;
-}
+/* Feedback 'O' Button Style - 수정 */
+#feedbackButton { order: 2; background: none; border: none; color: #b0b0b0; font-size: 1rem; font-weight: bold; cursor: pointer; padding: 0.2rem 0.4rem; margin: 0; line-height: 1; flex-shrink: 0; transition: color 0.2s ease; align-self: center; }
 #feedbackButton:hover { color: #ffffff; }
 #feedbackButton.active { color: #5080ff; }
 
-
-/* Horizontal Feedback Options Container - Revised */
-.feedback-options-container {
-    order: 3; /* 세번째 */
-    display: flex; align-items: center; gap: 0.4rem;
-    overflow: hidden;
-    /* 스르륵 효과: width 대신 max-width 사용 고려, visibility 추가 */
-    transition: max-width 0.3s ease-out, opacity 0.3s ease-out, visibility 0.3s step-end;
-    max-width: 0; /* 초기 숨김 */
-    opacity: 0;
-    visibility: hidden;
-    flex-shrink: 0;
-    /* margin-left: 0.3rem; */ /* O 버튼과의 간격 */
-}
-.feedback-options-container:not(.hidden) {
-    transition: max-width 0.3s ease-out, opacity 0.3s ease-out, visibility 0s; /* 나올 때 visibility 즉시 */
-    max-width: 250px; /* 펼쳐졌을 때 최대 너비 (내용에 맞게 조절) */
-    opacity: 1;
-    visibility: visible;
-}
-
-/* Feedback Option Button Style (inside horizontal container) */
-.feedback-options-container .feedback-option {
-    background-color: #3a3a3a; border: none; color: #ccc; font-size: 0.8rem;
-    cursor: pointer; border-radius: 15px; padding: 0.3rem 0.7rem;
-    white-space: nowrap; transition: background-color 0.2s, color 0.2s;
-}
+/* Horizontal Feedback Options Container - 수정 */
+.feedback-options-container { order: 3; display: flex; align-items: center; gap: 0.4rem; overflow: hidden; transition: max-width 0.3s ease-out, opacity 0.3s ease-out, visibility 0.3s step-end; max-width: 0; opacity: 0; visibility: hidden; flex-shrink: 0; }
+.feedback-options-container:not(.hidden) { transition: max-width 0.3s ease-out, opacity 0.3s ease-out, visibility 0s; max-width: 250px; opacity: 1; visibility: visible; }
+.feedback-options-container .feedback-option { background-color: #3a3a3a; border: none; color: #ccc; font-size: 0.8rem; cursor: pointer; border-radius: 15px; padding: 0.3rem 0.7rem; white-space: nowrap; transition: background-color 0.2s, color 0.2s; }
 .feedback-options-container .feedback-option:hover { background-color: #4a4a4a; color: #fff; }
 .feedback-options-container .feedback-option.active { background-color: #5080ff; color: white; }
 
-
-/* Textarea Style */
+/* Textarea Style - 스크롤바 숨김 재확인 */
 #userInput {
-    order: 4; /* 네번째 */
-    flex-grow: 1; /* 남은 공간 차지 */
-    /* 높이 관련 스타일은 JS에서 동적으로 변경 */
-    min-height: calc(1.4em + 0.8rem + 2px); /* line-height + padding*2 + border*2 (대략 1줄) */
-    padding: 0.4rem 0.8rem; line-height: 1.4; font-size: 0.9rem;
+    order: 4; flex-grow: 1;
+    min-height: calc(1.4em + 0.8rem + 2px); padding: 0.4rem 0.8rem; line-height: 1.4; font-size: 0.9rem;
     border-radius: 1rem; border: none; background-color: #2a2a2a; color: #e0e0e0;
     resize: none; outline: none; box-sizing: border-box; transition: background-color 0.2s;
-    /* 스크롤바 숨김 재확인! */
-    overflow-y: hidden; /* JS에서 auto로 변경 */
+    /* 스크롤바 숨김! */
+    overflow-y: hidden; /* JS에서 필요시 'auto'로 변경 */
     scrollbar-width: none; /* Firefox */
     -ms-overflow-style: none; /* IE, Edge */
 }
-#userInput::-webkit-scrollbar {
-    display: none; /* Chrome, Safari, Opera */
-}
+#userInput::-webkit-scrollbar { display: none; /* Chrome, Safari, Opera */ }
 #userInput:focus { background-color: #3a3a3a; box-shadow: none; }
 
-/* Send Button Style */
+/* Send Button Style - 수정: order 및 margin-left 적용 */
 #sendButton {
-    order: 5; /* 마지막 (오른쪽 끝) */
-    margin-left: auto; /* 왼쪽에 있는 요소들 밀어내기 */
-    /* 나머지 스타일 유지 */
+    order: 5; /* 마지막 */
+    margin-left: auto; /* 오른쪽 끝으로 밀기 */
     width: 28px; height: 28px; border-radius: 50%; background-color: #5080ff;
     color: #ffffff; font-size: 0.7rem; flex-shrink: 0; border: none;
     cursor: pointer; display: flex; justify-content: center; align-items: center;
@@ -247,19 +190,12 @@ tr:nth-child(even) { background-color: #1f1f1f; }
 #sendButton:disabled { background-color: #4a4a4a; color: #888; cursor: not-allowed; }
 
 /* Loading Spinner Style */
-#loadingSpinner {
-    position: absolute; bottom: 0.7rem; right: 3rem; /* Send 버튼 왼쪽에 위치 */
-    border: 3px solid rgba(255, 255, 255, 0.3); border-top: 3px solid #fff;
-    border-radius: 50%; width: 16px; height: 16px;
-    animation: spin 1s linear infinite; display: none; z-index: 4;
-}
+#loadingSpinner { position: absolute; bottom: 0.7rem; right: 3rem; border: 3px solid rgba(255, 255, 255, 0.3); border-top: 3px solid #fff; border-radius: 50%; width: 16px; height: 16px; animation: spin 1s linear infinite; display: none; z-index: 4; }
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
 /* Initial Notice Style */
 .initial-notice { text-align: center; margin: 0.1rem auto 0.1rem auto; color: #666; font-size: 0.85rem; padding: 0.8rem; max-width: 80%; word-break: break-word; }
-/* Notice Divider Style */
 .notice-divider { width: 90%; height: 1px; background-color: #3a3a3a; margin: 0.4rem auto 1.2rem auto; }
-/* Image Overlay Style */
 .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.85); display: none; justify-content: center; align-items: center; z-index: 1000; cursor: pointer; }
 .overlay img { max-width: 90%; max-height: 90%; object-fit: contain; border-radius: 6px; }
 
@@ -282,28 +218,59 @@ tr:nth-child(even) { background-color: #1f1f1f; }
 .slot-button.active { background-color: #5080ff; transform: scale(1.05); }
 .slot-button:active { background-color: #3366cc; }
 
-/* --- Resume Layout Styles - Revised for Compactness --- */
+/* --- Resume Layout Styles - Grid 수정 --- */
 .resume-layout-container { display: flex; flex-direction: column; gap: 1.5rem; }
 .character-info-section h3, .user-info-section h3 { margin-top: 0; margin-bottom: 0.8rem; font-size: 1rem; color: #ffffff; border-bottom: 1px dotted #444; padding-bottom: 0.4rem; }
 .info-grid {
     display: grid;
     grid-template-columns: 160px 1fr; /* Image Preview width + Remaining */
-    gap: 0.8rem 1rem; /* 행/열 간격 줄임 */
-    margin-bottom: 1rem;
-    align-items: start; /* 상단 정렬 */
+    gap: 0.8rem 1rem; /* 행/열 간격 */
+    /* margin-bottom 제거 -> Guidelines와 자연스럽게 연결 */
 }
 @media (max-width: 600px) { .info-grid { grid-template-columns: 1fr; gap: 0.8rem; } }
+
 .info-item { display: flex; flex-direction: column; gap: 0.4rem; }
-.info-item.full-width { /* Name, Age, Appearance 등 */
-    grid-column: 2 / 3; /* 두번째 컬럼 차지 */
+
+/* 이미지 아이템: 첫번째 컬럼 */
+.info-grid .info-item:has(#botImagePreview),
+.info-grid .info-item:has(#userImagePreview) {
+    grid-column: 1 / 2;
+    grid-row: 1 / 3; /* 이름+α 영역과 Guidelines 영역에 걸쳐 위치 (수정) */
+    align-self: start; /* 위쪽 정렬 */
 }
-.info-grid .info-item:first-child { /* Image Item */
-    grid-row: 1 / span 2; /* 이미지가 두 행에 걸쳐 위치하도록 */
+
+/* 이름, 성별, 나이, 외형 아이템: 두번째 컬럼, 첫번째 행 */
+.info-grid .info-item:has(#botNameInputModal),
+.info-grid .info-item:has(#userNameInputModal) {
+    grid-column: 2 / 3;
+    grid-row: 1 / 2;
 }
+
+/* 가이드라인 아이템: 두번째 컬럼, 두번째 행 (수정) */
+.info-grid .info-item:has(#botPersonaInputModal),
+.info-grid .info-item:has(#userGuidelinesInputModal) {
+    grid-column: 2 / 3; /* 두번째 컬럼 */
+    grid-row: 2 / 3;    /* 두번째 행 */
+    /* grid-column: 1 / -1; */ /* 이전 방식 삭제 -> 전체 너비 차지하지 않음 */
+}
+
+
+/* 모바일 뷰 */
 @media (max-width: 600px) {
-    .info-item.full-width { grid-column: 1 / -1; }
-    .info-grid .info-item:first-child { grid-row: auto; grid-column: 1 / -1; align-items: center; }
+    .info-grid .info-item:has(#botImagePreview),
+    .info-grid .info-item:has(#userImagePreview) {
+        grid-column: 1 / -1; grid-row: auto; align-items: center; margin-bottom: 0.5rem;
+    }
+    .info-grid .info-item:has(#botNameInputModal),
+    .info-grid .info-item:has(#userNameInputModal) {
+        grid-column: 1 / -1; grid-row: auto;
+    }
+     .info-grid .info-item:has(#botPersonaInputModal),
+     .info-grid .info-item:has(#userGuidelinesInputModal) {
+        grid-column: 1 / -1; grid-row: auto;
+    }
 }
+
 .half-width-row { display: flex; gap: 0.8rem; }
 .half-width-item { flex: 1; display: flex; flex-direction: column; gap: 0.4rem; }
 
@@ -311,45 +278,43 @@ tr:nth-child(even) { background-color: #1f1f1f; }
 .modal-body label { display: block; margin-bottom: 0.1rem; font-weight: normal; color: #b0b0b0; font-size: 0.85rem; }
 .modal-body input[type="text"], .modal-body textarea { width: 100%; padding: 0.5rem; border: none; border-radius: 6px; background-color: #3a3a3a; color: #e0e0e0; font-size: 0.9rem; margin-bottom: 0; box-sizing: border-box; resize: vertical; scrollbar-width: none; -ms-overflow-style: none; }
 .modal-body input[type="text"]::-webkit-scrollbar, .modal-body textarea::-webkit-scrollbar { display: none; }
-.modal-body textarea { line-height: 1.4; min-height: 80px; /* 기본 최소 높이 */ }
-/* Guidelines 높이 일관성 확보 - 수정 */
-#botPersonaInputModal, #userGuidelinesInputModal { min-height: 100px; /* 통일 */ }
+.modal-body textarea { line-height: 1.4; }
+/* Guidelines 높이 일관성 확보 */
+#botPersonaInputModal, #userGuidelinesInputModal { min-height: 100px; /* 통일된 높이 */ }
 .modal-body input[type="text"]:focus, .modal-body textarea:focus { outline: none; background-color: #4a4a4a; box-shadow: none; }
 
-/* Image Preview Area */
+/* Image Preview Area & Placeholder - 수정 */
 .image-preview-area {
     width: 160px; height: 220px; border: 1px dashed #5a5a5a; border-radius: 8px;
     display: flex; justify-content: center; align-items: center; background-color: #2d2d2d;
-    flex-shrink: 0; overflow: hidden; margin-top: 0; /* 라벨과 붙도록 마진 제거 */
-    cursor: pointer; transition: border-color 0.2s; position: relative; /* For placeholder */
+    flex-shrink: 0; overflow: hidden; margin-top: 0; cursor: pointer; transition: border-color 0.2s;
+    position: relative; /* Placeholder 위치 기준 */
 }
 .image-preview-area:hover { border-color: #777; }
 .image-preview-area img { width: 100%; height: 100%; object-fit: cover; border-radius: 0; opacity: 0.95; }
-.image-preview-area img[src=""], .image-preview-area img:not([src]) { display: none; }
-/* Placeholder text - 수정 */
+/* Placeholder text - 수정: 기본 숨김, 이미지가 없을 때만 보이도록 */
 .image-preview-area::before {
     content: "Click to add"; color: #888; font-size: 0.8rem; text-align: center;
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
     display: flex; align-items: center; justify-content: center;
-    background-color: #2d2d2d; /* 배경색 추가 */
-    opacity: 1; /* 기본적으로 보이도록 */
-    pointer-events: none; /* 클릭 방해 안함 */
+    background-color: #2d2d2d; opacity: 0; /* 기본 숨김 */ pointer-events: none;
+    transition: opacity 0.2s;
 }
-/* 이미지가 있으면 Placeholder 숨김 */
-.image-preview-area:has(img[src]:not([src=""]))::before {
-    opacity: 0;
+/* 이미지가 없거나 src가 비었을 때 Placeholder 표시 */
+.image-preview-area:not(:has(img[src]:not([src=""]))) > img + ::before {
+    opacity: 1;
 }
 
 
 /* Action Menu Overlay Style */
-#menuOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.3); /* 약간 어둡게 해서 구분 */ z-index: 490; display: none; cursor: default; }
+#menuOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.3); z-index: 490; display: none; cursor: default; }
 
 /* Action Menu Container Style */
-#actionMenu { position: absolute; bottom: calc(100% + 5px); /* 버튼 바로 위 */ left: 0.5rem; /* '+' 버튼 위치 근처 */ width: 120px; max-width: 150px; background-color: #2a2a2a; border: 1px solid #444; border-radius: 10px; padding: 0.3rem 0; box-sizing: border-box; z-index: 520; display: flex; flex-direction: column; align-items: stretch; opacity: 0; visibility: hidden; transition: opacity 0.2s ease-out, visibility 0.2s ease-out, transform 0.2s ease-out; transform: translateY(10px); box-shadow: 0 4px 10px rgba(0,0,0,0.4); }
+#actionMenu { position: absolute; bottom: calc(100% + 5px); left: 0.5rem; width: 120px; max-width: 150px; background-color: #2a2a2a; border: 1px solid #444; border-radius: 10px; padding: 0.3rem 0; box-sizing: border-box; z-index: 520; display: flex; flex-direction: column; align-items: stretch; opacity: 0; visibility: hidden; transition: opacity 0.2s ease-out, visibility 0.2s ease-out, transform 0.2s ease-out; transform: translateY(10px); box-shadow: 0 4px 10px rgba(0,0,0,0.4); }
 #actionMenu.visible { opacity: 1; visibility: visible; transform: translateY(0); }
-#actionMenu::after { /* Tail */ content: ""; position: absolute; top: 100%; /* 메뉴 아래 */ left: 12px; width: 0; height: 0; border-top: 8px solid #2a2a2a; border-left: 8px solid transparent; border-right: 8px solid transparent; z-index: 521; }
-#actionMenu::before { /* Tail Border */ content: ""; position: absolute; top: calc(100% - 1px); left: 10px; width: 0; height: 0; border-top: 10px solid #444; border-left: 10px solid transparent; border-right: 10px solid transparent; z-index: 520; }
-.menu-buttons { display: flex; flex-direction: column; gap: 0; width: 100%; }
+#actionMenu::after { content: ""; position: absolute; top: 100%; left: 12px; width: 0; height: 0; border-top: 8px solid #2a2a2a; border-left: 8px solid transparent; border-right: 8px solid transparent; z-index: 521; }
+#actionMenu::before { content: ""; position: absolute; top: calc(100% - 1px); left: 10px; width: 0; height: 0; border-top: 10px solid #444; border-left: 10px solid transparent; border-right: 10px solid transparent; z-index: 520; }
+.menu-buttons { display: flex; flex-direction: column; gap: 0; width: 100%; position: relative; /* For situation accordion positioning */ }
 #actionMenu button { width: 100%; padding: 0.5rem 0.8rem; border: none; border-radius: 0; background-color: transparent; color: #ccc; font-size: 0.85rem; cursor: pointer; transition: background-color 0.2s ease, color 0.2s ease; text-align: left; z-index: 522; display: flex; align-items: center; gap: 0.5rem; }
 #actionMenu button i { width: 1em; text-align: center; color: #999; }
 #actionMenu button:hover { background-color: #3a3a3a; color: #ffffff; }
@@ -361,35 +326,22 @@ tr:nth-child(even) { background-color: #1f1f1f; }
   display: flex; flex-direction: column; gap: 0.1rem; margin-left: 0; margin-top: 0.2rem;
   background-color: #2a2a2a; border: 1px solid #444; border-radius: 8px;
   padding: 0.2rem 0; box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-  transition: opacity 0.2s ease-out, visibility 0.2s ease-out;
-  position: absolute; /* Absolute positioning for menus */
-  z-index: 520; /* Above input area */
+  /* position: absolute; */ /* 제거 -> 일반 플로우로 */
+  z-index: 501; /* 다른 요소 위에 오도록 유지 */
+  width: 100%; /* 부모 너비 차지 */
 }
-.accordion.hidden { display: none; } /* Use display none */
+.accordion.hidden { display: none; }
 
-/* Situation Options Accordion Specific Style - 수정 */
+/* Situation Options Accordion Specific Style - 수정: position 제거 */
 #situationOptions {
    background-color: #383838; /* 구분되는 밝은 회색 */
    border-color: #555;
-   /* Positioning above #menuSituationButton */
-   bottom: 100%; /* 버튼 바로 위 */
-   left: 0; /* 버튼 왼쪽 정렬 */
-   margin-bottom: 5px; /* 버튼과의 간격 */
-   width: 100%; /* 부모(.menu-buttons) 너비 기준 */
-   min-width: 100px; /* 최소 너비 */
+   /* Absolute positioning 제거 */
+   margin-top: 0.1rem; /* 버튼과의 간격 */
 }
-#actionMenu .menu-buttons button:has(+ #situationOptions) {
-    position: relative; /* Allow absolute positioning of accordion */
-}
-
 
 /* Accordion Option Button General Style */
-.accordion button.option {
-  background-color: transparent; border: none; cursor: pointer; font-size: 0.8rem;
-  color: #bbb; padding: 0.4rem 0.8rem; text-align: center; width: 100%;
-  box-sizing: border-box; transition: color 0.2s, background-color 0.2s;
-  display: flex; justify-content: center; align-items: center;
-}
+.accordion button.option { background-color: transparent; border: none; cursor: pointer; font-size: 0.8rem; color: #bbb; padding: 0.4rem 0.8rem; text-align: center; width: 100%; box-sizing: border-box; transition: color 0.2s, background-color 0.2s; display: flex; justify-content: center; align-items: center; }
 .accordion button.option:hover { color: #fff; background-color: #4a4a4a; }
 
 
@@ -401,7 +353,7 @@ tr:nth-child(even) { background-color: #1f1f1f; }
 
 /* Random Character/User Button Style */
 #generateRandomCharacter, #generateRandomUser {
-    font-size: 1rem; background: none; border: none; padding: 0 0.4rem; /* 좌우 여백 늘림 */
+    font-size: 1rem; background: none; border: none; padding: 0 0.4rem; /* 좌우 여백 */
     margin: 0; cursor: pointer; color: #bbb; transition: color 0.2s;
     line-height: 1; flex-shrink: 0;
 }
