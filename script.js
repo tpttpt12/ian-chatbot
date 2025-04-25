@@ -1018,13 +1018,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // 이미지 URL 입력 필드 변경 시 미리보기 업데이트 이벤트 리스너 추가
-    botImageUrlInputModal.addEventListener('input', function() {
-        updateImagePreview(this.value, botImagePreview);
-    });
-    userImageUrlInputModal.addEventListener('input', function() {
-        updateImagePreview(this.value, userImagePreview);
-    });
 
     // textarea 입력 시 높이 자동 조절
     userInput.addEventListener('input', autoResizeTextarea);
