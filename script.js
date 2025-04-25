@@ -145,59 +145,61 @@ function saveSettings(slotNumber) {
 }
 
 function loadSettings(slotNumber) {
-    const savedSettings = localStorage.getItem(`settings_slot_${slotNumber}`);
-    if (savedSettings) {
-        const settings = JSON.parse(savedSettings);
-        botNameInputModal.value = settings.botName;
-        botAgeInputModal.value = settings.botAge;
-        botGenderInputModal.value = settings.botGender || '';
-        botAppearanceInputModal.value = settings.botAppearance;
-        botPersonaInputModal.value = settings.botPersona;
+  const savedSettings = localStorage.getItem(`settings_slot_${slotNumber}`);
+  if (savedSettings) {
+    const settings = JSON.parse(savedSettings);
+    botNameInputModal.value = settings.botName;
+    botAgeInputModal.value = settings.botAge;
+    botGenderInputModal.value = settings.botGender || '';
+    botAppearanceInputModal.value = settings.botAppearance;
+    botPersonaInputModal.value = settings.botPersona;
 
-        userNameInputModal.value = settings.userName;
-        userAgeInputModal.value = settings.userAge;
-        userGenderInputModal.value = settings.userGender || '';
-        userAppearanceInputModal.value = settings.userAppearance;
-        userGuidelinesInputModal.value = settings.userGuidelines;
+    userNameInputModal.value = settings.userName;
+    userAgeInputModal.value = settings.userAge;
+    userGenderInputModal.value = settings.userGender || '';
+    userAppearanceInputModal.value = settings.userAppearance;
+    userGuidelinesInputModal.value = settings.userGuidelines;
 
-        // 이미지 URL → 직접 이미지 태그에 반영
-        if (settings.botImageUrl && botImagePreview) {
-            botImagePreview.src = settings.botImageUrl;
-        }
-        if (settings.userImageUrl && userImagePreview) {
-            userImagePreview.src = settings.userImageUrl;
-        }
-
-        // 변수로도 저장 (채팅에서 쓸 수 있게)
-        userProfileImgUrl = settings.userImageUrl || "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU";
-        botProfileImgUrl = settings.botImageUrl || "https://via.placeholder.com/35/3a4a3a/ffffff?text=BOT";
+    // ✅ 이미지 태그에 직접 적용
+    if (settings.botImageUrl && botImagePreview) {
+      botImagePreview.src = settings.botImageUrl;
     }
+    if (settings.userImageUrl && userImagePreview) {
+      userImagePreview.src = settings.userImageUrl;
+    }
+
+    // ✅ 프로필 이미지 URL 저장
+    userProfileImgUrl = settings.userImageUrl || "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU";
+    botProfileImgUrl = settings.botImageUrl || "https://via.placeholder.com/35/3a4a3a/ffffff?text=BOT";
+  } else {
+    // ⚠ 저장된 설정 없을 때
+    alert(`설정 슬롯 ${slotNumber}에 저장된 설정이 없습니다. 기본값이 표시됩니다.`);
+
+    botNameInputModal.value = botNameInputModal.defaultValue;
+    botAgeInputModal.value = botAgeInputModal.defaultValue;
+    botGenderInputModal.value = botGenderInputModal.defaultValue || '';
+    botAppearanceInputModal.value = botAppearanceInputModal.defaultValue;
+    botPersonaInputModal.value = botPersonaInputModal.defaultValue;
+
+    userNameInputModal.value = userNameInputModal.defaultValue;
+    userAgeInputModal.value = userAgeInputModal.defaultValue;
+    userGenderInputModal.value = userGenderInputModal.defaultValue || '';
+    userAppearanceInputModal.value = userAppearanceInputModal.defaultValue;
+    userGuidelinesInputModal.value = userGuidelinesInputModal.defaultValue;
+
+    // ❌ input에서 value 못 읽으니까 직접 기본 이미지로 설정
+    if (botImagePreview) {
+      botImagePreview.src = "https://via.placeholder.com/160x220/3a4a4a/ffffff?text=BOT";
+    }
+    if (userImagePreview) {
+      userImagePreview.src = "https://via.placeholder.com/160x220/4a3a7a/ffffff?text=YOU";
+    }
+
+    // 기본 이미지도 프로필에 반영
+    userProfileImgUrl = "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU";
+    botProfileImgUrl = "https://via.placeholder.com/35/3a4a3a/ffffff?text=BOT";
+  }
 }
-
-} else {
-        // 저장된 설정이 없을 경우 기본값 (HTML value 속성)을 사용하고 알림
-        alert(`설정 슬롯 ${slotNumber}에 저장된 설정이 없습니다. 기본값이 표시됩니다.`);
-        // 기본 이미지 URL 변수 업데이트 (HTML 기본 value에서 가져옴)
-         botNameInputModal.value = botNameInputModal.defaultValue;
-         botAgeInputModal.value = botAgeInputModal.defaultValue;
-         botGenderInputModal.value = botGenderInputModal.defaultValue || '';
-         botAppearanceInputModal.value = botAppearanceInputModal.defaultValue;
-         botPersonaInputModal.value = botPersonaInputModal.defaultValue;
-         botImageUrlInputModal.value = botImageUrlInputModal.defaultValue;
-
-         userNameInputModal.value = userNameInputModal.defaultValue;
-         userAgeInputModal.value = userAgeInputModal.defaultValue;
-         userGenderInputModal.value = userGenderInputModal.defaultValue || '';
-         userAppearanceInputModal.value = userAppearanceInputModal.defaultValue;
-         userGuidelinesInputModal.value = userGuidelinesInputModal.defaultValue;
-         userImageUrlInputModal.value = userImageUrlInputModal.defaultValue;
-
-        userProfileImgUrl = userImageUrlInputModal.value || "https://via.placeholder.com/35/4a3a7a/ffffff?text=YOU";
-        botProfileImgUrl = botImageUrlInputModal.value || "https://via.placeholder.com/35/3a4a3a/ffffff?text=BOT";
-        // 저장된 설정이 없을 경우 이미지 미리보기 초기화 또는 기본값 표시
-         updateImagePreview(botImageUrlInputModal.value, botImagePreview);
-         updateImagePreview(userImageUrlInputModal.value, userImagePreview);
-    }
 
     // 로드 후 SYSTEM_PROMPT 업데이트
     updateSystemPrompt();
