@@ -115,54 +115,46 @@ function autoResizeTextarea() {
         if (!this || typeof this.style === 'undefined' || this.tagName !== 'TEXTAREA') {
             return;
         }
-        // 1. 높이를 'auto'로 설정하여 내용에 따른 실제 scrollHeight 계산 준비
         this.style.height = 'auto';
-        this.style.overflowY = 'hidden'; // 스크롤 임시 숨김
+        this.style.overflowY = 'hidden';
 
         const computedStyle = getComputedStyle(this);
-        const lineHeight = parseFloat(computedStyle.lineHeight) || 18; // 줄 높이
+        const lineHeight = parseFloat(computedStyle.lineHeight) || 18;
         const paddingTop = parseFloat(computedStyle.paddingTop) || 0;
         const paddingBottom = parseFloat(computedStyle.paddingBottom) || 0;
         const borderTop = parseFloat(computedStyle.borderTopWidth) || 0;
         const borderBottom = parseFloat(computedStyle.borderBottomWidth) || 0;
         const verticalPaddingAndBorder = paddingTop + paddingBottom + borderTop + borderBottom;
 
-        // 2. min-height 계산 (CSS 값 우선)
         let minHeight = 0;
         const minHeightStyle = computedStyle.minHeight;
         if (minHeightStyle && minHeightStyle !== 'none' && minHeightStyle !== 'auto') {
             minHeight = parseFloat(minHeightStyle);
             if (isNaN(minHeight)) minHeight = 0;
         }
-        // min-height 설정 없으면 기본 1줄 높이
         if (minHeight === 0) {
             minHeight = lineHeight + verticalPaddingAndBorder;
         }
 
-        // 3. max-height 계산 (CSS 값 우선)
         let maxHeight = Infinity;
         const maxHeightStyle = computedStyle.maxHeight;
         if (maxHeightStyle && maxHeightStyle !== 'none') {
             maxHeight = parseFloat(maxHeightStyle);
-             // px 단위가 아니거나 파싱 실패 시 무한대로 처리
             if (isNaN(maxHeight)) maxHeight = Infinity;
         }
 
-        // 4. 실제 내용 높이 가져오기
         const scrollHeight = this.scrollHeight;
 
-        // 5. 높이 설정
         if (scrollHeight <= maxHeight) {
-            // 최대 높이 이하: 내용 높이로 설정 (단, min-height보다 작으면 min-height로)
             this.style.height = Math.max(scrollHeight, minHeight) + 'px';
-            this.style.overflowY = 'hidden'; // 스크롤바 숨김
+            this.style.overflowY = 'hidden';
         } else {
-            // 최대 높이 초과: 최대 높이로 고정하고 스크롤바 표시
             this.style.height = maxHeight + 'px';
-            this.style.overflowY = 'auto'; // 스크롤바 표시
+            this.style.overflowY = 'auto';
         }
 
     } catch (e) {
+        // 자동 높이 조절 오류는 치명적이지 않으므로 콘솔 에러만 출력
         console.error("Error in autoResizeTextarea:", e);
     }
 }
@@ -226,7 +218,6 @@ function loadSettings(slotNumber) {
             }
         }
 
-        // 모달 필드 채우기
         if(botNameInputModal) botNameInputModal.value = settings.botName || '';
         if(botAgeInputModal) botAgeInputModal.value = settings.botAge || '';
         if(botGenderInputModal) botGenderInputModal.value = settings.botGender || '';
@@ -241,12 +232,11 @@ function loadSettings(slotNumber) {
         if(userGuidelinesInputModal) userGuidelinesInputModal.value = settings.userGuidelines || '';
         if(userImagePreview) updateImagePreview(settings.userImageUrl || '', userImagePreview);
 
-        // 전역 변수 업데이트
         userProfileImgUrl = settings.userImageUrl || "";
         botProfileImgUrl = settings.botImageUrl || "";
 
-        updateSystemPrompt(); // 시스템 프롬프트 업데이트
-        updateSlotButtonStyles(); // 슬롯 버튼 스타일 업데이트
+        updateSystemPrompt();
+        updateSlotButtonStyles();
 
         // 모달 Textarea 초기 높이 조절
         const modalTextareas = [
@@ -257,7 +247,6 @@ function loadSettings(slotNumber) {
         ];
         modalTextareas.forEach(textarea => {
             if (textarea) {
-                 // 비동기 호출 (setTimeout)로 렌더링 후 높이 조절
                  setTimeout(() => autoResizeTextarea.call(textarea), 0);
             }
         });
@@ -304,7 +293,7 @@ function initializeChat() {
         loadConversationHistory();
         if(userInput) autoResizeTextarea.call(userInput);
         // 초기화 성공 로그는 유지
-        console.log("Chat initialized successfully for slot " + currentSlot);
+        // console.log("Chat initialized successfully for slot " + currentSlot); // 필요한 경우 주석 해제
     } catch (e) {
         console.error("Error during initializeChat:", e);
     }
@@ -316,11 +305,9 @@ function appendInitialNotice() {
         if (chat) {
             const existingNotice = chat.querySelector('.initial-notice');
             if (existingNotice) existingNotice.remove();
-
             const noticeDiv = document.createElement('div');
             noticeDiv.className = 'initial-notice';
             noticeDiv.innerHTML = `대화를 시작하세요! 설정(≡)에서 캐릭터와 사용자 정보를 변경할 수 있습니다.<br><div class="notice-divider"></div>`;
-
             if (chat.firstChild) {
                 chat.insertBefore(noticeDiv, chat.firstChild);
             } else {
@@ -332,160 +319,61 @@ function appendInitialNotice() {
     }
 }
 
-// 메시지를 채팅창에 추가 (내부 콘솔 로그 제거)
+// 메시지를 채팅창에 추가 (Marked 라이브러리 확인 강화)
 function appendMessage(role, messageData, index = -1) {
     try {
         if (!chat) { console.error("Chat element not found"); return; }
         const isIndexed = typeof index === 'number' && index >= 0 && index < conversationHistory.length;
 
         if (messageData.type === 'image') {
-            const container = document.createElement("div");
-            container.className = `image-announcement ${role}`;
-            if (isIndexed) { container.dataset.index = index; }
-
-            const fadeContainer = document.createElement("div");
-            fadeContainer.className = "image-fade-container";
-
-            const img = document.createElement("img");
-            img.className = "chat-image";
-            img.src = messageData.url;
-            img.alt = "채팅 이미지";
-            img.loading = 'lazy';
-            img.onclick = () => openImageOverlay(img);
-            img.onerror = function() {
-                this.onerror = null;
-                const errorText = document.createElement('div');
-                errorText.textContent = "(이미지 로드 실패)";
-                errorText.className = 'image-error-text';
-                container.innerHTML = '';
-                container.appendChild(errorText);
-            };
-
-            const deleteButton = document.createElement("button");
-            deleteButton.className = "delete-btn chat-image-delete-btn";
-            deleteButton.textContent = "✕";
-            deleteButton.title = "이미지 삭제";
-            deleteButton.onclick = () => {
-                if (!isIndexed) { container.remove(); return; }
-                const msgIndex = parseInt(container.dataset.index);
-                if (!isNaN(msgIndex) && msgIndex >= 0 && msgIndex < conversationHistory.length && conversationHistory[msgIndex]?.messageData?.url === messageData.url) {
-                    if (confirm("이 이미지를 삭제하시겠습니까?")) {
-                        conversationHistory.splice(msgIndex, 1);
-                        saveConversationHistory();
-                        loadConversationHistory();
-                    }
-                } else {
-                    console.error("Cannot delete image, index mismatch or data error. Index:", msgIndex);
-                    alert("이미지 삭제 중 오류가 발생했습니다.");
-                    container.remove();
-                }
-            };
-
-            fadeContainer.appendChild(img);
-            container.appendChild(fadeContainer);
-            container.appendChild(deleteButton);
-            chat.appendChild(container);
+            // 이미지 처리 (변경 없음)
+            const container = document.createElement("div"); container.className = `image-announcement ${role}`; if (isIndexed) { container.dataset.index = index; }
+            const fadeContainer = document.createElement("div"); fadeContainer.className = "image-fade-container";
+            const img = document.createElement("img"); img.className = "chat-image"; img.src = messageData.url; img.alt = "채팅 이미지"; img.loading = 'lazy'; img.onclick = () => openImageOverlay(img);
+            img.onerror = function() { this.onerror = null; const errorText = document.createElement('div'); errorText.textContent = "(이미지 로드 실패)"; errorText.className = 'image-error-text'; container.innerHTML = ''; container.appendChild(errorText); };
+            const deleteButton = document.createElement("button"); deleteButton.className = "delete-btn chat-image-delete-btn"; deleteButton.textContent = "✕"; deleteButton.title = "이미지 삭제";
+            deleteButton.onclick = () => { if (!isIndexed) { container.remove(); return; } const msgIndex = parseInt(container.dataset.index); if (!isNaN(msgIndex) && msgIndex >= 0 && msgIndex < conversationHistory.length && conversationHistory[msgIndex]?.messageData?.url === messageData.url) { if (confirm("이 이미지를 삭제하시겠습니까?")) { conversationHistory.splice(msgIndex, 1); saveConversationHistory(); loadConversationHistory(); } } else { console.error("Cannot delete image, index mismatch or data error. Index:", msgIndex); alert("이미지 삭제 중 오류가 발생했습니다."); container.remove(); } };
+            fadeContainer.appendChild(img); container.appendChild(fadeContainer); container.appendChild(deleteButton); chat.appendChild(container);
 
         } else { // 텍스트 메시지
-            const messageContainer = document.createElement("div");
-            messageContainer.className = `message-container ${role}`;
-            if (isIndexed) { messageContainer.dataset.index = index; }
-
-            const profileArea = document.createElement("div");
-            profileArea.className = "profile-area";
-
-            const profileImgContainer = document.createElement("div");
-            profileImgContainer.style.position = 'relative';
-
+            const messageContainer = document.createElement("div"); messageContainer.className = `message-container ${role}`; if (isIndexed) { messageContainer.dataset.index = index; }
+            const profileArea = document.createElement("div"); profileArea.className = "profile-area";
+            const profileImgContainer = document.createElement("div"); profileImgContainer.style.position = 'relative';
             const profileUrl = (role === 'user' ? userProfileImgUrl : botProfileImgUrl);
             const profileName = (role === 'user' ? (userNameInputModal?.value || "사용자") : (botNameInputModal?.value || "캐릭터"));
-
-            const profileFallback = document.createElement("div");
-            profileFallback.className = "profile-fallback";
-            profileFallback.title = `${profileName} (이미지 없음)`;
+            const profileFallback = document.createElement("div"); profileFallback.className = "profile-fallback"; profileFallback.title = `${profileName} (이미지 없음)`;
 
             if (isValidImageUrl(profileUrl)) {
-                const profileImg = document.createElement("img");
-                profileImg.className = "profile-img";
-                profileImg.src = profileUrl;
-                profileImg.alt = `${profileName} 프로필`;
-                profileImg.loading = 'lazy';
-                profileImg.addEventListener("click", () => openImageOverlay(profileImg));
-                profileImg.onerror = function() {
-                    this.onerror = null;
-                    if (profileImgContainer) {
-                        profileImgContainer.innerHTML = '';
-                        profileImgContainer.appendChild(profileFallback.cloneNode(true));
-                    }
-                };
+                const profileImg = document.createElement("img"); profileImg.className = "profile-img"; profileImg.src = profileUrl; profileImg.alt = `${profileName} 프로필`; profileImg.loading = 'lazy'; profileImg.addEventListener("click", () => openImageOverlay(profileImg));
+                profileImg.onerror = function() { this.onerror = null; if (profileImgContainer) { profileImgContainer.innerHTML = ''; profileImgContainer.appendChild(profileFallback.cloneNode(true)); } };
                 profileImgContainer.appendChild(profileImg);
-            } else {
-                profileImgContainer.appendChild(profileFallback);
-            }
+            } else { profileImgContainer.appendChild(profileFallback); }
 
-             if (role === 'bot') {
-                 const profileEmoji = document.createElement("span");
-                 profileEmoji.className = "profile-emoji";
-                 const emojis = ['😊', '🤔', '✨', '👀', '😉', '😅', '📝', '💬', '🧐', '🤖'];
-                 profileEmoji.textContent = getRandomElement(emojis);
-                 profileEmoji.style.display = 'inline';
-                 profileImgContainer.appendChild(profileEmoji);
-             }
+             if (role === 'bot') { const profileEmoji = document.createElement("span"); profileEmoji.className = "profile-emoji"; const emojis = ['😊', '🤔', '✨', '👀', '😉', '😅', '📝', '💬', '🧐', '🤖']; profileEmoji.textContent = getRandomElement(emojis); profileEmoji.style.display = 'inline'; profileImgContainer.appendChild(profileEmoji); }
 
-            const nameArea = document.createElement("div");
-            nameArea.className = "role-name";
-            const nameSpan = document.createElement("span");
-            nameSpan.className = "name-text";
-            nameSpan.textContent = profileName;
+            const nameArea = document.createElement("div"); nameArea.className = "role-name"; const nameSpan = document.createElement("span"); nameSpan.className = "name-text"; nameSpan.textContent = profileName;
+            let deleteButton = document.createElement("button"); deleteButton.className = "delete-btn"; deleteButton.textContent = "✕"; deleteButton.title = "메시지 삭제";
+            deleteButton.onclick = () => { if (!isIndexed) { messageContainer.remove(); return; } const msgIndex = parseInt(messageContainer.dataset.index); if (!isNaN(msgIndex) && msgIndex >= 0 && msgIndex < conversationHistory.length && conversationHistory[msgIndex]?.messageData?.text === messageData.text) { if (confirm("이 메시지를 삭제하시겠습니까?")) { conversationHistory.splice(msgIndex, 1); saveConversationHistory(); loadConversationHistory(); } } else { console.error("Cannot delete message, index mismatch or data error. Index:", msgIndex); alert("메시지 삭제 중 오류가 발생했습니다."); messageContainer.remove(); } };
+            nameArea.appendChild(nameSpan); nameArea.appendChild(deleteButton);
 
-            let deleteButton = document.createElement("button");
-            deleteButton.className = "delete-btn";
-            deleteButton.textContent = "✕";
-            deleteButton.title = "메시지 삭제";
-            deleteButton.onclick = () => {
-                if (!isIndexed) { messageContainer.remove(); return; }
-                 const msgIndex = parseInt(messageContainer.dataset.index);
-                if (!isNaN(msgIndex) && msgIndex >= 0 && msgIndex < conversationHistory.length && conversationHistory[msgIndex]?.messageData?.text === messageData.text) {
-                    if (confirm("이 메시지를 삭제하시겠습니까?")) {
-                        conversationHistory.splice(msgIndex, 1);
-                        saveConversationHistory();
-                        loadConversationHistory();
-                    }
-                } else {
-                    console.error("Cannot delete message, index mismatch or data error. Index:", msgIndex);
-                    alert("메시지 삭제 중 오류가 발생했습니다.");
-                    messageContainer.remove();
-                }
-            };
+            if (role === 'user') { profileArea.appendChild(nameArea); profileArea.appendChild(profileImgContainer); } else { profileArea.appendChild(profileImgContainer); profileArea.appendChild(nameArea); }
 
-            nameArea.appendChild(nameSpan);
-            nameArea.appendChild(deleteButton);
-
-            if (role === 'user') {
-                profileArea.appendChild(nameArea);
-                profileArea.appendChild(profileImgContainer);
-            } else {
-                profileArea.appendChild(profileImgContainer);
-                profileArea.appendChild(nameArea);
-            }
-
-            const messageWrapper = document.createElement("div");
-            messageWrapper.className = "message-content-wrapper";
-            const bubble = document.createElement("div");
-            bubble.className = "message-bubble";
+            const messageWrapper = document.createElement("div"); messageWrapper.className = "message-content-wrapper";
+            const bubble = document.createElement("div"); bubble.className = "message-bubble";
 
             let textContent = messageData.text || "";
-            if (typeof marked === 'function') {
+            // ★★★ 마크다운 처리 부분 ★★★
+            if (typeof marked === 'function') { // marked 라이브러리가 로드되었는지 확인
                 try {
                     bubble.innerHTML = marked.parse(textContent, { breaks: true, gfm: true });
                 } catch (e) {
                     console.error("Marked parsing error:", e);
-                    bubble.textContent = textContent;
+                    bubble.textContent = textContent; // 파싱 실패 시 원본 표시
                 }
             } else {
-                // marked 로드 실패 시 경고 (한 번만) - 이 로그는 유지하는 것이 좋을 수 있음
+                // 라이브러리가 없다면 경고 (한 번만)하고 원본 텍스트 표시
                 if (!window.markedWarningShown) {
-                    console.warn("marked library not loaded. Markdown will not be rendered.");
+                    console.warn("marked library is not loaded. Markdown will not be rendered. Check if marked.min.js is included correctly in your HTML.");
                     window.markedWarningShown = true;
                 }
                 bubble.textContent = textContent;
@@ -497,106 +385,21 @@ function appendMessage(role, messageData, index = -1) {
             chat.appendChild(messageContainer);
         }
 
-        setTimeout(() => {
-            if (chat) chat.scrollTop = chat.scrollHeight;
-        }, 50);
+        setTimeout(() => { if (chat) chat.scrollTop = chat.scrollHeight; }, 50);
 
     } catch (e) {
         console.error("Error in appendMessage:", e);
     }
 }
 
-// TXT 내보내기 (내부 콘솔 로그 제거)
-function exportConversationAsTxt() {
-    try {
-        if (!conversationHistory || conversationHistory.length === 0) {
-            alert("내보낼 대화 내용이 없습니다.");
-            return;
-        }
-        let content = "";
-        const botName = botNameInputModal?.value || "캐릭터";
-        const userName = userNameInputModal?.value || "사용자";
-        conversationHistory.forEach(entry => {
-            if (entry.role === 'user' && entry.messageData?.type === 'text' && entry.messageData?.text === SYSTEM_PROMPT) return;
-            if (entry.messageData?.type === 'image') return;
-            if (entry.messageData?.type === 'text') {
-                const name = (entry.role === "user" ? userName : botName);
-                let text = entry.messageData?.text || "";
-                 let plainText = text.replace(/^\*|\*$/g, '').replace(/\*([^*]+)\*/gs, '$1').trim();
-                 if (plainText) {
-                     content += `[${name}] : ${plainText}\n\n`;
-                 }
-            }
-        });
-        content = content.trimEnd();
-        if (!content) {
-            alert("내보낼 텍스트 내용이 없습니다. (시스템 메시지, 이미지 제외)");
-            return;
-        }
-        const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        const timestamp = new Date().toISOString().slice(0, 10).replace(/-/g, '');
-        link.download = `chat_history_${botName}_${userName}_${timestamp}.txt`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(link.href);
-        closeActionMenu();
-    } catch (e) {
-        console.error("Error in exportConversationAsTxt:", e);
-        alert("TXT 내보내기 중 오류 발생");
-    }
-}
 
-// 요약 (내부 콘솔 로그 제거)
-async function summarizeConversation() {
-    if (!sendButton || !userInput || !actionMenuButton || !loadingSpinner || !menuSummarizeButton || !chat) { console.error("Summarize function dependencies missing"); return; }
-    sendButton.disabled = true; userInput.disabled = true; actionMenuButton.disabled = true; loadingSpinner.style.display = 'block'; menuSummarizeButton.disabled = true; if(feedbackButton) feedbackButton.disabled = true;
-    closeActionMenu();
-    try {
-        const historyToSummarize = conversationHistory.filter(e => !(e.role === 'user' && e.messageData?.text === SYSTEM_PROMPT) && e.messageData?.type === 'text').slice(-10);
-        if (historyToSummarize.length === 0) {
-            alert("요약할 대화 내용이 없습니다.");
-            return; // finally 블록 실행을 위해 return 사용
-        }
-        const summaryPrompt = `다음 대화 내용을 한국어로 간결하게 요약해줘. 요약은 제3자 시점에서 작성하고, 핵심 사건과 전개만 담되 군더더기 없는 자연스러운 문장으로 작성해. "요약:" 같은 머리말은 붙이지 말고, 그냥 텍스트만 출력해. (최근 ${historyToSummarize.length} 턴 기준)`;
-        const contents = [
-            { role: "user", parts: [{ text: SYSTEM_PROMPT }] },
-            ...historyToSummarize.map(e => ({ role: e.role === 'model' ? 'model' : 'user', parts: [{ text: e.messageData.text }] })),
-            { role: "user", parts: [{ text: summaryPrompt }] }
-        ];
-        let summaryText = '';
-        try {
-            const response = await fetch(`/api/chat`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ contents: contents }) });
-            if (!response.ok) {
-                const errorBody = await response.text();
-                console.error(`Summary API Error (${response.status}): ${errorBody}`);
-                summaryText = `(요약 요청 실패: ${response.status})`;
-            } else {
-                const data = await response.json();
-                 summaryText = data?.candidates?.[0]?.content?.parts?.[0]?.text || "(요약 응답 처리 실패)";
-            }
-        } catch (fetchError) {
-            console.error("Fetch Error during summary:", fetchError);
-            summaryText = "(요약 요청 중 통신 오류)";
-        }
-        appendMessage("bot", { type: 'text', text: `--- 최근 ${historyToSummarize.length}턴 대화 요약 ---\n${summaryText}\n---` });
-    } catch (processError) {
-        console.error("Error in Summarize process:", processError);
-        appendMessage("bot", { type: 'text', text: "(요약 처리 중 오류 발생)" });
-    } finally {
-        if(sendButton) sendButton.disabled = false;
-        if(userInput) userInput.disabled = false;
-        if(actionMenuButton) actionMenuButton.disabled = false;
-        if(loadingSpinner) loadingSpinner.style.display = 'none';
-        if(menuSummarizeButton) menuSummarizeButton.disabled = false;
-        if(feedbackButton) feedbackButton.disabled = false;
-        if(userInput) userInput.focus();
-    }
-}
+// TXT 내보내기 (변경 없음)
+function exportConversationAsTxt() { try { if (!conversationHistory || conversationHistory.length === 0) { alert("내보낼 대화 내용이 없습니다."); return; } let content = ""; const botName = botNameInputModal?.value || "캐릭터"; const userName = userNameInputModal?.value || "사용자"; conversationHistory.forEach(entry => { if (entry.role === 'user' && entry.messageData?.type === 'text' && entry.messageData?.text === SYSTEM_PROMPT) return; if (entry.messageData?.type === 'image') return; if (entry.messageData?.type === 'text') { const name = (entry.role === "user" ? userName : botName); let text = entry.messageData?.text || ""; let plainText = text.replace(/^\*|\*$/g, '').replace(/\*([^*]+)\*/gs, '$1').trim(); if (plainText) { content += `[${name}] : ${plainText}\n\n`; } } }); content = content.trimEnd(); if (!content) { alert("내보낼 텍스트 내용이 없습니다. (시스템 메시지, 이미지 제외)"); return; } const blob = new Blob([content], { type: 'text/plain;charset=utf-8' }); const link = document.createElement('a'); link.href = URL.createObjectURL(blob); const timestamp = new Date().toISOString().slice(0, 10).replace(/-/g, ''); link.download = `chat_history_${botName}_${userName}_${timestamp}.txt`; document.body.appendChild(link); link.click(); document.body.removeChild(link); URL.revokeObjectURL(link.href); closeActionMenu(); } catch (e) { console.error("Error in exportConversationAsTxt:", e); alert("TXT 내보내기 중 오류 발생"); } }
 
-// 메시지 전송 (내부 콘솔 로그 제거, 피드백 프롬프트 적용)
+// 요약 (변경 없음)
+async function summarizeConversation() { if (!sendButton || !userInput || !actionMenuButton || !loadingSpinner || !menuSummarizeButton || !chat) { console.error("Summarize function dependencies missing"); return; } sendButton.disabled = true; userInput.disabled = true; actionMenuButton.disabled = true; loadingSpinner.style.display = 'block'; menuSummarizeButton.disabled = true; if(feedbackButton) feedbackButton.disabled = true; closeActionMenu(); try { const historyToSummarize = conversationHistory.filter(e => !(e.role === 'user' && e.messageData?.text === SYSTEM_PROMPT) && e.messageData?.type === 'text').slice(-10); if (historyToSummarize.length === 0) { alert("요약할 대화 내용이 없습니다."); return; } const summaryPrompt = `다음 대화 내용을 한국어로 간결하게 요약해줘. 요약은 제3자 시점에서 작성하고, 핵심 사건과 전개만 담되 군더더기 없는 자연스러운 문장으로 작성해. "요약:" 같은 머리말은 붙이지 말고, 그냥 텍스트만 출력해. (최근 ${historyToSummarize.length} 턴 기준)`; const contents = [ { role: "user", parts: [{ text: SYSTEM_PROMPT }] }, ...historyToSummarize.map(e => ({ role: e.role === 'model' ? 'model' : 'user', parts: [{ text: e.messageData.text }] })), { role: "user", parts: [{ text: summaryPrompt }] } ]; let summaryText = ''; try { const response = await fetch(`/api/chat`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ contents: contents }) }); if (!response.ok) { const errorBody = await response.text(); console.error(`Summary API Error (${response.status}): ${errorBody}`); summaryText = `(요약 요청 실패: ${response.status})`; } else { const data = await response.json(); summaryText = data?.candidates?.[0]?.content?.parts?.[0]?.text || "(요약 응답 처리 실패)"; } } catch (fetchError) { console.error("Fetch Error during summary:", fetchError); summaryText = "(요약 요청 중 통신 오류)"; } appendMessage("bot", { type: 'text', text: `--- 최근 ${historyToSummarize.length}턴 대화 요약 ---\n${summaryText}\n---` }); } catch (processError) { console.error("Error in Summarize process:", processError); appendMessage("bot", { type: 'text', text: "(요약 처리 중 오류 발생)" }); } finally { if(sendButton) sendButton.disabled = false; if(userInput) userInput.disabled = false; if(actionMenuButton) actionMenuButton.disabled = false; if(loadingSpinner) loadingSpinner.style.display = 'none'; if(menuSummarizeButton) menuSummarizeButton.disabled = false; if(feedbackButton) feedbackButton.disabled = false; if(userInput) userInput.focus(); } }
+
+// 메시지 전송 (피드백 프롬프트 적용 수정)
 async function sendMessage(messageText) {
      if (!userInput || !sendButton || !actionMenuButton || !feedbackButton || !loadingSpinner || !chat) { console.error("sendMessage dependencies missing"); return; }
      let messageContent = messageText.trim();
@@ -610,7 +413,7 @@ async function sendMessage(messageText) {
          userInput.value = ''; autoResizeTextarea.call(userInput); return;
      }
      try {
-         let feedbackToSend = currentFeedback; // 현재 피드백 저장
+         let feedbackTypeToSend = currentFeedback; // 현재 피드백 종류 저장
          if (currentFeedback) {
              handleFeedbackSelection(null); // 피드백 상태 초기화 (보내고 나면 리셋)
          }
@@ -628,12 +431,12 @@ async function sendMessage(messageText) {
                  ...textHistory.map(e => ({ role: e.role === 'model' ? 'model' : 'user', parts: [{ text: e.messageData.text }] }))
              ];
              // ★★★ 피드백 적용 수정 ★★★
-             if (feedbackToSend && feedbackPrompts[feedbackToSend]) { // feedbackToSend 값이 있고, feedbackPrompts 객체에 해당 키가 존재하면
-                 apiContents.push({ role: "user", parts: [{ text: feedbackPrompts[feedbackToSend] }] }); // 정의된 상세 프롬프트를 추가
-             } else if (feedbackToSend) {
-                 // 혹시 모를 예외: feedbackPrompts에 키가 없는 경우 기본 형식 사용
-                 console.warn(`Feedback type "${feedbackToSend}" not found in feedbackPrompts. Sending basic feedback.`);
-                 apiContents.push({ role: "user", parts: [{ text: `(피드백: ${feedbackToSend})` }] });
+             if (feedbackTypeToSend && feedbackPrompts[feedbackTypeToSend]) { // feedbackTypeToSend 값이 있고, feedbackPrompts 객체에 해당 키가 존재하면
+                 apiContents.push({ role: "user", parts: [{ text: feedbackPrompts[feedbackTypeToSend] }] }); // 정의된 상세 프롬프트를 추가
+             } else if (feedbackTypeToSend) {
+                 // 정의되지 않은 피드백 타입에 대한 예외 처리 (기본 형식 사용)
+                 console.warn(`Feedback type "${feedbackTypeToSend}" not found in feedbackPrompts. Sending basic feedback.`);
+                 apiContents.push({ role: "user", parts: [{ text: `(피드백: ${feedbackTypeToSend})` }] });
              }
          } catch (prepError) {
              console.error("Error preparing API contents:", prepError);
@@ -660,7 +463,7 @@ async function sendMessage(messageText) {
          saveConversationHistory();
      } catch (e) {
          console.error("Error sendMessage:", e);
-         appendMessage("bot", { type: 'text', text: `(메시지 처리 중 오류 발생: ${e.message})` });
+         appendMessage("bot", { type: 'text', text: `(메시지 처리 중 오류 발생)` }); // 사용자에게는 간단히
      } finally {
          if(sendButton) sendButton.disabled = false;
          if(userInput) userInput.disabled = false;
@@ -671,14 +474,14 @@ async function sendMessage(messageText) {
      }
 }
 
-// '상황' 요청 함수 (내부 콘솔 로그 제거, 오류 수정)
+// '상황' 요청 함수 (오류 수정)
 async function sendSituationRequest(type) {
     if (!sendButton || !userInput || !actionMenuButton || !loadingSpinner || !botNameInputModal || !chat) { console.error("sendSituationRequest dependencies missing"); return; }
     sendButton.disabled = true; userInput.disabled = true; actionMenuButton.disabled = true; loadingSpinner.style.display = 'block'; if(feedbackButton) feedbackButton.disabled = true;
     closeActionMenu();
     try {
         const currentBotName = botNameInputModal.value || "캐릭터";
-        let situationPromptText = ''; // 보낼 프롬프트 텍스트 초기화
+        let situationPromptText = ''; // 보낼 프롬프트 텍스트
 
         // 타입별 프롬프트 정의
         switch (type) {
@@ -697,9 +500,8 @@ async function sendSituationRequest(type) {
                  break;
         }
 
-        // API 요청 데이터 준비
         const textHistory = conversationHistory.filter(e => e.messageData?.type === 'text');
-        // ★★★ 수정: 변수 이름 수정 (p -> situationPromptText) ★★★
+        // ★★★ 수정된 부분: p 대신 situationPromptText 사용 ★★★
         const contents = [
             { role: "user", parts: [{ text: SYSTEM_PROMPT }] },
             ...textHistory.map(e => ({ role: e.role === 'model' ? 'model' : 'user', parts: [{ text: e.messageData.text }] })),
@@ -726,9 +528,8 @@ async function sendSituationRequest(type) {
         appendMessage("bot", botMessage.messageData, conversationHistory.length - 1);
         saveConversationHistory();
     } catch (e) {
-        // Error 객체 전체를 로깅하면 스택 트레이스 확인에 도움됨
-        console.error("Error sendSituationRequest:", e);
-        appendMessage("bot", { type: 'text', text: `(상황 요청 처리 중 오류 발생)` }); // 사용자에게는 간단히 알림
+        console.error("Error sendSituationRequest:", e); // 오류 객체 전체 로깅
+        appendMessage("bot", { type: 'text', text: `(상황 요청 처리 중 오류 발생)` });
     } finally {
         if(sendButton) sendButton.disabled = false;
         if(userInput) userInput.disabled = false;
@@ -739,45 +540,19 @@ async function sendSituationRequest(type) {
     }
 }
 
-// 이미지 URL 미리보기 업데이트 (내부 콘솔 로그 제거)
-function updateImagePreview(url, imgElement) {
-    const previewArea = imgElement?.closest('.image-preview-area');
-    if (!imgElement || !previewArea) { return; }
-    if (isValidImageUrl(url)) {
-        imgElement.src = url;
-        imgElement.style.display = 'block';
-        previewArea.classList.add('has-image');
-        imgElement.onerror = function() {
-            this.onerror = null;
-            imgElement.style.display = 'none';
-            previewArea.classList.remove('has-image');
-            imgElement.src = '';
-        };
-    } else {
-        imgElement.src = '';
-        imgElement.style.display = 'none';
-        previewArea.classList.remove('has-image');
-    }
-}
+// 이미지 URL 미리보기 업데이트 (변경 없음)
+function updateImagePreview(url, imgElement) { const previewArea = imgElement?.closest('.image-preview-area'); if (!imgElement || !previewArea) { return; } if (isValidImageUrl(url)) { imgElement.src = url; imgElement.style.display = 'block'; previewArea.classList.add('has-image'); imgElement.onerror = function() { this.onerror = null; imgElement.style.display = 'none'; previewArea.classList.remove('has-image'); imgElement.src = ''; }; } else { imgElement.src = ''; imgElement.style.display = 'none'; previewArea.classList.remove('has-image'); } }
 
-// 슬롯 버튼 스타일 업데이트 (내부 콘솔 로그 제거)
-function updateSlotButtonStyles() {
-    try {
-        document.querySelectorAll('.slot-button').forEach(button => {
-            button.classList.toggle('active', parseInt(button.textContent) === currentSlot);
-        });
-    } catch (e) {
-        console.error("Error updating slot button styles:", e);
-    }
-}
+// 슬롯 버튼 스타일 업데이트 (변경 없음)
+function updateSlotButtonStyles() { try { document.querySelectorAll('.slot-button').forEach(button => { button.classList.toggle('active', parseInt(button.textContent) === currentSlot); }); } catch (e) { console.error("Error updating slot button styles:", e); } }
 
-// --- 랜덤 생성 함수 (API 호출 방식, 최종 프롬프트 적용) ---
+// --- 랜덤 생성 함수 (API 호출 방식, 프롬프트 개선 및 JSON 파싱 수정) ---
 async function generateRandomCharacter() {
      if (!generateRandomCharacterButton || !botNameInputModal || !botGenderInputModal || !botAgeInputModal || !botAppearanceInputModal || !botPersonaInputModal) { console.error("Character elements missing."); alert("캐릭터 생성 요소 누락"); return; }
      generateRandomCharacterButton.disabled = true; generateRandomCharacterButton.textContent = "⏳";
      try {
-         // 최종 랜덤 생성 프롬프트 (직업 통합, 500자, 2인칭, 다양성/균형 강화)
-         const p = `## 역할: **다양한 성향과 관계성을 가진** 개성있는 무작위 캐릭터 프로필 생성기 (JSON 출력)\n\n당신은 매번 새롭고 독특한 개성을 가진 캐릭터 프로필을 생성합니다. **진정한 무작위성 원칙**에 따라 각 항목(세계관, 성별, 종족, 나이, 직업, 성격 키워드, 도덕적 성향 등)을 **완전히 독립적으로, 모든 선택지에 동등한 확률을 부여**하여 선택합니다. **AI 스스로 특정 패턴(예: 세계관과 종족 연관 짓기, 특정 성격 반복)을 만들거나 회피하지 마십시오.** '현대' 세계관, '인간' 종족, 평범하거나 긍정적인 성격도 다른 모든 옵션과 **동일한 확률**로 선택될 수 있어야 하며, 현실적인 현대 한국인 캐릭터도 충분한 빈도로 포함되도록 하십시오.\n\n## 생성 규칙:\n\n1.  **세계관:** ['현대', '판타지', 'SF', '기타(포스트 아포칼립스, 스팀펑크 등)'] 중 **독립/무작위 1개 선택**. ('현대'도 다른 세계관과 선택 확률 동일)\n2.  **성별:** ['남성', '여성', '논바이너리'] 중 **독립/무작위 1개 선택**.\n3.  **인종:** ['백인', '아시아계', '흑인', '히스패닉/라틴계', '중동계', '혼혈', '한국인', '기타'] 중 **독립/무작위 1개 선택**.\n4.  **종족:** ['인간', '엘프', '드워프', '사이보그', '수인', '뱀파이어', '악마', '천사', '오크', '고블린', '요정', '언데드', '기타'] 중 **독립/무작위 1개 선택**. (선택된 세계관과 **절대로 연관 짓지 말고**, 모든 종족이 동일한 확률로 선택되어야 합니다).\n5.  **나이:**\n    *   **먼저, 위 4번에서 종족을 독립적으로 확정한 후** 나이를 결정합니다.\n    *   **만약 확정된 종족이 '뱀파이어', '천사', '악마', '엘프', '언데드'일 경우:** ['수백 살', '수천 년', '나이 불명', '고대의 존재'] 중 적절한 표현 **무작위 선택**.\n    *   **그 외 종족일 경우:** 19세부터 80세 사이 정수 중 **무작위 선택**.\n6.  **직업 선택 (내부용):** 선택된 **세계관, 종족, 나이**에 어울리는 **구체적인 직업 1개를 내부적으로 무작위 선택**합니다. **아래 7번에서 선택될 '도덕적 성향'과도 어느 정도 연관성을 고려**하여 설정하십시오.\n7.  **도덕적 성향/역할 선택:** 다음 목록에서 **1개를 무작위로 선택**합니다: ['선량함/영웅적', '평범함/중립적', '이기적/기회주의적', '반영웅적/모호함', '악당/빌런', '혼돈적/예측불허', '조직범죄 관련(조폭 등)']\n8.  **핵심 성격 키워드 선택:** 다음 목록에서 **서로 다른 키워드 1개 또는 2개를 무작위로 선택**합니다: ['낙천적인', '염세적인', '충동적인', '신중한', '사교적인', '내향적인', '원칙주의적인', '기회주의적인', '이타적인', '이기적인', '예술가적인', '현실적인', '광신적인', '회의적인', '자유분방한', '통제적인', '용감한', '겁 많은', '자존감 높은', '자존감 낮은', '비밀스러운', '솔직한', '감정적인', '이성적인', '엉뚱한', '진지한', '잔인한', '교활한', '탐욕스러운', '무자비한', '냉혈한'].\n9.  **이름:** 선택된 조건에 어울리는 이름 생성. (만약 세계관이 '현대'이고 인종이 '한국인'이면, 일반적인 한국 성+이름 형식을 우선 고려)\n10. **외형 묘사:** 조건을 반영하여 **최소 30자 이상** 작성.\n11. **성격/가이드라인:** **내부적으로 선택된 직업(6), 도덕적 성향(7), 성격 키워드(8)를 반드시 반영**하여, 캐릭터의 입체적인 면모(가치관, 동기, 행동 방식 등)를 보여주는 묘사를 **최소 500자 이상** 작성해야 합니다. **작성 시, 캐릭터의 직업이 무엇인지 명시적으로 서술하고, 그것이 캐릭터의 삶과 성격에 미치는 영향을 포함해야 합니다.** **또한, 이 캐릭터가 사용자({userName})에 대해 가지는 초기 인상, 태도, 또는 관계 설정을 서술할 때는, 사용자의 이름({userName}) 대신 반드시 2인칭 대명사('당신', '당신의')를 사용하여 직접적으로 표현해야 합니다.** **내용을 구성할 때, 의미 단위에 따라 적절히 문단을 나누어 (예: 줄 바꿈 2번 사용) 가독성을 높여주십시오.** (피상적인 이중 성격 묘사 지양)\n\n## 출력 형식 (JSON 객체 하나만 출력):\n**JSON 객체 외에 어떤 다른 텍스트(예: '알겠습니다', 'JSON입니다:')도 절대 포함하지 마십시오.**\n\`\`\`json\n{\n  "name": "생성된 이름",\n  "gender": "생성된 성별",\n  "age": "생성된 나이",\n  "appearance": "생성된 외형 묘사",\n  "persona": "생성된 성격/가이드라인 묘사 (캐릭터의 직업 명시 및 관련 서술, 성향, 키워드, 사용자 관계 포함, 최소 500자 이상, 문단 구분)"\n}\n\`\`\`\n`;
+         // 최종 랜덤 생성 프롬프트 (현대/한국인 빈도↑, 직업 균형, 문단 나누기, 2인칭, JSON만 출력)
+         const p = `## 역할: **다양한 성향과 관계성을 가진** 개성있는 무작위 캐릭터 프로필 생성기 (JSON 출력)\n\n당신은 매번 새롭고 독특한 개성을 가진 캐릭터 프로필을 생성합니다. **진정한 무작위성 원칙**에 따라 각 항목(세계관, 성별, 종족, 나이, 직업, 성격 키워드, 도덕적 성향 등)을 **완전히 독립적으로, 모든 선택지에 동등한 확률을 부여**하여 선택합니다. **AI 스스로 특정 패턴(예: 세계관과 종족 연관 짓기, 특정 성격 반복)을 만들거나 회피하지 마십시오.** '현대' 세계관, '인간' 종족, 평범하거나 긍정적인 성격도 다른 모든 옵션과 **동일한 확률**로 선택될 수 있어야 하며, **현실적인 현대 한국인 캐릭터도 충분한 빈도로 포함**되도록 하십시오.\n\n## 생성 규칙:\n\n1.  **세계관:** ['현대', '판타지', 'SF', '기타(포스트 아포칼립스, 스팀펑크 등)'] 중 **독립/무작위 1개 선택**. ('현대'도 다른 세계관과 선택 확률 동일)\n2.  **성별:** ['남성', '여성', '논바이너리'] 중 **독립/무작위 1개 선택**.\n3.  **인종:** ['백인', '아시아계', '흑인', '히스패닉/라틴계', '중동계', '혼혈', '한국인', '기타'] 중 **독립/무작위 1개 선택**.\n4.  **종족:** ['인간', '엘프', '드워프', '사이보그', '수인', '뱀파이어', '악마', '천사', '오크', '고블린', '요정', '언데드', '기타'] 중 **독립/무작위 1개 선택**. (선택된 세계관과 **절대로 연관 짓지 말고**, 모든 종족이 동일한 확률로 선택되어야 합니다).\n5.  **나이:**\n    *   **먼저, 위 4번에서 종족을 독립적으로 확정한 후** 나이를 결정합니다.\n    *   **만약 확정된 종족이 '뱀파이어', '천사', '악마', '엘프', '언데드'일 경우:** ['수백 살', '수천 년', '나이 불명', '고대의 존재'] 중 적절한 표현 **무작위 선택**.\n    *   **그 외 종족일 경우:** 19세부터 80세 사이 정수 중 **무작위 선택**.\n6.  **직업 선택 (내부용):** 선택된 **세계관, 종족, 나이**에 어울리는 **구체적인 직업 1개를 내부적으로 무작위 선택**합니다. (예: 현대-회사원, 의사, 교사, 예술가, 조폭, 학생 / 판타지-기사, 마법사, 상인, 암살자 / SF-우주선 조종사, 해커, 연구원 등). **현실적인 직업과 특이한 직업이 균형있게 선택**되도록 하십시오. **아래 7번에서 선택될 '도덕적 성향'과도 어느 정도 연관성을 고려**하여 설정하십시오.\n7.  **도덕적 성향/역할 선택:** 다음 목록에서 **1개를 무작위로 선택**합니다: ['선량함/영웅적', '평범함/중립적', '이기적/기회주의적', '반영웅적/모호함', '악당/빌런', '혼돈적/예측불허', '조직범죄 관련(조폭 등)']\n8.  **핵심 성격 키워드 선택:** 다음 목록에서 **서로 다른 키워드 1개 또는 2개를 무작위로 선택**합니다: ['낙천적인', '염세적인', '충동적인', '신중한', '사교적인', '내향적인', '원칙주의적인', '기회주의적인', '이타적인', '이기적인', '예술가적인', '현실적인', '광신적인', '회의적인', '자유분방한', '통제적인', '용감한', '겁 많은', '자존감 높은', '자존감 낮은', '비밀스러운', '솔직한', '감정적인', '이성적인', '엉뚱한', '진지한', '잔인한', '교활한', '탐욕스러운', '무자비한', '냉혈한'].\n9.  **이름:** 선택된 조건에 어울리는 이름 생성. (**만약 세계관이 '현대'이고 인종이 '한국인'이면, 일반적인 한국 성+이름 형식을 우선 고려**)\n10. **외형 묘사:** 조건을 반영하여 **최소 30자 이상** 작성.\n11. **성격/가이드라인:** **내부적으로 선택된 직업(6), 도덕적 성향(7), 성격 키워드(8)를 반드시 반영**하여, 캐릭터의 입체적인 면모(가치관, 동기, 행동 방식 등)를 보여주는 묘사를 **최소 500자 이상** 작성해야 합니다. **작성 시, 캐릭터의 직업이 무엇인지 명시적으로 서술하고, 그것이 캐릭터의 삶과 성격에 미치는 영향을 포함해야 합니다.** **또한, 이 캐릭터가 사용자({userName})에 대해 가지는 초기 인상, 태도, 또는 관계 설정을 서술할 때는, 사용자의 이름({userName}) 대신 반드시 2인칭 대명사('당신', '당신의')를 사용하여 직접적으로 표현해야 합니다.** **내용을 구성할 때, 의미 단위에 따라 적절히 문단을 나누어 (예: 줄 바꿈 \\n\\n 사용) 가독성을 높여주십시오.** (피상적인 이중 성격 묘사 지양)\n\n## 출력 형식 (JSON 객체 하나만 출력):\n**JSON 객체 외에 어떤 다른 텍스트(예: '알겠습니다', 'JSON입니다:')도 절대 포함하지 마십시오.**\n\`\`\`json\n{\n  "name": "생성된 이름",\n  "gender": "생성된 성별",\n  "age": "생성된 나이",\n  "appearance": "생성된 외형 묘사",\n  "persona": "생성된 성격/가이드라인 묘사 (직업 명시, 성향, 키워드, 사용자 2인칭 관점 포함, 최소 500자 이상, 문단 구분)"\n}\n\`\`\`\n`;
 
          const contents = [{ role: "user", parts: [{ text: p }] }];
          const response = await fetch(`/api/chat`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ contents: contents }) });
@@ -788,10 +563,13 @@ async function generateRandomCharacter() {
          if (!jsonText) { console.error("Empty API response for random character:", data); throw new Error("API로부터 유효한 응답을 받지 못했습니다."); }
 
          try {
+             // ★★★ JSON 파싱 수정 ★★★
              const jsonMatch = jsonText.match(/{[\s\S]*}/);
              if (!jsonMatch) { throw new Error("응답에서 유효한 JSON 형식을 찾을 수 없습니다."); }
-             const validJson = jsonMatch[0];
-             const parsedData = JSON.parse(validJson);
+             const rawJsonString = jsonMatch[0];
+             // 실제 줄바꿈(\n)을 JSON용 이스케이프 문자(\\n)로 변경
+             const processedJsonString = rawJsonString.replace(/\n/g, '\\n');
+             const parsedData = JSON.parse(processedJsonString); // 처리된 문자열로 파싱
 
              botNameInputModal.value = parsedData.name || '';
              botGenderInputModal.value = parsedData.gender || '';
@@ -799,7 +577,7 @@ async function generateRandomCharacter() {
              botAppearanceInputModal.value = parsedData.appearance || '';
              botPersonaInputModal.value = parsedData.persona || '';
 
-             // Textarea 높이 즉시 조절
+             // Textarea 높이 즉시 조절 (setTimeout 사용)
              if(botAppearanceInputModal) setTimeout(() => autoResizeTextarea.call(botAppearanceInputModal), 0);
              if(botPersonaInputModal) setTimeout(() => autoResizeTextarea.call(botPersonaInputModal), 0);
 
@@ -817,11 +595,12 @@ async function generateRandomCharacter() {
      }
 }
 
-async function generateRandomUser() { // 랜덤 사용자 생성 함수 (내부 콘솔 로그 제거)
+async function generateRandomUser() { // 랜덤 사용자 생성 함수 (프롬프트 복구 및 개선)
      if (!generateRandomUserButton || !userNameInputModal || !userGenderInputModal || !userAgeInputModal || !userAppearanceInputModal || !userGuidelinesInputModal) { console.error("User elements missing."); alert("사용자 생성 요소 누락"); return; }
      generateRandomUserButton.disabled = true; generateRandomUserButton.textContent = "⏳";
      try {
-         const p = `## 역할: 매력적인 사용자 프로필 생성기 (JSON 출력)\n\n채팅 상대방(캐릭터)에게 흥미를 유발할 수 있는 사용자 프로필을 **무작위로** 생성합니다. **다양한 성향과 배경**을 가진 사용자를 만들어 주세요.\n\n## 생성 규칙 (각 항목은 독립적으로 무작위 선택):\n\n1.  **성별:** ['남성', '여성', '논바이너리'] 중 **독립/무작위 1개 선택**.\n2.  **나이:** 19세부터 45세 사이 정수 중 **무작위 1개 선택**.\n3.  **인종:** ['백인', '아시아계', '흑인', '히스패닉/라틴계', '중동계', '혼혈', '한국인', '기타'] 중 **독립/무작위 1개 선택**.\n4.  **이름:** 선택된 인종, 성별에 어울리는 현대적인 이름 생성 (한국인이면 한국 이름 우선).\n5.  **외형 묘사:** 조건을 반영하여 **최소 30자 이상** 작성.\n6.  **사용자 가이드라인:** 이 사용자가 채팅에서 어떤 역할을 하고 싶은지, 어떤 플레이 스타일을 선호하는지 (예: '수줍지만 호기심 많음', '적극적으로 관계 주도', '캐릭터의 비밀을 파헤치려 함', '위험한 상황을 즐김', '느긋하게 일상적인 교류 선호') 등을 포함하여 **최소 50자 이상** 작성. 캐릭터의 성격이 아닌, **사용자의 플레이 방향성**에 대한 내용이어야 합니다.\n\n## 출력 형식 (JSON 객체 하나만 출력):\n**JSON 객체 외에 어떤 다른 텍스트(예: '알겠습니다', 'JSON입니다:')도 절대 포함하지 마십시오.**\n\`\`\`json\n{\n  "name": "생성된 이름",\n  "gender": "선택된 성별",\n  "age": "생성된 나이",\n  "appearance": "생성된 외형 묘사",\n  "guidelines": "생성된 사용자 가이드라인 (최소 50자 이상)"\n}\n\`\`\`\n`;
+         // ★★★ 사용자 생성 프롬프트 (복구 및 개선) ★★★
+         const p = `## 역할: 매력적인 사용자 프로필 생성기 (JSON 출력)\n\n채팅 상대방(캐릭터)에게 흥미를 유발할 수 있는 사용자 프로필을 **무작위로** 생성합니다. **다양한 성향과 배경**을 가진 사용자를 만들어 주세요.\n\n## 생성 규칙 (각 항목은 독립적으로 무작위 선택):\n\n1.  **성별:** ['남성', '여성', '논바이너리'] 중 **독립/무작위 1개 선택**.\n2.  **나이:** 19세부터 45세 사이 정수 중 **무작위 1개 선택**.\n3.  **인종:** ['백인', '아시아계', '흑인', '히스패닉/라틴계', '중동계', '혼혈', '한국인', '기타'] 중 **독립/무작위 1개 선택**.\n4.  **이름:** 선택된 인종, 성별에 어울리는 현대적인 이름 생성 (한국인이면 한국 이름 우선).\n5.  **외형 묘사:** 조건을 반영하여 **최소 30자 이상** 작성.\n6.  **사용자 가이드라인:** 이 사용자가 채팅에서 어떤 역할을 하고 싶은지, 어떤 플레이 스타일을 선호하는지 (예: '수줍지만 호기심 많음', '적극적으로 관계 주도', '캐릭터의 비밀을 파헤치려 함', '위험한 상황을 즐김', '느긋하게 일상적인 교류 선호') 등을 포함하여 **최소 50자 이상** 작성. **캐릭터의 성격이 아닌, 사용자의 플레이 방향성**에 대한 내용이어야 합니다. **의미 단위에 따라 적절히 문단을 나누어 (예: \\n\\n 사용) 가독성을 높여주세요.**\n\n## 출력 형식 (JSON 객체 하나만 출력):\n**JSON 객체 외에 어떤 다른 텍스트(예: '알겠습니다', 'JSON입니다:')도 절대 포함하지 마십시오.**\n\`\`\`json\n{\n  "name": "생성된 이름",\n  "gender": "선택된 성별",\n  "age": "생성된 나이",\n  "appearance": "생성된 외형 묘사",\n  "guidelines": "생성된 사용자 가이드라인 (최소 50자 이상, 문단 구분)"\n}\n\`\`\`\n`;
          const contents = [{ role: "user", parts: [{ text: p }] }];
          const response = await fetch(`/api/chat`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ contents: contents }) });
          if (!response.ok) { const errorBody = await response.text(); console.error(`Rand User API Error (${response.status}): ${errorBody}`); throw new Error(`서버 오류 (${response.status})`); }
@@ -829,17 +608,23 @@ async function generateRandomUser() { // 랜덤 사용자 생성 함수 (내부 
          const jsonText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
          if (!jsonText) { console.error("Empty API response for random user:", data); throw new Error("API로부터 유효한 응답을 받지 못했습니다."); }
          try {
+             // ★★★ JSON 파싱 수정 ★★★
              const jsonMatch = jsonText.match(/{[\s\S]*}/);
              if (!jsonMatch) { throw new Error("응답에서 유효한 JSON 형식을 찾을 수 없습니다."); }
-             const validJson = jsonMatch[0];
-             const parsedData = JSON.parse(validJson);
+             const rawJsonString = jsonMatch[0];
+             const processedJsonString = rawJsonString.replace(/\n/g, '\\n'); // 줄바꿈 처리
+             const parsedData = JSON.parse(processedJsonString); // 처리된 문자열로 파싱
+
              userNameInputModal.value = parsedData.name || '';
              userGenderInputModal.value = parsedData.gender || '';
              userAgeInputModal.value = parsedData.age || '';
              userAppearanceInputModal.value = parsedData.appearance || '';
              userGuidelinesInputModal.value = parsedData.guidelines || '';
+
+             // Textarea 높이 즉시 조절 (setTimeout 사용)
              if(userAppearanceInputModal) setTimeout(() => autoResizeTextarea.call(userAppearanceInputModal), 0);
              if(userGuidelinesInputModal) setTimeout(() => autoResizeTextarea.call(userGuidelinesInputModal), 0);
+
              updateSystemPrompt();
              alert("랜덤 사용자 생성 완료!");
          } catch (parseError) {
@@ -854,62 +639,17 @@ async function generateRandomUser() { // 랜덤 사용자 생성 함수 (내부 
      }
 }
 
-// 이미지 미리보기 클릭 시 URL 입력 (내부 콘솔 로그 제거)
-function promptForImageUrl(imgElement, isBot) {
-    const currentUrl = imgElement.src && isValidImageUrl(imgElement.src) ? imgElement.src : '';
-    const promptMessage = isBot ? "캐릭터 이미지 URL 입력:" : "사용자 이미지 URL 입력:";
-    const newUrl = prompt(promptMessage, currentUrl);
-    if (newUrl !== null) {
-        if (newUrl === "" || !isValidImageUrl(newUrl)) {
-            updateImagePreview('', imgElement);
-            if (isBot) { botProfileImgUrl = ''; } else { userProfileImgUrl = ''; }
-            if (newUrl !== "") { alert("유효하지 않은 이미지 URL입니다."); }
-        } else {
-            updateImagePreview(newUrl, imgElement);
-            if (isBot) { botProfileImgUrl = newUrl; } else { userProfileImgUrl = newUrl; }
-        }
-    }
-}
+// 이미지 미리보기 클릭 시 URL 입력 (변경 없음)
+function promptForImageUrl(imgElement, isBot) { const currentUrl = imgElement.src && isValidImageUrl(imgElement.src) ? imgElement.src : ''; const promptMessage = isBot ? "캐릭터 이미지 URL 입력:" : "사용자 이미지 URL 입력:"; const newUrl = prompt(promptMessage, currentUrl); if (newUrl !== null) { if (newUrl === "" || !isValidImageUrl(newUrl)) { updateImagePreview('', imgElement); if (isBot) { botProfileImgUrl = ''; } else { userProfileImgUrl = ''; } if (newUrl !== "") { alert("유효하지 않은 이미지 URL입니다."); } } else { updateImagePreview(newUrl, imgElement); if (isBot) { botProfileImgUrl = newUrl; } else { userProfileImgUrl = newUrl; } } } }
 
-// 채팅 이미지 삽입 함수 (내부 콘솔 로그 제거)
-function sendImageChatMessage() {
-    closeActionMenu();
-    const imageUrl = prompt("채팅에 삽입할 이미지 URL:");
-    if (imageUrl && isValidImageUrl(imageUrl)) {
-        if (userInput) {
-            sendMessage(imageUrl);
-        } else {
-             const imgMessage = { role: "user", messageData: { type: 'image', url: imageUrl } };
-             conversationHistory.push(imgMessage);
-             appendMessage("user", imgMessage.messageData, conversationHistory.length - 1);
-             saveConversationHistory();
-             if (chat) chat.scrollTop = chat.scrollHeight;
-        }
-    } else if (imageUrl !== null) {
-        alert("유효한 이미지 URL 형식이 아닙니다.");
-    }
-}
+// 채팅 이미지 삽입 함수 (변경 없음)
+function sendImageChatMessage() { closeActionMenu(); const imageUrl = prompt("채팅에 삽입할 이미지 URL:"); if (imageUrl && isValidImageUrl(imageUrl)) { if (userInput) { sendMessage(imageUrl); } else { const imgMessage = { role: "user", messageData: { type: 'image', url: imageUrl } }; conversationHistory.push(imgMessage); appendMessage("user", imgMessage.messageData, conversationHistory.length - 1); saveConversationHistory(); if (chat) chat.scrollTop = chat.scrollHeight; } } else if (imageUrl !== null) { alert("유효한 이미지 URL 형식이 아닙니다."); } }
 
-// 피드백 선택 처리 (내부 콘솔 로그 제거)
-function handleFeedbackSelection(feedbackType) {
-    if (!feedbackOptionsContainer || !feedbackButton) return;
-    feedbackOptionsContainer.querySelectorAll('.feedback-option').forEach(button => {
-        button.classList.remove('active');
-    });
-    if (feedbackType) {
-        const selectedButton = feedbackOptionsContainer.querySelector(`.feedback-option[data-feedback="${feedbackType}"]`);
-        if (selectedButton) { selectedButton.classList.add('active'); }
-        currentFeedback = feedbackType;
-        feedbackButton.classList.add('active');
-        closeFeedbackOptions();
-    } else {
-        currentFeedback = null;
-        feedbackButton.classList.remove('active');
-    }
-}
+// 피드백 선택 처리 (변경 없음)
+function handleFeedbackSelection(feedbackType) { if (!feedbackOptionsContainer || !feedbackButton) return; feedbackOptionsContainer.querySelectorAll('.feedback-option').forEach(button => { button.classList.remove('active'); }); if (feedbackType) { const selectedButton = feedbackOptionsContainer.querySelector(`.feedback-option[data-feedback="${feedbackType}"]`); if (selectedButton) { selectedButton.classList.add('active'); } currentFeedback = feedbackType; feedbackButton.classList.add('active'); closeFeedbackOptions(); } else { currentFeedback = null; feedbackButton.classList.remove('active'); } }
 
 // --- 대화 기록 관리 ---
-// (save/load/reset 함수 내용은 변경 없음, 내부 콘솔 로그 제거됨)
+// (save/load/reset 함수 내용은 변경 없음)
 function saveConversationHistory() { try { if (conversationHistory && conversationHistory.length > 0) { localStorage.setItem(`conversation_slot_${currentSlot}`, JSON.stringify(conversationHistory)); } else { localStorage.removeItem(`conversation_slot_${currentSlot}`); } } catch (e) { console.error("Error saving conversation history:", e); } }
 function loadConversationHistory() { try { const savedData = localStorage.getItem(`conversation_slot_${currentSlot}`); conversationHistory = []; if (savedData) { try { const parsedData = JSON.parse(savedData); if (Array.isArray(parsedData)) { conversationHistory = parsedData; } else { localStorage.removeItem(`conversation_slot_${currentSlot}`); } } catch (e) { console.error("Error parsing conversation history:", e); localStorage.removeItem(`conversation_slot_${currentSlot}`); } } if (chat) { chat.innerHTML = ''; appendInitialNotice(); conversationHistory.forEach((entry, index) => { if (!(entry.role === 'user' && entry.messageData?.type === 'text' && entry.messageData?.text === SYSTEM_PROMPT)) { appendMessage(entry.role === 'model' ? 'bot' : 'user', entry.messageData, index); } }); setTimeout(() => { if (chat) chat.scrollTop = chat.scrollHeight; }, 100); } else { console.error("Chat element not found for loading history."); } } catch (e) { console.error("Error loading conversation history:", e); conversationHistory = []; } }
 function resetConversation() { if (confirm(`슬롯 ${currentSlot}의 대화 기록을 정말로 삭제하시겠습니까?`)) { conversationHistory = []; saveConversationHistory(); loadConversationHistory(); alert(`슬롯 ${currentSlot}의 대화 기록이 초기화되었습니다.`); } }
@@ -921,7 +661,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // 요소 할당 (변경 없음)
         chat=getElement('chat');userInput=getElement('userInput');sendButton=getElement('sendButton');loadingSpinner=getElement('loadingSpinner');actionMenuButton=getElement('actionMenuButton');actionMenu=getElement('actionMenu');menuOverlay=getElement('menuOverlay');sidebarToggle=getElement('sidebarToggle');settingsModalOverlay=getElement('settingsModalOverlay');settingsModal=getElement('settingsModal');closeModalButton=getElement('closeModalButton');saveSettingsButtonModal=getElement('saveSettingsButtonModal');feedbackButton=getElement('feedbackButton');feedbackOptionsContainer=getElement('feedbackOptionsContainer');botNameInputModal=getElement('botNameInputModal');botAgeInputModal=getElement('botAgeInputModal');botGenderInputModal=getElement('botGenderInputModal');botAppearanceInputModal=getElement('botAppearanceInputModal');botPersonaInputModal=getElement('botPersonaInputModal');botImagePreview=getElement('botImagePreview');userNameInputModal=getElement('userNameInputModal');userAgeInputModal=getElement('userAgeInputModal');userGenderInputModal=getElement('userGenderInputModal');userAppearanceInputModal=getElement('userAppearanceInputModal');userGuidelinesInputModal=getElement('userGuidelinesInputModal');userImagePreview=getElement('userImagePreview');generateRandomCharacterButton=getElement('generateRandomCharacter',false);generateRandomUserButton=getElement('generateRandomUser',false);menuImageButton=getElement('menuImageButton',false);menuSituationButton=getElement('menuSituationButton',false);menuExportTxtButton=getElement('menuExportTxtButton',false);menuSummarizeButton=getElement('menuSummarizeButton',false);situationOptions=getElement('situationOptions',false);imageOverlay=getElement('imageOverlay',false);overlayImage=getElement('overlayImage',false);
 
-        // 이벤트 리스너 연결 (변경 없음, 내부 콘솔 로그 제거됨)
+        // 이벤트 리스너 연결 (변경 없음)
         if(sendButton)sendButton.addEventListener("click",()=>{if(userInput)sendMessage(userInput.value);});
         if(userInput)userInput.addEventListener("keydown",function(e){if(e.key==="Enter"&&!e.shiftKey&&!e.isComposing){e.preventDefault();sendMessage(userInput.value);}});
         if(userInput)userInput.addEventListener('input',autoResizeTextarea);
