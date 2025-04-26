@@ -60,24 +60,25 @@ body { font-family: "Nanum Gothic", sans-serif; background-color: #1E1E1E; color
     box-sizing: border-box;
     /* resize: vertical; */ /* 사용자가 수동으로 크기 조절하던 것 비활성화 */
     resize: none;          /* 수동 조절 끄기 */
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+    scrollbar-width: none; /* Firefox 스크롤바 숨김 */
+    -ms-overflow-style: none; /* IE/Edge 스크롤바 숨김 */
     transition: background-color .2s;
 }
+/* Webkit 기반 브라우저 스크롤바 숨김 */
 .modal-body input[type=text]::-webkit-scrollbar,
 .modal-body textarea::-webkit-scrollbar {
     display: none;
 }
+/* textarea 공통 스타일 (자동 높이 조절 관련) */
 .modal-body textarea {
     line-height: 1.4;
     overflow-y: hidden; /* 내용 넘치기 전 스크롤 숨김 (JS 제어용) */
     max-height: 250px;  /* 최대 늘어날 높이 지정 (예: 250px) */
-    scrollbar-width: none; /* Firefox 스크롤바 숨김 */
-   -ms-overflow-style: none; /* IE/Edge 스크롤바 숨김 */
 }
+/* 가이드라인 입력칸 최소 높이 지정 */
 #botPersonaInputModal,
 #userGuidelinesInputModal {
-    min-height: 100px; /* 가이드라인 칸은 최소 높이 유지 */
+    min-height: 100px;
 }
 /* ▲▲▲ 모달 textarea 수정 끝 ▲▲▲ */
 
