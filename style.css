@@ -73,7 +73,9 @@ body { font-family: "Nanum Gothic", sans-serif; background-color: #1E1E1E; color
 .modal-body textarea {
     line-height: 1.4;
     overflow-y: hidden; /* 내용 넘치기 전 스크롤 숨김 (JS 제어용) */
-    max-height: 250px;  /* 최대 늘어날 높이 지정 (예: 250px) */
+    max-height: 300px;  /* 최대 늘어날 높이 지정 (예: 250px) */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
 }
 /* 가이드라인 입력칸 최소 높이 지정 */
 #botPersonaInputModal,
