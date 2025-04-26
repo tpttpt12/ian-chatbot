@@ -6,6 +6,10 @@ let SYSTEM_PROMPT = '';
 let currentSlot = 1;
 let currentFeedback = null;
 
+// --- 전역 변수 ---
+const userWorldInputModal = document.getElementById('userWorldInputModal');
+const botWorldInputModal = document.getElementById('botWorldInputModal');
+
 // --- SYSTEM_PROMPT 템플릿 ---
 const SYSTEM_PROMPT_TEMPLATE = `
 ## 기본 역할
