@@ -4,7 +4,7 @@ let botProfileImgUrl = "";
 let conversationHistory = [];
 let SYSTEM_PROMPT = '';
 let currentSlot = 1;
-let currentFeedback = null; // 사용자가 선택한 피드백 종류 저장 (예: "지침", "반복" 등)
+let currentFeedback = null;
 
 // --- SYSTEM_PROMPT 템플릿 ---
 const SYSTEM_PROMPT_TEMPLATE = `
@@ -86,7 +86,6 @@ const feedbackPrompts = {
 
 
 // --- DOM 요소 변수 ---
-// (변수 선언은 변경 없음)
 let chat, userInput, sendButton, loadingSpinner, imageOverlay, overlayImage, actionMenuButton, actionMenu, menuOverlay, menuImageButton, menuSituationButton, menuExportTxtButton, menuSummarizeButton, situationOptions, settingsModalOverlay, settingsModal, closeModalButton, sidebarToggle, botNameInputModal, botAgeInputModal, botGenderInputModal, botAppearanceInputModal, botPersonaInputModal, botImagePreview, userNameInputModal, userAgeInputModal, userGenderInputModal, userAppearanceInputModal, userGuidelinesInputModal, userImagePreview, saveSettingsButtonModal, generateRandomCharacterButton, generateRandomUserButton, feedbackButton, feedbackOptionsContainer;
 
 // --- 유틸리티 함수 ---
@@ -94,7 +93,6 @@ function getElement(id, required = true) { const e = document.getElementById(id)
 function getRandomElement(arr) { if (!arr || arr.length === 0) return ''; return arr[Math.floor(Math.random() * arr.length)]; }
 
 // --- 메뉴/모달 관리 함수 ---
-// (함수 내용은 변경 없음, 내부 콘솔 로그 제거됨)
 function openSettingsModal() { if (!settingsModalOverlay || !settingsModal) { console.error("Cannot open settings modal: Elements missing!"); settingsModalOverlay = getElement('settingsModalOverlay'); settingsModal = getElement('settingsModal'); if (!settingsModalOverlay || !settingsModal) { alert("오류: 설정 모달 요소를 찾을 수 없습니다."); return; } } try { settingsModalOverlay.style.display = 'flex'; settingsModalOverlay.classList.remove('modal-fade-out'); settingsModalOverlay.classList.add('modal-fade-in'); } catch (e) { console.error("Error opening modal:", e); alert("모달 열기 오류"); } }
 function closeSettingsModal() { if (!settingsModalOverlay || !settingsModal) { console.error("Cannot close settings modal: Elements missing!"); return; } try { settingsModalOverlay.classList.remove('modal-fade-in'); settingsModalOverlay.classList.add('modal-fade-out'); setTimeout(() => { if (settingsModalOverlay.classList.contains('modal-fade-out')) { settingsModalOverlay.style.display = 'none'; settingsModalOverlay.classList.remove('modal-fade-out'); } }, 300); } catch (e) { console.error("Error closing modal:", e); alert("모달 닫기 오류"); } }
 function toggleActionMenu() { if (actionMenu && menuOverlay) { const v = actionMenu.classList.contains('visible'); if (v) { closeActionMenu(); } else { closeFeedbackOptions(); actionMenu.classList.add('visible'); menuOverlay.style.display = 'block'; } } else { console.error("Action Menu elements missing"); } }
@@ -139,18 +137,20 @@ function autoResizeTextarea() {
         let maxHeight = Infinity;
         const maxHeightStyle = computedStyle.maxHeight;
         if (maxHeightStyle && maxHeightStyle !== 'none') {
-            maxHeight = parseFloat(maxHeightStyle);
-            if (isNaN(maxHeight)) maxHeight = Infinity;
+             // CSS에서 px 단위로 설정했다고 가정하고 파싱
+             maxHeight = parseFloat(maxHeightStyle);
+             // 파싱 실패 시 (예: calc() 등 복잡한 값) 대비
+             if (isNaN(maxHeight)) maxHeight = Infinity;
         }
 
         const scrollHeight = this.scrollHeight;
 
-        // CSS의 max-height 값 이내에서만 높이 조절
-        if (scrollHeight <= maxHeight) {
+        if (maxHeight === Infinity || scrollHeight <= maxHeight) {
+            // 최대 높이 제한이 없거나, 내용 높이가 최대 높이 이하일 때
             this.style.height = Math.max(scrollHeight, minHeight) + 'px';
             this.style.overflowY = 'hidden';
         } else {
-            // CSS의 max-height 값에 도달하면 높이 고정 및 스크롤 표시
+            // 내용 높이가 CSS 최대 높이를 초과할 때
             this.style.height = maxHeight + 'px';
             this.style.overflowY = 'auto';
         }
@@ -168,37 +168,19 @@ function isValidImageUrl(url) { if (!url || !url.startsWith('http')) { return fa
 function saveSettings(slotNumber) {
     try {
         if (!botNameInputModal || !botAgeInputModal || !botGenderInputModal || !botAppearanceInputModal || !botPersonaInputModal || !botImagePreview || !userNameInputModal || !userAgeInputModal || !userGenderInputModal || !userAppearanceInputModal || !userGuidelinesInputModal || !userImagePreview) {
-            console.error("Cannot save settings: Elements missing.");
-            alert("설정 저장 실패: 요소 누락");
-            return;
+            console.error("Cannot save settings: Elements missing."); alert("설정 저장 실패: 요소 누락"); return;
         }
         const botImgUrl = isValidImageUrl(botImagePreview.src) ? botImagePreview.src : '';
         const userImgUrl = isValidImageUrl(userImagePreview.src) ? userImagePreview.src : '';
-
         const settings = {
-            botName: botNameInputModal.value || '',
-            botAge: botAgeInputModal.value || '',
-            botGender: botGenderInputModal.value || '',
-            botAppearance: botAppearanceInputModal.value || '',
-            botPersona: botPersonaInputModal.value || '',
-            botImageUrl: botImgUrl,
-            userName: userNameInputModal.value || '',
-            userAge: userAgeInputModal.value || '',
-            userGender: userGenderInputModal.value || '',
-            userAppearance: userAppearanceInputModal.value || '',
-            userGuidelines: userGuidelinesInputModal.value || '',
-            userImageUrl: userImgUrl
+            botName: botNameInputModal.value || '', botAge: botAgeInputModal.value || '', botGender: botGenderInputModal.value || '', botAppearance: botAppearanceInputModal.value || '', botPersona: botPersonaInputModal.value || '', botImageUrl: botImgUrl,
+            userName: userNameInputModal.value || '', userAge: userAgeInputModal.value || '', userGender: userGenderInputModal.value || '', userAppearance: userAppearanceInputModal.value || '', userGuidelines: userGuidelinesInputModal.value || '', userImageUrl: userImgUrl
         };
         localStorage.setItem(`settings_slot_${slotNumber}`, JSON.stringify(settings));
         alert(`설정 슬롯 ${slotNumber} 저장 완료.`);
-        userProfileImgUrl = settings.userImageUrl;
-        botProfileImgUrl = settings.botImageUrl;
-        updateSystemPrompt();
-        closeSettingsModal();
-    } catch (e) {
-        console.error("Error in saveSettings:", e);
-        alert("설정 저장 중 오류 발생");
-    }
+        userProfileImgUrl = settings.userImageUrl; botProfileImgUrl = settings.botImageUrl;
+        updateSystemPrompt(); closeSettingsModal();
+    } catch (e) { console.error("Error in saveSettings:", e); alert("설정 저장 중 오류 발생"); }
 }
 
 // 설정 로드
@@ -206,19 +188,7 @@ function loadSettings(slotNumber) {
     try {
         const data = localStorage.getItem(`settings_slot_${slotNumber}`);
         let settings = {};
-        if (data) {
-            try {
-                settings = JSON.parse(data);
-                if (typeof settings !== 'object' || settings === null) {
-                    settings = {};
-                    localStorage.removeItem(`settings_slot_${slotNumber}`);
-                }
-            } catch (e) {
-                console.error("Failed to parse settings for slot " + slotNumber + ":", e);
-                localStorage.removeItem(`settings_slot_${slotNumber}`);
-                settings = {};
-            }
-        }
+        if (data) { try { settings = JSON.parse(data); if (typeof settings !== 'object' || settings === null) { settings = {}; localStorage.removeItem(`settings_slot_${slotNumber}`); } } catch (e) { console.error("Failed to parse settings for slot " + slotNumber + ":", e); localStorage.removeItem(`settings_slot_${slotNumber}`); settings = {}; } }
 
         if(botNameInputModal) botNameInputModal.value = settings.botName || '';
         if(botAgeInputModal) botAgeInputModal.value = settings.botAge || '';
@@ -226,7 +196,6 @@ function loadSettings(slotNumber) {
         if(botAppearanceInputModal) botAppearanceInputModal.value = settings.botAppearance || '';
         if(botPersonaInputModal) botPersonaInputModal.value = settings.botPersona || '';
         if(botImagePreview) updateImagePreview(settings.botImageUrl || '', botImagePreview);
-
         if(userNameInputModal) userNameInputModal.value = settings.userName || '';
         if(userAgeInputModal) userAgeInputModal.value = settings.userAge || '';
         if(userGenderInputModal) userGenderInputModal.value = settings.userGender || '';
@@ -234,90 +203,32 @@ function loadSettings(slotNumber) {
         if(userGuidelinesInputModal) userGuidelinesInputModal.value = settings.userGuidelines || '';
         if(userImagePreview) updateImagePreview(settings.userImageUrl || '', userImagePreview);
 
-        userProfileImgUrl = settings.userImageUrl || "";
-        botProfileImgUrl = settings.botImageUrl || "";
-
-        updateSystemPrompt();
-        updateSlotButtonStyles();
+        userProfileImgUrl = settings.userImageUrl || ""; botProfileImgUrl = settings.botImageUrl || "";
+        updateSystemPrompt(); updateSlotButtonStyles();
 
         // 모달 Textarea 초기 높이 조절
-        const modalTextareas = [
-            botAppearanceInputModal,
-            botPersonaInputModal,
-            userAppearanceInputModal,
-            userGuidelinesInputModal
-        ];
-        modalTextareas.forEach(textarea => {
-            if (textarea) {
-                 setTimeout(() => autoResizeTextarea.call(textarea), 0);
-            }
-        });
+        const modalTextareas = [ botAppearanceInputModal, botPersonaInputModal, userAppearanceInputModal, userGuidelinesInputModal ];
+        modalTextareas.forEach(textarea => { if (textarea) { setTimeout(() => autoResizeTextarea.call(textarea), 50); } }); // 50ms 지연
 
-    } catch (e) {
-        console.error("Error in loadSettings:", e);
-    }
+    } catch (e) { console.error("Error in loadSettings:", e); }
 }
 
 // SYSTEM_PROMPT 업데이트
 function updateSystemPrompt() {
      try {
-        const bn = botNameInputModal?.value || "캐릭터";
-        const ba = botAgeInputModal?.value || "불명";
-        const bg = botGenderInputModal?.value || "지정 안됨";
-        const bap = botAppearanceInputModal?.value || "알 수 없음";
-        const bp = botPersonaInputModal?.value || "설정 없음";
-        const un = userNameInputModal?.value || "사용자";
-        const ua = userAgeInputModal?.value || "불명";
-        const usg = userGenderInputModal?.value || "지정 안됨";
-        const uap = userAppearanceInputModal?.value || "알 수 없음";
-        const ug = userGuidelinesInputModal?.value || "설정 없음";
-
+        const bn = botNameInputModal?.value || "캐릭터"; const ba = botAgeInputModal?.value || "불명"; const bg = botGenderInputModal?.value || "지정 안됨"; const bap = botAppearanceInputModal?.value || "알 수 없음"; const bp = botPersonaInputModal?.value || "설정 없음";
+        const un = userNameInputModal?.value || "사용자"; const ua = userAgeInputModal?.value || "불명"; const usg = userGenderInputModal?.value || "지정 안됨"; const uap = userAppearanceInputModal?.value || "알 수 없음"; const ug = userGuidelinesInputModal?.value || "설정 없음";
         SYSTEM_PROMPT = SYSTEM_PROMPT_TEMPLATE
-            .replace(/{botName}/g, bn)
-            .replace(/{botAge}/g, ba)
-            .replace(/{botGender}/g, bg)
-            .replace(/{botAppearance}/g, bap)
-            .replace(/{botPersona}/g, bp)
-            .replace(/{userName}/g, un)
-            .replace(/{userAge}/g, ua)
-            .replace(/{userGender}/g, usg)
-            .replace(/{userAppearance}/g, uap)
-            .replace(/{userGuidelines}/g, ug);
-     } catch(e){
-         console.error("Error in updateSystemPrompt:", e);
-     }
+            .replace(/{botName}/g, bn).replace(/{botAge}/g, ba).replace(/{botGender}/g, bg).replace(/{botAppearance}/g, bap).replace(/{botPersona}/g, bp)
+            .replace(/{userName}/g, un).replace(/{userAge}/g, ua).replace(/{userGender}/g, usg).replace(/{userAppearance}/g, uap).replace(/{userGuidelines}/g, ug);
+     } catch(e){ console.error("Error in updateSystemPrompt:", e); }
 }
 
 // 초기화
-function initializeChat() {
-    try {
-        loadSettings(currentSlot);
-        loadConversationHistory();
-        if(userInput) autoResizeTextarea.call(userInput);
-    } catch (e) {
-        console.error("Error during initializeChat:", e);
-    }
-}
+function initializeChat() { try { loadSettings(currentSlot); loadConversationHistory(); if(userInput) autoResizeTextarea.call(userInput); } catch (e) { console.error("Error during initializeChat:", e); } }
 
 // 초기 공지 메시지
-function appendInitialNotice() {
-    try {
-        if (chat) {
-            const existingNotice = chat.querySelector('.initial-notice');
-            if (existingNotice) existingNotice.remove();
-            const noticeDiv = document.createElement('div');
-            noticeDiv.className = 'initial-notice';
-            noticeDiv.innerHTML = `대화를 시작하세요! 설정(≡)에서 캐릭터와 사용자 정보를 변경할 수 있습니다.<br><div class="notice-divider"></div>`;
-            if (chat.firstChild) {
-                chat.insertBefore(noticeDiv, chat.firstChild);
-            } else {
-                chat.appendChild(noticeDiv);
-            }
-        }
-    } catch(e) {
-        console.error("Error appending initial notice:", e);
-    }
-}
+function appendInitialNotice() { try { if (chat) { const existingNotice = chat.querySelector('.initial-notice'); if (existingNotice) existingNotice.remove(); const noticeDiv = document.createElement('div'); noticeDiv.className = 'initial-notice'; noticeDiv.innerHTML = `대화를 시작하세요! 설정(≡)에서 캐릭터와 사용자 정보를 변경할 수 있습니다.<br><div class="notice-divider"></div>`; if (chat.firstChild) { chat.insertBefore(noticeDiv, chat.firstChild); } else { chat.appendChild(noticeDiv); } } } catch(e) { console.error("Error appending initial notice:", e); } }
 
 // 메시지를 채팅창에 추가 (Marked 라이브러리 확인 강화)
 function appendMessage(role, messageData, index = -1) {
@@ -361,21 +272,18 @@ function appendMessage(role, messageData, index = -1) {
             const bubble = document.createElement("div"); bubble.className = "message-bubble";
 
             let textContent = messageData.text || "";
-            // ★★★ 마크다운 처리 부분 ★★★
-            if (typeof marked === 'function') { // marked 라이브러리가 로드되었는지 확인
+            // 마크다운 처리
+            if (typeof marked === 'function') {
                 try {
                     bubble.innerHTML = marked.parse(textContent, { breaks: true, gfm: true });
                 } catch (e) {
                     console.error("Marked parsing error:", e);
-                    bubble.textContent = textContent; // 파싱 실패 시 원본 표시
+                    bubble.textContent = textContent;
                 }
             } else {
-                // 라이브러리가 없다면 경고 (한 번만)하고 원본 텍스트 표시
-                if (!window.markedWarningShown) {
-                    console.warn("marked library is not loaded. Markdown will not be rendered. Check if marked.min.js is included correctly in your HTML.");
-                    window.markedWarningShown = true;
-                }
-                bubble.textContent = textContent;
+                // marked 라이브러리 로드 실패 경고 (매번 발생 시 문제 파악 위해 유지 권장)
+                 console.warn("marked library is not loaded. Markdown rendering skipped.");
+                bubble.textContent = textContent; // 원본 텍스트 표시
             }
 
             messageWrapper.appendChild(bubble);
@@ -429,9 +337,9 @@ async function sendMessage(messageText) {
                  { role: "user", parts: [{ text: SYSTEM_PROMPT }] },
                  ...textHistory.map(e => ({ role: e.role === 'model' ? 'model' : 'user', parts: [{ text: e.messageData.text }] }))
              ];
-             // ★★★ 피드백 적용 수정 ★★★
+             // 피드백 적용
              if (feedbackTypeToSend && feedbackPrompts[feedbackTypeToSend]) {
-                 apiContents.push({ role: "user", parts: [{ text: feedbackPrompts[feedbackTypeToSend] }] }); // 상세 프롬프트 추가
+                 apiContents.push({ role: "user", parts: [{ text: feedbackPrompts[feedbackTypeToSend] }] });
              } else if (feedbackTypeToSend) {
                  console.warn(`Feedback type "${feedbackTypeToSend}" not found in feedbackPrompts. Sending basic feedback.`);
                  apiContents.push({ role: "user", parts: [{ text: `(피드백: ${feedbackTypeToSend})` }] });
@@ -443,33 +351,13 @@ async function sendMessage(messageText) {
          let botResponseText = '';
          try {
              const response = await fetch(`/api/chat`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ contents: apiContents }) });
-             if (!response.ok) {
-                 const errorBody = await response.text();
-                 console.error(`Chat API Error (${response.status}): ${errorBody}`);
-                 botResponseText = `(메시지 응답 오류: ${response.status})`;
-             } else {
-                 const data = await response.json();
-                 botResponseText = data?.candidates?.[0]?.content?.parts?.[0]?.text || "(빈 응답)";
-             }
-         } catch (fetchError) {
-             console.error("Fetch Error sending message:", fetchError);
-             botResponseText = "(메시지 전송 중 통신 오류)";
-         }
+             if (!response.ok) { const errorBody = await response.text(); console.error(`Chat API Error (${response.status}): ${errorBody}`); botResponseText = `(메시지 응답 오류: ${response.status})`; } else { const data = await response.json(); botResponseText = data?.candidates?.[0]?.content?.parts?.[0]?.text || "(빈 응답)"; }
+         } catch (fetchError) { console.error("Fetch Error sending message:", fetchError); botResponseText = "(메시지 전송 중 통신 오류)"; }
          const botMessage = { role: "model", messageData: { type: 'text', text: botResponseText } };
          conversationHistory.push(botMessage);
          appendMessage("bot", botMessage.messageData, conversationHistory.length - 1);
          saveConversationHistory();
-     } catch (e) {
-         console.error("Error sendMessage:", e);
-         appendMessage("bot", { type: 'text', text: `(메시지 처리 중 오류 발생)` });
-     } finally {
-         if(sendButton) sendButton.disabled = false;
-         if(userInput) userInput.disabled = false;
-         if(actionMenuButton) actionMenuButton.disabled = false;
-         if(feedbackButton) feedbackButton.disabled = false;
-         if(loadingSpinner) loadingSpinner.style.display = 'none';
-         if(userInput) userInput.focus();
-     }
+     } catch (e) { console.error("Error sendMessage:", e); appendMessage("bot", { type: 'text', text: `(메시지 처리 중 오류 발생)` }); } finally { if(sendButton) sendButton.disabled = false; if(userInput) userInput.disabled = false; if(actionMenuButton) actionMenuButton.disabled = false; if(feedbackButton) feedbackButton.disabled = false; if(loadingSpinner) loadingSpinner.style.display = 'none'; if(userInput) userInput.focus(); }
 }
 
 // '상황' 요청 함수 (오류 수정)
@@ -519,7 +407,7 @@ async function generateRandomCharacter() {
      if (!generateRandomCharacterButton || !botNameInputModal || !botGenderInputModal || !botAgeInputModal || !botAppearanceInputModal || !botPersonaInputModal) { console.error("Character elements missing."); alert("캐릭터 생성 요소 누락"); return; }
      generateRandomCharacterButton.disabled = true; generateRandomCharacterButton.textContent = "⏳";
      try {
-         // ★★★ 최종 랜덤 캐릭터 생성 프롬프트 ★★★
+         // ★★★ 랜덤 캐릭터 생성 프롬프트 (최종) ★★★
          const p = `## 역할: **다양한 성향과 관계성을 가진** 개성있는 무작위 캐릭터 프로필 생성기 (JSON 출력)\n\n당신은 매번 새롭고 독특한 개성을 가진 캐릭터 프로필을 생성합니다. **진정한 무작위성 원칙**에 따라 각 항목(세계관, 성별, 종족, 나이, 직업, 성격 키워드, 도덕적 성향 등)을 **완전히 독립적으로, 모든 선택지에 동등한 확률을 부여**하여 선택합니다. **AI 스스로 특정 패턴(예: 세계관과 종족 연관 짓기, 특정 성격 반복)을 만들거나 회피하지 마십시오.** '현대' 세계관, '인간' 종족, 평범하거나 긍정적인 성격도 다른 모든 옵션과 **동일한 확률**로 선택될 수 있어야 하며, **현실적인 현대 한국인 캐릭터도 충분한 빈도로 포함**되도록 하십시오.\n\n## 생성 규칙:\n\n1.  **세계관:** ['현대', '판타지', 'SF', '기타(포스트 아포칼립스, 스팀펑크 등)'] 중 **독립/무작위 1개 선택**. ('현대'도 다른 세계관과 선택 확률 동일)\n2.  **성별:** ['남성', '여성', '논바이너리'] 중 **독립/무작위 1개 선택**.\n3.  **인종:** ['백인', '아시아계', '흑인', '히스패닉/라틴계', '중동계', '혼혈', '한국인', '기타'] 중 **독립/무작위 1개 선택**.\n4.  **종족:** ['인간', '엘프', '드워프', '사이보그', '수인', '뱀파이어', '악마', '천사', '오크', '고블린', '요정', '언데드', '기타'] 중 **독립/무작위 1개 선택**. (선택된 세계관과 **절대로 연관 짓지 말고**, 모든 종족이 동일한 확률로 선택되어야 합니다).\n5.  **나이:**\n    *   **먼저, 위 4번에서 종족을 독립적으로 확정한 후** 나이를 결정합니다.\n    *   **만약 확정된 종족이 '뱀파이어', '천사', '악마', '엘프', '언데드'일 경우:** ['수백 살', '수천 년', '나이 불명', '고대의 존재'] 중 적절한 표현 **무작위 선택**.\n    *   **그 외 종족일 경우:** 19세부터 80세 사이 정수 중 **무작위 선택**.\n6.  **직업 선택 (내부용):** 선택된 **세계관, 종족, 나이**에 어울리는 **구체적인 직업 1개를 내부적으로 무작위 선택**합니다. (예: 현대-회사원, 의사, 교사, 예술가, 조폭, 학생, 카페 사장, 개발자 / 판타지-기사, 마법사, 상인, 암살자, 연금술사 / SF-우주선 조종사, 해커, 연구원, 군인 등). **현실적인 직업과 특이한 직업이 균형있게 선택**되도록 하십시오. **아래 7번에서 선택될 '도덕적 성향'과도 어느 정도 연관성을 고려**하여 설정하십시오.\n7.  **도덕적 성향/역할 선택:** 다음 목록에서 **1개를 무작위로 선택**합니다: ['선량함/영웅적', '평범함/중립적', '이기적/기회주의적', '반영웅적/모호함', '악당/빌런', '혼돈적/예측불허', '조직범죄 관련(조폭 등)']\n8.  **핵심 성격 키워드 선택:** 다음 목록에서 **서로 다른 키워드 1개 또는 2개를 무작위로 선택**합니다: ['낙천적인', '염세적인', '충동적인', '신중한', '사교적인', '내향적인', '원칙주의적인', '기회주의적인', '이타적인', '이기적인', '예술가적인', '현실적인', '광신적인', '회의적인', '자유분방한', '통제적인', '용감한', '겁 많은', '자존감 높은', '자존감 낮은', '비밀스러운', '솔직한', '감정적인', '이성적인', '엉뚱한', '진지한', '잔인한', '교활한', '탐욕스러운', '무자비한', '냉혈한'].\n9.  **이름:** 선택된 조건에 어울리는 이름 생성. (**만약 세계관이 '현대'이고 인종이 '한국인'이면, 일반적인 한국 성+이름 형식을 우선 고려**)\n10. **외형 묘사:** 조건을 반영하여 **최소 30자 이상** 작성.\n11. **성격/가이드라인:** **내부적으로 선택된 직업(6), 도덕적 성향(7), 성격 키워드(8)를 반드시 반영**하여, 캐릭터의 입체적인 면모(가치관, 동기, 행동 방식 등)를 보여주는 묘사를 **최소 500자 이상** 작성해야 합니다. **작성 시, 캐릭터의 직업이 무엇인지 명시적으로 서술하고, 그것이 캐릭터의 삶과 성격에 미치는 영향을 포함해야 합니다.** **또한, 이 캐릭터가 사용자({userName})에 대해 가지는 초기 인상, 태도, 또는 관계 설정을 서술할 때는, 사용자의 이름({userName}) 대신 반드시 2인칭 대명사('당신', '당신의')를 사용하여 직접적으로 표현해야 합니다.** **내용을 구성할 때, 의미 단위에 따라 적절히 문단을 나누어 (예: 줄 바꿈 \\n\\n 사용) 가독성을 높여주십시오.** (피상적인 이중 성격 묘사 지양)\n\n## 출력 형식 (JSON 객체 하나만 출력):\n**!!!! 절대로, 절대로 JSON 객체 외의 다른 어떤 텍스트도 응답에 포함하지 마십시오. 오직 아래 형식의 유효한 JSON 데이터만 출력해야 합니다. !!!!**\n\`\`\`json\n{\n  "name": "생성된 이름",\n  "gender": "생성된 성별",\n  "age": "생성된 나이",\n  "appearance": "생성된 외형 묘사",\n  "persona": "생성된 성격/가이드라인 묘사 (직업 명시, 성향, 키워드, 사용자 2인칭 관점 포함, 최소 500자 이상, 문단 구분)"\n}\n\`\`\`\n`;
 
          const contents = [{ role: "user", parts: [{ text: p }] }];
@@ -531,9 +419,13 @@ async function generateRandomCharacter() {
          if (!jsonText) { console.error("Empty API response for random character:", data); throw new Error("API로부터 유효한 응답을 받지 못했습니다."); }
 
          try {
-             const jsonMatch = jsonText.match(/{[\s\S]*}/);
-             if (!jsonMatch) { throw new Error("응답에서 유효한 JSON 형식을 찾을 수 없습니다."); }
-             let rawJsonString = jsonMatch[0].trim(); // 앞뒤 공백 제거 추가
+             // ★★★ 안정적인 JSON 추출 및 파싱 로직 ★★★
+             const startIndex = jsonText.indexOf('{');
+             const endIndex = jsonText.lastIndexOf('}');
+             if (startIndex === -1 || endIndex === -1 || endIndex < startIndex) {
+                 throw new Error("응답에서 유효한 JSON 시작 또는 끝 문자를 찾을 수 없습니다.");
+             }
+             const rawJsonString = jsonText.substring(startIndex, endIndex + 1);
              const processedJsonString = rawJsonString.replace(/\n/g, '\\n'); // 줄바꿈 처리
              const parsedData = JSON.parse(processedJsonString);
 
@@ -543,8 +435,8 @@ async function generateRandomCharacter() {
              botAppearanceInputModal.value = parsedData.appearance || '';
              botPersonaInputModal.value = parsedData.persona || '';
 
-             if(botAppearanceInputModal) setTimeout(() => autoResizeTextarea.call(botAppearanceInputModal), 0);
-             if(botPersonaInputModal) setTimeout(() => autoResizeTextarea.call(botPersonaInputModal), 0);
+             if(botAppearanceInputModal) setTimeout(() => autoResizeTextarea.call(botAppearanceInputModal), 50);
+             if(botPersonaInputModal) setTimeout(() => autoResizeTextarea.call(botPersonaInputModal), 50);
 
              updateSystemPrompt();
              alert("랜덤 캐릭터 생성 완료!");
@@ -564,7 +456,7 @@ async function generateRandomUser() { // 랜덤 사용자 생성 함수 (프롬�
      if (!generateRandomUserButton || !userNameInputModal || !userGenderInputModal || !userAgeInputModal || !userAppearanceInputModal || !userGuidelinesInputModal) { console.error("User elements missing."); alert("사용자 생성 요소 누락"); return; }
      generateRandomUserButton.disabled = true; generateRandomUserButton.textContent = "⏳";
      try {
-         // ★★★ 사용자 생성 프롬프트 (복구 및 개선) ★★★
+         // ★★★ 사용자 생성 프롬프트 (복구 및 개선, 최종) ★★★
          const p = `## 역할: **다양한 성향과 관계성을 가진** 개성있는 무작위 사용자 프로필 생성기 (JSON 출력)\n\n당신은 채팅 상대방인 캐릭터와 상호작용할 매력적인 사용자 프로필을 생성합니다. **진정한 무작위성 원칙**에 따라 각 항목(세계관, 성별, 종족, 나이, 직업, 성격 키워드, 도덕적 성향 등)을 **완전히 독립적으로, 모든 선택지에 동등한 확률을 부여**하여 선택합니다. **AI 스스로 특정 패턴을 만들거나 회피하지 마십시오.** '현대' 세계관, '인간' 종족, 평범하거나 긍정적인 성격도 다른 모든 옵션과 **동일한 확률**로 선택될 수 있어야 하며, 현실적인 현대 한국인 사용자도 충분한 빈도로 포함되도록 하십시오.\n\n## 생성 규칙:\n\n1.  **세계관:** ['현대', '판타지', 'SF', '기타(포스트 아포칼립스, 스팀펑크 등)'] 중 **독립/무작위 1개 선택**. ('현대'도 다른 세계관과 선택 확률 동일)\n2.  **성별:** ['남성', '여성', '논바이너리'] 중 **독립/무작위 1개 선택**.\n3.  **인종:** ['백인', '아시아계', '흑인', '히스패닉/라틴계', '중동계', '혼혈', '한국인', '기타'] 중 **독립/무작위 1개 선택**.\n4.  **종족:** ['인간', '엘프', '드워프', '사이보그', '수인', '뱀파이어', '악마', '천사', '오크', '고블린', '요정', '언데드', '기타'] 중 **독립/무작위 1개 선택**. (선택된 세계관과 **절대로 연관 짓지 말고**, 모든 종족이 동일한 확률로 선택되어야 합니다).\n5.  **나이:**\n    *   **먼저, 위 4번에서 종족을 독립적으로 확정한 후** 나이를 결정합니다.\n    *   **만약 확정된 종족이 '뱀파이어', '천사', '악마', '엘프', '언데드'일 경우:** ['수백 살', '수천 년', '나이 불명', '고대의 존재'] 중 적절한 표현 **무작위 선택**.\n    *   **그 외 종족일 경우:** 19세부터 80세 사이 정수 중 **무작위 선택**.\n6.  **직업 선택 (내부용):** 선택된 **세계관, 종족, 나이**에 어울리는 **구체적인 직업 1개를 내부적으로 무작위 선택**합니다. (예: 현대-회사원, 의사, 교사, 예술가, 조폭, 학생, 카페 사장, 개발자 / 판타지-기사, 마법사, 상인, 암살자, 연금술사 / SF-우주선 조종사, 해커, 연구원, 군인 등). **현실적인 직업과 특이한 직업이 균형있게 선택**되도록 하십시오. **아래 7번에서 선택될 '도덕적 성향'과도 어느 정도 연관성을 고려**하여 설정하십시오.\n7.  **도덕적 성향/역할 선택:** 다음 목록에서 **1개를 무작위로 선택**합니다: ['선량함/영웅적', '평범함/중립적', '이기적/기회주의적', '반영웅적/모호함', '악당/빌런', '혼돈적/예측불허', '조직범죄 관련(조폭 등)']\n8.  **핵심 성격 키워드 선택:** 다음 목록에서 **서로 다른 키워드 1개 또는 2개를 무작위로 선택**합니다: ['낙천적인', '염세적인', '충동적인', '신중한', '사교적인', '내향적인', '원칙주의적인', '기회주의적인', '이타적인', '이기적인', '예술가적인', '현실적인', '광신적인', '회의적인', '자유분방한', '통제적인', '용감한', '겁 많은', '자존감 높은', '자존감 낮은', '비밀스러운', '솔직한', '감정적인', '이성적인', '엉뚱한', '진지한', '잔인한', '교활한', '탐욕스러운', '무자비한', '냉혈한'].\n9.  **이름:** 선택된 조건에 어울리는 이름 생성. (**만약 세계관이 '현대'이고 인종이 '한국인'이면, 일반적인 한국 성+이름 형식을 우선 고려**)\n10. **외형 묘사:** 조건을 반영하여 **최소 30자 이상** 작성.\n11. **사용자 가이드라인 (실제로는 캐릭터 설정):** **내부적으로 선택된 직업(6), 도덕적 성향(7), 성격 키워드(8)를 반드시 반영**하여, 이 사용자 캐릭터의 입체적인 면모(가치관, 동기, 행동 방식 등)를 보여주는 묘사를 **최소 500자 이상** 작성해야 합니다. **작성 시, 사용자 캐릭터의 직업이 무엇인지 명시적으로 서술하고, 그것이 캐릭터의 삶과 성격에 미치는 영향을 포함해야 합니다.** **또한, 이 사용자 캐릭터가 상대방 캐릭터에 대해 가지는 초기 인상, 태도, 또는 관계 설정 (예: '호기심을 느낀다', '경계한다', '이용하려 한다', '첫눈에 반했다', '오래된 악연이다' 등)을 반드시 포함하여 서술하십시오.** **내용을 구성할 때, 의미 단위에 따라 적절히 문단을 나누어 (예: 줄 바꿈 \\n\\n 사용) 가독성을 높여주십시오.** (피상적인 이중 성격 묘사 지양)\n\n## 출력 형식 (JSON 객체 하나만 출력):\n**!!!! 절대로, 절대로 JSON 객체 외의 다른 어떤 텍스트도 응답에 포함하지 마십시오. 오직 아래 형식의 유효한 JSON 데이터만 출력해야 합니다. !!!!**\n\`\`\`json\n{\n  "name": "생성된 이름",\n  "gender": "선택된 성별",\n  "age": "생성된 나이",\n  "appearance": "생성된 외형 묘사",\n  "guidelines": "생성된 사용자 설정 묘사 (직업 명시, 성향, 키워드, 상대 캐릭터 관계 포함, 최소 500자 이상, 문단 구분)"\n}\n\`\`\`\n`;
          const contents = [{ role: "user", parts: [{ text: p }] }];
          const response = await fetch(`/api/chat`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ contents: contents }) });
@@ -573,10 +465,13 @@ async function generateRandomUser() { // 랜덤 사용자 생성 함수 (프롬�
          const jsonText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
          if (!jsonText) { console.error("Empty API response for random user:", data); throw new Error("API로부터 유효한 응답을 받지 못했습니다."); }
          try {
-             // ★★★ JSON 파싱 수정 ★★★
-             const jsonMatch = jsonText.match(/{[\s\S]*}/);
-             if (!jsonMatch) { throw new Error("응답에서 유효한 JSON 형식을 찾을 수 없습니다."); }
-             let rawJsonString = jsonMatch[0].trim(); // 앞뒤 공백 제거 추가
+             // ★★★ 안정적인 JSON 추출 및 파싱 로직 ★★★
+             const startIndex = jsonText.indexOf('{');
+             const endIndex = jsonText.lastIndexOf('}');
+             if (startIndex === -1 || endIndex === -1 || endIndex < startIndex) {
+                 throw new Error("응답에서 유효한 JSON 시작 또는 끝 문자를 찾을 수 없습니다.");
+             }
+             const rawJsonString = jsonText.substring(startIndex, endIndex + 1);
              const processedJsonString = rawJsonString.replace(/\n/g, '\\n'); // 줄바꿈 처리
              const parsedData = JSON.parse(processedJsonString);
 
@@ -584,10 +479,10 @@ async function generateRandomUser() { // 랜덤 사용자 생성 함수 (프롬�
              userGenderInputModal.value = parsedData.gender || '';
              userAgeInputModal.value = parsedData.age || '';
              userAppearanceInputModal.value = parsedData.appearance || '';
-             userGuidelinesInputModal.value = parsedData.guidelines || ''; // 'persona'가 아닌 'guidelines' 사용
+             userGuidelinesInputModal.value = parsedData.guidelines || '';
 
-             if(userAppearanceInputModal) setTimeout(() => autoResizeTextarea.call(userAppearanceInputModal), 0);
-             if(userGuidelinesInputModal) setTimeout(() => autoResizeTextarea.call(userGuidelinesInputModal), 0);
+             if(userAppearanceInputModal) setTimeout(() => autoResizeTextarea.call(userAppearanceInputModal), 50);
+             if(userGuidelinesInputModal) setTimeout(() => autoResizeTextarea.call(userGuidelinesInputModal), 50);
 
              updateSystemPrompt();
              alert("랜덤 사용자 생성 완료!");
@@ -602,6 +497,7 @@ async function generateRandomUser() { // 랜덤 사용자 생성 함수 (프롬�
          generateRandomUserButton.disabled = false; generateRandomUserButton.textContent = "🎲";
      }
 }
+
 
 // 이미지 미리보기 클릭 시 URL 입력 (변경 없음)
 function promptForImageUrl(imgElement, isBot) { const currentUrl = imgElement.src && isValidImageUrl(imgElement.src) ? imgElement.src : ''; const promptMessage = isBot ? "캐릭터 이미지 URL 입력:" : "사용자 이미지 URL 입력:"; const newUrl = prompt(promptMessage, currentUrl); if (newUrl !== null) { if (newUrl === "" || !isValidImageUrl(newUrl)) { updateImagePreview('', imgElement); if (isBot) { botProfileImgUrl = ''; } else { userProfileImgUrl = ''; } if (newUrl !== "") { alert("유효하지 않은 이미지 URL입니다."); } } else { updateImagePreview(newUrl, imgElement); if (isBot) { botProfileImgUrl = newUrl; } else { userProfileImgUrl = newUrl; } } } }
