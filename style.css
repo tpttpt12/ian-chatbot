@@ -95,3 +95,7 @@ body { font-family: "Nanum Gothic", sans-serif; background-color: #1E1E1E; color
 #generateRandomCharacter,#generateRandomUser{font-size:1rem;background:0 0;border:none;padding:0 .4rem;margin:0;cursor:pointer;color:#bbb;transition:color .2s,transform .1s;line-height:1;flex-shrink:0;}#generateRandomCharacter:hover,#generateRandomUser:hover{color:#fff;transform:scale(1.1);}#generateRandomCharacter:active,#generateRandomUser:active{transform:scale(.95);}#generateRandomCharacter:disabled,#generateRandomUser:disabled{cursor:wait;color:#888;}
 /* --- Modal Animations (복구) --- */
 @keyframes fadeIn{from{opacity:0;transform:scale(.98)}to{opacity:1;transform:scale(1)}}@keyframes fadeOut{from{opacity:1;transform:scale(1)}to{opacity:0;transform:scale(.98)}}.modal-overlay.modal-fade-in{animation:fadeIn .3s cubic-bezier(.25,.46,.45,.94) forwards;}.modal-overlay.modal-fade-out{animation:fadeOut .3s cubic-bezier(.25,.46,.45,.94) forwards;}
+
+em {
+    font-style: italic;
+}
