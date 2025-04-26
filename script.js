@@ -420,6 +420,10 @@ async function generateRandomCharacter() {
 
          try {
              // ★★★ 안정적인 JSON 추출 및 파싱 로직 ★★★
+           const cleanedJsonText = jsonText
+            .replace(/^```json\s*/i, '')
+            .replace(/\s*```$/, '');
+           
              const startIndex = jsonText.indexOf('{');
              const endIndex = jsonText.lastIndexOf('}');
              if (startIndex === -1 || endIndex === -1 || endIndex < startIndex) {
