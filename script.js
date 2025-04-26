@@ -423,15 +423,8 @@ async function generateRandomCharacter() {
            const cleanedJsonText = jsonText
             .replace(/^```json\s*/i, '')
             .replace(/\s*```$/, '');
-           
-             const startIndex = jsonText.indexOf('{');
-             const endIndex = jsonText.lastIndexOf('}');
-             if (startIndex === -1 || endIndex === -1 || endIndex < startIndex) {
-                 throw new Error("응답에서 유효한 JSON 시작 또는 끝 문자를 찾을 수 없습니다.");
-             }
-             const rawJsonString = jsonText.substring(startIndex, endIndex + 1);
-             const processedJsonString = rawJsonString.replace(/\n/g, '\\n'); // 줄바꿈 처리
-             const parsedData = JSON.parse(processedJsonString);
+            const parsedData = JSON.parse(cleanedJsonText);
+          
 
              botNameInputModal.value = parsedData.name || '';
              botGenderInputModal.value = parsedData.gender || '';
