@@ -432,7 +432,13 @@ if (userWorldInputModal?.value) {
             .replace(/^```json\s*/i, '')
             .replace(/\s*```$/, '');
             const parsedData = JSON.parse(cleanedJsonText);
-          
+
+           // 🔥 한국인 확률 보정 (25% 확률로)
+if (parsedData.race && parsedData.race !== '한국인') {
+    if (Math.random() < 0.25) {
+        parsedData.race = '한국인';
+    }
+}
 
              botNameInputModal.value = parsedData.name || '';
              botGenderInputModal.value = parsedData.gender || '';
@@ -477,7 +483,12 @@ const cleanedJsonText = jsonText
 
 const parsedData = JSON.parse(cleanedJsonText);
 
-
+           // 🔥 한국인 확률 보정 (25% 확률로)
+if (parsedData.race && parsedData.race !== '한국인') {
+    if (Math.random() < 0.25) {
+        parsedData.race = '한국인';
+    }
+}
              userNameInputModal.value = parsedData.name || '';
              userGenderInputModal.value = parsedData.gender || '';
              userAgeInputModal.value = parsedData.age || '';
