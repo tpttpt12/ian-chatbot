@@ -273,7 +273,7 @@ function appendMessage(role, messageData, index = -1) {
 
             let textContent = messageData.text || "";
             // 마크다운 처리
-            if (typeof marked === 'function') {
+            if (typeof marked !== 'undefined' && typeof marked.parse === 'function') {
                 try {
                     bubble.innerHTML = marked.parse(textContent, { breaks: true, gfm: true });
                 } catch (e) {
