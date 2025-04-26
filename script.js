@@ -567,3 +567,13 @@ document.addEventListener('DOMContentLoaded', () => {
         alert("페이지 초기화 중 심각한 오류가 발생했습니다.");
     }
 }); // DOMContentLoaded 끝
+
+document.addEventListener("DOMContentLoaded", function() {
+    console.log("DOMContentLoaded! Starting App...");
+    if (typeof marked !== 'undefined') {
+        initializeChat();
+    } else {
+        console.error("marked library not loaded!");
+    }
+});
+
