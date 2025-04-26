@@ -6,6 +6,11 @@ let SYSTEM_PROMPT = '';
 let currentSlot = 1;
 let currentFeedback = null;
 
+function initApp() {
+    console.log("marked 로딩 완료. 이제 앱 시작!");
+    initializeChat(); // 초기화 시작
+}
+
 // --- SYSTEM_PROMPT 템플릿 ---
 const SYSTEM_PROMPT_TEMPLATE = `
 ## 기본 역할
