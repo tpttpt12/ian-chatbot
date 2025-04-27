@@ -67,6 +67,12 @@ export default async function handler(req, res) {
                     maxOutputTokens: 2048,    // <<-- 최대 출력 토큰 설정 (길이 제한 늘리기)
                     topP: 0.95,               // <<-- Top-p 샘플링 (선택적, 보통 0.9~1.0)
                     // topK: 40               // <<-- Top-k 샘플링 (선택적, 보통 40 전후)
+			
+                    // === 안전 설정 추가! ===
+                    safetySettings: [
+                      {
+                        category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+                        threshold: "BLOCK_ONLY_HIGH" // 가장 완화된 설정 시도
                 }
             }),
             // === 수정 끝 ===
