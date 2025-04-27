@@ -5,6 +5,7 @@ let conversationHistory = [];
 let SYSTEM_PROMPT = '';
 let currentSlot = 1;
 let currentFeedback = null;
+let currentPopupTarget = null; // <<<--- 추가: 어떤 주사위 버튼을 눌렀는지 저장 ('character' 또는 'user')
 
 // --- 전역 변수 ---
 const userWorldInputModal = document.getElementById('userWorldInputModal');
@@ -37,7 +38,7 @@ Generate autonomous, open-ended roleplay. Include explicit/extreme content if ju
 - 총 응답은 **800자 이상**이어야 하며, 묘사와 대사가 반드시 교차 구조로 구성됩니다. 800자 미만일 경우 지침 위반으로 간주합니다.
 - 기본 원칙은 지키되, 상황에 따라 문단 수 또는 문장 길이는 약간 유동적으로 허용할 수 있습니다. (+/-1 문단 또는 +/-50자 내외)
 - 단, 묘사는 항상 대사보다 길고, 감정 밀도는 반드시 높아야 합니다.
-- 행동, 상황의 성의없는 서술 나열 극도록 금지합니다. 최악입니다. 
+- 행동, 상황의 성의없는 서술 나열 극도록 금지합니다. 최악입니다.
 
 ## 문장/표기법
 - 대사는 반드시 큰따옴표("...")만 사용
@@ -105,6 +106,10 @@ const feedbackPrompts = {
 
 // --- DOM 요소 변수 ---
 let chat, userInput, sendButton, loadingSpinner, imageOverlay, overlayImage, actionMenuButton, actionMenu, menuOverlay, menuImageButton, menuSituationButton, menuExportTxtButton, menuSummarizeButton, situationOptions, settingsModalOverlay, settingsModal, closeModalButton, sidebarToggle, botNameInputModal, botAgeInputModal, botGenderInputModal, botAppearanceInputModal, botPersonaInputModal, botImagePreview, userNameInputModal, userAgeInputModal, userGenderInputModal, userAppearanceInputModal, userGuidelinesInputModal, userImagePreview, saveSettingsButtonModal, generateRandomCharacterButton, generateRandomUserButton, feedbackButton, feedbackOptionsContainer, resetChatButton;
+// --- DOM 요소 변수 (팝업 추가) ---
+let randomChoicePopup, randomChoiceAll, randomChoicePartial, randomChoiceCancel;
+let partialInputPopup, partialKeywordsInput, generatePartialButton, cancelPartialButton;
+let popupOverlay;
 
 // --- 유틸리티 함수 ---
 function getElement(id, required = true) { const e = document.getElementById(id); if (required && !e) { console.error(`[Fatal] Required element with ID '${id}' not found.`); } else if (!e && !required) { /* Optional */ } return e; }
@@ -118,6 +123,39 @@ function closeActionMenu() { if (actionMenu && menuOverlay && actionMenu.classLi
 function toggleSituationOptions(event) { event.stopPropagation(); if (situationOptions) { situationOptions.classList.toggle('hidden'); } else { console.error("Situation Options element missing"); } }
 function toggleFeedbackOptions(event) { event.stopPropagation(); if (feedbackOptionsContainer && feedbackButton) { const h = feedbackOptionsContainer.classList.contains('hidden'); if (h) { closeActionMenu(); feedbackOptionsContainer.classList.remove('hidden'); feedbackButton.classList.add('active'); } else { feedbackOptionsContainer.classList.add('hidden'); if (!currentFeedback) { feedbackButton.classList.remove('active'); } } } else { console.error("Feedback elements missing"); } }
 function closeFeedbackOptions() { if (feedbackOptionsContainer && feedbackButton && !feedbackOptionsContainer.classList.contains('hidden')) { feedbackOptionsContainer.classList.add('hidden'); if (!currentFeedback) { feedbackButton.classList.remove('active'); } } }
+
+// --- 팝업 관리 함수 추가 ---
+function showPopup(popupElement) {
+    if (popupOverlay) popupOverlay.classList.remove('hidden');
+    if (popupElement) popupElement.classList.remove('hidden');
+}
+
+function hidePopups() {
+    if (popupOverlay) popupOverlay.classList.add('hidden');
+    if (randomChoicePopup) randomChoicePopup.classList.add('hidden');
+    if (partialInputPopup) partialInputPopup.classList.add('hidden');
+    // 버튼 로딩 상태 초기화 (필요시)
+    resetPopupButtonLoadingState();
+}
+
+function resetPopupButtonLoadingState() {
+     const buttons = document.querySelectorAll('.popup-button.loading');
+     buttons.forEach(button => {
+         button.classList.remove('loading');
+         button.disabled = false;
+         // 원래 텍스트 복원 로직이 필요하다면 여기에 추가 (예: data 속성 사용)
+         // 예시: button.textContent = button.dataset.originalText || '버튼';
+     });
+     // 주사위 버튼 로딩 상태도 여기서 해제할 수 있습니다.
+     if (generateRandomCharacterButton) {
+         generateRandomCharacterButton.disabled = false;
+         generateRandomCharacterButton.textContent = '🎲';
+     }
+      if (generateRandomUserButton) {
+         generateRandomUserButton.disabled = false;
+         generateRandomUserButton.textContent = '🎲';
+     }
+}
 
 // --- 나머지 함수 정의 ---
 
@@ -420,21 +458,28 @@ function updateImagePreview(url, imgElement) { const previewArea = imgElement?.c
 // 슬롯 버튼 스타일 업데이트 (변경 없음)
 function updateSlotButtonStyles() { try { document.querySelectorAll('.slot-button').forEach(button => { button.classList.toggle('active', parseInt(button.textContent) === currentSlot); }); } catch (e) { console.error("Error updating slot button styles:", e); } }
 
-// --- 랜덤 생성 함수 (API 호출 방식, 프롬프트 개선 및 JSON 파싱 수정) ---
-async function generateRandomCharacter() {
+// --- 랜덤 생성 함수 수정: keywords 매개변수 추가 및 프롬프트 조건부 삽입 ---
+async function generateRandomCharacter(keywords = '') { // keywords 매개변수 추가, 기본값 ''
      if (!generateRandomCharacterButton || !botNameInputModal || !botGenderInputModal || !botAgeInputModal || !botAppearanceInputModal || !botPersonaInputModal) { console.error("Character elements missing."); alert("캐릭터 생성 요소 누락"); return; }
+     // 로딩 상태는 메인 주사위 버튼에만 적용
      generateRandomCharacterButton.disabled = true; generateRandomCharacterButton.textContent = "⏳";
-     try {
 
-let worldHint = '';
-if (userWorldInputModal?.value) {
-    worldHint = `\n\n[세계관 설정]\n이 캐릭터는 반드시 \"${userWorldInputModal.value}\" 세계관에 적합하게 생성되어야 합니다. 세계관 설정을 무시하거나 임의로 변경하지 마십시오.`;
-} else if (botWorldInputModal?.value) {
-    worldHint = `\n\n[세계관 설정]\n이 캐릭터는 반드시 \"${botWorldInputModal.value}\" 세계관에 적합하게 생성되어야 합니다. 세계관 설정을 무시하거나 임의로 변경하지 마십시오.`;
-}
-   
-         // ★★★ 랜덤 캐릭터 생성 프롬프트 (최종) ★★★
-         const p = `## 역할: **다양한 성향과 관계성을 가진** 개성있는 무작위 공(攻) 캐릭터 프로필 생성기 (JSON 출력)\n\n당신은 매번 새롭고 독특한 개성을 가진 캐릭터 프로필을 생성합니다. **진정한 무작위성 원칙**에 따라 각 항목(세계관, 성별, 종족, 나이, 직업, 성격 키워드, 도덕적 성향 등)을 **완전히 독립적으로, 모든 선택지에 동등한 확률을 부여**하여 선택합니다. **AI 스스로 특정 패턴(예: 세계관과 종족 연관 짓기, 특정 성격 반복)을 만들거나 회피하지 마십시오.** '현대' 세계관, '인간' 종족, 평범하거나 긍정적인 성격도 다른 모든 옵션과 **동일한 확률**로 선택될 수 있어야 하며, **현실적인 현대 한국인 캐릭터도 충분한 빈도로 포함**되도록 하십시오.\n\n## 생성 규칙:\n\n1.  **세계관:** ['현대', '판타지', 'SF', '기타(포스트 아포칼립스, 스팀펑크 등)'] 중 무작위 선택하되,'현대'는 반드시 30% 확률로 등장하도록 설정하십시오. (즉, 20% 확률로 '현대' 세계관을 선택하고, 그렇지 않은 경우 다른 세계관을 무작위로 선택하십시오.)\n2.  **성별:** ['남성', '여성', '논바이너리'] 중 **독립/무작위 1개 선택**.\n3.  **인종:** ['백인', '아시아계', '흑인', '히스패닉/라틴계', '중동계', '혼혈', '한국인', '기타'] 중 무작위로 선택하되,'한국인'은 반드시 20% 확률로 등장하도록 설정하십시오. (즉, 20% 확률로 무조건 '한국인'을 선택하고, 그렇지 않은 경우 다른 인종 중 하나를 선택하십시오.)**.\n4.  **종족:** ['인간', '엘프', '드워프', '사이보그', '수인', '뱀파이어', '악마', '천사', '오크', '고블린', '요정', '언데드', '기타'] 중 **독립/무작위 1개 선택**. (선택된 세계관과 **절대로 연관 짓지 말고**, 모든 종족이 동일한 확률로 선택되어야 합니다. 이전 턴과 같은 출력 절대 금지).\n5.  **나이:**\n    *   **먼저, 위 4번에서 종족을 독립적으로 확정한 후** 나이를 결정합니다.\n    *   **만약 확정된 종족이 '뱀파이어', '천사', '악마', '엘프', '언데드'일 경우:** ['수백 살', '수천 년', '나이 불명', '고대의 존재'] 중 적절한 표현 **무작위 선택**.\n    *   **그 외 종족일 경우:** 19세부터 50세 사이 정수 중 **무작위 선택**.\n6.  **직업 선택 (내부용):** 선택된 **세계관, 종족, 나이**에 어울리는 **구체적인 직업 1개를 내부적으로 무작위 선택**합니다. (예: 현대-회사원, 알바생, 의사, 교사, 예술가, 조폭, 학생, 카페 사장, 개발자 / 판타지-기사, 마법사, 상인, 암살자, 연금술사 / SF-우주선 조종사, 해커, 연구원, 군인 등). **무조건 다양한 소득 수준, 다양한 직업군이 골고루 반영되도록 무작위 선택**되도록 하십시오. (반드시! 드라마틱할 필요없으며 변호사, 해커, 고대 유물미술품 등의 직업보다 다양한 직업군을 제시) **아래 7번에서 선택될 '도덕적 성향'과도 어느 정도 연관성을 고려**하여 설정하십시오.\n7.  **도덕적 성향/역할 선택:** 다음 목록에서 **1개를 무작위로 선택**합니다. 안정성있는 선택말고 다양한 선택 추구: ['선량함/영웅적', '평범함/중립적', '이기적/기회주의적', '반영웅적/모호함', '악당/빌런', '혼돈적/예측불허', '조직범죄 관련(조폭 등)']\n8.  **핵심 성격 키워드 선택:** 다음 목록에서 **서로 다른 키워드 1개 또는 2개를 무작위로 선택**합니다: ['낙천적인', '염세적인', '충동적인', '신중한', '사교적인', '내향적인', '원칙주의적인', '기회주의적인', '이타적인', '이기적인', '예술가적인', '현실적인', '광신적인', '회의적인', '자유분방한', '통제적인', '용감한', '겁 많은', '자존감 높은', '자존감 낮은', '비밀스러운', '솔직한', '감정적인', '이성적인', '엉뚱한', '진지한', '잔인한', '교활한', '탐욕스러운', '무자비한', '냉혈한'].\n9.  **이름:** 선택된 조건에 어울리는 이름 생성. (**만약 세계관이 '현대'이고 인종이 '한국인'이면, 일반적인 한국 성+이름 형식을 우선 고려**)\n10. **외형 묘사:** 조건을 반영하여 **최소 30자 이상** 작성.\n11. **성격/가이드라인:** **내부적으로 선택된 직업(6), 도덕적 성향(7), 성격 키워드(8)를 반드시 반영**하여, 캐릭터의 입체적인 면모(가치관, 동기, 행동 방식 등)를 보여주는 묘사를 **최소 500자 이상** 작성해야 합니다. **작성 시, 캐릭터의 직업이 무엇인지 명시적으로 서술하고, 그것이 캐릭터의 삶과 성격에 미치는 영향을 포함해야 합니다.** **또한, 이 캐릭터가 사용자({userName})에 대해 가지는 초기 인상, 태도, 또는 관계 설정 & 일화를 서술할 때는, 사용자의 이름({userName}) 대신 반드시 2인칭 대명사('당신', '당신의')를 사용하여 직접적으로 표현해야 합니다.** **내용을 구성할 때, 의미 단위에 따라 적절히 문단을 나누어 (예: 줄 바꿈 \\n\\n 사용) 가독성을 높여주십시오.** (피상적인 이중 성격 묘사 지양)\n\n## 출력 형식 (JSON 객체 하나만 출력):\n**!!!! 절대로, 절대로 JSON 객체 외의 다른 어떤 텍스트도 응답에 포함하지 마십시오. 오직 아래 형식의 유효한 JSON 데이터만 출력해야 합니다. !!!!**\n\`\`\`json\n{\n  "name": "생성된 이름",\n  "gender": "생성된 성별",\n  "age": "생성된 나이",\n  "appearance": "생성된 외형 묘사",\n  "persona": "생성된 성격/가이드라인 묘사 (직업 명시, 성향, 키워드, 사용자 2인칭 관점 포함, 최소 500자 이상, 문단 구분)"\n}\n\`\`\`\n`;
+     try {
+         let worldHint = '';
+         if (userWorldInputModal?.value) {
+             worldHint = `\n\n[세계관 설정]\n이 캐릭터는 반드시 \"${userWorldInputModal.value}\" 세계관에 적합하게 생성되어야 합니다. 세계관 설정을 무시하거나 임의로 변경하지 마십시오.`;
+         } else if (botWorldInputModal?.value) {
+             worldHint = `\n\n[세계관 설정]\n이 캐릭터는 반드시 \"${botWorldInputModal.value}\" 세계관에 적합하게 생성되어야 합니다. 세계관 설정을 무시하거나 임의로 변경하지 마십시오.`;
+         }
+
+         // ★★★ 사용자 키워드 지침 추가 ★★★
+         let keywordInstruction = '';
+         if (keywords && keywords.trim() !== '') {
+             keywordInstruction = `\n\n## 사용자 요청 키워드 (반영 필수):\n다음 키워드를 **최대한 반영**하여 캐릭터를 생성하십시오: "${keywords.trim()}"\n이 키워드와 상충되지 않는 선에서 다른 요소들은 자유롭게 생성하되, 키워드 내용은 반드시 결과에 명확히 드러나야 합니다.\n`;
+         }
+
+         // ★★★ 랜덤 캐릭터 생성 프롬프트 (키워드 지침 포함) ★★★
+         const p = `## 역할: **다양한 성향과 관계성을 가진** 개성있는 무작위 공(攻) 캐릭터 프로필 생성기 (JSON 출력)\n\n당신은 매번 새롭고 독특한 개성을 가진 캐릭터 프로필을 생성합니다. **진정한 무작위성 원칙**에 따라 각 항목(세계관, 성별, 종족, 나이, 직업, 성격 키워드, 도덕적 성향 등)을 **완전히 독립적으로, 모든 선택지에 동등한 확률을 부여**하여 선택합니다. **AI 스스로 특정 패턴(예: 세계관과 종족 연관 짓기, 특정 성격 반복)을 만들거나 회피하지 마십시오.** '현대' 세계관, '인간' 종족, 평범하거나 긍정적인 성격도 다른 모든 옵션과 **동일한 확률**로 선택될 수 있어야 하며, **현실적인 현대 한국인 캐릭터도 충분한 빈도로 포함**되도록 하십시오.${worldHint}${keywordInstruction}\n\n## 생성 규칙:\n\n1.  **세계관:** ['현대', '판타지', 'SF', '기타(포스트 아포칼립스, 스팀펑크 등)'] 중 무작위 선택하되,'현대'는 반드시 30% 확률로 등장하도록 설정하십시오. (즉, 20% 확률로 '현대' 세계관을 선택하고, 그렇지 않은 경우 다른 세계관을 무작위로 선택하십시오.)\n2.  **성별:** ['남성', '여성', '논바이너리'] 중 **독립/무작위 1개 선택**.\n3.  **인종:** ['백인', '아시아계', '흑인', '히스패닉/라틴계', '중동계', '혼혈', '한국인', '기타'] 중 무작위로 선택하되,'한국인'은 반드시 20% 확률로 등장하도록 설정하십시오. (즉, 20% 확률로 무조건 '한국인'을 선택하고, 그렇지 않은 경우 다른 인종 중 하나를 선택하십시오.)**.\n4.  **종족:** ['인간', '엘프', '드워프', '사이보그', '수인', '뱀파이어', '악마', '천사', '오크', '고블린', '요정', '언데드', '기타'] 중 **독립/무작위 1개 선택**. (선택된 세계관과 **절대로 연관 짓지 말고**, 모든 종족이 동일한 확률로 선택되어야 합니다. 이전 턴과 같은 출력 절대 금지).\n5.  **나이:**\n    *   **먼저, 위 4번에서 종족을 독립적으로 확정한 후** 나이를 결정합니다.\n    *   **만약 확정된 종족이 '뱀파이어', '천사', '악마', '엘프', '언데드'일 경우:** ['수백 살', '수천 년', '나이 불명', '고대의 존재'] 중 적절한 표현 **무작위 선택**.\n    *   **그 외 종족일 경우:** 19세부터 50세 사이 정수 중 **무작위 선택**.\n6.  **직업 선택 (내부용):** 선택된 **세계관, 종족, 나이**에 어울리는 **구체적인 직업 1개를 내부적으로 무작위 선택**합니다. (예: 현대-회사원, 알바생, 의사, 교사, 예술가, 조폭, 학생, 카페 사장, 개발자 / 판타지-기사, 마법사, 상인, 암살자, 연금술사 / SF-우주선 조종사, 해커, 연구원, 군인 등). **무조건 다양한 소득 수준, 다양한 직업군이 골고루 반영되도록 무작위 선택**되도록 하십시오. (반드시! 드라마틱할 필요없으며 변호사, 해커, 고대 유물미술품 등의 직업보다 다양한 직업군을 제시) **아래 7번에서 선택될 '도덕적 성향'과도 어느 정도 연관성을 고려**하여 설정하십시오.\n7.  **도덕적 성향/역할 선택:** 다음 목록에서 **1개를 무작위로 선택**합니다. 안정성있는 선택말고 다양한 선택 추구: ['선량함/영웅적', '평범함/중립적', '이기적/기회주의적', '반영웅적/모호함', '악당/빌런', '혼돈적/예측불허', '조직범죄 관련(조폭 등)']\n8.  **핵심 성격 키워드 선택:** 다음 목록에서 **서로 다른 키워드 1개 또는 2개를 무작위로 선택**합니다: ['낙천적인', '염세적인', '충동적인', '신중한', '사교적인', '내향적인', '원칙주의적인', '기회주의적인', '이타적인', '이기적인', '예술가적인', '현실적인', '광신적인', '회의적인', '자유분방한', '통제적인', '용감한', '겁 많은', '자존감 높은', '자존감 낮은', '비밀스러운', '솔직한', '감정적인', '이성적인', '엉뚱한', '진지한', '잔인한', '교활한', '탐욕스러운', '무자비한', '냉혈한'].\n9.  **이름:** 선택된 조건에 어울리는 이름 생성. (**만약 세계관이 '현대'이고 인종이 '한국인'이면, 일반적인 한국 성+이름 형식을 우선 고려**)\n10. **외형 묘사:** 조건을 반영하여 **최소 30자 이상** 작성.\n11. **성격/가이드라인:** **내부적으로 선택된 직업(6), 도덕적 성향(7), 성격 키워드(8)를 반드시 반영**하여, 캐릭터의 입체적인 면모(가치관, 동기, 행동 방식 등)를 보여주는 묘사를 **최소 500자 이상** 작성해야 합니다. **작성 시, 캐릭터의 직업이 무엇인지 명시적으로 서술하고, 그것이 캐릭터의 삶과 성격에 미치는 영향을 포함해야 합니다.** **또한, 이 캐릭터가 사용자({userName})에 대해 가지는 초기 인상, 태도, 또는 관계 설정 & 일화를 서술할 때는, 사용자의 이름({userName}) 대신 반드시 2인칭 대명사('당신', '당신의')를 사용하여 직접적으로 표현해야 합니다.** **내용을 구성할 때, 의미 단위에 따라 적절히 문단을 나누어 (예: 줄 바꿈 \\n\\n 사용) 가독성을 높여주십시오.** (피상적인 이중 성격 묘사 지양)\n\n## 출력 형식 (JSON 객체 하나만 출력):\n**!!!! 절대로, 절대로 JSON 객체 외의 다른 어떤 텍스트도 응답에 포함하지 마십시오. 오직 아래 형식의 유효한 JSON 데이터만 출력해야 합니다. !!!!**\n\`\`\`json\n{\n  "name": "생성된 이름",\n  "gender": "생성된 성별",\n  "age": "생성된 나이",\n  "appearance": "생성된 외형 묘사",\n  "persona": "생성된 성격/가이드라인 묘사 (직업 명시, 성향, 키워드, 사용자 2인칭 관점 포함, 최소 500자 이상, 문단 구분)"\n}\n\`\`\`\n`;
 
          const contents = [{ role: "user", parts: [{ text: p }] }];
          const response = await fetch(`/api/chat`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ contents: contents }) });
@@ -451,12 +496,12 @@ if (userWorldInputModal?.value) {
             .replace(/\s*```$/, '');
             const parsedData = JSON.parse(cleanedJsonText);
 
-           // 🔥 한국인 확률 보정 (25% 확률로)
-if (parsedData.race && parsedData.race !== '한국인') {
-    if (Math.random() < 0.25) {
-        parsedData.race = '한국인';
-    }
-}
+           // 🔥 한국인 확률 보정 (25% 확률로) - 프롬프트로 이동했으므로 주석 처리 또는 삭제 가능
+/*            if (parsedData.race && parsedData.race !== '한국인') {
+                if (Math.random() < 0.25) {
+                    parsedData.race = '한국인';
+                }
+            } */
 
              botNameInputModal.value = parsedData.name || '';
              botGenderInputModal.value = parsedData.gender || '';
@@ -477,16 +522,25 @@ if (parsedData.race && parsedData.race !== '한국인') {
          console.error("Error generating Random Character:", e);
          alert(`랜덤 캐릭터 생성 중 오류 발생: ${e.message}`);
      } finally {
+         // 로딩 상태 해제는 resetPopupButtonLoadingState 에서 처리하거나 여기서도 가능
          generateRandomCharacterButton.disabled = false; generateRandomCharacterButton.textContent = "🎲";
+         hidePopups(); // <<<--- 추가: 완료 후 모든 팝업 닫기
      }
 }
 
-async function generateRandomUser() { // 랜덤 사용자 생성 함수 (프롬프트 복구 및 개선, JSON 파싱 수정)
+// --- 랜덤 생성 함수 수정: keywords 매개변수 추가 및 프롬프트 조건부 삽입 ---
+async function generateRandomUser(keywords = '') { // keywords 매개변수 추가, 기본값 ''
      if (!generateRandomUserButton || !userNameInputModal || !userGenderInputModal || !userAgeInputModal || !userAppearanceInputModal || !userGuidelinesInputModal) { console.error("User elements missing."); alert("사용자 생성 요소 누락"); return; }
      generateRandomUserButton.disabled = true; generateRandomUserButton.textContent = "⏳";
      try {
-         // ★★★ 사용자 생성 프롬프트 (복구 및 개선, 최종) ★★★
-         const p = `## 역할: **다양한 성향과 관계성을 가진** 개성있는 무작위 사용자 수(受) 프로필 생성기 (JSON 출력)\n\n당신은 채팅 상대방인 캐릭터와 상호작용할 매력적인 사용자 프로필을 생성합니다. **진정한 무작위성 원칙**에 따라 각 항목(세계관, 성별, 종족, 나이, 직업, 성격 키워드, 도덕적 성향 등)을 **완전히 독립적으로, 모든 선택지에 동등한 확률을 부여**하여 선택합니다. **AI 스스로 특정 패턴을 만들거나 회피하지 마십시오.** '현대' 세계관, '인간' 종족, 평범하거나 긍정적인 성격도 다른 모든 옵션과 **동일한 확률**로 선택될 수 있어야 하며, 현실적인 현대 한국인 사용자도 충분한 빈도로 포함되도록 하십시오.\n\n## 생성 규칙:\n\n1.  **세계관:** ['현대', '판타지','로맨스 판타지', 'SF', '기타(포스트 아포칼립스, 스팀펑크 등)'] 중 **독립/무작위 1개 선택**. ('현대'도 다른 세계관과 선택 확률 동일)\n2.  **성별:** ['남성', '여성', '논바이너리'] 중 **독립/무작위 1개 선택**.\n3.  **인종:** ['백인', '아시아계', '흑인', '히스패닉/라틴계', '중동계', '혼혈', '한국인', '기타'] 중 **독립/무작위 1개 선택하되 반드시 한국인 비율 20%**.\n4.  **종족:** ['인간', '엘프', '드워프', '사이보그', '수인', '뱀파이어', '악마', '천사', '오크', '고블린', '요정', '언데드', '기타'] 중 **독립/무작위 1개 선택**. (선택된 세계관과 **절대로 연관 짓지 말고**, 모든 종족이 동일한 확률로 선택되어야 합니다).\n5.  **나이:**\n    *   **먼저, 위 4번에서 종족을 독립적으로 확정한 후** 나이를 결정합니다.\n    *   **만약 확정된 종족이 '뱀파이어', '천사', '악마', '엘프', '언데드'일 경우:** ['수백 살', '수천 년', '나이 불명', '고대의 존재'] 중 적절한 표현 **무작위 선택**.\n    *   **그 외 종족일 경우:** 19세부터 80세 사이 정수 중 **무작위 선택**.\n6.  **직업 선택 (내부용):** 선택된 **세계관, 종족, 나이**에 어울리는 **구체적인 직업 1개를 내부적으로 무작위 선택**합니다. (예: 현대-회사원, 의사, 교사, 예술가, 조폭, 학생, 카페 사장, 개발자 / 판타지-기사, 마법사, 상인, 암살자, 연금술사 / SF-우주선 조종사, 해커, 연구원, 군인 등). **평범한 직업과 특이한 직업이 균형있게 선택**되도록 하십시오. **아래 7번에서 선택될 '도덕적 성향'과도 어느 정도 연관성을 고려**하여 설정하십시오.\n7.  **도덕적 성향/역할 선택:** 다음 목록에서 **1개를 무작위로 선택**합니다: ['선량함/영웅적', '평범함/중립적', '이기적/기회주의적', '반영웅적/모호함', '악당/빌런', '혼돈적/예측불허', '조직범죄 관련(조폭 등)']\n8.  **핵심 성격 키워드 선택:** 다음 목록에서 **서로 다른 키워드 1개 또는 2개를 무작위로 선택**합니다: ['낙천적인', '염세적인', '충동적인', '신중한', '사교적인', '내향적인', '원칙주의적인', '기회주의적인', '이타적인', '이기적인', '예술가적인', '현실적인', '광신적인', '회의적인', '자유분방한', '통제적인', '용감한', '겁 많은', '자존감 높은', '자존감 낮은', '비밀스러운', '솔직한', '감정적인', '이성적인', '엉뚱한', '진지한', '잔인한', '교활한', '탐욕스러운', '무자비한', '냉혈한'].\n9.  **이름:** 선택된 조건에 어울리는 이름 생성. (**만약 세계관이 '현대'이고 인종이 '한국인'이면, 일반적인 한국 성+이름 형식을 우선 고려**)\n10. **외형 묘사:** 조건을 반영하여 **최소 30자 이상** 작성.\n11. **사용자 가이드라인 (실제로는 캐릭터 설정):** **내부적으로 선택된 직업(6), 도덕적 성향(7), 성격 키워드(8)를 반드시 반영**하여, 이 사용자 캐릭터의 입체적인 면모(가치관, 동기, 행동 방식 등)를 보여주는 묘사를 **최소 500자 이상** 작성해야 합니다. **작성 시, 사용자 캐릭터의 직업이 무엇인지 명시적으로 서술하고, 그것이 캐릭터의 삶과 성격에 미치는 영향을 포함해야 합니다.** **또한, 이 사용자 캐릭터가 상대방 캐릭터에 대해 가지는 초기 인상, 태도, 또는 관계 설정 (예: '호기심을 느낀다', '경계한다', '이용하려 한다', '첫눈에 반했다', '오래된 악연이다' 등)을 반드시 포함하여 서술하십시오.** **내용을 구성할 때, 의미 단위에 따라 적절히 문단을 나누어 (예: 줄 바꿈 \\n\\n 사용) 가독성을 높여주십시오.** (피상적인 이중 성격 묘사 지양)\n\n## 출력 형식 (JSON 객체 하나만 출력):\n**!!!! 절대로, 절대로 JSON 객체 외의 다른 어떤 텍스트도 응답에 포함하지 마십시오. 오직 아래 형식의 유효한 JSON 데이터만 출력해야 합니다. !!!!**\n\`\`\`json\n{\n  "name": "생성된 이름",\n  "gender": "선택된 성별",\n  "age": "생성된 나이",\n  "appearance": "생성된 외형 묘사",\n  "guidelines": "생성된 사용자 설정 묘사 (직업 명시, 성향, 키워드, 상대 캐릭터 관계 포함, 최소 500자 이상, 문단 구분)"\n}\n\`\`\`\n`;
+         // ★★★ 사용자 키워드 지침 추가 ★★★
+         let keywordInstruction = '';
+         if (keywords && keywords.trim() !== '') {
+             keywordInstruction = `\n\n## 사용자 요청 키워드 (반영 필수):\n다음 키워드를 **최대한 반영**하여 사용자 프로필을 생성하십시오: "${keywords.trim()}"\n이 키워드와 상충되지 않는 선에서 다른 요소들은 자유롭게 생성하되, 키워드 내용은 반드시 결과에 명확히 드러나야 합니다.\n`;
+         }
+
+         // ★★★ 사용자 생성 프롬프트 (키워드 지침 포함) ★★★
+         const p = `## 역할: **다양한 성향과 관계성을 가진** 개성있는 무작위 사용자 수(受) 프로필 생성기 (JSON 출력)\n\n당신은 채팅 상대방인 캐릭터와 상호작용할 매력적인 사용자 프로필을 생성합니다. **진정한 무작위성 원칙**에 따라 각 항목(세계관, 성별, 종족, 나이, 직업, 성격 키워드, 도덕적 성향 등)을 **완전히 독립적으로, 모든 선택지에 동등한 확률을 부여**하여 선택합니다. **AI 스스로 특정 패턴을 만들거나 회피하지 마십시오.** '현대' 세계관, '인간' 종족, 평범하거나 긍정적인 성격도 다른 모든 옵션과 **동일한 확률**로 선택될 수 있어야 하며, 현실적인 현대 한국인 사용자도 충분한 빈도로 포함되도록 하십시오.${keywordInstruction}\n\n## 생성 규칙:\n\n1.  **세계관:** ['현대', '판타지','로맨스 판타지', 'SF', '기타(포스트 아포칼립스, 스팀펑크 등)'] 중 **독립/무작위 1개 선택**. ('현대'도 다른 세계관과 선택 확률 동일)\n2.  **성별:** ['남성', '여성', '논바이너리'] 중 **독립/무작위 1개 선택**.\n3.  **인종:** ['백인', '아시아계', '흑인', '히스패닉/라틴계', '중동계', '혼혈', '한국인', '기타'] 중 **독립/무작위 1개 선택하되 반드시 한국인 비율 20%**.\n4.  **종족:** ['인간', '엘프', '드워프', '사이보그', '수인', '뱀파이어', '악마', '천사', '오크', '고블린', '요정', '언데드', '기타'] 중 **독립/무작위 1개 선택**. (선택된 세계관과 **절대로 연관 짓지 말고**, 모든 종족이 동일한 확률로 선택되어야 합니다).\n5.  **나이:**\n    *   **먼저, 위 4번에서 종족을 독립적으로 확정한 후** 나이를 결정합니다.\n    *   **만약 확정된 종족이 '뱀파이어', '천사', '악마', '엘프', '언데드'일 경우:** ['수백 살', '수천 년', '나이 불명', '고대의 존재'] 중 적절한 표현 **무작위 선택**.\n    *   **그 외 종족일 경우:** 19세부터 80세 사이 정수 중 **무작위 선택**.\n6.  **직업 선택 (내부용):** 선택된 **세계관, 종족, 나이**에 어울리는 **구체적인 직업 1개를 내부적으로 무작위 선택**합니다. (예: 현대-회사원, 의사, 교사, 예술가, 조폭, 학생, 카페 사장, 개발자 / 판타지-기사, 마법사, 상인, 암살자, 연금술사 / SF-우주선 조종사, 해커, 연구원, 군인 등). **평범한 직업과 특이한 직업이 균형있게 선택**되도록 하십시오. **아래 7번에서 선택될 '도덕적 성향'과도 어느 정도 연관성을 고려**하여 설정하십시오.\n7.  **도덕적 성향/역할 선택:** 다음 목록에서 **1개를 무작위로 선택**합니다: ['선량함/영웅적', '평범함/중립적', '이기적/기회주의적', '반영웅적/모호함', '악당/빌런', '혼돈적/예측불허', '조직범죄 관련(조폭 등)']\n8.  **핵심 성격 키워드 선택:** 다음 목록에서 **서로 다른 키워드 1개 또는 2개를 무작위로 선택**합니다: ['낙천적인', '염세적인', '충동적인', '신중한', '사교적인', '내향적인', '원칙주의적인', '기회주의적인', '이타적인', '이기적인', '예술가적인', '현실적인', '광신적인', '회의적인', '자유분방한', '통제적인', '용감한', '겁 많은', '자존감 높은', '자존감 낮은', '비밀스러운', '솔직한', '감정적인', '이성적인', '엉뚱한', '진지한', '잔인한', '교활한', '탐욕스러운', '무자비한', '냉혈한'].\n9.  **이름:** 선택된 조건에 어울리는 이름 생성. (**만약 세계관이 '현대'이고 인종이 '한국인'이면, 일반적인 한국 성+이름 형식을 우선 고려**)\n10. **외형 묘사:** 조건을 반영하여 **최소 30자 이상** 작성.\n11. **사용자 가이드라인 (실제로는 캐릭터 설정):** **내부적으로 선택된 직업(6), 도덕적 성향(7), 성격 키워드(8)를 반드시 반영**하여, 이 사용자 캐릭터의 입체적인 면모(가치관, 동기, 행동 방식 등)를 보여주는 묘사를 **최소 500자 이상** 작성해야 합니다. **작성 시, 사용자 캐릭터의 직업이 무엇인지 명시적으로 서술하고, 그것이 캐릭터의 삶과 성격에 미치는 영향을 포함해야 합니다.** **또한, 이 사용자 캐릭터가 상대방 캐릭터에 대해 가지는 초기 인상, 태도, 또는 관계 설정 (예: '호기심을 느낀다', '경계한다', '이용하려 한다', '첫눈에 반했다', '오래된 악연이다' 등)을 반드시 포함하여 서술하십시오.** **내용을 구성할 때, 의미 단위에 따라 적절히 문단을 나누어 (예: 줄 바꿈 \\n\\n 사용) 가독성을 높여주십시오.** (피상적인 이중 성격 묘사 지양)\n\n## 출력 형식 (JSON 객체 하나만 출력):\n**!!!! 절대로, 절대로 JSON 객체 외의 다른 어떤 텍스트도 응답에 포함하지 마십시오. 오직 아래 형식의 유효한 JSON 데이터만 출력해야 합니다. !!!!**\n\`\`\`json\n{\n  "name": "생성된 이름",\n  "gender": "선택된 성별",\n  "age": "생성된 나이",\n  "appearance": "생성된 외형 묘사",\n  "guidelines": "생성된 사용자 설정 묘사 (직업 명시, 성향, 키워드, 상대 캐릭터 관계 포함, 최소 500자 이상, 문단 구분)"\n}\n\`\`\`\n`;
          const contents = [{ role: "user", parts: [{ text: p }] }];
          const response = await fetch(`/api/chat`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ contents: contents }) });
          if (!response.ok) { const errorBody = await response.text(); console.error(`Rand User API Error (${response.status}): ${errorBody}`); throw new Error(`서버 오류 (${response.status})`); }
@@ -494,19 +548,19 @@ async function generateRandomUser() { // 랜덤 사용자 생성 함수 (프롬�
          const jsonText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
          if (!jsonText) { console.error("Empty API response for random user:", data); throw new Error("API로부터 유효한 응답을 받지 못했습니다."); }
          try {
-           
+
 const cleanedJsonText = jsonText
     .replace(/^```json\s*/i, '')   // 맨 앞 ```json 제거
     .replace(/\s*```$/, '');        // 맨 뒤 ``` 제거
 
 const parsedData = JSON.parse(cleanedJsonText);
 
-           // 🔥 한국인 확률 보정 (25% 확률로)
-if (parsedData.race && parsedData.race !== '한국인') {
-    if (Math.random() < 0.25) {
-        parsedData.race = '한국인';
-    }
-}
+           // 🔥 한국인 확률 보정 (25% 확률로) - 프롬프트로 이동했으므로 주석 처리 또는 삭제 가능
+/*            if (parsedData.race && parsedData.race !== '한국인') {
+                if (Math.random() < 0.25) {
+                    parsedData.race = '한국인';
+                }
+            } */
              userNameInputModal.value = parsedData.name || '';
              userGenderInputModal.value = parsedData.gender || '';
              userAgeInputModal.value = parsedData.age || '';
@@ -527,6 +581,7 @@ if (parsedData.race && parsedData.race !== '한국인') {
          alert(`랜덤 사용자 생성 중 오류 발생: ${e.message}`);
      } finally {
          generateRandomUserButton.disabled = false; generateRandomUserButton.textContent = "🎲";
+         hidePopups(); // <<<--- 추가: 완료 후 모든 팝업 닫기
      }
 }
 
@@ -552,8 +607,21 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
         // 요소 할당 (변경 없음)
         chat=getElement('chat');userInput=getElement('userInput');sendButton=getElement('sendButton');loadingSpinner=getElement('loadingSpinner');actionMenuButton=getElement('actionMenuButton');actionMenu=getElement('actionMenu');menuOverlay=getElement('menuOverlay');sidebarToggle=getElement('sidebarToggle');settingsModalOverlay=getElement('settingsModalOverlay');settingsModal=getElement('settingsModal');closeModalButton=getElement('closeModalButton');saveSettingsButtonModal=getElement('saveSettingsButtonModal');feedbackButton=getElement('feedbackButton');feedbackOptionsContainer=getElement('feedbackOptionsContainer');botNameInputModal=getElement('botNameInputModal');botAgeInputModal=getElement('botAgeInputModal');botGenderInputModal=getElement('botGenderInputModal');botAppearanceInputModal=getElement('botAppearanceInputModal');botPersonaInputModal=getElement('botPersonaInputModal');botImagePreview=getElement('botImagePreview');userNameInputModal=getElement('userNameInputModal');userAgeInputModal=getElement('userAgeInputModal');userGenderInputModal=getElement('userGenderInputModal');userAppearanceInputModal=getElement('userAppearanceInputModal');userGuidelinesInputModal=getElement('userGuidelinesInputModal');userImagePreview=getElement('userImagePreview');generateRandomCharacterButton=getElement('generateRandomCharacter',false);generateRandomUserButton=getElement('generateRandomUser',false);menuImageButton=getElement('menuImageButton',false);menuSituationButton=getElement('menuSituationButton',false);menuExportTxtButton=getElement('menuExportTxtButton',false);menuSummarizeButton=getElement('menuSummarizeButton',false);situationOptions=getElement('situationOptions',false);imageOverlay=getElement('imageOverlay',false);overlayImage=getElement('overlayImage',false);
+        resetChatButton = getElement('resetChatButton'); // resetChatButton 요소 가져오기 (위치 변경 없음)
 
-        // 이벤트 리스너 연결 (변경 없음)
+        // --- 팝업 요소 할당 ---
+        randomChoicePopup = getElement('randomChoicePopup');
+        randomChoiceAll = getElement('randomChoiceAll');
+        randomChoicePartial = getElement('randomChoicePartial');
+        randomChoiceCancel = getElement('randomChoiceCancel');
+        partialInputPopup = getElement('partialInputPopup');
+        partialKeywordsInput = getElement('partialKeywordsInput');
+        generatePartialButton = getElement('generatePartialButton');
+        cancelPartialButton = getElement('cancelPartialButton');
+        popupOverlay = getElement('popupOverlay');
+        // userWorldInputModal, botWorldInputModal 은 이미 전역에서 가져옴
+
+        // 이벤트 리스너 연결 (기존 리스너들은 변경 없음)
         if(sendButton)sendButton.addEventListener("click",()=>{if(userInput)sendMessage(userInput.value);});
         if(userInput)userInput.addEventListener("keydown",function(e){if(e.key==="Enter"&&!e.shiftKey&&!e.isComposing){e.preventDefault();sendMessage(userInput.value);}});
         if(userInput)userInput.addEventListener('input',autoResizeTextarea);
@@ -569,31 +637,130 @@ document.addEventListener('DOMContentLoaded', () => {
         if(settingsModalOverlay){settingsModalOverlay.addEventListener("click",function(e){if(e.target===settingsModalOverlay){closeSettingsModal();}});}
         if(saveSettingsButtonModal)saveSettingsButtonModal.addEventListener("click",()=>saveSettings(currentSlot));
         document.querySelectorAll('.slot-button').forEach(b=>{b.addEventListener('click',function(){const s=parseInt(this.textContent);if(!isNaN(s)&&s!==currentSlot){currentSlot=s;loadSettings(currentSlot);loadConversationHistory();}});});
-        if(generateRandomCharacterButton)generateRandomCharacterButton.addEventListener('click',generateRandomCharacter);
-        if(generateRandomUserButton)generateRandomUserButton.addEventListener('click',generateRandomUser);
         if(botImagePreview)botImagePreview.closest('.image-preview-area')?.addEventListener('click',()=>promptForImageUrl(botImagePreview,true));
         if(userImagePreview)userImagePreview.closest('.image-preview-area')?.addEventListener('click',()=>promptForImageUrl(userImagePreview,false));
         if(feedbackButton)feedbackButton.addEventListener("click",toggleFeedbackOptions);
         if(feedbackOptionsContainer){feedbackOptionsContainer.querySelectorAll('.feedback-option').forEach(b=>{b.addEventListener('click',function(e){e.stopPropagation();const f=this.dataset.feedback;if(currentFeedback===f){handleFeedbackSelection(null);}else{handleFeedbackSelection(f);}});});}
-        document.addEventListener('click',function(e){if(actionMenu&&actionMenuButton&&!actionMenu.contains(e.target)&&e.target!==actionMenuButton&&actionMenu.classList.contains('visible')){closeActionMenu();}if(feedbackOptionsContainer&&feedbackButton&&!feedbackOptionsContainer.contains(e.target)&&e.target!==feedbackButton&&!currentFeedback&&!feedbackOptionsContainer.classList.contains('hidden')){closeFeedbackOptions();}});
-
-        // 여기에 resetChatButton 이벤트 리스너 추가
-        resetChatButton = getElement('resetChatButton'); // resetChatButton 요소 가져오기
-        if(resetChatButton) {
-        resetChatButton.addEventListener("click", () => {
-        resetConversation(); // 클릭 시 resetConversation 함수 호출
+        document.addEventListener('click',function(e){
+            if(actionMenu&&actionMenuButton&&!actionMenu.contains(e.target)&&e.target!==actionMenuButton&&actionMenu.classList.contains('visible')){closeActionMenu();}
+            if(feedbackOptionsContainer&&feedbackButton&&!feedbackOptionsContainer.contains(e.target)&&e.target!==feedbackButton&&!currentFeedback&&!feedbackOptionsContainer.classList.contains('hidden')){closeFeedbackOptions();}
+            // --- 팝업 외부 클릭 시 닫기 ---
+            if (popupOverlay && !popupOverlay.classList.contains('hidden') && e.target === popupOverlay) {
+                 hidePopups();
+            }
         });
+
+        // 여기에 resetChatButton 이벤트 리스너 추가 (변경 없음)
+        if(resetChatButton) {
+            resetChatButton.addEventListener("click", () => {
+                resetConversation(); // 클릭 시 resetConversation 함수 호출
+            });
         } else {
-        console.error("resetChatButton not found!");
+            console.error("resetChatButton not found!");
         }
 
-        // 모달 Textarea 자동 높이 조절 연결
+        // --- ★★★ 주사위 버튼 클릭 리스너 수정 ★★★ ---
+        if(generateRandomCharacterButton) {
+            generateRandomCharacterButton.addEventListener('click', (e) => {
+                e.preventDefault(); // 기본 동작 방지 (필요시)
+                currentPopupTarget = 'character'; // 대상 저장
+                // 팝업 버튼에 대상 정보 설정 (data 속성 활용)
+                if(randomChoiceAll) randomChoiceAll.dataset.targetGen = 'character';
+                if(randomChoicePartial) randomChoicePartial.dataset.targetGen = 'character';
+                if(generatePartialButton) generatePartialButton.dataset.targetGen = 'character';
+                showPopup(randomChoicePopup); // 선택 팝업 열기
+            });
+        }
+        if(generateRandomUserButton) {
+            generateRandomUserButton.addEventListener('click', (e) => {
+                e.preventDefault(); // 기본 동작 방지 (필요시)
+                currentPopupTarget = 'user'; // 대상 저장
+                // 팝업 버튼에 대상 정보 설정
+                if(randomChoiceAll) randomChoiceAll.dataset.targetGen = 'user';
+                if(randomChoicePartial) randomChoicePartial.dataset.targetGen = 'user';
+                if(generatePartialButton) generatePartialButton.dataset.targetGen = 'user';
+                showPopup(randomChoicePopup); // 선택 팝업 열기
+            });
+        }
+
+        // --- ★★★ 팝업 버튼 이벤트 리스너 추가 ★★★ ---
+        if (randomChoiceAll) {
+            randomChoiceAll.addEventListener('click', function() {
+                const target = this.dataset.targetGen; // data 속성에서 대상 읽기
+                // 팝업 버튼 로딩 상태 적용 (선택사항)
+                this.classList.add('loading');
+                this.disabled = true;
+                if(randomChoicePartial) randomChoicePartial.disabled = true;
+                if(randomChoiceCancel) randomChoiceCancel.disabled = true;
+                // hidePopups(); // API 호출 전에 닫거나, 호출 시작 시 닫거나 선택
+
+                if (target === 'character') {
+                    generateRandomCharacter(); // 키워드 없이 호출
+                } else if (target === 'user') {
+                    generateRandomUser(); // 키워드 없이 호출
+                } else {
+                     console.error("Unknown target for random generation:", target);
+                     hidePopups(); // 타겟 오류 시 팝업 닫기
+                }
+            });
+        }
+        if (randomChoicePartial) {
+            randomChoicePartial.addEventListener('click', function() {
+                const target = this.dataset.targetGen; // 대상 정보 읽기
+                 if (partialKeywordsInput) partialKeywordsInput.value = ''; // 키워드 입력창 초기화
+                if(generatePartialButton) generatePartialButton.dataset.targetGen = target; // 부분 생성 버튼에도 타겟 설정
+                if (randomChoicePopup) randomChoicePopup.classList.add('hidden'); // 선택 팝업 닫고
+                showPopup(partialInputPopup); // 키워드 입력 팝업 열기
+                if (partialKeywordsInput) partialKeywordsInput.focus();
+            });
+        }
+        if (randomChoiceCancel) {
+            randomChoiceCancel.addEventListener('click', hidePopups);
+        }
+        if (generatePartialButton) {
+            generatePartialButton.addEventListener('click', function() {
+                const target = this.dataset.targetGen; // data 속성에서 대상 읽기
+                const keywords = partialKeywordsInput ? partialKeywordsInput.value.trim() : '';
+
+                if (!keywords) {
+                     alert("키워드를 입력해주세요!");
+                     if (partialKeywordsInput) partialKeywordsInput.focus();
+                     return; // 키워드 없으면 중단
+                }
+
+                // 로딩 상태 설정
+                this.classList.add('loading');
+                this.disabled = true;
+                // this.dataset.originalText = this.textContent; // 원래 텍스트 저장 (복원용)
+                // this.textContent = ''; // 로딩 표시 위해 텍스트 제거
+                if (cancelPartialButton) cancelPartialButton.disabled = true;
+
+                // hidePopups(); // API 호출 전에 닫기
+
+                if (target === 'character') {
+                    generateRandomCharacter(keywords); // 키워드 전달
+                } else if (target === 'user') {
+                    generateRandomUser(keywords); // 키워드 전달
+                } else {
+                     console.error("Unknown target for partial generation:", target);
+                     hidePopups(); // 타겟 오류 시 팝업 닫기
+                }
+            });
+        }
+        if (cancelPartialButton) {
+            cancelPartialButton.addEventListener('click', hidePopups);
+        }
+         if (popupOverlay) {
+             popupOverlay.addEventListener('click', hidePopups); // 오버레이 클릭 시 닫기
+         }
+
+        // 모달 Textarea 자동 높이 조절 연결 (변경 없음)
         const modalTextareas = [ botAppearanceInputModal, botPersonaInputModal, userAppearanceInputModal, userGuidelinesInputModal ];
         modalTextareas.forEach(textarea => {
             if (textarea) { textarea.addEventListener('input', autoResizeTextarea); }
         });
 
-        initializeChat(); // 초기화
+        initializeChat(); // 초기화 (변경 없음)
         console.log("Initialization complete."); // 필수 완료 로그
     } catch (e) {
         console.error("Error during DOMContentLoaded setup:", e);
@@ -601,11 +768,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 }); // DOMContentLoaded 끝
 
+// document.addEventListener("DOMContentLoaded", ...) 이 부분은 위에서 통합했으므로 제거하거나 주석처리 합니다.
+/*
 document.addEventListener("DOMContentLoaded", function() {
     console.log("DOMContentLoaded! Starting App...");
     if (typeof marked !== 'undefined') {
-        initializeChat();
+        // initializeChat(); // 이미 위에서 호출됨
     } else {
         console.error("marked library not loaded!");
     }
 });
+*/
