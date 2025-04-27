@@ -131,23 +131,15 @@ function resetPopupButtonLoadingState() { const buttons = document.querySelector
 
 // --- 메시지 편집 관련 함수 ---
 function startEditing(messageContainer, index) {
-    // 유효성 검사 강화
-    if (!messageContainer || typeof index !== 'number' || index < 0 || index >= conversationHistory.length) {
-        console.error("Invalid arguments for startEditing:", messageContainer, index);
-        return;
-    }
+    // 유효성 검사
+    if (!messageContainer || typeof index !== 'number' || index < 0 || index >= conversationHistory.length) { console.error("Invalid arguments for startEditing:", messageContainer, index); return; }
     // 시스템 프롬프트 수정 불가
-    if (conversationHistory[index].role === 'user' && index === 0 && conversationHistory[index]?.messageData?.text === SYSTEM_PROMPT) {
-        console.log("System prompt message cannot be edited.");
-        return;
-    }
+    if (conversationHistory[index].role === 'user' && index === 0 && conversationHistory[index]?.messageData?.text === SYSTEM_PROMPT) { return; }
 
     // 다른 메시지 편집 중이면 종료
     if (currentlyEditingIndex !== null && currentlyEditingIndex !== index) {
         const previousEditingContainer = chat.querySelector(`.message-container[data-index="${currentlyEditingIndex}"]`);
-        if (previousEditingContainer) {
-            cancelEdit(previousEditingContainer);
-        }
+        if (previousEditingContainer) { cancelEdit(previousEditingContainer); }
     }
 
     // 이미 편집 중인 메시지의 버튼을 다시 클릭 -> 편집 모드 종료
@@ -157,114 +149,84 @@ function startEditing(messageContainer, index) {
     }
 
     // 편집 시작
-    console.log(`Starting edit for index: ${index}`); // 디버깅 로그 추가
+    console.log(`Starting edit for index: ${index}`);
     currentlyEditingIndex = index;
-    messageContainer.classList.add('editing');
+    messageContainer.classList.add('editing'); // CSS 적용
 
     const messageWrapper = messageContainer.querySelector('.message-content-wrapper');
-    if (!messageWrapper) { console.error("messageWrapper not found in startEditing"); return; } // 방어 코드
+    if (!messageWrapper) { console.error("messageWrapper not found in startEditing"); return; }
     let editArea = messageWrapper.querySelector('.message-edit-area');
 
     // 편집 UI 생성 또는 업데이트
     if (!editArea) {
-        console.log(`Creating edit area for index: ${index}`); // 디버깅 로그 추가
+        console.log(`Creating edit area for index: ${index}`);
         editArea = document.createElement('div');
         editArea.className = 'message-edit-area';
 
         const textarea = document.createElement('textarea');
         textarea.className = 'message-edit-textarea';
         textarea.value = conversationHistory[index].messageData.text;
-
-        textarea.addEventListener('keydown', handleEditKeyDown); // 이벤트 핸들러 분리
+        textarea.addEventListener('keydown', handleEditKeyDown);
         textarea.addEventListener('input', autoResizeTextarea);
 
         const buttonArea = document.createElement('div');
         buttonArea.className = 'message-edit-buttons';
-
         const saveBtn = document.createElement('button');
         saveBtn.className = 'message-edit-button message-edit-save';
         saveBtn.textContent = '저장';
-        saveBtn.addEventListener('click', handleSaveClick); // click 리스너 사용
-
+        saveBtn.addEventListener('click', handleSaveClick);
         const cancelBtn = document.createElement('button');
         cancelBtn.className = 'message-edit-button message-edit-cancel';
         cancelBtn.textContent = '취소';
-        cancelBtn.addEventListener('click', handleCancelClick); // click 리스너 사용
-
+        cancelBtn.addEventListener('click', handleCancelClick);
         buttonArea.appendChild(saveBtn);
         buttonArea.appendChild(cancelBtn);
         editArea.appendChild(textarea);
         editArea.appendChild(buttonArea);
         messageWrapper.appendChild(editArea);
 
-        // 비동기로 높이 계산 및 포커스
-        setTimeout(() => {
-            autoResizeTextarea.call(textarea);
-            textarea.focus();
-            textarea.select();
-        }, 0);
+        setTimeout(() => { autoResizeTextarea.call(textarea); textarea.focus(); textarea.select(); }, 0);
     } else {
-        console.log(`Updating edit area for index: ${index}`); // 디버깅 로그 추가
+        console.log(`Updating edit area for index: ${index}`);
         const textarea = editArea.querySelector('.message-edit-textarea');
         if (textarea) {
             textarea.value = conversationHistory[index].messageData.text;
-            setTimeout(() => {
-                autoResizeTextarea.call(textarea);
-                textarea.focus();
-                textarea.select();
-            }, 0);
+            setTimeout(() => { autoResizeTextarea.call(textarea); textarea.focus(); textarea.select(); }, 0);
         }
-        editArea.style.display = 'flex'; // 숨겨져 있었다면 다시 보이게
+        // .editing 클래스가 추가되었으므로 CSS에 의해 display: flex가 적용될 것임
+        // editArea.style.display = 'flex'; // 명시적으로 설정할 수도 있음
     }
 }
 
-// 편집 textarea 키다운 이벤트 핸들러
 function handleEditKeyDown(e) {
     const textarea = e.target;
     const messageContainer = textarea.closest('.message-container');
     if (!messageContainer) return;
     const index = parseInt(messageContainer.dataset.index);
+    if (isNaN(index)) { console.error("Invalid index on keydown"); return; }
 
-    if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        if (!isNaN(index)) {
-            saveEdit(index, textarea);
-        } else {
-            console.error("Invalid index on Enter keydown");
-            cancelEdit(messageContainer);
-        }
-    } else if (e.key === 'Escape') {
-        cancelEdit(messageContainer);
-    }
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); saveEdit(index, textarea); }
+    else if (e.key === 'Escape') { cancelEdit(messageContainer); }
 }
 
-// 저장 버튼 클릭 이벤트 핸들러
 function handleSaveClick(e) {
+    e.stopPropagation(); // <<<--- 중요: 클릭 이벤트가 전역 리스너로 퍼지는 것 방지
     const button = e.target;
     const editArea = button.closest('.message-edit-area');
     const messageContainer = button.closest('.message-container');
     if (!editArea || !messageContainer) return;
-
     const textarea = editArea.querySelector('.message-edit-textarea');
     const index = parseInt(messageContainer.dataset.index);
-
-    if (textarea && !isNaN(index)) {
-        saveEdit(index, textarea);
-    } else {
-        console.error("Could not find textarea or index on save click");
-        cancelEdit(messageContainer);
-    }
+    if (textarea && !isNaN(index)) { saveEdit(index, textarea); }
+    else { console.error("Could not find textarea or index on save click"); cancelEdit(messageContainer); }
 }
 
-// 취소 버튼 클릭 이벤트 핸들러
 function handleCancelClick(e) {
+    e.stopPropagation(); // <<<--- 중요: 클릭 이벤트가 전역 리스너로 퍼지는 것 방지
     const button = e.target;
     const messageContainer = button.closest('.message-container');
-    if (messageContainer) {
-        cancelEdit(messageContainer);
-    }
+    if (messageContainer) { cancelEdit(messageContainer); }
 }
-
 
 function saveEdit(index, textareaElement) {
     const newText = textareaElement.value.trim();
@@ -275,27 +237,20 @@ function saveEdit(index, textareaElement) {
         if (container) cancelEdit(container);
         return;
     }
-
-    console.log(`Saving edit for index: ${index}`); // 디버깅 로그
+    console.log(`Saving edit for index: ${index}`);
     conversationHistory[index].messageData.text = newText;
     saveConversationHistory();
-
-    // 해당 메시지만 UI 업데이트
-    updateSingleMessage(index, newText);
-
+    updateSingleMessage(index, newText); // 해당 메시지만 UI 업데이트
     currentlyEditingIndex = null;
 }
 
 function cancelEdit(messageContainer) {
     if (!messageContainer) return;
     const index = messageContainer.dataset.index;
-    console.log(`Canceling edit for index: ${index}`); // 디버깅 로그
-
-    messageContainer.classList.remove('editing');
-
+    console.log(`Canceling edit for index: ${index}`);
+    messageContainer.classList.remove('editing'); // CSS가 처리
     const editArea = messageContainer.querySelector('.message-edit-area');
-    if (editArea) { editArea.style.display = 'none'; }
-
+    if (editArea) { editArea.style.display = 'none'; } // 명시적으로 숨김
     if (currentlyEditingIndex !== null && index == currentlyEditingIndex) {
         currentlyEditingIndex = null;
     }
@@ -309,21 +264,17 @@ function hideAllEditAreas() {
 }
 
 function updateSingleMessage(index, newText) {
-    console.log(`Updating single message for index: ${index}`); // 디버깅 로그
+    console.log(`Updating single message for index: ${index}`);
     const messageContainer = chat.querySelector(`.message-container[data-index="${index}"]`);
     if (!messageContainer) { console.error("Cannot find message container to update"); return; }
     const bubble = messageContainer.querySelector('.message-bubble');
     if (!bubble) { console.error("Cannot find message bubble to update"); return; }
-
     if (typeof marked !== 'undefined' && typeof marked.parse === 'function') {
         try { bubble.innerHTML = marked.parse(newText, { breaks: true, gfm: true }); }
         catch (e) { console.error("Marked parsing error on update:", e); bubble.textContent = newText; }
     } else { bubble.textContent = newText; }
-
-    // 편집 UI 숨기기 및 상태 초기화
-    cancelEdit(messageContainer);
+    cancelEdit(messageContainer); // 편집 UI 숨기기 및 상태 초기화
 }
-
 
 // --- 나머지 함수 정의 ---
 
@@ -423,7 +374,6 @@ function appendMessage(role, messageData, index = -1) {
         } else { // 텍스트 메시지
             const messageContainer = document.createElement("div"); messageContainer.className = `message-container ${role}`; if (isIndexed) { messageContainer.dataset.index = index; }
             const profileArea = document.createElement("div"); profileArea.className = "profile-area";
-            // 프로필 생성
             const profileImgContainer = document.createElement("div"); profileImgContainer.style.position = 'relative';
             const profileUrl = (role === 'user' ? userProfileImgUrl : botProfileImgUrl);
             const profileName = (role === 'user' ? (userNameInputModal?.value || "사용자") : (botNameInputModal?.value || "캐릭터"));
@@ -439,23 +389,21 @@ function appendMessage(role, messageData, index = -1) {
             const messageWrapper = document.createElement("div"); messageWrapper.className = "message-content-wrapper";
             const bubble = document.createElement("div"); bubble.className = "message-bubble";
 
-            // Marked 처리
             let textContent = messageData.text || "";
             if (typeof marked !== 'undefined' && typeof marked.parse === 'function') { try { bubble.innerHTML = marked.parse(textContent, { breaks: true, gfm: true }); } catch (e) { console.error("Marked parsing error:", e); bubble.textContent = textContent; } } else { console.warn("marked library not loaded."); bubble.textContent = textContent; }
 
             messageWrapper.appendChild(bubble);
 
-            // 버튼 추가 로직 (수정됨)
+            // 버튼 추가 로직
             if (isIndexed) {
                 const isSystemPromptMsg = role === 'user' && index === 0 && messageData.text === SYSTEM_PROMPT;
-
                 if (!isSystemPromptMsg) {
-                    // 수정 버튼 (모든 메시지에 추가, 시스템 프롬프트 제외)
+                    // 수정 버튼
                     const editBtn = document.createElement('button');
                     editBtn.className = 'message-action-btn edit-btn';
                     editBtn.title = '메시지 수정';
                     editBtn.innerHTML = '<i class="fa-solid fa-pencil"></i>';
-                    editBtn.addEventListener('click', (event) => { // onclick 대신 addEventListener 사용
+                    editBtn.addEventListener('click', (event) => {
                         event.stopPropagation();
                         const msgIndex = parseInt(messageContainer.dataset.index);
                         if (!isNaN(msgIndex) && msgIndex >= 0) {
@@ -464,13 +412,13 @@ function appendMessage(role, messageData, index = -1) {
                     });
                     messageWrapper.appendChild(editBtn);
 
-                    // 다시 생성 버튼 (봇 메시지에만 추가)
+                    // 다시 생성 버튼 (봇 메시지에만)
                     if (role === 'bot') {
                         const regenerateBtn = document.createElement('button');
                         regenerateBtn.className = 'message-action-btn regenerate-btn';
                         regenerateBtn.title = '응답 다시 생성';
                         regenerateBtn.innerHTML = '<i class="fa-solid fa-arrows-rotate"></i>';
-                        regenerateBtn.addEventListener('click', (event) => { // onclick 대신 addEventListener 사용
+                        regenerateBtn.addEventListener('click', (event) => {
                             event.stopPropagation();
                             const btn = event.currentTarget;
                             const msgIndex = parseInt(messageContainer.dataset.index);
@@ -481,7 +429,7 @@ function appendMessage(role, messageData, index = -1) {
                         messageWrapper.appendChild(regenerateBtn);
                     }
 
-                    // 편집 영역 placeholder (CSS로 숨겨짐)
+                    // 편집 영역 placeholder
                     const editArea = document.createElement('div');
                     editArea.className = 'message-edit-area';
                     messageWrapper.appendChild(editArea);
@@ -709,18 +657,19 @@ document.addEventListener('DOMContentLoaded', () => {
         if(feedbackButton)feedbackButton.addEventListener("click",toggleFeedbackOptions);
         if(feedbackOptionsContainer){feedbackOptionsContainer.querySelectorAll('.feedback-option').forEach(b=>{b.addEventListener('click',function(e){e.stopPropagation();const f=this.dataset.feedback;if(currentFeedback===f){handleFeedbackSelection(null);}else{handleFeedbackSelection(f);}});});}
 
-        // 전역 클릭 리스너 (메뉴/팝업/편집 종료)
+        // --- 전역 클릭 리스너 (수정) ---
         document.addEventListener('click',function(e){
             // 메뉴/팝업 닫기
             if(actionMenu&&actionMenuButton&&!actionMenu.contains(e.target)&&e.target!==actionMenuButton&&actionMenu.classList.contains('visible')){closeActionMenu();}
             if(feedbackOptionsContainer&&feedbackButton&&!feedbackOptionsContainer.contains(e.target)&&e.target!==feedbackButton&&!currentFeedback&&!feedbackOptionsContainer.classList.contains('hidden')){closeFeedbackOptions();}
             if (popupOverlay && !popupOverlay.classList.contains('hidden') && e.target === popupOverlay) { hidePopups(); }
 
-            // 편집 영역 외부 클릭 시 편집 종료
+            // 편집 영역 외부 클릭 시 편집 종료 (수정 버튼 클릭 제외)
             const clickedInsideEditArea = e.target.closest('.message-edit-area');
-            const clickedEditButton = e.target.closest('.edit-btn'); // 수정 버튼 자체는 제외
+            const clickedEditButton = e.target.closest('.edit-btn');
 
             if (currentlyEditingIndex !== null && !clickedInsideEditArea && !clickedEditButton) {
+                 // console.log("Clicked outside edit area, closing edit mode."); // 디버깅 로그
                  hideAllEditAreas();
             }
         });
