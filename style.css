@@ -303,3 +303,67 @@ em {
 
 
 /* ▲▲▲ 랜덤 생성 팝업 CSS (옵션 3: 다크 테마) 끝 ▲▲▲ */
+
+/* ▼▼▼ AI 응답 다시 생성 버튼 CSS ▼▼▼ */
+
+.message-container.bot .message-content-wrapper {
+    position: relative; /* 버튼 위치 기준점 */
+    padding-right: 55px; /* 버튼 놓을 공간 확보 (기존 36px + 버튼너비 + 여백) */
+}
+
+.regenerate-btn {
+    position: absolute;
+    bottom: 5px; /* 메시지 버블 하단에 맞춤 */
+    right: 5px;  /* 메시지 버블 오른쪽에 붙임 */
+    background-color: rgba(255, 255, 255, 0.1); /* 반투명 배경 */
+    color: #aaa;
+    border: none;
+    border-radius: 50%;
+    width: 22px;  /* 작은 크기 */
+    height: 22px; /* 작은 크기 */
+    font-size: 0.7rem; /* 아이콘 크기 */
+    cursor: pointer;
+    display: flex; /* 아이콘 중앙 정렬 */
+    justify-content: center;
+    align-items: center;
+    opacity: 0.7; /* 평소엔 약간 투명하게 */
+    transition: opacity 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+    z-index: 5; /* 다른 요소 위에 오도록 */
+}
+
+/* 마우스 올렸을 때 더 잘 보이게 */
+.message-container.bot:hover .regenerate-btn {
+    opacity: 1;
+}
+
+.regenerate-btn:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #fff;
+}
+
+.regenerate-btn:active {
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+/* 로딩 중 스타일 (기존 spin 애니메이션 활용) */
+.regenerate-btn.loading {
+    cursor: default;
+    opacity: 1;
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+.regenerate-btn.loading::before { /* FontAwesome 아이콘 숨기기 */
+    content: "";
+    display: none;
+}
+.regenerate-btn.loading::after { /* 스피너 표시 */
+    content: '';
+    display: block; /* 스피너 보이게 */
+    width: 12px;
+    height: 12px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+/* ▲▲▲ AI 응답 다시 생성 버튼 CSS 끝 ▲▲▲ */
