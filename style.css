@@ -36,6 +36,37 @@ body { font-family: "Nanum Gothic", sans-serif; background-color: #1E1E1E; color
 .feedback-options-container{order:3;display:flex;align-items:center;gap:.4rem;overflow:hidden;transition:max-width .3s ease-out,opacity .3s ease-out,visibility .3s step-end;max-width:0;opacity:0;visibility:hidden;flex-shrink:0;z-index:113;}.feedback-options-container:not(.hidden){transition:max-width .3s ease-out,opacity .3s ease-out,visibility 0s;max-width:250px;opacity:1;visibility:visible;}.feedback-options-container .feedback-option{background-color:#3a3a3a;border:none;color:#ccc;font-size:.8rem;cursor:pointer;border-radius:15px;padding:.3rem .7rem;white-space:nowrap;transition:background-color .2s,color .2s;}.feedback-options-container .feedback-option:hover{background-color:#4a4a4a;color:#fff;}.feedback-options-container .feedback-option.active{background-color:#5080ff;color:#fff;font-weight:700;}
 #userInput{order:4;flex-grow:1;min-height:calc(1.4em + .8rem + 2px);max-height:calc(2.8em + .8rem + 2px);padding:.4rem .8rem;line-height:1.4;font-size:.9rem;border-radius:1rem;border:none;background-color:#1e1e1e;color:#e0e0e0;resize:none;outline:0;box-sizing:border-box;transition:background-color .2s;overflow-y:hidden;scrollbar-width:none;-ms-overflow-style:none;z-index:111;}#userInput::-webkit-scrollbar{display:none;}#userInput:focus{background-color:#3a3a3a;box-shadow:none;}
 #sendButton{order:5;margin-left:auto;width:28px;height:28px;border-radius:50%;background-color:#5080ff;color:#fff;font-size:.7rem;flex-shrink:0;border:none;cursor:pointer;display:flex;justify-content:center;align-items:center;transition:background-color .2s ease;padding:0;align-self:center;z-index:113;}#sendButton:hover{background-color:#6699ff;}#sendButton:active{background-color:#3366cc;}#sendButton:disabled{background-color:#4a4a4a;color:#888;cursor:not-allowed;}
+#resetChatButton {
+    position: absolute;
+    top: 50%;
+    /* 오른쪽에서 살짝 떨어뜨려 '≡' 버튼 옆에 위치 */
+    right: 3.5rem; /* 이 값을 조절해서 위치를 맞출 수 있어요 */
+    transform: translateY(-50%);
+    width: 30px;
+    height: 30px;
+    background-color: #5a5a5a;
+    color: #ffffff;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.2rem; /* '-' 기호 크기 조절 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.2s ease;
+    z-index: 10;
+    line-height: 1; /* 세로 중앙 정렬 미세 조정 */
+    padding-bottom: 3px; /* '-' 기호 세로 위치 미세 조정 */
+}
+
+#resetChatButton:hover {
+    background-color: #ff5a5a; /* 마우스를 올렸을 때 색상 변경 (경고 느낌) */
+}
+
+#resetChatButton:active {
+     background-color: #cc0000; /* 클릭했을 때 색상 변경 */
+     transform: translateY(-50%) scale(0.95); /* 클릭 시 살짝 줄어드는 효과 */
+}
 #loadingSpinner{position:absolute;bottom:.7rem;right:3rem;border:3px solid rgba(255,255,255,.3);border-top:3px solid #fff;border-radius:50%;width:16px;height:16px;animation:spin 1s linear infinite;display:none;z-index:112;}@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
 .initial-notice{text-align:center;margin:.1rem auto 1rem;color:#666;font-size:.85rem;padding:.8rem;max-width:80%;word-break:break-word;}.notice-divider{width:90%;height:1px;background-color:#3a3a3a;margin:.4rem auto 0;}
 #imageOverlay{position:fixed;top:0;left:0;width:100%;height:100%;background-color:rgba(0,0,0,.85);display:none;justify-content:center;align-items:center;z-index:300;cursor:pointer;}#imageOverlay img{max-width:90%;max-height:90%;object-fit:contain;border-radius:6px;}
