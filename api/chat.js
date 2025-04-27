@@ -7,7 +7,7 @@ const { GEMINI_API_KEY } = process.env;
 // 프론트엔드와 유사하게 fetch를 사용하는 방식으로 작성하여 이해를 돕습니다.
 // 실제 라이브러리 사용 시 더 편리하고 안정적일 수 있습니다.
 
-export default async function handler(req, res) {
+module.exports = async (req, res) => {
     // CORS 설정 (프론트엔드와 백엔드가 다른 출처일 수 있으므로 필요)
     // 여기서는 모든 출처 (*) 에서 요청을 허용하도록 간단히 설정합니다.
     // 실제 운영 환경에서는 특정 프론트엔드 주소만 허용하도록 수정하는 것이 좋습니다.
