@@ -151,9 +151,10 @@ function startEditing(messageContainer, index) {
     let editArea = messageWrapper.querySelector('.message-edit-area');
     const originalBubble = messageWrapper.querySelector('.message-bubble');
 
-    if (!editArea) { // 편집 UI가 없으면 새로 생성
+    // 편집 UI가 없으면 새로 생성
+    if (!editArea) {
         editArea = document.createElement('div');
-        editArea.className = 'message-edit-area'; // display: none 상태
+        editArea.className = 'message-edit-area'; // 초기 display: none (CSS에서 처리)
 
         const textarea = document.createElement('textarea');
         textarea.className = 'message-edit-textarea';
@@ -168,6 +169,7 @@ function startEditing(messageContainer, index) {
                 cancelEdit(messageContainer);
             }
         });
+        textarea.addEventListener('input', autoResizeTextarea); // 자동 높이 조절 연결
 
         const buttonArea = document.createElement('div');
         buttonArea.className = 'message-edit-buttons';
@@ -190,19 +192,26 @@ function startEditing(messageContainer, index) {
         // 편집 영역을 메시지 래퍼에 추가
         messageWrapper.appendChild(editArea);
 
-        // Textarea 자동 높이 조절 및 포커스
-        textarea.addEventListener('input', autoResizeTextarea);
+         // 비동기로 높이 계산 및 포커스
         setTimeout(() => {
-            autoResizeTextarea.call(textarea);
+            autoResizeTextarea.call(textarea); // 초기 높이 계산
             textarea.focus();
             textarea.select();
-        }, 0); // 비동기로 처리하여 UI 렌더링 후 실행
-    }
-    // 편집 UI를 보이게 (CSS에서 display: flex 처리)
-    editArea.style.display = 'flex'; // 명시적으로 보여주기 (혹시 모르니)
+        }, 0);
 
-    // 원래 버블 숨기기 (CSS가 이 역할을 함)
-    // if (originalBubble) originalBubble.style.display = 'none';
+    } else { // 이미 존재하면 내용 업데이트 후 보여주기
+        const textarea = editArea.querySelector('.message-edit-textarea');
+        if (textarea) {
+             textarea.value = conversationHistory[index].messageData.text; // 최신 내용 반영
+             setTimeout(() => {
+                 autoResizeTextarea.call(textarea); // 높이 재계산
+                 textarea.focus();
+                 textarea.select();
+             }, 0);
+        }
+        editArea.style.display = 'flex'; // 숨겨져 있었다면 다시 보이게
+    }
+    // .editing 클래스가 추가되면 CSS에 의해 originalBubble은 숨겨지고 editArea는 보이게 됨
 }
 
 function saveEdit(index, textareaElement) {
@@ -213,29 +222,32 @@ function saveEdit(index, textareaElement) {
     }
     if (index < 0 || index >= conversationHistory.length) {
         console.error("Invalid index for saving edit:", index);
-        cancelEdit(textareaElement.closest('.message-container'));
+        const container = textareaElement.closest('.message-container');
+        if (container) cancelEdit(container);
         return;
     }
 
     conversationHistory[index].messageData.text = newText;
     saveConversationHistory();
 
-    // 화면 업데이트 방식 변경: 전체 새로고침 대신 해당 메시지만 업데이트 시도
-    // loadConversationHistory(); // 전체 새로고침 대신 아래 로직 사용
+    // 해당 메시지만 UI 업데이트
     updateSingleMessage(index, newText);
+
     currentlyEditingIndex = null; // 편집 상태 해제
 }
 
 function cancelEdit(messageContainer) {
     if (!messageContainer) return;
-    messageContainer.classList.remove('editing'); // CSS 클래스 제거하여 원래 버블 보이게
 
-    // 편집 UI는 제거하지 않고 숨김 (다시 더블클릭 시 재사용 위함)
+    messageContainer.classList.remove('editing'); // editing 클래스 제거 (CSS가 알아서 처리)
+
+    // 편집 UI 숨기기
     const editArea = messageContainer.querySelector('.message-edit-area');
     if (editArea) {
         editArea.style.display = 'none';
     }
 
+    // 현재 편집 인덱스 초기화
     if (currentlyEditingIndex !== null && messageContainer.dataset.index == currentlyEditingIndex) {
         currentlyEditingIndex = null;
     }
@@ -248,35 +260,21 @@ function hideAllEditAreas() {
              cancelEdit(editingContainer);
          }
     }
-    // currentlyEditingIndex = null; // cancelEdit에서 처리됨
 }
 
-// 특정 메시지만 업데이트하는 함수 (새로 추가)
 function updateSingleMessage(index, newText) {
     const messageContainer = chat.querySelector(`.message-container[data-index="${index}"]`);
     if (!messageContainer) return;
-
     const bubble = messageContainer.querySelector('.message-bubble');
     if (!bubble) return;
 
-    // Marked 라이브러리로 새 텍스트 렌더링
     if (typeof marked !== 'undefined' && typeof marked.parse === 'function') {
-        try {
-            bubble.innerHTML = marked.parse(newText, { breaks: true, gfm: true });
-        } catch (e) {
-            console.error("Marked parsing error on update:", e);
-            bubble.textContent = newText; // 오류 시 원본 텍스트
-        }
-    } else {
-        bubble.textContent = newText; // Marked 없으면 원본 텍스트
-    }
+        try { bubble.innerHTML = marked.parse(newText, { breaks: true, gfm: true }); }
+        catch (e) { console.error("Marked parsing error on update:", e); bubble.textContent = newText; }
+    } else { bubble.textContent = newText; }
 
-    // 편집 UI 숨기기
-    const editArea = messageContainer.querySelector('.message-edit-area');
-    if (editArea) {
-        editArea.style.display = 'none';
-    }
-    messageContainer.classList.remove('editing'); // editing 클래스 제거
+    // 편집 UI 숨기기 (저장 후)
+    cancelEdit(messageContainer); // cancelEdit 호출로 editing 클래스 제거 및 UI 숨김 처리
 }
 
 
@@ -400,17 +398,14 @@ function appendMessage(role, messageData, index = -1) {
             if (isIndexed) {
                 bubble.addEventListener('dblclick', (e) => {
                     e.stopPropagation();
-                    // 시스템 프롬프트 메시지 수정 불가 (첫 번째 사용자 메시지이고 내용이 같으면)
-                    if (role === 'user' && index === 0 && conversationHistory[index]?.messageData?.text === SYSTEM_PROMPT) {
-                         console.log("System prompt message cannot be edited.");
-                         return;
-                    }
-                    // 다른 메시지 편집 중이면 종료 후 현재 메시지 편집 시작/종료 토글
+                    // 시스템 프롬프트 메시지 수정 불가
+                    if (role === 'user' && index === 0 && conversationHistory[index]?.messageData?.text === SYSTEM_PROMPT) { return; }
+                    // 다른 메시지 편집 중이면 종료
                     if (currentlyEditingIndex !== null && currentlyEditingIndex !== index) {
                        const otherEditingContainer = chat.querySelector(`.message-container[data-index="${currentlyEditingIndex}"]`);
                        if (otherEditingContainer) cancelEdit(otherEditingContainer);
                     }
-                    startEditing(messageContainer, index); // 편집 시작 또는 종료
+                    startEditing(messageContainer, index); // 편집 시작 또는 종료 토글
                 });
             }
 
@@ -427,33 +422,13 @@ function appendMessage(role, messageData, index = -1) {
             if (isIndexed) {
                  const editArea = document.createElement('div');
                  editArea.className = 'message-edit-area'; // 초기 display: none
-                 messageWrapper.appendChild(editArea);
+                 messageWrapper.appendChild(editArea); // CSS에 의해 숨겨짐
              }
 
             messageContainer.appendChild(profileArea);
             messageContainer.appendChild(messageWrapper);
             chat.appendChild(messageContainer);
 
-            // 화면 로드 후, 현재 편집 중인 메시지가 있다면 편집 상태 복원
-            if (currentlyEditingIndex === index) {
-                // startEditing을 다시 호출하면 토글되므로 직접 클래스 추가 및 UI 생성/표시 필요
-                 messageContainer.classList.add('editing');
-                 const editArea = messageWrapper.querySelector('.message-edit-area');
-                 if (editArea) {
-                     // startEditing과 유사하게 UI 구성 요소 만들고 표시
-                     // (코드 중복 피하려면 별도 함수로 분리하는 것이 좋음)
-                     if (!editArea.hasChildNodes()) { // 아직 UI가 없으면 생성
-                        const textarea = document.createElement('textarea'); /* ... */
-                        const buttonArea = document.createElement('div'); /* ... */
-                        // ... 버튼 생성 및 이벤트 핸들러 연결 ...
-                        editArea.appendChild(textarea);
-                        editArea.appendChild(buttonArea);
-                        textarea.addEventListener('input', autoResizeTextarea);
-                        setTimeout(() => { autoResizeTextarea.call(textarea); textarea.focus(); textarea.select(); }, 0);
-                     }
-                     editArea.style.display = 'flex';
-                 }
-            }
         }
 
         setTimeout(() => { if (chat) chat.scrollTop = chat.scrollHeight; }, 50);
@@ -463,8 +438,9 @@ function appendMessage(role, messageData, index = -1) {
     }
 }
 
+
 // TXT 내보내기
-function exportConversationAsTxt() { try { if (!conversationHistory || conversationHistory.length === 0) { alert("내보낼 대화 내용이 없습니다."); return; } let content = ""; const botName = botNameInputModal?.value || "캐릭터"; const userName = userNameInputModal?.value || "사용자"; conversationHistory.forEach(entry => { if (entry.role === 'user' && entry.messageData?.type === 'text' && entry.messageData?.text === SYSTEM_PROMPT) return; if (entry.messageData?.type === 'image') return; if (entry.messageData?.type === 'text') { const name = (entry.role === "user" ? userName : botName); let text = entry.messageData?.text || ""; let plainText = text.replace(/^\*|\*$/g, '').replace(/\*([^*]+)\*/gs, '$1').trim(); if (plainText) { content += `[${name}] : ${plainText}\n\n`; } } }); content = content.trimEnd(); if (!content) { alert("내보낼 텍스트 내용이 없습니다. (시스템 메시지, 이미지 제외)"); return; } const blob = new Blob([content], { type: 'text/plain;charset=utf-8' }); const link = document.createElement('a'); link.href = URL.createObjectURL(blob); const timestamp = new Date().toISOString().slice(0, 10).replace(/-/g, ''); link.download = `chat_history_${botName}_${userName}_${timestamp}.txt`; document.body.appendChild(link); link.click(); document.body.removeChild(link); URL.revokeObjectURL(link.href); closeActionMenu(); } catch (e) { console.error("Error in exportConversationAsTxt:", e); alert("TXT 내보내기 중 오류 발생"); } }
+function exportConversationAsTxt() { try { hideAllEditAreas(); if (!conversationHistory || conversationHistory.length === 0) { alert("내보낼 대화 내용이 없습니다."); return; } let content = ""; const botName = botNameInputModal?.value || "캐릭터"; const userName = userNameInputModal?.value || "사용자"; conversationHistory.forEach(entry => { if (entry.role === 'user' && entry.messageData?.type === 'text' && entry.messageData?.text === SYSTEM_PROMPT) return; if (entry.messageData?.type === 'image') return; if (entry.messageData?.type === 'text') { const name = (entry.role === "user" ? userName : botName); let text = entry.messageData?.text || ""; let plainText = text.replace(/^\*|\*$/g, '').replace(/\*([^*]+)\*/gs, '$1').trim(); if (plainText) { content += `[${name}] : ${plainText}\n\n`; } } }); content = content.trimEnd(); if (!content) { alert("내보낼 텍스트 내용이 없습니다. (시스템 메시지, 이미지 제외)"); return; } const blob = new Blob([content], { type: 'text/plain;charset=utf-8' }); const link = document.createElement('a'); link.href = URL.createObjectURL(blob); const timestamp = new Date().toISOString().slice(0, 10).replace(/-/g, ''); link.download = `chat_history_${botName}_${userName}_${timestamp}.txt`; document.body.appendChild(link); link.click(); document.body.removeChild(link); URL.revokeObjectURL(link.href); closeActionMenu(); } catch (e) { console.error("Error in exportConversationAsTxt:", e); alert("TXT 내보내기 중 오류 발생"); } }
 
 // 요약
 async function summarizeConversation() { hideAllEditAreas(); if (!sendButton || !userInput || !actionMenuButton || !loadingSpinner || !menuSummarizeButton || !chat) { console.error("Summarize function dependencies missing"); return; } sendButton.disabled = true; userInput.disabled = true; actionMenuButton.disabled = true; loadingSpinner.style.display = 'block'; menuSummarizeButton.disabled = true; if(feedbackButton) feedbackButton.disabled = true; closeActionMenu(); try { const historyToSummarize = conversationHistory.filter(e => !(e.role === 'user' && e.messageData?.text === SYSTEM_PROMPT) && e.messageData?.type === 'text').slice(-10); if (historyToSummarize.length === 0) { alert("요약할 대화 내용이 없습니다."); return; } const summaryPrompt = `다음 대화 내용을 한국어로 간결하게 요약해줘. 요약은 제3자 시점에서 작성하고, 핵심 사건과 전개만 담되 군더더기 없는 자연스러운 문장으로 작성해. "요약:" 같은 머리말은 붙이지 말고, 그냥 텍스트만 출력해. (최근 ${historyToSummarize.length} 턴 기준)`; const contents = [ { role: "user", parts: [{ text: SYSTEM_PROMPT }] }, ...historyToSummarize.map(e => ({ role: e.role === 'model' ? 'model' : 'user', parts: [{ text: e.messageData.text }] })), { role: "user", parts: [{ text: summaryPrompt }] } ]; let summaryText = ''; try { const response = await fetch(`/api/chat`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ contents: contents }) }); if (!response.ok) { const errorBody = await response.text(); console.error(`Summary API Error (${response.status}): ${errorBody}`); summaryText = `(요약 요청 실패: ${response.status})`; } else { const data = await response.json(); summaryText = data?.candidates?.[0]?.content?.parts?.[0]?.text || "(요약 응답 처리 실패)"; } } catch (fetchError) { console.error("Fetch Error during summary:", fetchError); summaryText = "(요약 요청 중 통신 오류)"; } appendMessage("bot", { type: 'text', text: `--- 최근 ${historyToSummarize.length}턴 대화 요약 ---\n${summaryText}\n---` }); } catch (processError) { console.error("Error in Summarize process:", processError); appendMessage("bot", { type: 'text', text: "(요약 처리 중 오류 발생)" }); } finally { if(sendButton) sendButton.disabled = false; if(userInput) userInput.disabled = false; if(actionMenuButton) actionMenuButton.disabled = false; if(loadingSpinner) loadingSpinner.style.display = 'none'; if(menuSummarizeButton) menuSummarizeButton.disabled = false; if(feedbackButton) feedbackButton.disabled = false; if(userInput) userInput.focus(); } }
@@ -590,7 +566,7 @@ async function generateRandomUser(keywords = '') {
 }
 
 // 이미지 미리보기 클릭 시 URL 입력
-function promptForImageUrl(imgElement, isBot) { const currentUrl = imgElement.src && isValidImageUrl(imgElement.src) ? imgElement.src : ''; const promptMessage = isBot ? "캐릭터 이미지 URL 입력:" : "사용자 이미지 URL 입력:"; const newUrl = prompt(promptMessage, currentUrl); if (newUrl !== null) { if (newUrl === "" || !isValidImageUrl(newUrl)) { updateImagePreview('', imgElement); if (isBot) { botProfileImgUrl = ''; } else { userProfileImgUrl = ''; } if (newUrl !== "") { alert("유효하지 않은 이미지 URL입니다."); } } else { updateImagePreview(newUrl, imgElement); if (isBot) { botProfileImgUrl = newUrl; } else { userProfileImgUrl = newUrl; } } } }
+function promptForImageUrl(imgElement, isBot) { hideAllEditAreas(); const currentUrl = imgElement.src && isValidImageUrl(imgElement.src) ? imgElement.src : ''; const promptMessage = isBot ? "캐릭터 이미지 URL 입력:" : "사용자 이미지 URL 입력:"; const newUrl = prompt(promptMessage, currentUrl); if (newUrl !== null) { if (newUrl === "" || !isValidImageUrl(newUrl)) { updateImagePreview('', imgElement); if (isBot) { botProfileImgUrl = ''; } else { userProfileImgUrl = ''; } if (newUrl !== "") { alert("유효하지 않은 이미지 URL입니다."); } } else { updateImagePreview(newUrl, imgElement); if (isBot) { botProfileImgUrl = newUrl; } else { userProfileImgUrl = newUrl; } } } }
 
 // 채팅 이미지 삽입 함수
 function sendImageChatMessage() { closeActionMenu(); hideAllEditAreas(); const imageUrl = prompt("채팅에 삽입할 이미지 URL:"); if (imageUrl && isValidImageUrl(imageUrl)) { if (userInput) { sendMessage(imageUrl); } else { const imgMessage = { role: "user", messageData: { type: 'image', url: imageUrl } }; conversationHistory.push(imgMessage); appendMessage("user", imgMessage.messageData, conversationHistory.length - 1); saveConversationHistory(); if (chat) chat.scrollTop = chat.scrollHeight; } } else if (imageUrl !== null) { alert("유효한 이미지 URL 형식이 아닙니다."); } }
@@ -626,8 +602,7 @@ async function regenerateResponse(index, buttonElement) {
         const newBotMessage = { role: "model", messageData: { type: 'text', text: newBotResponseText } };
         conversationHistory[index] = newBotMessage;
         saveConversationHistory();
-        // 화면 업데이트: 해당 메시지만 업데이트하는 방식 시도
-        // loadConversationHistory(); // 전체 로드 대신 아래 호출
+        // 화면 업데이트: 해당 메시지만 업데이트
         updateSingleMessage(index, newBotResponseText);
 
     } catch (e) {
@@ -639,7 +614,7 @@ async function regenerateResponse(index, buttonElement) {
         // UI 복구 (화면 업데이트 후 잠시 뒤)
         setTimeout(() => {
             if (sendButton) sendButton.disabled = false; if (userInput) userInput.disabled = false; if (actionMenuButton) actionMenuButton.disabled = false; if (feedbackButton) feedbackButton.disabled = false;
-             // 모든 재생성 버튼 다시 활성화 (updateSingleMessage에서 새로 그리지 않으므로 필요)
+             // 모든 재생성 버튼 다시 활성화
             document.querySelectorAll('.regenerate-btn').forEach(btn => {
                 btn.disabled = false;
                 btn.classList.remove('loading');
@@ -688,11 +663,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const clickedInsideEditArea = e.target.closest('.message-edit-area');
             const clickedOnMessageBubble = e.target.closest('.message-bubble');
+
+            // 현재 편집 중이고, 클릭한 곳이 (편집 영역 내부도 아니고) 또는 (편집 중인 메시지 버블 자체도 아니면) 편집 종료
             if (currentlyEditingIndex !== null && !clickedInsideEditArea) {
-                const editingContainer = chat.querySelector(`.message-container[data-index="${currentlyEditingIndex}"]`);
-                 // 편집 중인 버블 자체를 클릭한 경우가 아니면 편집 종료
-                if (!editingContainer || !editingContainer.contains(e.target) || !clickedOnMessageBubble) {
-                    hideAllEditAreas();
+                const editingContainer = chat.querySelector(`.message-container.editing`); // editing 클래스가 있는 컨테이너
+                // 클릭한 곳이 편집 중인 컨테이너 내부가 아니거나, 버블은 클릭했지만 편집 영역은 아니면 종료
+                if (!editingContainer || !editingContainer.contains(e.target)) {
+                     hideAllEditAreas();
                 }
             }
         });
