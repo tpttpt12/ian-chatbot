@@ -60,23 +60,28 @@ module.exports = async (req, res) => {
             },
             // 프론트엔드에서 받은 대화 내용을 그대로 구글 API로 보냅니다.
             // === 여기를 수정합니다 ===
-            body: JSON.stringify({
+body: JSON.stringify({ // 1번 { 시작
                 contents: contents,
-                generationConfig: {
-                    temperature: 0.7,         // <<-- 온도 설정 (0.0 ~ 1.0 이상, 높을수록 창의적)
-                    maxOutputTokens: 2048,    // <<-- 최대 출력 토큰 설정 (길이 제한 늘리기)
-                    topP: 0.95,               // <<-- Top-p 샘플링 (선택적, 보통 0.9~1.0)
-                    // topK: 40               // <<-- Top-k 샘플링 (선택적, 보통 40 전후)
-			
+                generationConfig: { // 2번 { 시작
+                    temperature: 0.7,
+                    maxOutputTokens: 2048,
+                    topP: 0.95,
+                    // topK: 40
+
                     // === 안전 설정 추가! ===
-                    safetySettings: [
-                      {
+                    safetySettings: [ // 1번 [ 시작
+                      { // 3번 { 시작
                         category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-                        threshold: "BLOCK_ONLY_HIGH" // 가장 완화된 설정 시도
-                }
-            }),
+                        threshold: "BLOCK_ONLY_HIGH"
+                      } // 3번 } 닫힘
+                    ] // <<-- 1번 대괄호 ] 닫힘 추가!
+                }, // <<-- 2번 중괄호 } 닫힘 추가!
+                // safetySettings 추가하면서 위 두 닫는 괄호가 빠졌었습니다.
+
+                // 이전 코드에서 여기 있던 닫는 중괄호 } 는 삭제해야 합니다.
+            }), // 1번 { 에 대한 닫는 중괄호 } (이건 원래 있었음)
             // === 수정 끝 ===
-			signal: controller.signal // 컨트롤러 연결
+			signal: controller.signal
         });
 		
 		clearTimeout(timeout);
