@@ -130,7 +130,7 @@ body { font-family: "Nanum Gothic", sans-serif; background-color: #1E1E1E; color
 em {
     font-style: italic;
 }
-/* ▼▼▼ 랜덤 생성 팝업 CSS 추가 ▼▼▼ */
+/* ▼▼▼ 랜덤 생성 팝업 CSS (옵션 3: 다크 테마) ▼▼▼ */
 
 /* 팝업 공통 스타일 */
 .popup {
@@ -138,153 +138,168 @@ em {
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-    background-color: white; /* 밝은 배경색 */
-    color: #333; /* 어두운 글자색 */
-    padding: 25px;
-    border-radius: 8px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); /* 그림자 조금 더 진하게 */
-    z-index: 1001; /* 모달보다 위에 오도록 (기존 z-index 고려) */
-    min-width: 300px;
-    max-width: 90%; /* 화면 너비에 따라 최대 너비 제한 */
+    background-color: #2a2a2a; /* 어두운 배경 (액션 메뉴와 유사) */
+    color: #ccc;               /* 기본 글자색 */
+    padding: 20px 25px;        /* 패딩 조정 */
+    border-radius: 10px;       /* 둥근 모서리 */
+    border: 1px solid #444;    /* 약간 밝은 테두리 */
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5); /* 그림자 강화 */
+    z-index: 1001;
+    min-width: 320px;
+    max-width: 90%;
     display: flex;
     flex-direction: column;
-    gap: 15px; /* 요소 간 간격 */
-    border: 1px solid #ccc; /* 팝업 테두리 추가 (선택 사항) */
+    gap: 18px; /* 요소 간 간격 조정 */
+    font-family: "Nanum Gothic", sans-serif; /* 기본 폰트 적용 */
 }
 
+/* 팝업 제목 */
 .popup h4 {
-    margin-top: 0;
-    margin-bottom: 10px;
+    margin: 0 0 5px 0; /* 위쪽 마진 제거, 아래쪽 약간 */
     text-align: center;
-    color: #111; /* 제목 색상 더 진하게 */
-    font-size: 1.1em; /* 제목 크기 살짝 키움 */
+    color: #e0e0e0;   /* 약간 더 밝은 글자색 */
+    font-size: 1.05em;
+    font-weight: 600;  /* 살짝 굵게 */
+    border-bottom: 1px solid #444; /* 구분선 */
+    padding-bottom: 12px; /* 구분선과의 간격 */
 }
 
+/* 레이블 스타일 */
 .popup label {
     display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-    color: #444; /* 레이블 색상 */
+    margin-bottom: 6px;
+    font-weight: 500;  /* 보통 두께 */
+    color: #b0b0b0;   /* 약간 더 어두운 글자색 */
+    font-size: 0.85em;
 }
 
+/* 텍스트 영역 스타일 */
 .popup textarea {
-    width: 100%; /* 부모 너비에 맞춤 */
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    resize: vertical; /* 세로 크기만 조절 가능 */
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #444; /* 테두리 */
+    border-radius: 6px;    /* 모서리 */
+    resize: vertical;
     font-size: 0.9em;
-    min-height: 60px;
-    box-sizing: border-box; /* 패딩, 테두리 포함해서 너비 계산 */
-    background-color: #f9f9f9; /* 텍스트 영역 배경색 */
-    color: #333; /* 텍스트 영역 글자색 */
+    min-height: 70px;      /* 최소 높이 살짝 증가 */
+    box-sizing: border-box;
+    background-color: #1e1e1e; /* 더 어두운 배경 (채팅창 배경과 유사) */
+    color: #e0e0e0;           /* 밝은 글자색 */
+    line-height: 1.4;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease; /* 부드러운 전환 효과 */
 }
 
+/* 텍스트 영역 포커스 스타일 */
 .popup textarea:focus {
     outline: none;
-    border-color: #4CAF50; /* 포커스 시 테두리 색 변경 */
-    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.3); /* 포커스 시 그림자 효과 */
+    border-color: #5080ff; /* 파란색 강조 테두리 */
+    box-shadow: 0 0 0 2px rgba(80, 128, 255, 0.3); /* 포커스 시 외부 글로우 */
 }
 
-
+/* 버튼 영역 스타일 */
 .popup-buttons {
     display: flex;
-    justify-content: space-around; /* 버튼 간격 벌리기 */
-    gap: 10px;
+    justify-content: space-between; /* 양쪽 끝으로 배치 */
+    gap: 12px;
     margin-top: 10px;
 }
 
+/* 팝업 버튼 공통 스타일 */
 .popup-button {
-    padding: 10px 15px;
+    padding: 9px 15px; /* 패딩 미세 조정 */
     border: none;
-    border-radius: 5px;
+    border-radius: 6px; /* 모서리 */
     cursor: pointer;
-    font-weight: bold;
-    transition: background-color 0.2s ease, transform 0.1s ease; /* transform 추가 */
-    flex-grow: 1; /* 버튼 너비 균등하게 */
-    font-size: 0.9em; /* 버튼 폰트 크기 조정 */
+    font-weight: 500; /* 보통 두께 */
+    transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+    flex-grow: 1;
+    font-size: 0.9em;
+    text-align: center;
+    background-color: #3a3a3a; /* 기본 버튼 배경 */
+    color: #ccc;               /* 기본 버튼 글자 */
+    border: 1px solid #555;    /* 살짝 테두리 */
 }
 
 .popup-button:hover {
-    opacity: 0.9;
+    background-color: #4a4a4a; /* 호버 시 배경 밝게 */
+    color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* 호버 시 그림자 */
 }
 
 .popup-button:active {
-    transform: scale(0.98); /* 클릭 시 살짝 작아지는 효과 */
+    transform: scale(0.98);
+    box-shadow: none; /* 클릭 시 그림자 제거 */
 }
 
-
-/* 기본 버튼 스타일 (녹색 계열) */
+/* 확인/진행 버튼 스타일 (파란색 강조) */
 .popup-button:not(.cancel-button) {
-    background-color: #4CAF50; /* Green */
+    background-color: #5080ff; /* 파란색 강조 */
     color: white;
+    border: 1px solid #5080ff; /* 같은 색 테두리 */
 }
 .popup-button:not(.cancel-button):hover {
-    background-color: #45a049;
+    background-color: #6699ff;
+    border-color: #6699ff;
 }
 
-
-/* 취소 버튼 스타일 (붉은 계열) */
+/* 취소 버튼 스타일 (덜 강조되는 회색) */
 .popup-button.cancel-button {
-    background-color: #f44336; /* Red */
-    color: white;
+    background-color: #5a5a5a; /* 회색 계열 */
+    color: #ccc;
+    border: 1px solid #6a6a6a;
 }
 .popup-button.cancel-button:hover {
-    background-color: #da190b;
+    background-color: #6a6a6a;
+    color: #fff;
 }
 
-
-/* 팝업 숨김 처리 */
+/* 팝업 숨김 처리 (변경 없음) */
 .hidden {
-    display: none !important; /* important 로 확실히 숨김 */
+    display: none !important;
 }
 
-/* 팝업 배경 오버레이 */
+/* 팝업 배경 오버레이 (변경 없음) */
 #popupOverlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.6); /* 반투명 검정 배경 */
-    z-index: 1000; /* 팝업 바로 아래 */
-    backdrop-filter: blur(2px); /* 배경 블러 처리 (선택 사항) */
-    -webkit-backdrop-filter: blur(2px); /* Safari 지원 */
+    background-color: rgba(0, 0, 0, 0.7); /* 오버레이 약간 더 진하게 */
+    z-index: 1000;
+    backdrop-filter: blur(3px); /* 배경 블러 */
+    -webkit-backdrop-filter: blur(3px);
 }
 
-/* 버튼 로딩 상태 (선택적) */
+/* 버튼 로딩 상태 (다크 테마 맞춤) */
 .popup-button.loading {
     cursor: wait;
-    background-color: #ccc !important; /* 로딩 중 배경색 (important로 우선 적용) */
-    color: #666 !important; /* 로딩 중 글자색 */
-    position: relative; /* 가상 요소 위치 기준 */
-    overflow: hidden; /* 가상 요소 넘침 방지 */
+    background-color: #444 !important; /* 로딩 중 배경색 */
+    color: #888 !important; /* 로딩 중 글자색 */
+    border-color: #555 !important;
+    position: relative;
+    overflow: hidden;
+    box-shadow: none; /* 로딩 중 그림자 제거 */
 }
 .popup-button.loading::after {
-    content: '...';
-    position: absolute; /* 버튼 내부에 위치 */
+    content: ''; /* 텍스트 대신 스피너 사용 */
+    position: absolute;
     left: 50%;
     top: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 1.2em; /* 점 크기 키움 */
-    font-weight: bold;
-    color: #555;
-    animation: ellipsis 1.5s infinite steps(3, end); /* steps 애니메이션으로 변경 */
-    opacity: 1; /* 항상 보이도록 */
-    width: auto; /* 너비 자동 */
+    width: 16px; /* 스피너 크기 */
+    height: 16px; /* 스피너 크기 */
+    margin-left: -8px; /* 중앙 정렬 */
+    margin-top: -8px;  /* 중앙 정렬 */
+    border: 2px solid rgba(255, 255, 255, 0.2); /* 스피너 테두리 */
+    border-top-color: #aaa; /* 스피너 상단 색 */
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite; /* 기존 spin 애니메이션 재활용 */
+}
+/* @keyframes spin 은 이미 style.css 에 있을 가능성이 높음, 없으면 추가 */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
-/* 더 부드러운 점멸 애니메이션 (선택 사항) */
-/* @keyframes ellipsis {
-    0%, 100% { opacity: 0.3; }
-    50% { opacity: 1; }
-} */
 
-/* Steps 애니메이션 (점 3개 순차 표시) */
-@keyframes ellipsis {
-  0%, 20% { content: '.'; }
-  40%, 60% { content: '..'; }
-  80%, 100% { content: '...'; }
-}
-
-/* ▲▲▲ 랜덤 생성 팝업 CSS 추가 끝 ▲▲▲ */
+/* ▲▲▲ 랜덤 생성 팝업 CSS (옵션 3: 다크 테마) 끝 ▲▲▲ */
