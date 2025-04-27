@@ -161,6 +161,31 @@
     <input id="userWorldInputModal" type="text" style="display:none;">
 <input id="botWorldInputModal" type="text" style="display:none;">
 
+<!-- ▼▼▼ 랜덤 생성 팝업 HTML 추가 ▼▼▼ -->
+<!-- 랜덤 생성 방식 선택 팝업 -->
+<div id="randomChoicePopup" class="popup random-choice-popup hidden">
+    <h4>랜덤 생성 방식 선택</h4>
+    <button id="randomChoiceAll" data-target-gen="" class="popup-button">전체 랜덤</button>
+    <button id="randomChoicePartial" data-target-gen="" class="popup-button">부분 (키워드) 랜덤</button>
+    <button id="randomChoiceCancel" class="popup-button cancel-button">취소</button>
+</div>
+
+<!-- 부분 랜덤 키워드 입력 팝업 -->
+<div id="partialInputPopup" class="popup partial-input-popup hidden">
+    <h4>부분 랜덤 생성 가이드</h4>
+    <label for="partialKeywordsInput">원하는 캐릭터 특징을 키워드로 입력하세요:</label>
+    <textarea id="partialKeywordsInput" rows="3" placeholder="예: 검은 머리, 40대, 현대, 냉철한 성격, 회사원"></textarea>
+    <div class="popup-buttons">
+        <button id="generatePartialButton" data-target-gen="" class="popup-button">키워드로 생성</button>
+        <button id="cancelPartialButton" class="popup-button cancel-button">취소</button>
+    </div>
+</div>
+
+<!-- 팝업 배경 오버레이 -->
+<div id="popupOverlay" class="hidden"></div>
+<!-- ▲▲▲ 랜덤 생성 팝업 HTML 추가 끝 ▲▲▲ -->
+
+
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="script.js"></script>
 
