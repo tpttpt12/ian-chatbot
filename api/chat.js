@@ -86,11 +86,6 @@ module.exports = async (req, res) => {
         // 구글 API 응답을 JSON으로 파싱
         const googleData = await googleRes.json();
 
-	            // 2. ***** 여기에 로그 출력 코드를 넣으세요! *****
-        console.log("===== Google API Response START =====");
-        console.log(JSON.stringify(googleData, null, 2)); // googleData 객체 전체를 보기 좋게 출력
-        console.log("===== Google API Response END =====");
-        // ****************************************************
 
         // 파싱된 응답을 프론트엔드로 다시 보냅니다.
         res.status(200).json(googleData);
