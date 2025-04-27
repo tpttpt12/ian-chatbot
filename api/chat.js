@@ -63,8 +63,8 @@ export default async function handler(req, res) {
             body: JSON.stringify({
                 contents: contents,
                 generationConfig: {
-                    temperature: 0.7,         // <<-- 온도 설정 (0.0 ~ 1.0 이상, 높을수록 창의적)
-                    maxOutputTokens: 2048,    // <<-- 최대 출력 토큰 설정 (길이 제한 늘리기)
+                    temperature: 0.6,         // <<-- 온도 설정 (0.0 ~ 1.0 이상, 높을수록 창의적)
+                    maxOutputTokens: 8000,    // <<-- 최대 출력 토큰 설정 (길이 제한 늘리기)
                     topP: 0.95,               // <<-- Top-p 샘플링 (선택적, 보통 0.9~1.0)
                     // topK: 40               // <<-- Top-k 샘플링 (선택적, 보통 40 전후)
                 }
