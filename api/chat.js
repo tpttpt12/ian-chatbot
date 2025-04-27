@@ -7,7 +7,7 @@ const { GEMINI_API_KEY } = process.env;
 // 프론트엔드와 유사하게 fetch를 사용하는 방식으로 작성하여 이해를 돕습니다.
 // 실제 라이브러리 사용 시 더 편리하고 안정적일 수 있습니다.
 
-module.exports = async (req, res) => {
+export default async function handler(req, res) {
     // CORS 설정 (프론트엔드와 백엔드가 다른 출처일 수 있으므로 필요)
     // 여기서는 모든 출처 (*) 에서 요청을 허용하도록 간단히 설정합니다.
     // 실제 운영 환경에서는 특정 프론트엔드 주소만 허용하도록 수정하는 것이 좋습니다.
@@ -50,7 +50,7 @@ module.exports = async (req, res) => {
         }
 
         // 구글 Gemini API 엔드포인트 (프론트엔드에서 직접 호출했던 주소)
-        const API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
+        const API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro-exp-03-25:generateContent";
 
         // 구글 Gemini API 호출 (API 키는 백엔드에서 사용)
         const googleRes = await fetch(`${API_URL}?key=${GEMINI_API_KEY}`, {
@@ -92,6 +92,10 @@ module.exports = async (req, res) => {
 
     } catch (error) {
         console.error("Backend Error:", error);
-        res.status(500).json({ error: 'An unexpected error occurred on the server.' });
-    }
+        if (error.name === 'AbortError') {
+          res.status(504).json({ error: 'Request timeout.' });
+        } else {
+          res.status(500).json({ error: 'An unexpected error occurred on the server.' });
+        }
+      }
 };
