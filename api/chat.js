@@ -59,7 +59,17 @@ module.exports = async (req, res) => {
                 'Content-Type': 'application/json'
             },
             // 프론트엔드에서 받은 대화 내용을 그대로 구글 API로 보냅니다.
-            body: JSON.stringify({ contents: contents }),
+            // === 여기를 수정합니다 ===
+            body: JSON.stringify({
+                contents: contents,
+                generationConfig: {
+                    temperature: 0.7,         // <<-- 온도 설정 (0.0 ~ 1.0 이상, 높을수록 창의적)
+                    maxOutputTokens: 2048,    // <<-- 최대 출력 토큰 설정 (길이 제한 늘리기)
+                    topP: 0.95,               // <<-- Top-p 샘플링 (선택적, 보통 0.9~1.0)
+                    // topK: 40               // <<-- Top-k 샘플링 (선택적, 보통 40 전후)
+                }
+            }),
+            // === 수정 끝 ===
 			signal: controller.signal // 컨트롤러 연결
         });
 		
