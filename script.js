@@ -385,7 +385,7 @@ async function sendMessage(messageText) {
          }
          let botResponseText = '';
          try {
-             const response = await fetch(`/api/chat`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ contents: apiContents }) });
+             const response = await fetch('https://ian-chatbot.vercel.app/api/chat', { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ contents: apiContents }) });
              if (!response.ok) { const errorBody = await response.text(); console.error(`Chat API Error (${response.status}): ${errorBody}`); botResponseText = `(메시지 응답 오류: ${response.status})`; } else { const data = await response.json(); botResponseText = data?.candidates?.[0]?.content?.parts?.[0]?.text || "(빈 응답)"; }
          } catch (fetchError) { console.error("Fetch Error sending message:", fetchError); botResponseText = "(메시지 전송 중 통신 오류)"; }
          const botMessage = { role: "model", messageData: { type: 'text', text: botResponseText } };
@@ -616,4 +616,3 @@ document.addEventListener("DOMContentLoaded", function() {
         console.error("marked library not loaded!");
     }
 });
-
