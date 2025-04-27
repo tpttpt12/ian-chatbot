@@ -37,6 +37,12 @@ module.exports = async (req, res) => {
     try {
         // 프론트엔드에서 보낸 대화 내용(contents)을 요청 본문에서 가져옵니다.
         const { contents } = req.body;
+		// 타임아웃 설정
+		const controller = new AbortController();
+		const timeout = setTimeout(() => {
+			controller.abort(); // 일정 시간 지나면 요청 강제 중단
+		}, 120000); // 120초 (2분)
+
 
         if (!contents || !Array.isArray(contents)) {
              res.status(400).json({ error: 'Invalid request body: contents array is missing.' });
@@ -44,7 +50,7 @@ module.exports = async (req, res) => {
         }
 
         // 구글 Gemini API 엔드포인트 (프론트엔드에서 직접 호출했던 주소)
-        const API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro-exp-03-25:generateContent";
+        const API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
 
         // 구글 Gemini API 호출 (API 키는 백엔드에서 사용)
         const googleRes = await fetch(`${API_URL}?key=${GEMINI_API_KEY}`, {
@@ -53,8 +59,11 @@ module.exports = async (req, res) => {
                 'Content-Type': 'application/json'
             },
             // 프론트엔드에서 받은 대화 내용을 그대로 구글 API로 보냅니다.
-            body: JSON.stringify({ contents: contents })
+            body: JSON.stringify({ contents: contents }),
+			signal: controller.signal // 컨트롤러 연결
         });
+		
+		clearTimeout(timeout);
 
         // 구글 API 응답 확인
         if (!googleRes.ok) {
