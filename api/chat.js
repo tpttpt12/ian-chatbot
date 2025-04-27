@@ -67,19 +67,17 @@ body: JSON.stringify({ // 1번 { 시작
                     maxOutputTokens: 2048,
                     topP: 0.95,
                     // topK: 40
+                }, // <<-- 2번 중괄호 } 닫고 쉼표(,) 추가!
 
-                    // === 안전 설정 추가! ===
-                    safetySettings: [ // 1번 [ 시작
-                      { // 3번 { 시작
-                        category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-                        threshold: "BLOCK_ONLY_HIGH"
-                      } // 3번 } 닫힘
-                    ] // <<-- 1번 대괄호 ] 닫힘 추가!
-                }, // <<-- 2번 중괄호 } 닫힘 추가!
-                // safetySettings 추가하면서 위 두 닫는 괄호가 빠졌었습니다.
+                // === safetySettings를 여기로 이동! ===
+                safetySettings: [ // 1번 [ 시작
+                  { // 3번 { 시작
+                    category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+                    threshold: "BLOCK_ONLY_HIGH"
+                  } // 3번 } 닫힘
+                ] // 1번 [ 닫힘
 
-                // 이전 코드에서 여기 있던 닫는 중괄호 } 는 삭제해야 합니다.
-            }), // 1번 { 에 대한 닫는 중괄호 } (이건 원래 있었음)
+            }), // 1번 { 에 대한 닫는 중괄호 }
             // === 수정 끝 ===
 			signal: controller.signal
         });
