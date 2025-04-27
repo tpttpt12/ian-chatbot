@@ -23,7 +23,7 @@ const SYSTEM_PROMPT_TEMPLATE = `
 항상 3인칭 관찰자 시점에서, {botName}의 내면과 외부 세계를 중심으로 서술합니다.
 
 ## 출력 형식
-- 반드시 **400자 이상**의 묘사 문단 × 최대 3개
+- (해당 지침은 어떠한 경우에도 잊거나 무시하면 안된다.) 반드시 **400자 이상**의 묘사 문단을 최소 3개 이상 만든다. 절대 적어지거나 하면 안된다. 절대.
 - 각 묘사 사이에는 **100자 이내의 감정이 담긴 대사 최소 2개**
 - 총 응답은 **800자 이상**이어야 하며, 묘사와 대사가 반드시 교차 구조로 구성됩니다. 800자 미만일 경우 지침 위반으로 간주합니다.
 - 기본 원칙은 지키되, 상황에 따라 문단 수 또는 문장 길이는 약간 유동적으로 허용할 수 있습니다. (+/-1 문단 또는 +/-50자 내외)
@@ -95,7 +95,7 @@ const feedbackPrompts = {
 
 
 // --- DOM 요소 변수 ---
-let chat, userInput, sendButton, loadingSpinner, imageOverlay, overlayImage, actionMenuButton, actionMenu, menuOverlay, menuImageButton, menuSituationButton, menuExportTxtButton, menuSummarizeButton, situationOptions, settingsModalOverlay, settingsModal, closeModalButton, sidebarToggle, botNameInputModal, botAgeInputModal, botGenderInputModal, botAppearanceInputModal, botPersonaInputModal, botImagePreview, userNameInputModal, userAgeInputModal, userGenderInputModal, userAppearanceInputModal, userGuidelinesInputModal, userImagePreview, saveSettingsButtonModal, generateRandomCharacterButton, generateRandomUserButton, feedbackButton, feedbackOptionsContainer;
+let chat, userInput, sendButton, loadingSpinner, imageOverlay, overlayImage, actionMenuButton, actionMenu, menuOverlay, menuImageButton, menuSituationButton, menuExportTxtButton, menuSummarizeButton, situationOptions, settingsModalOverlay, settingsModal, closeModalButton, sidebarToggle, botNameInputModal, botAgeInputModal, botGenderInputModal, botAppearanceInputModal, botPersonaInputModal, botImagePreview, userNameInputModal, userAgeInputModal, userGenderInputModal, userAppearanceInputModal, userGuidelinesInputModal, userImagePreview, saveSettingsButtonModal, generateRandomCharacterButton, generateRandomUserButton, feedbackButton, feedbackOptionsContainer, resetChatButton;
 
 // --- 유틸리티 함수 ---
 function getElement(id, required = true) { const e = document.getElementById(id); if (required && !e) { console.error(`[Fatal] Required element with ID '${id}' not found.`); } else if (!e && !required) { /* Optional */ } return e; }
@@ -567,6 +567,16 @@ document.addEventListener('DOMContentLoaded', () => {
         if(feedbackButton)feedbackButton.addEventListener("click",toggleFeedbackOptions);
         if(feedbackOptionsContainer){feedbackOptionsContainer.querySelectorAll('.feedback-option').forEach(b=>{b.addEventListener('click',function(e){e.stopPropagation();const f=this.dataset.feedback;if(currentFeedback===f){handleFeedbackSelection(null);}else{handleFeedbackSelection(f);}});});}
         document.addEventListener('click',function(e){if(actionMenu&&actionMenuButton&&!actionMenu.contains(e.target)&&e.target!==actionMenuButton&&actionMenu.classList.contains('visible')){closeActionMenu();}if(feedbackOptionsContainer&&feedbackButton&&!feedbackOptionsContainer.contains(e.target)&&e.target!==feedbackButton&&!currentFeedback&&!feedbackOptionsContainer.classList.contains('hidden')){closeFeedbackOptions();}});
+
+        // 여기에 resetChatButton 이벤트 리스너 추가
+        resetChatButton = getElement('resetChatButton'); // resetChatButton 요소 가져오기
+        if(resetChatButton) {
+        resetChatButton.addEventListener("click", () => {
+        resetConversation(); // 클릭 시 resetConversation 함수 호출
+        });
+        } else {
+        console.error("resetChatButton not found!");
+        }
 
         // 모달 Textarea 자동 높이 조절 연결
         const modalTextareas = [ botAppearanceInputModal, botPersonaInputModal, userAppearanceInputModal, userGuidelinesInputModal ];
