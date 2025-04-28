@@ -50,7 +50,7 @@ module.exports = async (req, res) => {
         }
 
         // 구글 Gemini API 엔드포인트 (프론트엔드에서 직접 호출했던 주소)
-        const API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-04-17:generateContent";
+        const API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent";
 
         // 구글 Gemini API 호출 (API 키는 백엔드에서 사용)
         const googleRes = await fetch(`${API_URL}?key=${GEMINI_API_KEY}`, {
