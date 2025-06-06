@@ -1,194 +1,1187 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>character-chat</title>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Character Prompt Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a1a;
+            color: #e0e0e0;
+            height: 100vh;
+            overflow: hidden;
+        }
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bakbak+One&family=Libre+Barcode+39+Text&family=Nanum+Gothic&display=swap" rel="stylesheet">
+        .header {
+            background: #2a2a2a;
+            border-bottom: 1px solid #444;
+            padding: 20px;
+        }
 
-    <link rel="stylesheet" href="style.css">
+        .request-section {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
 
+        .request-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 12px;
+        }
+
+        .request-input-group {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+        }
+
+        .request-input {
+            flex: 1;
+            background: #333;
+            border: 1px solid #555;
+            border-radius: 6px;
+            padding: 12px 15px;
+            color: #e0e0e0;
+            font-size: 14px;
+            resize: none;
+            height: 80px;
+        }
+
+        .request-input:focus {
+            outline: none;
+            border-color: #666;
+        }
+
+        .request-options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .option-toggle {
+            background: #3a3a3a;
+            border: 1px solid #555;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 500;
+            transition: all 0.3s;
+            user-select: none;
+            width: 70px;
+            height: 32px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            padding: 0;
+        }
+
+        .option-toggle::before {
+            content: '';
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #666;
+            left: 4px;
+            transition: all 0.3s;
+        }
+
+        .option-toggle .toggle-label {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #aaa;
+            font-size: 10px;
+            pointer-events: none;
+        }
+
+        .option-toggle.active::before {
+            left: calc(100% - 28px);
+        }
+
+        .option-toggle.special-active {
+            background: #4a4a2a;
+            border-color: #aa6;
+        }
+
+        .option-toggle.special-active::before {
+            background: #ff6;
+        }
+
+        .option-toggle.special-active .toggle-label {
+            color: #ff6;
+        }
+
+        .option-toggle.nsfw-active {
+            background: #4a2a2a;
+            border-color: #a66;
+        }
+
+        .option-toggle.nsfw-active::before {
+            background: #f99;
+        }
+
+        .option-toggle.nsfw-active .toggle-label {
+            color: #f99;
+        }
+
+        .generate-request-btn {
+            background: #444;
+            border: 1px solid #666;
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            height: 80px;
+            white-space: nowrap;
+            transition: background-color 0.2s;
+        }
+
+        .generate-request-btn:hover {
+            background: #555;
+        }
+
+        .main-container {
+            display: flex;
+            height: calc(100vh - 140px);
+        }
+
+        .panel {
+            flex: 1;
+            overflow-y: auto;
+            border-right: 1px solid #444;
+        }
+
+        .panel:last-child {
+            border-right: none;
+        }
+
+        .left-panel {
+            background: #222;
+            padding: 20px;
+        }
+
+        .middle-panel {
+            background: #1e1e1e;
+            padding: 20px;
+        }
+
+        .right-panel {
+            background: #252525;
+            padding: 20px;
+        }
+
+        .panel-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #fff;
+            border-bottom: 2px solid #555;
+            padding-bottom: 10px;
+        }
+
+        .form-section {
+            margin-bottom: 25px;
+            background: #2a2a2a;
+            border: 1px solid #444;
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .section-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #ccc;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            color: #aaa;
+            margin-bottom: 4px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            background: #333;
+            border: 1px solid #555;
+            border-radius: 4px;
+            padding: 8px 12px;
+            color: #e0e0e0;
+            font-size: 12px;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #666;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 50px;
+        }
+
+        .generate-btn {
+            width: 100%;
+            background: #444;
+            border: 1px solid #666;
+            color: #fff;
+            padding: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+
+        .generate-btn:hover {
+            background: #555;
+        }
+
+        .prompt-card {
+            background: #2a2a2a;
+            border: 1px solid #444;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .prompt-section {
+            border-bottom: 1px solid #444;
+        }
+
+        .prompt-section:last-child {
+            border-bottom: none;
+        }
+
+        .section-header {
+            background: #333;
+            padding: 10px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #444;
+        }
+
+        .section-header h3 {
+            font-size: 13px;
+            font-weight: 600;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .edit-btn {
+            background: #444;
+            border: 1px solid #666;
+            color: #ccc;
+            padding: 3px 6px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 10px;
+            transition: all 0.2s;
+        }
+
+        .edit-btn:hover {
+            background: #555;
+            color: #fff;
+        }
+
+        .section-content {
+            padding: 12px;
+            font-size: 12px;
+            line-height: 1.4;
+            color: #e0e0e0;
+            font-family: 'Consolas', 'Monaco', monospace;
+        }
+
+        .copy-all-btn {
+            width: 100%;
+            background: #333;
+            border: 1px solid #555;
+            color: #fff;
+            padding: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            margin-top: 20px;
+            transition: background-color 0.2s;
+        }
+
+        .copy-all-btn:hover {
+            background: #444;
+        }
+
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .chat-messages {
+            flex: 1;
+            background: #2a2a2a;
+            border: 1px solid #444;
+            border-radius: 8px;
+            padding: 15px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            min-height: 300px;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            max-width: 85%;
+        }
+
+        .message.user {
+            background: #444;
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .message.ai {
+            background: #333;
+            margin-right: auto;
+        }
+
+        .message-sender {
+            font-size: 11px;
+            color: #aaa;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .message-content {
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .chat-input-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .chat-input {
+            flex: 1;
+            background: #333;
+            border: 1px solid #555;
+            border-radius: 6px;
+            padding: 10px 12px;
+            color: #e0e0e0;
+            font-size: 13px;
+            resize: none;
+            min-height: 40px;
+            max-height: 120px;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: #666;
+        }
+
+        .send-btn {
+            background: #444;
+            border: 1px solid #666;
+            color: #fff;
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            white-space: nowrap;
+            transition: background-color 0.2s;
+        }
+
+        .send-btn:hover {
+            background: #555;
+        }
+
+        .chat-controls {
+            margin-bottom: 15px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .create-scenario-btn {
+            background: #444;
+            border: 1px solid #666;
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+
+        .create-scenario-btn:hover {
+            background: #555;
+        }
+
+        .clear-chat-btn {
+            background: #3a3a3a;
+            border: 1px solid #555;
+            color: #ccc;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+
+        .clear-chat-btn:hover {
+            background: #444;
+        }
+
+        .placeholder-text {
+            color: #666;
+            font-style: italic;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .empty-chat {
+            color: #666;
+            font-style: italic;
+            text-align: center;
+            padding: 80px 20px;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #444;
+            border-radius: 3px;
+        }
+
+        .translate-toggle {
+            cursor: pointer;
+            opacity: 0.6;
+            transition: all 0.3s;
+            margin-left: 8px;
+            font-size: 18px;
+        }
+
+        .translate-toggle:hover {
+            opacity: 0.8;
+        }
+
+        .translate-toggle.active {
+            opacity: 1;
+            filter: brightness(1.5);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
 </head>
 <body>
-    <div class="app-container">
-        <div class="chat-header">
-            character-chat
-            <button id="resetChatButton" title="대화 기록 삭제">-</button> <button id="sidebarToggle" title="설정 열기">≡</button>
-        </div>
-
-        <div id="chat">
-        </div>
-
-        <div id="inputArea">
-            <div id="loadingSpinner" class="loading-spinner"></div>
-            <div id="actionMenu">
-                <div class="menu-buttons">
-                     <button id="menuImageButton"><i class="fa-solid fa-image"></i>　사진</button>
-                     <button id="menuSituationButton"><i class="fa-solid fa-clapperboard"></i>　상황</button>
-                    <div id="situationOptions" class="accordion hidden">
-                        <button class="option">랜덤</button>
-                        <button class="option">전환</button>
-                        <button class="option">돌발</button>
-                        <button class="option">성인</button>
+    <!-- 상단 요청창 -->
+    <div class="header">
+        <div class="request-section">
+            <div class="request-title">💡 캐릭터 간단 요청</div>
+            <div class="request-input-group">
+                <textarea class="request-input" id="characterRequest" placeholder="예: 30세 잘생긴 남성, 현대풍에 힘든 삶을 살고있음. 츤데레 성격에 회사원."></textarea>
+                
+                <div class="request-options">
+                    <div class="option-toggle" id="specialToggle" onclick="toggleOption('special')">
+                        <span class="toggle-label">✨</span>
                     </div>
-                     <button id="menuSummarizeButton"><i class="fa-solid fa-list-check"></i>　요약</button>
-                    <button id="menuExportTxtButton"><i class="fa-solid fa-download"></i>　저장</button>
+                    <div class="option-toggle" id="nsfwToggle" onclick="toggleOption('nsfw')">
+                        <span class="toggle-label">🔞</span>
+                    </div>
+                </div>
+                
+                <button class="generate-request-btn" onclick="generateFromRequest()">AI 생성</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <!-- 1열: 캐릭터 설정 -->
+        <div class="panel left-panel">
+            <h2 class="panel-title">🎭 캐릭터 설정</h2>
+            
+            <div class="form-section">
+                <div class="section-title">기본 정보</div>
+                <div class="form-group">
+                    <label>이름</label>
+                    <input type="text" id="name" placeholder="캐릭터 이름">
+                </div>
+                <div class="form-group">
+                    <label>나이</label>
+                    <input type="text" id="age" placeholder="예: 23">
+                </div>
+                <div class="form-group">
+                    <label>키/체형</label>
+                    <input type="text" id="physique" placeholder="예: 168cm, 슬림한 체형">
+                </div>
+                <div class="form-group">
+                    <label>외모</label>
+                    <textarea id="appearance" placeholder="헤어, 눈색, 얼굴형, 특징적인 외모 등"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>의상/스타일</label>
+                    <input type="text" id="clothing" placeholder="평소 입는 옷, 패션 스타일">
                 </div>
             </div>
 
-            <div class="input-textarea-container">
-                <textarea id="userInput" placeholder="유저의 말..." autocomplete="off"></textarea>
+            <div class="form-section">
+                <div class="section-title">성격 & 관계</div>
+                <div class="form-group">
+                    <label>핵심 성격</label>
+                    <textarea id="personality" placeholder="주요 성격 특성들을 적어주세요"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>말투/어조</label>
+                    <input type="text" id="speech" placeholder="예: 정중한 존댓말, 친근한 반말, 츤데레톤">
+                </div>
+                <div class="form-group">
+                    <label>유저와의 관계</label>
+                    <input type="text" id="relationship" placeholder="예: 첫 만남, 친구, 연인, 상사와 부하">
+                </div>
             </div>
 
-            <div class="input-buttons-row">
-                 <button id="actionMenuButton" title="액션 메뉴 열기">+</button>
-                 <button id="feedbackButton" title="피드백 메뉴 열기">O</button>
-                 <div id="feedbackOptionsContainer" class="feedback-options-container hidden">
-                     <button class="feedback-option" data-feedback="지침">지침</button>
-                     <button class="feedback-option" data-feedback="반복">반복</button>
-                     <button class="feedback-option" data-feedback="명시">명시</button>
-                     <button class="feedback-option" data-feedback="칭찬">♡</button>
-                 </div>
-                 <button id="sendButton">
-                    ▶ </button>
+            <div class="form-section">
+                <div class="section-title">세계관 & 배경</div>
+                <div class="form-group">
+                    <label>세계관</label>
+                    <select id="worldtype">
+                        <option value="">선택하세요</option>
+                        <option value="modern">현대</option>
+                        <option value="fantasy">판타지</option>
+                        <option value="scifi">SF</option>
+                        <option value="school">학원물</option>
+                        <option value="historical">역사물</option>
+                        <option value="other">기타</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>배경 설정</label>
+                    <textarea id="background" placeholder="캐릭터의 배경 스토리, 직업, 환경 등"></textarea>
+                </div>
             </div>
+
+            <div class="form-section">
+                <div class="section-title">특수 설정</div>
+                <div class="form-group">
+                    <label>성향/취향</label>
+                    <textarea id="preferences" placeholder="NSFW 관련 성향이나 특별한 취향"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>특별한 특성</label>
+                    <textarea id="special" placeholder="기타 특별한 설정이나 특성"></textarea>
+                </div>
+            </div>
+
+            <button class="generate-btn" onclick="generatePrompt()">프롬프트 생성</button>
         </div>
-        </div>
 
-    <div id="settingsModalOverlay" class="modal-overlay">
-        <div id="settingsModal" class="modal-content">
-            <div class="modal-header">
-                 <h2>Character / User Settings</h2>
-                 <button id="closeModalButton" class="close-button">✕</button>
+        <!-- 2열: 영어 프롬프트 -->
+        <div class="panel middle-panel">
+            <h2 class="panel-title">📋 AI Character Prompt <span class="translate-toggle" id="translateToggle" onclick="toggleTranslation()">🌐</span></h2>
+            
+            <div class="prompt-card" id="promptCard">
+                <div class="placeholder-text">
+                    ← 왼쪽에서 캐릭터를 설정하고<br>'프롬프트 생성' 버튼을 눌러주세요
+                </div>
             </div>
 
-            <div class="modal-body">
-                <div class="setting-slots-modal">
-                     <div class="slot-buttons-container-modal">
-                       <button class="slot-button">1</button>
-                       <button class="slot-button">2</button>
-                       <button class="slot-button">3</button>
-                       <button class="slot-button">4</button>
-                       <button class="slot-button">5</button>
-                       <button class="slot-button">6</button>
-                     </div>
-                 </div>
+            <button class="copy-all-btn" id="copyAllBtn" onclick="copyAllPrompt()" style="display: none;">
+                전체 프롬프트 복사
+            </button>
+        </div>
 
-                 <div class="resume-layout-container">
-                    <div class="character-info-section">
-                        <h3>Character</h3>
-                        <div class="info-grid">
-                            <div class="info-item">
-                                <div class="image-preview-area">
-                                     <img id="botImagePreview" src="" alt="캐릭터 이미지 미리보기">
-                                </div>
-                            </div>
-                            <div class="info-item full-width">
-                              <label for="botNameInputModal">Name:</label>
-                              <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                <input type="text" id="botNameInputModal">
-                                <button id="generateRandomCharacter" title="랜덤 캐릭터">🎲</button> </div>
-                              <div class="half-width-row">
-                                <div class="half-width-item">
-                                  <label for="botGenderInputModal">Gender:</label>
-                                  <input type="text" id="botGenderInputModal">
-                                </div>
-                                <div class="half-width-item">
-                                  <label for="botAgeInputModal">Age:</label>
-                                  <input type="text" id="botAgeInputModal">
-                                </div>
-                              </div>
-                              <label for="botAppearanceInputModal">Appearance:</label>
-                              <textarea id="botAppearanceInputModal"></textarea>
-                            </div>
+        <!-- 3열: 테스트 채팅 -->
+        <div class="panel right-panel">
+            <h2 class="panel-title">💬 테스트 채팅</h2>
+            
+            <div class="chat-container">
+                <div class="chat-controls">
+                    <button class="create-scenario-btn" onclick="createScenario()">✨ 첫 상황 만들기</button>
+                    <button class="clear-chat-btn" onclick="clearChat()">🗑️ 채팅 지우기</button>
+                </div>
+
+                <div class="chat-messages" id="chatMessages">
+                    <div class="empty-chat">
+                        👆 '첫 상황 만들기'를 눌러<br>캐릭터와 대화를 시작해보세요!
                     </div>
-                                                <div class="info-item full-width" style="margin-top: 1rem;"> <!-- 위쪽 여백 추가 (선택 사항) -->
-                          <label for="botPersonaInputModal">Guidelines:</label>
-                          <textarea id="botPersonaInputModal"></textarea>
-                        </div>
-                  </div>
+                </div>
 
-                    <div class="user-info-section">
-                         <h3>User</h3>
-                         <div class="info-grid">
-                             <div class="info-item">
-                                 <div class="image-preview-area">
-                                     <img id="userImagePreview" src="" alt="사용자 이미지 미리보기">
-                                 </div>
-                             </div>
-                             <div class="info-item full-width">
-                                 <label for="userNameInputModal">Name:</label>
-                                 <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                     <input type="text" id="userNameInputModal">
-                                     <button id="generateRandomUser" title="랜덤 사용자">🎲</button> </div>
-                                 <div class="half-width-row">
-                                     <div class="half-width-item">
-                                         <label for="userGenderInputModal">Gender:</label>
-                                         <input type="text" id="userGenderInputModal">
-                                     </div>
-                                     <div class="half-width-item">
-                                         <label for="userAgeInputModal">Age:</label>
-                                         <input type="text" id="userAgeInputModal">
-                                      </div>
-                                 </div>
-                                  <label for="userAppearanceInputModal">Appearance:</label>
-                                 <textarea id="userAppearanceInputModal"></textarea>
-                             </div>
-                         </div>
-                         <label for="userGuidelinesInputModal">Guidelines:</label>
-                         <textarea id="userGuidelinesInputModal"></textarea> </div>
-                 </div>
-            </div>
-
-            <div class="modal-footer">
-                 <button id="saveSettingsButtonModal" class="save-button">Save Settings</button>
+                <div class="chat-input-group">
+                    <textarea class="chat-input" id="chatInput" placeholder="메시지를 입력하세요..." onkeydown="handleChatKeydown(event)"></textarea>
+                    <button class="send-btn" onclick="sendMessage()">전송</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <div id="menuOverlay" style="display:none;"></div>
+    <script>
+        let currentPromptData = {};
+        let chatHistory = [];
+        let isTranslated = false;
+        let originalContents = {};
+        let specialFeatureEnabled = false;
+        let nsfwModeEnabled = false;
 
-    <div id="imageOverlay" class="overlay" onclick="closeImageOverlay()">
-        <img id="overlayImage" src="" alt="확대 이미지">
-    </div>
+        // 구글 번역 API 키 (여기에 본인의 API 키를 입력하세요)
+        const GOOGLE_TRANSLATE_API_KEY = 'YOUR_API_KEY_HERE';
 
-    <input id="userWorldInputModal" type="text" style="display:none;">
-<input id="botWorldInputModal" type="text" style="display:none;">
+        function toggleOption(type) {
+            if (type === 'special') {
+                specialFeatureEnabled = !specialFeatureEnabled;
+                const toggle = document.getElementById('specialToggle');
+                if (specialFeatureEnabled) {
+                    toggle.classList.add('active', 'special-active');
+                } else {
+                    toggle.classList.remove('active', 'special-active');
+                }
+            } else if (type === 'nsfw') {
+                nsfwModeEnabled = !nsfwModeEnabled;
+                const toggle = document.getElementById('nsfwToggle');
+                if (nsfwModeEnabled) {
+                    toggle.classList.add('active', 'nsfw-active');
+                } else {
+                    toggle.classList.remove('active', 'nsfw-active');
+                }
+            }
+        }
 
-<!-- ▼▼▼ 랜덤 생성 팝업 HTML 추가 ▼▼▼ -->
-<!-- 랜덤 생성 방식 선택 팝업 -->
-<div id="randomChoicePopup" class="popup random-choice-popup hidden">
-    <h4>랜덤 생성 방식 선택</h4>
-    <button id="randomChoiceAll" data-target-gen="" class="popup-button">ALL</button>
-    <button id="randomChoicePartial" data-target-gen="" class="popup-button">Partial</button>
-    <button id="randomChoiceCancel" class="popup-button cancel-button">Cancel</button>
-</div>
+        function toggleOption(type) {
+            if (type === 'special') {
+                specialFeatureEnabled = !specialFeatureEnabled;
+                const toggle = document.getElementById('specialToggle');
+                if (specialFeatureEnabled) {
+                    toggle.classList.add('active', 'special-active');
+                } else {
+                    toggle.classList.remove('active', 'special-active');
+                }
+            } else if (type === 'nsfw') {
+                nsfwModeEnabled = !nsfwModeEnabled;
+                const toggle = document.getElementById('nsfwToggle');
+                if (nsfwModeEnabled) {
+                    toggle.classList.add('active', 'nsfw-active');
+                } else {
+                    toggle.classList.remove('active', 'nsfw-active');
+                }
+            }
+        }
 
-<!-- 부분 랜덤 키워드 입력 팝업 -->
-<div id="partialInputPopup" class="popup partial-input-popup hidden">
-    <h4>부분 랜덤 생성 가이드</h4>
-    <label for="partialKeywordsInput">원하는 캐릭터 특징을 키워드로 입력하세요:</label>
-    <textarea id="partialKeywordsInput" rows="3" placeholder="예: 검은 머리, 40대, 현대, 냉철한 성격, 회사원"></textarea>
-    <div class="popup-buttons">
-        <button id="generatePartialButton" data-target-gen="" class="popup-button">Keyword</button>
-        <button id="cancelPartialButton" class="popup-button cancel-button">Cancel</button>
-    </div>
-</div>
+        async function translateText(text, targetLang = 'ko') {
+            if (!GOOGLE_TRANSLATE_API_KEY || GOOGLE_TRANSLATE_API_KEY === 'YOUR_API_KEY_HERE') {
+                alert('API 키를 먼저 설정해주세요!');
+                return text;
+            }
 
-<!-- 팝업 배경 오버레이 -->
-<div id="popupOverlay" class="hidden"></div>
-<!-- ▲▲▲ 랜덤 생성 팝업 HTML 추가 끝 ▲▲▲ -->
+            try {
+                const url = `https://translation.googleapis.com/language/translate/v2?key=${GOOGLE_TRANSLATE_API_KEY}`;
+                
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        q: text,
+                        target: targetLang,
+                        source: 'en'
+                    })
+                });
 
+                const result = await response.json();
+                return result.data.translations[0].translatedText;
+            } catch (error) {
+                console.error('번역 오류:', error);
+                return text;
+            }
+        }
 
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-<script src="script.js"></script>
+        async function toggleTranslation() {
+            const toggle = document.getElementById('translateToggle');
+            const promptCard = document.getElementById('promptCard');
+            
+            if (!currentPromptData.name) {
+                alert('먼저 프롬프트를 생성해주세요!');
+                return;
+            }
 
+            if (isTranslated) {
+                // 원본으로 복원
+                toggle.classList.remove('active');
+                isTranslated = false;
+                renderPromptCard();
+            } else {
+                // 번역 시작
+                toggle.classList.add('active');
+                isTranslated = true;
+                
+                // 모든 섹션 번역
+                const sections = promptCard.querySelectorAll('.section-content');
+                for (let section of sections) {
+                    const originalText = section.textContent;
+                    const translatedText = await translateText(originalText);
+                    
+                    section.innerHTML = `
+                        <div>${originalText}</div>
+                        <div class="translated-content">📖 ${translatedText}</div>
+                    `;
+                }
+            }
+        }
 
+        function generateFromRequest() {
+            const request = document.getElementById('characterRequest').value;
+            if (!request.trim()) {
+                alert('캐릭터 요청을 입력해주세요!');
+                return;
+            }
+            
+            let requestWithOptions = request;
+            if (specialFeatureEnabled) {
+                requestWithOptions += '\n\n[특별 기능]: 이 캐릭터만의 독특하고 개성있는 특징을 추가해주세요. (예: 특별한 말투, 행동패턴, 습관 등)';
+            }
+            if (nsfwModeEnabled) {
+                requestWithOptions += '\n\n[NSFW 모드]: 성인 콘텐츠가 포함된 캐릭터로 설정해주세요.';
+            }
+            
+            // 실제 API 호출
+            generateCharacterWithAPI(requestWithOptions);
+        }
+
+        async function generateCharacterWithAPI(requestText) {
+            const generateBtn = document.querySelector('.generate-request-btn');
+            if (!generateBtn) return;
+            
+            generateBtn.disabled = true;
+            generateBtn.textContent = '생성중...';
+            
+            try {
+                console.log('API 요청 시작...');
+                
+                const prompt = `다음 요청에 따라 캐릭터를 생성해주세요. 반드시 JSON 형식으로만 응답해주세요.
+
+요청: ${requestText}
+
+응답 형식:
+{
+  "name": "캐릭터 이름",
+  "age": "나이",
+  "physique": "키/체형 (예: 175cm, 슬림한 체형)",
+  "appearance": "외모 설명",
+  "personality": "성격 설명",
+  "speech": "말투/어조",
+  "relationship": "유저와의 관계",
+  "worldtype": "세계관 (modern/fantasy/scifi/school/historical/other 중 하나)",
+  "background": "배경 설정",
+  "preferences": "NSFW 관련 설정 (해당되는 경우)",
+  "special": "특별한 특성"
+}
+
+반드시 유효한 JSON 형식으로만 응답하고, 다른 텍스트는 포함하지 마세요.`;
+
+                const contents = [
+                    { role: "user", parts: [{ text: prompt }] }
+                ];
+
+                console.log('fetch 요청 전송:', '/api/chat');
+                
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: contents })
+                });
+
+                console.log('Response status:', response.status);
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('API 에러 응답:', errorText);
+                    throw new Error(`API 오류 (${response.status}): ${errorText}`);
+                }
+
+                const data = await response.json();
+                console.log('API 응답 데이터:', data);
+                
+                const responseText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+                
+                if (!responseText) {
+                    throw new Error('API 응답이 비어있습니다');
+                }
+
+                console.log('응답 텍스트:', responseText);
+
+                // JSON 파싱
+                const cleanedResponse = responseText.replace(/```json\s*/, '').replace(/\s*```/, '').trim();
+                const characterData = JSON.parse(cleanedResponse);
+
+                // 폼에 데이터 입력
+                document.getElementById('name').value = characterData.name || '';
+                document.getElementById('age').value = characterData.age || '';
+                document.getElementById('physique').value = characterData.physique || '';
+                document.getElementById('appearance').value = characterData.appearance || '';
+                document.getElementById('personality').value = characterData.personality || '';
+                document.getElementById('speech').value = characterData.speech || '';
+                document.getElementById('relationship').value = characterData.relationship || '';
+                document.getElementById('worldtype').value = characterData.worldtype || 'modern';
+                document.getElementById('background').value = characterData.background || '';
+                document.getElementById('preferences').value = characterData.preferences || '';
+                document.getElementById('special').value = characterData.special || '';
+
+                alert('캐릭터 생성이 완료되었습니다!');
+
+            } catch (error) {
+                console.error('캐릭터 생성 오류:', error);
+                
+                // 상세한 에러 정보 표시
+                let errorMessage = error.message;
+                if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
+                    errorMessage = 'API 서버에 연결할 수 없습니다.\n서버가 실행 중인지 확인해주세요.\n\n현재 URL: ' + window.location.origin + '/api/chat';
+                }
+                
+                alert(`캐릭터 생성 중 오류가 발생했습니다:\n${errorMessage}`);
+            } finally {
+                generateBtn.disabled = false;
+                generateBtn.textContent = 'AI 생성';
+            }
+        }
+
+        function generatePrompt() {
+            const name = document.getElementById('name').value || 'Character';
+            const age = document.getElementById('age').value || '20';
+            const physique = document.getElementById('physique').value || 'Average build';
+            const appearance = document.getElementById('appearance').value || 'Attractive appearance';
+            const clothing = document.getElementById('clothing').value || 'Casual clothing';
+            const personality = document.getElementById('personality').value || 'Friendly personality';
+            const speech = document.getElementById('speech').value || 'Casual speech';
+            const relationship = document.getElementById('relationship').value || 'Friendly acquaintance';
+            const worldtype = document.getElementById('worldtype').value || 'modern';
+            const background = document.getElementById('background').value || 'Ordinary background';
+            const preferences = document.getElementById('preferences').value || '';
+            const special = document.getElementById('special').value || '';
+
+            currentPromptData = {
+                name: name,
+                profile: `${age} years old, ${physique}. ${appearance}. Usually wears ${clothing}.`,
+                personality: `Personality: ${personality}. Speaking style: ${speech}. Relationship with user: ${relationship}.`,
+                worldsetting: `Setting: ${getWorldDescription(worldtype)}. Background: ${background}.`,
+                special: preferences || special ? `Special traits: ${preferences} ${special}`.trim() : ''
+            };
+
+            renderPromptCard();
+        }
+
+        function getWorldDescription(worldtype) {
+            const descriptions = {
+                'modern': 'Modern contemporary world',
+                'fantasy': 'Fantasy world with magic and mythical creatures',
+                'scifi': 'Science fiction futuristic setting',
+                'school': 'School/academy setting',
+                'historical': 'Historical period setting',
+                'other': 'Custom world setting'
+            };
+            return descriptions[worldtype] || 'Modern setting';
+        }
+
+        function renderPromptCard() {
+            const promptCard = document.getElementById('promptCard');
+            const copyBtn = document.getElementById('copyAllBtn');
+            
+            let html = '';
+            
+            html += `
+                <div class="prompt-section">
+                    <div class="section-header">
+                        <h3>Name</h3>
+                        <button class="edit-btn" onclick="editSection('name')">Edit</button>
+                    </div>
+                    <div class="section-content">${currentPromptData.name}</div>
+                </div>
+            `;
+
+            html += `
+                <div class="prompt-section">
+                    <div class="section-header">
+                        <h3>Character Profile</h3>
+                        <button class="edit-btn" onclick="editSection('profile')">Edit</button>
+                    </div>
+                    <div class="section-content">${currentPromptData.profile}</div>
+                </div>
+            `;
+
+            html += `
+                <div class="prompt-section">
+                    <div class="section-header">
+                        <h3>Personality & Relationship</h3>
+                        <button class="edit-btn" onclick="editSection('personality')">Edit</button>
+                    </div>
+                    <div class="section-content">${currentPromptData.personality}</div>
+                </div>
+            `;
+
+            html += `
+                <div class="prompt-section">
+                    <div class="section-header">
+                        <h3>World Setting</h3>
+                        <button class="edit-btn" onclick="editSection('worldsetting')">Edit</button>
+                    </div>
+                    <div class="section-content">${currentPromptData.worldsetting}</div>
+                </div>
+            `;
+
+            if (currentPromptData.special) {
+                html += `
+                    <div class="prompt-section">
+                        <div class="section-header">
+                            <h3>Special Traits</h3>
+                            <button class="edit-btn" onclick="editSection('special')">Edit</button>
+                        </div>
+                        <div class="section-content">${currentPromptData.special}</div>
+                    </div>
+                `;
+            }
+
+            promptCard.innerHTML = html;
+            copyBtn.style.display = 'block';
+        }
+
+        function editSection(sectionName) {
+            const currentContent = currentPromptData[sectionName];
+            const newContent = prompt(`Edit ${sectionName}:`, currentContent);
+            
+            if (newContent !== null) {
+                currentPromptData[sectionName] = newContent;
+                renderPromptCard();
+            }
+        }
+
+        function copyAllPrompt() {
+            let fullPrompt = '';
+            
+            fullPrompt += `Name: ${currentPromptData.name}\n\n`;
+            fullPrompt += `Character Profile: ${currentPromptData.profile}\n\n`;
+            fullPrompt += `Personality & Relationship: ${currentPromptData.personality}\n\n`;
+            fullPrompt += `World Setting: ${currentPromptData.worldsetting}`;
+            
+            if (currentPromptData.special) {
+                fullPrompt += `\n\nSpecial Traits: ${currentPromptData.special}`;
+            }
+
+            navigator.clipboard.writeText(fullPrompt).then(() => {
+                alert('프롬프트가 클립보드에 복사되었습니다!');
+            }).catch(err => {
+                console.error('복사 실패:', err);
+                alert('복사에 실패했습니다.');
+            });
+        }
+
+        async function createScenario() {
+            if (!currentPromptData.name) {
+                alert('먼저 캐릭터 프롬프트를 생성해주세요!');
+                return;
+            }
+            
+            const createBtn = document.querySelector('.create-scenario-btn');
+            if (!createBtn) return;
+            
+            createBtn.disabled = true;
+            createBtn.textContent = '생성중...';
+            
+            try {
+                const prompt = `다음 캐릭터 설정을 바탕으로 첫 만남 상황을 만들어주세요:
+
+캐릭터 이름: ${currentPromptData.name}
+캐릭터 설정: ${currentPromptData.profile}
+성격: ${currentPromptData.personality}
+세계관: ${currentPromptData.worldsetting}
+
+자연스러운 첫 만남 상황을 300자 내외로 작성해주세요. 상황 설명과 캐릭터의 첫 대사를 포함해주세요.`;
+
+                const contents = [
+                    { role: "user", parts: [{ text: prompt }] }
+                ];
+
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: contents })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API 오류: ${response.status}`);
+                }
+
+                const data = await response.json();
+                const scenario = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+                
+                if (!scenario) {
+                    throw new Error('시나리오 생성 실패');
+                }
+
+                addMessage('ai', scenario);
+
+            } catch (error) {
+                console.error('시나리오 생성 오류:', error);
+                addMessage('ai', `시나리오 생성 중 오류가 발생했습니다: ${error.message}`);
+            } finally {
+                createBtn.disabled = false;
+                createBtn.textContent = '✨ 첫 상황 만들기';
+            }
+        }
+
+        function clearChat() {
+            chatHistory = [];
+            document.getElementById('chatMessages').innerHTML = '<div class="empty-chat">👆 \'첫 상황 만들기\'를 눌러<br>캐릭터와 대화를 시작해보세요!</div>';
+        }
+
+        function addMessage(sender, content) {
+            const chatMessages = document.getElementById('chatMessages');
+            
+            // 빈 채팅 메시지 제거
+            const emptyChat = chatMessages.querySelector('.empty-chat');
+            if (emptyChat) {
+                emptyChat.remove();
+            }
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            messageDiv.innerHTML = `
+                <div class="message-sender">${sender === 'user' ? 'You' : currentPromptData.name || 'AI'}</div>
+                <div class="message-content">${content}</div>
+            `;
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            chatHistory.push({ sender, content });
+        }
+
+        function sendMessage() {
+            const chatInput = document.getElementById('chatInput');
+            const message = chatInput.value.trim();
+            
+            if (!message) return;
+            if (!currentPromptData.name) {
+                alert('먼저 캐릭터 프롬프트를 생성해주세요!');
+                return;
+            }
+            
+            addMessage('user', message);
+            chatInput.value = '';
+            
+            // API 호출로 응답 생성
+            generateAIResponse(message);
+        }
+
+        async function generateAIResponse(userMessage) {
+            const sendBtn = document.querySelector('.send-btn');
+            if (!sendBtn) return;
+            
+            sendBtn.disabled = true;
+            sendBtn.textContent = '...';
+            
+            try {
+                // 대화 히스토리 구성
+                let conversationHistory = '';
+                const messages = document.querySelectorAll('.message');
+                messages.forEach((msg, index) => {
+                    if (index < messages.length - 1) { // 방금 추가한 사용자 메시지 제외
+                        const sender = msg.querySelector('.message-sender')?.textContent || '';
+                        const content = msg.querySelector('.message-content')?.textContent || '';
+                        if (sender && content) {
+                            conversationHistory += `${sender}: ${content}\n\n`;
+                        }
+                    }
+                });
+
+                const systemPrompt = `당신은 다음과 같은 캐릭터입니다:
+
+이름: ${currentPromptData.name}
+프로필: ${currentPromptData.profile}
+성격과 관계: ${currentPromptData.personality}
+세계관: ${currentPromptData.worldsetting}
+${currentPromptData.special ? `특별한 특성: ${currentPromptData.special}` : ''}
+
+위 설정에 맞춰 자연스럽게 대화해주세요. 캐릭터의 성격과 말투를 일관되게 유지하고, 상황에 맞는 반응을 보여주세요.
+
+이전 대화:
+${conversationHistory}
+
+사용자: ${userMessage}
+
+캐릭터로서 자연스럽게 응답해주세요:`;
+
+                const contents = [
+                    { role: "user", parts: [{ text: systemPrompt }] }
+                ];
+
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: contents })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API 오류: ${response.status}`);
+                }
+
+                const data = await response.json();
+                const aiResponse = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+                
+                if (!aiResponse) {
+                    throw new Error('AI 응답이 비어있습니다');
+                }
+
+                addMessage('ai', aiResponse);
+
+            } catch (error) {
+                console.error('AI 응답 생성 오류:', error);
+                addMessage('ai', `응답 생성 중 오류가 발생했습니다: ${error.message}`);
+            } finally {
+                sendBtn.disabled = false;
+                sendBtn.textContent = '전송';
+            }
+        }
+
+        function handleChatKeydown(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+    </script>
 </body>
 </html>
