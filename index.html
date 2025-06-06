@@ -799,35 +799,36 @@ ${text}`;
                 if (nsfwModeEnabled) {
                     specialInstructions += `
                     
-**성인 콘텐츠 요구사항:**
-- 성적 매력이나 유혹적인 면모를 자연스럽게 포함
-- 성격에 관능적이거나 도발적인 요소 추가
-- 신체적 매력에 대한 구체적 묘사
-- 은근한 성적 어필이나 유혹 기술 언급`;
+**NSFW 모드 - 성인 콘텐츠 요구사항:**
+- 캐릭터는 성적으로 매력적이고 유혹적인 특성을 가져야 함
+- 신체적 매력과 성적 어필에 대한 구체적이고 직접적인 묘사 포함
+- 성적 행동, 취향, 페티쉬에 대한 명시적 언급
+- 도발적이고 관능적인 성격 특성 강조
+- 성적 유혹 기술이나 경험에 대한 구체적 설명
+- 성적 욕구나 성향을 솔직하고 직접적으로 표현
+- 침실에서의 행동이나 선호도 포함`;
                 }
 
-                const prompt = `다음 요청에 따라 캐릭터를 생성해주세요. 응답은 반드시 JSON 형식으로만 해주세요:
+                const prompt = `다음 요청에 따라 캐릭터를 생성해주세요. 응답은 JSON 형식으로 해주세요:
 
-기본 요청: ${requestText}
+${requestText}
 
 ${specialInstructions}
 
 JSON 형식:
 {
   "name": "캐릭터 이름",
-  "age": "나이",
+  "age": "나이", 
   "physique": "키/체형",
-  "appearance": "외모 묘사",
+  "appearance": "외모",
   "personality": "성격",
   "speech": "말투",
-  "relationship": "유저와의 관계",
+  "relationship": "관계",
   "worldtype": "modern",
   "background": "배경",
-  "preferences": "특별한 취향",
-  "special": "특별한 특성"
-}
-
-위 JSON 형식을 반드시 지켜주세요.`;
+  "preferences": "취향",
+  "special": "특성"
+}`;
 
                 const contents = [
                     { role: "user", parts: [{ text: prompt }] }
@@ -1092,15 +1093,21 @@ JSON 형식:
         function copyAllPrompt() {
             let fullPrompt = '';
             
-            fullPrompt += `【Absolute Top Priority - Mandatory Checklist for Every Response】:\n1. {{char}}의 성격과 말투를 일관되게 유지\n2. {{user}}와의 관계 설정 준수\n3. 세계관에 맞는 행동과 대화\n4. 자연스러운 대화 흐름 유지\n\n`;
-            fullPrompt += `${currentPromptData.name}\n\n`;
+            fullPrompt += `# **${currentPromptData.name}**\n\n`;
+            fullPrompt += `## **기본 정보**\n`;
             fullPrompt += `${currentPromptData.profile}\n\n`;
+            fullPrompt += `## **성격 & 관계**\n`;
             fullPrompt += `${currentPromptData.personality}\n\n`;
-            fullPrompt += `${currentPromptData.worldsetting}`;
+            fullPrompt += `## **세계관 & 배경**\n`;
+            fullPrompt += `${currentPromptData.worldsetting}\n\n`;
             
             if (currentPromptData.special) {
-                fullPrompt += `\n\n${currentPromptData.special}`;
+                fullPrompt += `## **특별한 특성**\n`;
+                fullPrompt += `${currentPromptData.special}\n\n`;
             }
+            
+            fullPrompt += `## **⚠️ 필수 규칙**\n`;
+            fullPrompt += `(여기에 원하는 특별한 명령어를 추가하세요)\n\n`;
 
             navigator.clipboard.writeText(fullPrompt).then(() => {
                 alert('프롬프트가 클립보드에 복사되었습니다!');
