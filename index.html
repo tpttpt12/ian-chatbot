@@ -968,7 +968,11 @@ JSON:
                 
                 // finishReason 체크
                 if (candidate?.finishReason === 'MAX_TOKENS') {
-                    throw new Error('응답이 너무 길어서 잘렸습니다. 더 짧은 요청을 시도해주세요.');
+                    console.warn('토큰 제한으로 응답이 잘렸습니다');
+                }
+                
+                if (candidate?.finishReason === 'SAFETY') {
+                    console.warn('안전 필터로 응답이 중단되었습니다');
                 }
                 
                 try {
@@ -983,10 +987,21 @@ JSON:
                     
                     // 응답이 비어있는 이유 분석
                     if (candidate?.finishReason) {
-                        throw new Error(`응답 생성 실패: ${candidate.finishReason}`);
+                        if (candidate.finishReason === 'MAX_TOKENS') {
+                            throw new Error('응답이 너무 길어서 잘렸습니다. 요청을 더 간단하게 해주세요.');
+                        } else if (candidate.finishReason === 'SAFETY') {
+                            throw new Error('안전 필터에 걸렸습니다. NSFW 내용을 줄여주세요.');
+                        } else {
+                            throw new Error(`응답 생성 실패: ${candidate.finishReason}`);
+                        }
                     } else {
                         throw new Error('API에서 빈 응답을 받았습니다');
                     }
+                }
+                
+                // 응답이 잘렸는지 체크 (마지막에 .. 이나 문장이 끝나지 않은 경우)
+                if (responseText.endsWith('..') || responseText.endsWith('...')) {
+                    console.warn('응답이 중간에 잘린 것 같습니다');
                 }
 
                 console.log('원본 응답 텍스트:', responseText);
@@ -1068,6 +1083,8 @@ JSON:
                 age: /"age"\s*:\s*"([^"]+)"/,
                 physique: /"physique"\s*:\s*"([^"]+)"/,
                 appearance: /"appearance"\s*:\s*"([^"]+)"/,
+                clothing: /"clothing"\s*:\s*"([^"]+)"/,
+                backstory: /"backstory"\s*:\s*"([^"]+)"/,
                 personality: /"personality"\s*:\s*"([^"]+)"/,
                 speech: /"speech"\s*:\s*"([^"]+)"/,
                 relationship: /"relationship"\s*:\s*"([^"]+)"/,
@@ -1103,17 +1120,17 @@ JSON:
             const speech = document.getElementById('speech').value || 'Casual speech';
             const relationship = document.getElementById('relationship').value || 'Friendly acquaintance';
             const worldtype = document.getElementById('worldtype').value || 'modern';
-            const background = document.getElementById('background').value || 'Ordinary background';
+            const background = document.getElementById('background').value || 'Ordinary world setting';
             const preferences = document.getElementById('preferences').value || '';
             const special = document.getElementById('special').value || '';
 
             currentPromptData = {
                 name: name,
-                profile: `${age} years old, ${physique}. ${appearance}. Usually wears ${clothing}.`,
+                profile: `Age: ${age}\nPhysique: ${physique}\nAppearance: ${appearance}\nClothing: ${clothing}`,
                 backstory: backstory,
-                personality: `Personality: ${personality}. Speaking style: ${speech}. Relationship with user: ${relationship}.`,
-                worldsetting: `Setting: ${getWorldDescription(worldtype)}. Background: ${background}.`,
-                special: preferences || special ? `Special traits: ${preferences} ${special}`.trim() : ''
+                personality: `Personality: ${personality}\n\nSpeaking style: ${speech}\n\nRelationship with user: ${relationship}`,
+                worldsetting: `Setting: ${getWorldDescription(worldtype)}\n\nBackground: ${background}`,
+                special: preferences || special ? `Special traits: ${preferences}\n\n${special}`.trim() : ''
             };
 
             renderPromptCard();
