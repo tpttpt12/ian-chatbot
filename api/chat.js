@@ -34,7 +34,7 @@ module.exports = async (req, res) => {
              return;
         }
 
-        const API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
+        const API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro-preview-06-05:generateContent";
 
         const googleRes = await fetch(`${API_URL}?key=${GEMINI_API_KEY}`, {
             method: 'POST',
