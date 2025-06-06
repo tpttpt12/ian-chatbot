@@ -341,6 +341,12 @@
             height: 100%;
         }
 
+        .chat-controls {
+            margin-bottom: 15px;
+            display: flex;
+            gap: 8px;
+        }
+
         .chat-messages {
             flex: 1;
             background: #2a2a2a;
@@ -350,6 +356,54 @@
             overflow-y: auto;
             margin-bottom: 15px;
             min-height: 300px;
+            max-height: 400px;
+        }
+
+        .chat-input-group {
+            display: flex;
+            gap: 8px;
+            align-items: flex-end;
+        }
+
+        .chat-input {
+            flex: 1;
+            background: #333;
+            border: 1px solid #555;
+            border-radius: 6px;
+            padding: 10px 12px;
+            color: #e0e0e0;
+            font-size: 13px;
+            resize: none;
+            min-height: 40px;
+            max-height: 120px;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: #666;
+        }
+
+        .send-btn {
+            background: #444;
+            border: 1px solid #666;
+            color: #fff;
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            white-space: nowrap;
+            transition: background-color 0.2s;
+        }
+
+        .send-btn:hover {
+            background: #555;
+        }
+
+        .send-btn:disabled {
+            background: #333;
+            color: #666;
+            cursor: not-allowed;
         }
 
         .message {
@@ -792,26 +846,52 @@
             try {
                 console.log('API 요청 시작...');
                 
-                const prompt = `다음 요청에 따라 캐릭터를 생성해주세요. 반드시 JSON 형식으로만 응답해주세요.
+                let specialInstructions = '';
+                if (specialFeatureEnabled) {
+                    specialInstructions += `
+                    
+**특별 기능 요구사항:**
+- 이 캐릭터는 반드시 독특하고 기억에 남을 특별한 개성을 가져야 합니다
+- 다음 중 하나 이상을 포함해주세요:
+  * 특이한 말투나 언어 습관 (예: 라틴어 주문, 의학용어 남발, 고어체 사용)
+  * 독특한 행동 패턴 (예: 항상 책을 들고 다님, 특정 동작 반복)
+  * 특별한 능력이나 지식 (예: 마음 읽기, 미래 예지, 초인적 기억력)
+  * 강박적 습관 (예: 숫자 세기, 대칭 맞추기, 특정 색깔 선호)
+  * 유니크한 배경 설정 (예: 전생 기억, 비밀 정체성, 특별한 임무)`;
+                }
+                
+                if (nsfwModeEnabled) {
+                    specialInstructions += `
+                    
+**성인 콘텐츠 요구사항:**
+- 성적 매력이나 유혹적인 면모를 자연스럽게 포함
+- 성격에 관능적이거나 도발적인 요소 추가
+- 신체적 매력에 대한 구체적 묘사
+- 은근한 성적 어필이나 유혹 기술 언급`;
+                }
 
-요청: ${requestText}
+                const prompt = `다음 요청에 따라 매우 개성있고 독특한 캐릭터를 생성해주세요. 평범하거나 뻔한 캐릭터는 절대 안 됩니다!
 
-응답 형식:
+기본 요청: ${requestText}
+
+${specialInstructions}
+
+응답은 반드시 다음 JSON 형식으로만 해주세요:
 {
-  "name": "캐릭터 이름",
+  "name": "캐릭터 이름 (독특하고 기억에 남는)",
   "age": "나이",
-  "physique": "키/체형 (예: 175cm, 슬림한 체형)",
-  "appearance": "외모 설명",
-  "personality": "성격 설명",
-  "speech": "말투/어조",
+  "physique": "키/체형 설명",
+  "appearance": "외모 상세 묘사 (최소 100자)",
+  "personality": "성격 설명 (특별한 개성 포함, 최소 150자)",
+  "speech": "말투/어조 (독특한 특징 포함)",
   "relationship": "유저와의 관계",
-  "worldtype": "세계관 (modern/fantasy/scifi/school/historical/other 중 하나)",
-  "background": "배경 설정",
-  "preferences": "NSFW 관련 설정 (해당되는 경우)",
-  "special": "특별한 특성"
+  "worldtype": "세계관 (modern/fantasy/scifi/school/historical/other)",
+  "background": "배경 설정 (흥미로운 스토리 포함, 최소 100자)",
+  "preferences": "NSFW 관련 설정 (해당시)",
+  "special": "특별한 개성/능력/습관 (구체적으로)"
 }
 
-반드시 유효한 JSON 형식으로만 응답하고, 다른 텍스트는 포함하지 마세요.`;
+절대 평범한 캐릭터를 만들지 말고, 사용자가 "와 이 캐릭터 정말 독특하다!"라고 할 만한 개성을 넣어주세요.`;
 
                 const contents = [
                     { role: "user", parts: [{ text: prompt }] }
@@ -861,7 +941,7 @@
                 document.getElementById('preferences').value = characterData.preferences || '';
                 document.getElementById('special').value = characterData.special || '';
 
-                alert('캐릭터 생성이 완료되었습니다!');
+                alert('🎉 독특한 캐릭터 생성 완료!');
 
             } catch (error) {
                 console.error('캐릭터 생성 오류:', error);
@@ -991,13 +1071,14 @@
         function copyAllPrompt() {
             let fullPrompt = '';
             
-            fullPrompt += `Name: ${currentPromptData.name}\n\n`;
-            fullPrompt += `Character Profile: ${currentPromptData.profile}\n\n`;
-            fullPrompt += `Personality & Relationship: ${currentPromptData.personality}\n\n`;
-            fullPrompt += `World Setting: ${currentPromptData.worldsetting}`;
+            fullPrompt += `【Absolute Top Priority - Mandatory Checklist for Every Response】:\n1. {{char}}의 성격과 말투를 일관되게 유지\n2. {{user}}와의 관계 설정 준수\n3. 세계관에 맞는 행동과 대화\n4. 자연스러운 대화 흐름 유지\n\n`;
+            fullPrompt += `${currentPromptData.name}\n\n`;
+            fullPrompt += `${currentPromptData.profile}\n\n`;
+            fullPrompt += `${currentPromptData.personality}\n\n`;
+            fullPrompt += `${currentPromptData.worldsetting}`;
             
             if (currentPromptData.special) {
-                fullPrompt += `\n\nSpecial Traits: ${currentPromptData.special}`;
+                fullPrompt += `\n\n${currentPromptData.special}`;
             }
 
             navigator.clipboard.writeText(fullPrompt).then(() => {
@@ -1034,28 +1115,38 @@
                     { role: "user", parts: [{ text: prompt }] }
                 ];
 
+                console.log('시나리오 API 요청 시작...');
+                
                 const response = await fetch('/api/chat', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ contents: contents })
                 });
 
+                console.log('시나리오 Response status:', response.status);
+
                 if (!response.ok) {
-                    throw new Error(`API 오류: ${response.status}`);
+                    const errorText = await response.text();
+                    console.error('시나리오 API 에러:', errorText);
+                    throw new Error(`API 오류 (${response.status}): ${errorText}`);
                 }
 
                 const data = await response.json();
+                console.log('시나리오 API 응답:', data);
+                
                 const scenario = data?.candidates?.[0]?.content?.parts?.[0]?.text;
                 
-                if (!scenario) {
-                    throw new Error('시나리오 생성 실패');
+                if (!scenario || scenario.trim() === '') {
+                    console.error('빈 시나리오 응답:', data);
+                    throw new Error('시나리오가 생성되지 않았습니다');
                 }
 
+                console.log('생성된 시나리오:', scenario);
                 addMessage('ai', scenario);
 
             } catch (error) {
                 console.error('시나리오 생성 오류:', error);
-                addMessage('ai', `시나리오 생성 중 오류가 발생했습니다: ${error.message}`);
+                addMessage('ai', `시나리오 생성 중 오류: ${error.message}`);
             } finally {
                 createBtn.disabled = false;
                 createBtn.textContent = '✨ 첫 상황 만들기';
