@@ -690,9 +690,9 @@
             }
         }
 
-        async function translateText(text, targetLang = 'ko') {
+        async function translateText(text, targetLang = 'en') {
             try {
-                const prompt = `다음 영어 텍스트를 한국어로 번역해주세요. 번역된 텍스트만 반환해주세요:
+                const prompt = `다음 한국어 텍스트를 영어로 번역해주세요. 번역된 텍스트만 반환해주세요:
 
 ${text}`;
 
@@ -739,19 +739,21 @@ ${text}`;
                 isTranslated = false;
                 renderPromptCard();
             } else {
-                // 번역 시작
+                // 영어로 번역 시작
                 toggle.classList.add('active');
                 isTranslated = true;
                 
-                // 모든 섹션 번역
+                // 모든 섹션 영어로 번역
                 const sections = promptCard.querySelectorAll('.section-content');
                 for (let section of sections) {
                     const originalText = section.textContent;
                     const translatedText = await translateText(originalText);
                     
                     section.innerHTML = `
-                        <div>${originalText}</div>
-                        <div class="translated-content">📖 ${translatedText}</div>
+                        <div style="color: #aaa; font-size: 11px; margin-bottom: 8px;">[원본]</div>
+                        <div style="margin-bottom: 12px;">${originalText}</div>
+                        <div style="color: #8ef; font-size: 11px; margin-bottom: 8px;">[English]</div>
+                        <div>${translatedText}</div>
                     `;
                 }
             }
@@ -1051,6 +1053,16 @@ JSON:
             html += `
                 <div class="prompt-section">
                     <div class="section-header">
+                        <h3>Backstory</h3>
+                        <button class="edit-btn" onclick="editSection('backstory')">Edit</button>
+                    </div>
+                    <div class="section-content">${currentPromptData.backstory}</div>
+                </div>
+            `;
+
+            html += `
+                <div class="prompt-section">
+                    <div class="section-header">
                         <h3>Personality & Relationship</h3>
                         <button class="edit-btn" onclick="editSection('personality')">Edit</button>
                     </div>
@@ -1100,6 +1112,8 @@ JSON:
             fullPrompt += `${currentPromptData.name}\n\n`;
             fullPrompt += `# 기본 정보\n`;
             fullPrompt += `${currentPromptData.profile}\n\n`;
+            fullPrompt += `# 백스토리\n`;
+            fullPrompt += `${currentPromptData.backstory}\n\n`;
             fullPrompt += `# 성격과 관계\n`;
             fullPrompt += `${currentPromptData.personality}\n\n`;
             fullPrompt += `# 배경과 세계관\n`;
