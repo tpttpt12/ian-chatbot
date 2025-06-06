@@ -64,21 +64,31 @@ body: JSON.stringify({ // 1번 { 시작
                 contents: contents,
                 generationConfig: { // 2번 { 시작
                     temperature: 0.7,
-                    maxOutputTokens: 2048,
+                    maxOutputTokens: 8192,
                     topP: 0.95,
                     // topK: 40
                 }, // <<-- 2번 중괄호 } 닫고 쉼표(,) 추가!
 
-                // === safetySettings를 여기로 이동! ===
-                safetySettings: [ // 1번 [ 시작
-                  { // 3번 { 시작
-                    category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-                    threshold: "BLOCK_ONLY_HIGH"
-                  } // 3번 } 닫힘
-                ] // 1번 [ 닫힘
 
-            }), // 1번 { 에 대한 닫는 중괄호 }
-            // === 수정 끝 ===
+safetySettings: [
+  {
+    category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+    threshold: "BLOCK_NONE"
+  },
+  {
+    category: "HARM_CATEGORY_HARASSMENT", 
+    threshold: "BLOCK_NONE"
+  },
+  {
+    category: "HARM_CATEGORY_HATE_SPEECH",
+    threshold: "BLOCK_NONE" 
+  },
+  {
+    category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+    threshold: "BLOCK_NONE"
+  }
+]
+
 			signal: controller.signal
         });
 		
