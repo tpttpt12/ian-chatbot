@@ -436,52 +436,6 @@
             line-height: 1.4;
         }
 
-        .chat-input-group {
-            display: flex;
-            gap: 8px;
-        }
-
-        .chat-input {
-            flex: 1;
-            background: #333;
-            border: 1px solid #555;
-            border-radius: 6px;
-            padding: 10px 12px;
-            color: #e0e0e0;
-            font-size: 13px;
-            resize: none;
-            min-height: 40px;
-            max-height: 120px;
-        }
-
-        .chat-input:focus {
-            outline: none;
-            border-color: #666;
-        }
-
-        .send-btn {
-            background: #444;
-            border: 1px solid #666;
-            color: #fff;
-            padding: 10px 15px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 500;
-            white-space: nowrap;
-            transition: background-color 0.2s;
-        }
-
-        .send-btn:hover {
-            background: #555;
-        }
-
-        .chat-controls {
-            margin-bottom: 15px;
-            display: flex;
-            gap: 8px;
-        }
-
         .create-scenario-btn {
             background: #444;
             border: 1px solid #666;
@@ -712,29 +666,6 @@
         let specialFeatureEnabled = false;
         let nsfwModeEnabled = false;
 
-        // 구글 번역 API 키 (여기에 본인의 API 키를 입력하세요)
-        const GOOGLE_TRANSLATE_API_KEY = 'YOUR_API_KEY_HERE';
-
-        function toggleOption(type) {
-            if (type === 'special') {
-                specialFeatureEnabled = !specialFeatureEnabled;
-                const toggle = document.getElementById('specialToggle');
-                if (specialFeatureEnabled) {
-                    toggle.classList.add('active', 'special-active');
-                } else {
-                    toggle.classList.remove('active', 'special-active');
-                }
-            } else if (type === 'nsfw') {
-                nsfwModeEnabled = !nsfwModeEnabled;
-                const toggle = document.getElementById('nsfwToggle');
-                if (nsfwModeEnabled) {
-                    toggle.classList.add('active', 'nsfw-active');
-                } else {
-                    toggle.classList.remove('active', 'nsfw-active');
-                }
-            }
-        }
-
         function toggleOption(type) {
             if (type === 'special') {
                 specialFeatureEnabled = !specialFeatureEnabled;
@@ -756,31 +687,36 @@
         }
 
         async function translateText(text, targetLang = 'ko') {
-            if (!GOOGLE_TRANSLATE_API_KEY || GOOGLE_TRANSLATE_API_KEY === 'YOUR_API_KEY_HERE') {
-                alert('API 키를 먼저 설정해주세요!');
-                return text;
-            }
-
             try {
-                const url = `https://translation.googleapis.com/language/translate/v2?key=${GOOGLE_TRANSLATE_API_KEY}`;
-                
-                const response = await fetch(url, {
+                const prompt = `다음 영어 텍스트를 한국어로 번역해주세요. 번역된 텍스트만 반환해주세요:
+
+${text}`;
+
+                const contents = [
+                    { role: "user", parts: [{ text: prompt }] }
+                ];
+
+                const response = await fetch('/api/chat', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        q: text,
-                        target: targetLang,
-                        source: 'en'
-                    })
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: contents })
                 });
 
-                const result = await response.json();
-                return result.data.translations[0].translatedText;
+                if (!response.ok) {
+                    throw new Error(`번역 API 오류: ${response.status}`);
+                }
+
+                const data = await response.json();
+                const translatedText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+                
+                if (!translatedText) {
+                    throw new Error('번역 응답이 비어있습니다');
+                }
+
+                return translatedText.trim();
             } catch (error) {
                 console.error('번역 오류:', error);
-                return text;
+                return text; // 번역 실패시 원본 텍스트 반환
             }
         }
 
@@ -916,17 +852,54 @@ ${specialInstructions}
                 const data = await response.json();
                 console.log('API 응답 데이터:', data);
                 
-                const responseText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+                // 더 안전한 응답 추출
+                let responseText = '';
+                try {
+                    responseText = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+                } catch (e) {
+                    console.error('응답 구조 파싱 에러:', e);
+                    console.log('전체 응답 구조:', JSON.stringify(data, null, 2));
+                }
                 
-                if (!responseText) {
-                    throw new Error('API 응답이 비어있습니다');
+                if (!responseText || responseText.trim() === '') {
+                    console.error('빈 응답. 전체 데이터:', JSON.stringify(data, null, 2));
+                    throw new Error('API에서 빈 응답을 받았습니다');
                 }
 
-                console.log('응답 텍스트:', responseText);
+                console.log('원본 응답 텍스트:', responseText);
 
-                // JSON 파싱
-                const cleanedResponse = responseText.replace(/```json\s*/, '').replace(/\s*```/, '').trim();
-                const characterData = JSON.parse(cleanedResponse);
+                // JSON 추출 및 정리 - 더 강력한 방법
+                let jsonText = responseText;
+                
+                // 모든 종류의 마크다운 코드블록 제거
+                jsonText = jsonText.replace(/```json\s*/gi, '').replace(/```\s*/gi, '').trim();
+                
+                // 첫 번째 {부터 마지막 }까지만 추출
+                const firstBrace = jsonText.indexOf('{');
+                const lastBrace = jsonText.lastIndexOf('}');
+                
+                if (firstBrace === -1 || lastBrace === -1 || firstBrace >= lastBrace) {
+                    throw new Error('JSON 형식을 찾을 수 없습니다. 응답: ' + responseText.substring(0, 200) + '...');
+                }
+                
+                jsonText = jsonText.substring(firstBrace, lastBrace + 1);
+                console.log('정리된 JSON:', jsonText);
+                
+                let characterData;
+                try {
+                    characterData = JSON.parse(jsonText);
+                } catch (parseError) {
+                    console.error('JSON 파싱 에러:', parseError.message);
+                    console.error('파싱 시도한 텍스트:', jsonText);
+                    
+                    // 수동으로 필드 추출 시도
+                    try {
+                        characterData = extractDataManually(responseText);
+                        console.log('수동 추출 성공:', characterData);
+                    } catch (manualError) {
+                        throw new Error(`JSON 파싱 실패 및 수동 추출 실패: ${parseError.message}`);
+                    }
+                }
 
                 // 폼에 데이터 입력
                 document.getElementById('name').value = characterData.name || '';
@@ -941,6 +914,7 @@ ${specialInstructions}
                 document.getElementById('preferences').value = characterData.preferences || '';
                 document.getElementById('special').value = characterData.special || '';
 
+                console.log('캐릭터 데이터 입력 완료:', characterData);
                 alert('🎉 독특한 캐릭터 생성 완료!');
 
             } catch (error) {
@@ -957,6 +931,40 @@ ${specialInstructions}
                 generateBtn.disabled = false;
                 generateBtn.textContent = 'AI 생성';
             }
+        }
+
+        // 수동으로 데이터 추출하는 백업 함수
+        function extractDataManually(text) {
+            const data = {};
+            
+            // 정규식으로 각 필드 추출
+            const patterns = {
+                name: /"name"\s*:\s*"([^"]+)"/,
+                age: /"age"\s*:\s*"([^"]+)"/,
+                physique: /"physique"\s*:\s*"([^"]+)"/,
+                appearance: /"appearance"\s*:\s*"([^"]+)"/,
+                personality: /"personality"\s*:\s*"([^"]+)"/,
+                speech: /"speech"\s*:\s*"([^"]+)"/,
+                relationship: /"relationship"\s*:\s*"([^"]+)"/,
+                worldtype: /"worldtype"\s*:\s*"([^"]+)"/,
+                background: /"background"\s*:\s*"([^"]+)"/,
+                preferences: /"preferences"\s*:\s*"([^"]+)"/,
+                special: /"special"\s*:\s*"([^"]+)"/
+            };
+            
+            for (const [key, pattern] of Object.entries(patterns)) {
+                const match = text.match(pattern);
+                if (match) {
+                    data[key] = match[1];
+                }
+            }
+            
+            // 최소한 이름이라도 추출되어야 함
+            if (!data.name) {
+                throw new Error('필수 데이터를 추출할 수 없습니다');
+            }
+            
+            return data;
         }
 
         function generatePrompt() {
