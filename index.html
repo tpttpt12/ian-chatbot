@@ -298,13 +298,13 @@
             background: #444;
             border: 1px solid #666;
             color: #ccc;
-            padding: 6px 12px;
-            border-radius: 4px;
+            padding: 3px 8px;
+            border-radius: 3px;
             cursor: pointer;
-            font-size: 11px;
+            font-size: 10px;
             transition: all 0.2s;
-            margin-top: 8px;
-            width: 100%;
+            margin-top: 4px;
+            float: right;
         }
 
         .edit-btn:hover {
@@ -653,28 +653,24 @@
                     <input type="text" id="clothing" placeholder="평소 입는 옷, 패션 스타일">
                 </div>
                 <div class="form-group">
-                    <label>백스토리 (개인 배경)</label>
+                    <label>백스토리 (개인 배경) <button class="edit-btn" onclick="editField('backstory', '백스토리')">Edit</button></label>
                     <textarea id="backstory" placeholder="캐릭터의 과거, 개인사, 경험 등"></textarea>
-                    <button class="edit-btn" onclick="editField('backstory', '백스토리')">수정</button>
                 </div>
             </div>
 
             <div class="form-section">
                 <div class="section-title">성격 & 관계</div>
                 <div class="form-group">
-                    <label>핵심 성격</label>
+                    <label>핵심 성격 <button class="edit-btn" onclick="editField('personality', '성격')">Edit</button></label>
                     <textarea id="personality" placeholder="주요 성격 특성들을 적어주세요"></textarea>
-                    <button class="edit-btn" onclick="editField('personality', '성격')">수정</button>
                 </div>
                 <div class="form-group">
-                    <label>말투/어조</label>
+                    <label>말투/어조 <button class="edit-btn" onclick="editField('speech', '말투')">Edit</button></label>
                     <input type="text" id="speech" placeholder="예: 정중한 존댓말, 친근한 반말, 츤데레톤">
-                    <button class="edit-btn" onclick="editField('speech', '말투')">수정</button>
                 </div>
                 <div class="form-group">
-                    <label>유저와의 관계</label>
+                    <label>유저와의 관계 <button class="edit-btn" onclick="editField('relationship', '관계')">Edit</button></label>
                     <input type="text" id="relationship" placeholder="예: 첫 만남, 친구, 연인, 상사와 부하">
-                    <button class="edit-btn" onclick="editField('relationship', '관계')">수정</button>
                 </div>
             </div>
 
@@ -693,23 +689,20 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>배경 설정</label>
+                    <label>배경 설정 <button class="edit-btn" onclick="editField('background', '배경 설정')">Edit</button></label>
                     <textarea id="background" placeholder="캐릭터의 배경 스토리, 직업, 환경 등"></textarea>
-                    <button class="edit-btn" onclick="editField('background', '배경 설정')">수정</button>
                 </div>
             </div>
 
             <div class="form-section">
                 <div class="section-title">특수 설정</div>
                 <div class="form-group">
-                    <label>성향/취향</label>
+                    <label>성향/취향 <button class="edit-btn" onclick="editField('preferences', '성향/취향')">Edit</button></label>
                     <textarea id="preferences" placeholder="NSFW 관련 성향이나 특별한 취향"></textarea>
-                    <button class="edit-btn" onclick="editField('preferences', '성향/취향')">수정</button>
                 </div>
                 <div class="form-group">
-                    <label>특별한 특성</label>
+                    <label>특별한 특성 <button class="edit-btn" onclick="editField('special', '특별한 특성')">Edit</button></label>
                     <textarea id="special" placeholder="기타 특별한 설정이나 특성"></textarea>
-                    <button class="edit-btn" onclick="editField('special', '특별한 특성')">수정</button>
                 </div>
             </div>
 
@@ -1148,7 +1141,6 @@ JSON:
                 <div class="prompt-section">
                     <div class="section-header">
                         <h3>Name</h3>
-                        <button class="edit-btn" onclick="editSection('name')">Edit</button>
                     </div>
                     <div class="section-content">${currentPromptData.name}</div>
                 </div>
@@ -1158,7 +1150,6 @@ JSON:
                 <div class="prompt-section">
                     <div class="section-header">
                         <h3>Character Profile</h3>
-                        <button class="edit-btn" onclick="editSection('profile')">Edit</button>
                     </div>
                     <div class="section-content">${currentPromptData.profile}</div>
                 </div>
@@ -1168,7 +1159,6 @@ JSON:
                 <div class="prompt-section">
                     <div class="section-header">
                         <h3>Backstory</h3>
-                        <button class="edit-btn" onclick="editSection('backstory')">Edit</button>
                     </div>
                     <div class="section-content">${currentPromptData.backstory}</div>
                 </div>
@@ -1178,7 +1168,6 @@ JSON:
                 <div class="prompt-section">
                     <div class="section-header">
                         <h3>Personality & Relationship</h3>
-                        <button class="edit-btn" onclick="editSection('personality')">Edit</button>
                     </div>
                     <div class="section-content">${currentPromptData.personality}</div>
                 </div>
@@ -1188,7 +1177,6 @@ JSON:
                 <div class="prompt-section">
                     <div class="section-header">
                         <h3>World Setting</h3>
-                        <button class="edit-btn" onclick="editSection('worldsetting')">Edit</button>
                     </div>
                     <div class="section-content">${currentPromptData.worldsetting}</div>
                 </div>
@@ -1199,7 +1187,6 @@ JSON:
                     <div class="prompt-section">
                         <div class="section-header">
                             <h3>Special Traits</h3>
-                            <button class="edit-btn" onclick="editSection('special')">Edit</button>
                         </div>
                         <div class="section-content">${currentPromptData.special}</div>
                     </div>
@@ -1208,6 +1195,58 @@ JSON:
 
             promptCard.innerHTML = html;
             copyBtn.style.display = 'block';
+        }
+
+        function editField(fieldId, fieldName) {
+            const currentValue = document.getElementById(fieldId).value;
+            showEditModal(fieldName, currentValue, (newValue) => {
+                document.getElementById(fieldId).value = newValue;
+                // 프롬프트 다시 생성
+                generatePrompt();
+            });
+        }
+
+        function showEditModal(title, content, onSave) {
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay';
+            
+            overlay.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">${title} 수정</div>
+                    <textarea class="modal-textarea" id="modalTextarea">${content}</textarea>
+                    <div class="modal-buttons">
+                        <button class="modal-btn" onclick="closeModal()">취소</button>
+                        <button class="modal-btn save" onclick="saveModal()">저장</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(overlay);
+            
+            // 전역 함수로 설정
+            window.currentOnSave = onSave;
+            window.currentOverlay = overlay;
+            
+            // 텍스트영역 포커스
+            setTimeout(() => {
+                document.getElementById('modalTextarea').focus();
+            }, 100);
+        }
+
+        function closeModal() {
+            if (window.currentOverlay) {
+                document.body.removeChild(window.currentOverlay);
+                window.currentOverlay = null;
+                window.currentOnSave = null;
+            }
+        }
+
+        function saveModal() {
+            const newValue = document.getElementById('modalTextarea').value;
+            if (window.currentOnSave) {
+                window.currentOnSave(newValue);
+            }
+            closeModal();
         }
 
         function editSection(sectionName) {
