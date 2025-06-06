@@ -242,6 +242,7 @@
         .form-group textarea {
             resize: vertical;
             min-height: 50px;
+            white-space: pre-line;
         }
 
         .generate-btn {
@@ -297,16 +298,100 @@
             background: #444;
             border: 1px solid #666;
             color: #ccc;
-            padding: 3px 6px;
-            border-radius: 3px;
+            padding: 6px 12px;
+            border-radius: 4px;
             cursor: pointer;
-            font-size: 10px;
+            font-size: 11px;
             transition: all 0.2s;
+            margin-top: 8px;
+            width: 100%;
         }
 
         .edit-btn:hover {
             background: #555;
             color: #fff;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: #2a2a2a;
+            border: 1px solid #555;
+            border-radius: 8px;
+            padding: 20px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80%;
+        }
+
+        .modal-header {
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #444;
+            padding-bottom: 10px;
+        }
+
+        .modal-textarea {
+            width: 100%;
+            height: 300px;
+            background: #333;
+            border: 1px solid #555;
+            border-radius: 4px;
+            padding: 12px;
+            color: #e0e0e0;
+            font-size: 13px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            resize: vertical;
+            white-space: pre-line;
+        }
+
+        .modal-textarea:focus {
+            outline: none;
+            border-color: #666;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            justify-content: flex-end;
+        }
+
+        .modal-btn {
+            background: #444;
+            border: 1px solid #666;
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background-color 0.2s;
+        }
+
+        .modal-btn:hover {
+            background: #555;
+        }
+
+        .modal-btn.save {
+            background: #1a4a1a;
+            border-color: #2a6a2a;
+        }
+
+        .modal-btn.save:hover {
+            background: #2a5a2a;
         }
 
         .section-content {
@@ -570,6 +655,7 @@
                 <div class="form-group">
                     <label>백스토리 (개인 배경)</label>
                     <textarea id="backstory" placeholder="캐릭터의 과거, 개인사, 경험 등"></textarea>
+                    <button class="edit-btn" onclick="editField('backstory', '백스토리')">수정</button>
                 </div>
             </div>
 
@@ -578,14 +664,17 @@
                 <div class="form-group">
                     <label>핵심 성격</label>
                     <textarea id="personality" placeholder="주요 성격 특성들을 적어주세요"></textarea>
+                    <button class="edit-btn" onclick="editField('personality', '성격')">수정</button>
                 </div>
                 <div class="form-group">
                     <label>말투/어조</label>
                     <input type="text" id="speech" placeholder="예: 정중한 존댓말, 친근한 반말, 츤데레톤">
+                    <button class="edit-btn" onclick="editField('speech', '말투')">수정</button>
                 </div>
                 <div class="form-group">
                     <label>유저와의 관계</label>
                     <input type="text" id="relationship" placeholder="예: 첫 만남, 친구, 연인, 상사와 부하">
+                    <button class="edit-btn" onclick="editField('relationship', '관계')">수정</button>
                 </div>
             </div>
 
@@ -606,6 +695,7 @@
                 <div class="form-group">
                     <label>배경 설정</label>
                     <textarea id="background" placeholder="캐릭터의 배경 스토리, 직업, 환경 등"></textarea>
+                    <button class="edit-btn" onclick="editField('background', '배경 설정')">수정</button>
                 </div>
             </div>
 
@@ -614,10 +704,12 @@
                 <div class="form-group">
                     <label>성향/취향</label>
                     <textarea id="preferences" placeholder="NSFW 관련 성향이나 특별한 취향"></textarea>
+                    <button class="edit-btn" onclick="editField('preferences', '성향/취향')">수정</button>
                 </div>
                 <div class="form-group">
                     <label>특별한 특성</label>
                     <textarea id="special" placeholder="기타 특별한 설정이나 특성"></textarea>
+                    <button class="edit-btn" onclick="editField('special', '특별한 특성')">수정</button>
                 </div>
             </div>
 
@@ -820,26 +912,30 @@ ${text}`;
 
 ${specialInstructions}
 
-경고: 아래 형식을 정확히 따르지 않으면 실패입니다!
+🚨 경고: 아래 형식과 길이를 정확히 따르지 않으면 실패입니다! 🚨
 
-personality 필드 예시:
+background 필드 - 반드시 500자 이상 작성:
+"# 정치체제
+## 정부 구조
+현재 정부는 민주주의 체제로 운영되며, 대통령과 국회가 권력을 분담한다. 지방자치제도가 발달되어 있어 각 지역마다 고유한 특색을 유지하고 있다.
+## 법률 시스템  
+성문법 체계를 따르며, 대법원을 최고 법원으로 하는 3심제를 운영한다. 최근 AI 관련 법안들이 새롭게 제정되고 있다.
+# 지역
+## 수도
+인구 천만의 거대 도시로, 정치와 경제의 중심지이다. 고층 빌딩들이 즐비하고 지하철망이 발달되어 있다.
+## 변방
+자연이 잘 보존된 지역으로, 전통 문화가 살아있는 곳이다. 관광업이 주요 산업이며 특산품이 유명하다."
+
+personality 필드 - 반드시 이 형식:
 "Personality
 * 성격특성1
 * 성격특성2
 
-Speaking style  
-* 말투특징1
+Speaking style
+* 말투특징1  
 * 말투특징2"
 
-background 필드 예시:
-"# 정치체제
-## 정부 구조
-## 법률 시스템
-# 지역
-## 수도
-## 변방"
-
-special 필드 예시:
+special 필드 - 반드시 이 형식:
 "【Absolute Top Priority - Mandatory Checklist for Every Response】:
 1. 규칙1
 2. 규칙2
@@ -847,13 +943,8 @@ special 필드 예시:
 4. 규칙4
 5. 규칙5"
 
-절대 금지:
-- "Setting:" "Background:" 같은 불필요한 접두사
-- preferences와 special 합치기
-- 형식 무시
-
 JSON:
-{"name":"이름","age":"나이","physique":"체형","appearance":"외모","clothing":"의상","backstory":"배경","personality":"위 예시 형식 그대로","speech":"말투","relationship":"관계","worldtype":"장르","background":"위 예시 형식으로 세계관만","preferences":"성적 취향","special":"위 예시 형식으로 규칙만"}`;
+{"name":"이름","age":"나이","physique":"체형","appearance":"외모","clothing":"의상","backstory":"배경","personality":"위 예시처럼 Personality/Speaking style 분리","speech":"말투","relationship":"관계","worldtype":"장르","background":"위 예시처럼 500자 이상 세계관만","preferences":"성적 취향","special":"위 예시처럼 5개 규칙"}`;
 
                 const contents = [
                     { role: "user", parts: [{ text: prompt }] }
