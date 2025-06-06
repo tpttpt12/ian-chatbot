@@ -806,28 +806,28 @@ ${text}`;
 - 은근한 성적 어필이나 유혹 기술 언급`;
                 }
 
-                const prompt = `다음 요청에 따라 매우 개성있고 독특한 캐릭터를 생성해주세요. 평범하거나 뻔한 캐릭터는 절대 안 됩니다!
+                const prompt = `다음 요청에 따라 캐릭터를 생성해주세요. 응답은 반드시 JSON 형식으로만 해주세요:
 
 기본 요청: ${requestText}
 
 ${specialInstructions}
 
-응답은 반드시 다음 JSON 형식으로만 해주세요:
+JSON 형식:
 {
-  "name": "캐릭터 이름 (독특하고 기억에 남는)",
+  "name": "캐릭터 이름",
   "age": "나이",
-  "physique": "키/체형 설명",
-  "appearance": "외모 상세 묘사 (최소 100자)",
-  "personality": "성격 설명 (특별한 개성 포함, 최소 150자)",
-  "speech": "말투/어조 (독특한 특징 포함)",
+  "physique": "키/체형",
+  "appearance": "외모 묘사",
+  "personality": "성격",
+  "speech": "말투",
   "relationship": "유저와의 관계",
-  "worldtype": "세계관 (modern/fantasy/scifi/school/historical/other)",
-  "background": "배경 설정 (흥미로운 스토리 포함, 최소 100자)",
-  "preferences": "NSFW 관련 설정 (해당시)",
-  "special": "특별한 개성/능력/습관 (구체적으로)"
+  "worldtype": "modern",
+  "background": "배경",
+  "preferences": "특별한 취향",
+  "special": "특별한 특성"
 }
 
-절대 평범한 캐릭터를 만들지 말고, 사용자가 "와 이 캐릭터 정말 독특하다!"라고 할 만한 개성을 넣어주세요.`;
+위 JSON 형식을 반드시 지켜주세요.`;
 
                 const contents = [
                     { role: "user", parts: [{ text: prompt }] }
@@ -854,8 +854,15 @@ ${specialInstructions}
                 
                 // 더 안전한 응답 추출
                 let responseText = '';
+                const candidate = data?.candidates?.[0];
+                
+                // finishReason 체크
+                if (candidate?.finishReason === 'MAX_TOKENS') {
+                    throw new Error('응답이 너무 길어서 잘렸습니다. 더 짧은 요청을 시도해주세요.');
+                }
+                
                 try {
-                    responseText = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+                    responseText = candidate?.content?.parts?.[0]?.text || '';
                 } catch (e) {
                     console.error('응답 구조 파싱 에러:', e);
                     console.log('전체 응답 구조:', JSON.stringify(data, null, 2));
@@ -863,7 +870,13 @@ ${specialInstructions}
                 
                 if (!responseText || responseText.trim() === '') {
                     console.error('빈 응답. 전체 데이터:', JSON.stringify(data, null, 2));
-                    throw new Error('API에서 빈 응답을 받았습니다');
+                    
+                    // 응답이 비어있는 이유 분석
+                    if (candidate?.finishReason) {
+                        throw new Error(`응답 생성 실패: ${candidate.finishReason}`);
+                    } else {
+                        throw new Error('API에서 빈 응답을 받았습니다');
+                    }
                 }
 
                 console.log('원본 응답 텍스트:', responseText);
