@@ -613,10 +613,10 @@
                 
                 <div class="request-options">
                     <div class="option-toggle" id="specialToggle" onclick="toggleOption('special')">
-                        <span class="toggle-label">✨</span>
+                        <span class="toggle-label"></span>
                     </div>
                     <div class="option-toggle" id="nsfwToggle" onclick="toggleOption('nsfw')">
-                        <span class="toggle-label">🔞</span>
+                        <span class="toggle-label"></span>
                     </div>
                 </div>
                 
@@ -1011,7 +1011,7 @@ JSON:
                     console.warn('응답이 중간에 잘린 것 같습니다');
                 }
 
-                console.log('원본 응답 텍스트:', responseText);
+                console.log('원본 응답 텍스트:', responseText.substring(0, 100) + '...');
 
                 // JSON 추출 및 정리 - 더 강력한 방법
                 let jsonText = responseText;
